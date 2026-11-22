@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:28:13+03:00" /><title>Hiyerarşi Uzlaşımları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Porting.html" title="GNU C Kütüphanesinin Uyarlanması" /><link rel="previous" href="../glibc/glibc-Porting.html" title="GNU C Kütüphanesinin Uyarlanması" /><link rel="next" href="../glibc/glibc-Porting-to-Unix.html" title="GNU C Kütüphanesinin Unix Sistemlerine Uyarlanması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Hiyerarşi Uzlaşımları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Porting.html">Önceki</a> </td><th width="60%" align="center">GNU C Kütüphanesinin Uyarlanması</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Porting-to-Unix.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="glibc-Hierarchy-Conventions" id="glibc-Hierarchy-Conventions"></a>Hiyerarşi Uzlaşımları</div><dl><dd><div class="para">
+Bir GNU yapılandırma ismi üç parçadan oluşur: İşlemci türü, üretici ismi ve işletim sistemi. <b><tt>configure</tt></b> betiği bunları sistem bağımlı dizinlerin hangilerine bakacağını bilmek için kullanır. Eğer <b><tt>configure</tt></b> betiğine <b><tt>--nfp</tt></b> seçeneği belirtilmemişse, ayrıca, <i><tt>makine</tt></i><tt>/fpu</tt> dizini de kullanılır. Bir işletim sisteminin genellikle bir <span><i>temel işletim sistemi</i></span> vardır; örneğin, <b><tt>Linux</tt></b> işletim sistemi için bu temel işletim sistemi <b><tt>unix/sysv</tt></b>'dir. Dizinlere bakılmasını sağlayacak algoritma basittir: <b><tt>configure</tt></b> betiği, temel işletim sistemi, üretici, işlemci türü ve işletim sissemi sırasıyla bir liste oluşturur. Bunların aralarına bölü işaretleri yerleştirerek dizinleri elde eder; örneğin, yapılandırma <b><tt>i686-linux-gnu</tt></b> ise bu  <tt>unix/sysv/linux/i386/i686</tt> ile sonuçlanır.  <b><tt>configure</tt></b> betiği sırayla dizinleri kaldırarak diğer dizileri de dener, böylece diğerlerinin yanında <tt>unix/sysv/linux</tt> ve <tt>unix/sysv</tt> dizinleri de ayrıca denenir. İşletim sistemlerinde sürüm numaraları her zaman çok önemli olmaz; örneğin <tt>irix6.2</tt> ve <tt>irix6.3</tt> dizinlerinin isimlerinde <b><tt>configure</tt></b> noktadan sonraki kısımları atarak da deneme yapar.
+    </div><div class="para">
+Bir örnek olarak, <b><tt>i686-linux-gnu</tt></b> yapılandırmasında denenecek dizinlerin bir listesine yer verilmiştir (<b><tt>crypt</tt></b> ve <b><tt>linuxthreads</tt></b> eklentileriyle):
+    </div>
+<div class="para"><pre class="literallayout">sysdeps/i386/elf
+crypt/sysdeps/unix
+linuxthreads/sysdeps/unix/sysv/linux
+linuxthreads/sysdeps/pthread
+linuxthreads/sysdeps/unix/sysv
+linuxthreads/sysdeps/unix
+linuxthreads/sysdeps/i386/i686
+linuxthreads/sysdeps/i386
+linuxthreads/sysdeps/pthread/no-cmpxchg
+sysdeps/unix/sysv/linux/i386
+sysdeps/unix/sysv/linux
+sysdeps/gnu
+sysdeps/unix/common
+sysdeps/unix/mman
+sysdeps/unix/inet
+sysdeps/unix/sysv/i386/i686
+sysdeps/unix/sysv/i386
+sysdeps/unix/sysv
+sysdeps/unix/i386
+sysdeps/unix
+sysdeps/posix
+sysdeps/i386/i686
+sysdeps/i386/i486
+sysdeps/libm-i387/i686
+sysdeps/i386/fpu
+sysdeps/libm-i387
+sysdeps/i386
+sysdeps/wordsize-32
+sysdeps/ieee754
+sysdeps/libm-ieee754
+sysdeps/generic
+</pre></div><div class="para">
+Farklı makine mimarileri teamülen ana kaynak dizinindeki <tt>sydeps</tt> dizin ağacındaki altdizinlerdir. Örneğin, <tt>sysdeps/sparc</tt> ve <tt>sysdeps/m68k</tt>.  Bunlar bu makine mimarilerine özgü dosyaları içerir, bu mimarilerde kullanılan işletim sistemlerine özgü dosyaları içermezler. Bu mimarilerde özelleştirilmiş alt dizinler de olabilir; örneğin, <tt>sysdeps/m68k/68020</tt>. Belli bir makinede kullanılan aritmetik işlemciye özel kod <tt>sysdeps/<i><tt>makine</tt></i>/fpu</tt> dizinlerinde bulunur.
+    </div><div class="para">
+<tt>sysdeps</tt> dizininin altında belli bir makine mimarisine ait olmayan birkaç dizin vardır.
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>generic</tt></span></dt><dd class="varlist"><div class="para">
+Evvelce açıklandığı gibi (<a href="../glibc/glibc-Porting.html" class="xref" title="GNU C Kütüphanesinin Uyarlanması">GNU C Kütüphanesinin Uyarlanması</a>), bu alt dizindekiler tüm diğerlerinden sonra her yapılandırma tarafından dolaylı olarak kullanılır.
+       </div></dd><dt><span class="term"><tt>ieee754</tt></span></dt><dd class="varlist"><div class="para">
+IEEE 754 kayan nokta biçimi (IEEE 754 tek hassasiyetli biçim için <b><tt>float</tt></b> türü ve IEEE 754 çift hassasiyetli biçim için <b><tt>double</tt></b> türü) kullanan kodun bulunduğu dizin. Genellikle bu dizin makine mimarisine özel dizin içindeki <tt>Implies</tt> (<tt>m68k/Implies</tt> gibi) dosyasında belirtilir.
+       </div></dd><dt><span class="term"><tt>libm-ieee754</tt></span></dt><dd class="varlist"><div class="para">
+IEEE 754 uyumlu kayan nokta biçimi kullanılan platformların matematik kütüphanesinin gerçeklenimini içerir.
+       </div></dd><dt><span class="term"><tt>libm-i387</tt></span></dt><dd class="varlist"><div class="para">
+Bu özel bir durumdur. Aslında kodun ideal yeri <tt>sysdeps/i386/fpu</tt> olmalıydı ama çeşitli sebeplerle ayrı tutulmaktadır.
+       </div></dd><dt><span class="term"><tt>posix</tt></span></dt><dd class="varlist"><div class="para">
+Bu dizin POSIX.1 işlevlerine konu olan kütüphanedeki şeylerin gerçeklenimini içerir. Bazı POSIX.1 işlevlerinin kendilerini içerir. Şüphesiz, POSIX.1 kendi kurallarına göre tamamen gerçeklenemez, bu bakımdan sadece <tt>posix</tt> kullanan bir yapılandırma tamam olamayacaktır.
+       </div></dd><dt><span class="term"><tt>unix</tt></span></dt><dd class="varlist"><div class="para">
+Bu dizin Unix benzeri şeyler içindir. Bkz. <a href="../glibc/glibc-Porting-to-Unix.html" class="xref" title="GNU C Kütüphanesinin Unix Sistemlerine Uyarlanması">GNU C Kütüphanesinin Unix Sistemlerine Uyarlanması</a>. <tt>unix</tt>, <tt>posix</tt>'i uygular.  <tt>unix</tt> dizininin altında özel amaçlı bazı dizinler bulunur:
+       </div><div class="variablelist"><dl><dt><span class="term"><tt>unix/common</tt></span></dt><dd class="varlist"><div class="para">
+Bu dizin hem BSD hem de System V 4. sürümünde ortak olan şeyleri içerir.  <tt>unix/bsd</tt> ve <tt>unix/sysv/sysv4</tt> her ikisi de  <tt>unix/common</tt> uygular.
+          </div></dd><dt><span class="term"><tt>unix/inet</tt></span></dt><dd class="varlist"><div class="para">
+Bu dizin Unix sistemlerindeki <tt>socket</tt> ve ilgili işlevler içindir. <tt>unix/inet/Subdirs</tt> dosyasında <tt>inet</tt> üst seviyeli alt dizindir. <b><tt>unix/common</tt></b>, <tt>unix/inet</tt> uygular.
+          </div></dd></dl></div>
+          </dd><dt><span class="term"><tt>mach</tt></span></dt><dd class="varlist"><div class="para">
+Bu dizin, CMU'daki Mach mikroçekirdeğini (GNU işletim sistemi içerir) temel alan şeyleri içerir. Diğer temel işletim sistemlerinin (örneğin, VMS) <tt>sysdeps</tt> hiyerarşisi içinde <tt>unix</tt> and <tt>mach</tt> ile aynı seviyede kendi dizinleri vardır.
+       </div></dd></dl></div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Porting.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Porting.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Porting-to-Unix.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">GNU C Kütüphanesinin Uyarlanması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> GNU C Kütüphanesinin Unix Sistemlerine Uyarlanması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

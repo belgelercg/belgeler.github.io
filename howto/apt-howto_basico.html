@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:13+03:00" /><title>Temel Yapılandırma</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/apt-howto.html" title="APT NASIL" /><link rel="previous" href="../howto/apt-howto_intro.html" title="Başlarken" /><link rel="next" href="../howto/apt-howto_apt-get.html" title="Paketlerin yönetimi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Temel Yapılandırma</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/apt-howto_intro.html">Önceki</a> </td><th width="60%" align="center">APT NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/apt-howto_apt-get.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="apt-howto_basico" id="apt-howto_basico"></a>Temel Yapılandırma</div><dl><dd> <div class="head3"><a name="apt-howto_sources.list" id="apt-howto_sources.list"></a>/etc/apt/sources.list dosyası</div><dl><dd><div class="para">
+APT, paketlerin bulunduğu kaynaklara nasıl erişebileceğinin bilgisini <tt>/etc/apt/sources.list</tt> dosyasında saklar.
+      </div><div class="para">
+Dosya içindeki girdilerin biçimi aşağıdaki gibidir:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+deb http://site.http.org/debian sürüm bölüm1 bölüm2 bölüm3
+deb-src http://site.http.org/debian sürüm bölüm1 bölüm2 bölüm3
+</pre></div></div>
+      <div class="para">
+Elbette yukarıda verdiğimiz örnek kullanılabilir değildir. Her satırın ilk kelimesi mutlaka <tt>deb</tt> veya <tt>deb-src</tt> olmak zorundadır. Bu ifadeler arşivin türünü belirler: derlenmiş ve kullanıma hazır duruma getirilmiş, çalıştırılabilir paketler (<tt>deb</tt>) veya programın asıl kaynak kodu + Debian kontrol dosyası (<tt>.dsc</tt>) ve programı `debianlaştırmak' için gerekli değişiklikleri içeren <tt>diff.gz</tt>.
+      </div><div class="para">
+Öntanımlı Debian <tt>sources.list</tt> dosyasının biçimi genellikle aşağıdaki gibi olacaktır:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# See sources.list(5) for more information, especialy
+# Remember that you can only use http, ftp or file URIs
+# CDROMs are managed through the apt-cdrom tool.
+<b><tt>deb http://http.us.debian.org/debian stable main contrib non-free</tt></b>
+<b><tt>deb http://non-us.debian.org/debian-non-US stable/non-US main contrib non-free</tt></b>
+<b><tt>deb http://security.debian.org stable/updates main contrib non-free</tt></b>
+
+# Uncomment if you want the apt-get source function to work
+#deb-src http://http.us.debian.org/debian stable main contrib non-free
+#deb-src http://non-us.debian.org/debian-non-US stable non-US
+</pre></div></div>
+      <div class="para">
+En temel Debian kurulumu için ihtiyaç duyulan satırlar bunlardır. Birinci <tt>deb</tt> satırı resmi Debian arşivini gösterirken, ikincisi ABD dışı arşivini ve üçüncüsü ise Debian güvenlik güncellemelerini içeren arşivi göstermektedir.
+      </div><div class="para">
+Sondaki iki satır yorum haline getirilmiş olup (satır başındaki <tt>#</tt> karakteri ile) <b><tt>apt-get</tt></b> tarafından yoksayılmaktadır. Buradaki <tt>deb-src</tt>
+ satırları Debian kaynak paketlerini göstermektedirler. Eğer sıklıkla program kaynak kodlarını test veya yeniden derleme amaçlı olarak indiriyorsanız satırları aktif hale getirmelisiniz.
+      </div><div class="para">
+<tt>/etc/apt/sources.list</tt> dosyası çeşitli tiplerde satırlar içerebilir. APT uygulaması <tt>http</tt>, <tt>ftp</tt>, <tt>file</tt> (yerel dosyalar, örneğin bağlı durumdaki bir ISO9660 dosya sistemi) ve <tt>ssh</tt> arşiv türlerini tanıyabilmektedir.
+      </div><div class="para">
+<tt>/etc/apt/sources.list</tt> dosyasında değişiklik yaptıktan sonra <b><tt>apt-get update</tt></b> komutunu çalıştırmayı unutmayınız. Bu komutla APT'nin dosyada belirtmiş olduğunuz arşivlerdeki güncel paket listesini edinmesini sağlamış olursunuz.
+      </div></dd></dl> <div class="head3"><a name="apt-howto_dpkg-scanpackages" id="apt-howto_dpkg-scanpackages"></a>APT'nin yerel olarak kullanımı</div><dl><dd><div class="para">
+Bazen APT tarafından kurulmasını istediğiniz onlarca paketiniz olabilir. Bunların hepsini birden sisteminizdeki kopyasından kurulumunu isterseniz aşağıdaki adımları izlemelisiniz.
+      </div><div class="para">
+Öncelikle bir dizin oluşturup içerisinde sizdeki <tt>.deb</tt> paketlerini atınız. Örneğin:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>mkdir /root/debs</tt></b>
+</pre></div></div><div class="para">
+Paketlerin <tt>control</tt> dosyalarında belirtilen tanımlamalarının üzerine kendi tanımlamalarınızı <tt>override</tt> dosyası kullanarak yapabilirsiniz. Bu dosya içerisinde paketle birlikte gelen bazı seçenekleri aşağıdaki gibi tanımlayabilirsiniz:
+      </div><div class="para">
+<i><tt>paket öncelik bölüm</tt></i>
+      </div><div class="para">
+<i><tt>paket</tt></i>, paketin ismini belirtir; <i><tt>öncelik</tt></i> değeri sırasıyla düşük, orta ve yüksek anlamında <tt>low</tt>, <tt>medium</tt> ve <tt>high</tt> olabilir; <i><tt>bölüm</tt></i> ise paketin ait olduğu bölümü gösterir. Dosya adının mutlaka böyle olması gerekmez, başka bir dosya kullanıp <b><tt>dpkg-scanpackages</tt></b>'a parametre olarak verebilirsiniz. Eğer bir <tt>override</tt> dosyası yazmak istemiyorsanız <b><tt>dpkg-scanpackages</tt></b> programını çağırırken <tt>/dev/null</tt>'u kullanabilirsiniz.
+      </div><div class="para">
+Halen <tt>/root</tt> dizini içerisindeyken aşağıdaki komutu çalıştırın:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>dpkg-scanpackages debs</tt></b> <i>dosya</i><b><tt> | gzip &gt; debs/Packages.gz</tt></b>
+</pre></div></div><div class="para">
+Yukarıdaki satırda <i><tt>dosya</tt></i> olarak girilen dosya, <tt>override</tt> dosyasıdır. Bu komut APT tarafından kullanılmak üzere, paketler hakkında çeşitli bilgiler içeren <tt>Packages.gz</tt> dosyasını üretir. Paketleri kullanmak için son olarak aşağıdaki satırı <tt>sources.list</tt> dosyanıza ekleyin:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+deb file:/root debs/
+</pre></div></div>
+      <div class="para">
+Bu eklentiden sonra artık APT uygulamasını yeni arşivinizle birlikte kullanabilirsiniz. Ayrıca isterseniz kaynak paketler için de yerel bir arşiv oluşturabilirsiniz. Bunun için izlemeniz gereken yol yukarıdaki ile hemen hemen aynıdır. Dikkat etmeniz gereken nokta, <tt>.orig.tar.gz</tt>, <tt>.dsc</tt> ve <tt>.diff.gz</tt> dosyalarını da dizin içerisine kopyalamanız ve <tt>Packages.gz</tt> dosyası yerine <tt>Sources.gz</tt> dosyasını oluşturmanız gerektiğidir. Kullanacağınız program ise <b><tt>dpkg-scansources</tt></b> olacaktır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>dpkg-scansources debs | gzip &gt; debs/Sources.gz</tt></b>
+</pre></div></div>
+      <div class="para">
+Dikkat ettiyseniz <b><tt>dpkg-scansources</tt></b> uygulaması parametre olarak bir <tt>override</tt> dosyasına ihtiyaç duymamaktadır. <tt>sources.list</tt> dosyanıza eklemeniz gereken satır ise aşağıdadır:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+deb-src file:/root debs/
+</pre></div></div>
+      </dd></dl> <div class="head3"><a name="apt-howto_netselect" id="apt-howto_netselect"></a>sources.list dosyası için en iyi yansıya karar verme</div> <div class="head4" id="subtitle">netselect, netselect-apt</div><dl><dd><div class="para">
+Yeni Debian kullanıcılarının kararsız oldukları noktalardan biri <tt>sources.list</tt> dosyasına hangi Debian yansısını eklemeleri gerektiğidir. En iyi yansıya karar vermek için pek çok yöntem mevcuttur. Deneyimli kullanıcılar bir betik programı yazarak yansılar ile aradaki iletişim hızını ölçebilirler. Bu işi sizin için büyük ölçüde yapacak bir paket mevcuttur: <b><tt>netselect</tt></b>.
+      </div><div class="para">
+<b><tt>netselect</tt></b> paketini bildiğimiz yöntemle kuralım:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>apt-get install netselect</tt></b>
+</pre></div></div>
+      <div class="para">
+Parametre vermeden programı çalıştırdığımızda bir yardım sayfası gözükecektir. Programı birbirinden boşluk karakteri ile ayrılmış yansı adresleriyle çalıştırırsanız geriye bir skor ve yansı adresi döndürecektir. Buradaki değer yaklaşık olarak <b><tt>ping</tt></b> zamanı,ilgili yansıya kaç adımda ulaşılabilindiği bilgisini dikkate alır ve yaklaşık indirme zamanıyla ters orantılıdır (yanı, en düşüğü en iyisidir). Geri dönen alan adı en düşük skora sahip olandır. Eğer parametre olarak verdiğiniz tüm yansılara ait skorları görmek isterseniz programı <tt>-vv</tt> seçeneği ile çalıştırabilirsiniz.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>netselect ftp.debian.org http.us.debian.org ftp.at.debian.org download.unesp.br ftp.debian.org.br</tt></b>
+ 365 ftp.debian.org.br
+<tt>#</tt>
+</pre></div></div>
+      <div class="para">
+Bu çıktının anlamı, <b><tt>netselect</tt></b> programına parametre olarak verdiğimiz yansılar arasından en uygununun <tt>ftp.debian.org.br</tt> olduğu ve bu yansı için elde edilen skor değerinin 365 olduğudur. (Bu değer herkes için farklı olacaktır!).
+      </div><div class="para">
+Şimdi <b><tt>netselect</tt></b> tarafından en hızlı olarak belirtilen yansıyı <tt>/etc/apt/sources.list</tt> dosyanıza (bkz. <a href="../howto/apt-howto_basico.html#apt-howto_sources.list" class="xref" title="/etc/apt/sources.list dosyası">/etc/apt/sources.list dosyası</a>) ekleyebilir ve ardından <a href="../howto/apt-howto_apt-get.html" class="xref" title="Paketlerin yönetimi">Paketlerin yönetimi</a> bölümündeki yönergeleri takip edebilirsiniz.
+      </div>
+        <div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Debian tam yansı listesine <a class="ulink" href="http://www.debian.org/mirror/mirrors_full" target="_top">http://www.debian.org/mirror/mirrors_full</a> adresinden erişebilirsiniz.
+        </div></td></tr></table></div>
+      <div class="para">
+0.3.ds1 sürümünden itibaren <b><tt>netselect</tt></b> paketi <b><tt>netselect-apt</tt></b> betiğini de içermektedir. Bu betik yukarıdaki işlemleri otomatik olarak yapmaktadır. Dağıtım olarak ne kullanmak istediğinizi belirtmeniz durumunda (öntanımlı olarak kararlı) yansılar arasından sizin için en iyileri seçilecek ve bu karar doğrultusunda en iyi <tt>main</tt> ve <tt>non-US</tt> yansıları ile <tt>sources.list</tt> dosyanız oluşturulacaktır. Aşağıdaki örnek kullanım ile kararlı dağıtım için bir <tt>sources.list</tt> dosyası üretilmektedir:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>ls sources.list</tt></b>
+ls: sources.list: Böyle bir dosya ya da dizin yok
+<tt>#</tt> <b><tt>netselect-apt stable</tt></b>
+      <i>(...) Bir miktar bekliyoruz</i>
+<tt>#</tt> <b><tt>ls -l sources.list</tt></b>
+sources.list
+<tt>#</tt>
+</pre></div></div>
+      
+        <div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/warning.png" /></td><th class="admon">Uyarı</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+<tt>sources.list</tt> dosyası bulunduğunuz dizin altında oluşturulacaktır. Bu dosyayı kullanmak istiyorsanız <tt>/etc/apt</tt> dizini altına taşımalısınız.
+        </div></td></tr></table></div>
+      <div class="para">
+Ardından <a href="../howto/apt-howto_apt-get.html" class="xref" title="Paketlerin yönetimi">Paketlerin yönetimi</a> bölümündeki yönergeleri izleyebilirsiniz.
+      </div></dd></dl> <div class="head3"><a name="apt-howto_cdrom" id="apt-howto_cdrom"></a>sources.list dosyasına CD-ROM ekleme</div><dl><dd><div class="para">
+Eğer paketlerin kurulumu veya güncellemesi için halihazırda elinizde bulunan bir CD-ROM'u kullanmak istiyorsanız bunu <tt>sources.list</tt> dosyanıza eklemelisiniz. Bunun için CD-ROM'u takıp <b><tt>apt-cdrom</tt></b> programını aşağıdaki gibi çalıştırın:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>apt-cdrom add</tt></b>
+</pre></div></div>
+      <div class="para">
+CD-ROM bağlanacak ve eğer geçerli bir Debian CD'si ise üzerindeki paketlere ait bilgiler okunacaktır. Eğer CD-ROM ayarlamalarınız biraz standart dışı ise aşağıdaki seçenekleri de kullanabilirsiniz:
+      </div>
+<div class="para"><pre class="literallayout">
+-h           - bu yardım iletisini gösterir
+-d DİZİN     - DİZİN ile CD-ROM'un bağlanacağı yer belirtilir
+-r           - Tanınmış bir CD-ROM'u yeniden adlandırır
+-m           - Bağlama işlemini gerçekleştirir
+-f           - Hızlı kip, paket dosyaları kontrol edilmez
+-a           - Tarama kipi ile
+</pre></div>
+      
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>apt-cdrom -d /home/kov/mycdrom add</tt></b>
+</pre></div></div>
+      <div class="para">
+Ayrıca <tt>sources.list</tt> dosyanıza eklemeden CD-ROM'u tanıma işlemini yapabilirsiniz:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>apt-cdrom ident</tt></b>
+</pre></div></div>
+      
+        <div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+<b><tt>apt-cdrom</tt></b> CD-ROM aygıtınıza ait ayarların <tt>/etc/fstab</tt> dosyasında düzgün olarak yapılmış olduğu durumda çalışacaktır.
+        </div></td></tr></table></div>
+      </dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/apt-howto_intro.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/apt-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/apt-howto_apt-get.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Başlarken </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Paketlerin yönetimi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:01+03:00" /><title>Komut Satırı Argümanları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/asm-syntax.html" title="Linux ile Sembolik Makina Dili Kullanımı" /><link rel="previous" href="../howto/asm-syntax-syscalls.html" title="Sistem Çağrıları" /><link rel="next" href="../howto/asm-syntax-inline-asm.html" title="GCC Satıriçi Sembolik Makina Dili" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Komut Satırı Argümanları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/asm-syntax-syscalls.html">Önceki</a> </td><th width="60%" align="center">Linux ile Sembolik Makina Dili Kullanımı</th><td width="20%" align="right"> <a accesskey="n" href="../howto/asm-syntax-inline-asm.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="asm-syntax-cmdline-args" id="asm-syntax-cmdline-args"></a>Komut Satırı Argümanları</div><dl><dd><div class="para">
+Linux çalışabilir dosyalarında komut satırı parametreleri yığıt üzerinde dizilirler. <tt>argc</tt> ilk olarak gelir ve bir boş gösterici tarafından takip edilen, komut satırındaki dizgeleri gösteren göstericilerin oluşturduğu bir dizi tarafından izlenir (<tt>**argv</tt>). Daha sonra çevreye ait göstericilerin tutulduğu bir dizi gelir (<tt>**envp</tt>). Bunlar sembolik makina dili altında kolayca elde edilir ve bu örnek kod ile de gösterilmiştir.
+    </div><dl class="example"><dt class="example"><a class="example" name="idxmp69" id="idxmp69"></a><b>Örnek 9.4. args.s</b></dt><dd class="example"><div class="para"><div align="right"><pre class="screen">
+/* args.s */
+
+.text
+
+.globl _start
+
+_start:
+  popl %ecx              // argc
+
+lewp:
+  popl %ecx              // argv
+  test %ecx,%ecx
+  jz   exit
+
+  movl %ecx,%ebx
+  xorl %edx,%edx
+
+strlen:
+  movb (%ebx),%al
+  inc  %edx
+  inc  %ebx
+  test %al,%al
+  jnz  strlen
+  movb $10,-1(%ebx)
+
+// write(1, argv[i], strlen(argv[i]));
+  movl $SYS_write,%eax
+  movl $STDOUT,%ebx
+  int  $0x80
+
+  jmp  lewp
+
+exit:
+  movl $SYS_exit,%eax
+  xorl %ebx,%ebx
+  int  $0x80
+
+  ret
+</pre></div></div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/asm-syntax-syscalls.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/asm-syntax.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/asm-syntax-inline-asm.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Sistem Çağrıları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> GCC Satıriçi Sembolik Makina Dili</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

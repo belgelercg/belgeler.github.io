@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:53+03:00" /><title>Kullanıcı Listesinin Taranması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-User-Database.html" title="Kullanıcı Veritabanı" /><link rel="previous" href="../glibc/glibc-Lookup-User.html" title="Bir Kullanıcı Hakkında Bilgi Alınması" /><link rel="next" href="../glibc/glibc-Writing-a-User-Entry.html" title="Bir Kullanıcı Girdisinin Yazılması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Kullanıcı Listesinin Taranması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Lookup-User.html">Önceki</a> </td><th width="60%" align="center">Kullanıcı Veritabanı</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Writing-a-User-Entry.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Scanning-All-Users" id="glibc-Scanning-All-Users"></a>Kullanıcı Listesinin Taranması</div><dl><dd><div class="para">
+<a class="indexterm" name="idx3148" id="idx3148"></a>
+Bu bölümde bir yazılımın sistemdeki tüm kullanıcılar hakkındaki bilgileri bir kerede bir kullanıcı olarak nasıl okuyabileceği anlatılmıştır. Burada bahsedilen işlevler  <tt>pwd.h</tt> başlık dosyasında bildirilmiştir.
+    </div><div class="para">
+Belli bir dosyadaki kullanıcı girdilerini okumak için <b><tt>fgetpwent</tt></b> işlevini kullanabilirsiniz.
+    </div>
+<a class="indexterm" name="idx3149" id="idx3149"></a>
+<a name="glibc-fgetpwent" id="glibc-fgetpwent"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct passwd *<b><tt>fgetpwent</tt></b></tt></td><td valign="top"><pre class="paramdef">(FILE *<i><tt>akım</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev <i><tt>akım</tt></i>'dan sonraki kullanıcı girdisini okur ve girdiye bir gösterici ile döner. Yapı durağan olarak ayrıldığından sonraki <b><tt>fgetpwent</tt></b> çağrıları üzerine yazabilir. Aldığınız bilgiyi saklamak istiyorsanız yapıyı bir değişkene kopyalamalısınız.
+    </div><div class="para">
+Akım, standart parola veritabanı dosyası ile aynı biçimdeki bir dosyaya karşılık olmalıdır.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx3150" id="idx3150"></a>
+<a name="glibc-fgetpwent_r" id="glibc-fgetpwent_r"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>fgetpwent_r</tt></b></tt></td><td valign="top"><pre class="paramdef">(FILE           *<i><tt>akım</tt></i>,
+ struct passwd  *<i><tt>sonuç_tamponu</tt></i>,
+ char           *<i><tt>tampon</tt></i>,
+ size_t          <i><tt>tampon_uzunluğu</tt></i>,
+ struct passwd **<i><tt>sonuç</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev <i><tt>akım</tt></i>'dan sonraki kullanıcı girdisini okuyan <b><tt>fgetpwent</tt></b> işlevine benzer. Fakat sonuç <i><tt>sonuç_tamponu</tt></i> ile gösterilen yapı içinde döner. <i><tt>tampon</tt></i> ile gösterilen ek tamponun ilk <i><tt>tampon_uzunluğu</tt></i> baytı, normalde sonuç yapının elemanları tarafından gösterilen dizgelerden oluşan ek bilgi içerir.
+    </div><div class="para">
+Akım, standart parola veritabanı dosyası ile aynı biçimdeki bir dosyaya karşılık olmalıdır.
+    </div><div class="para">
+İşlev sıfırla dönmüşse <i><tt>sonuç</tt></i> istenen veriyi içeren yapıya göstericidir. Bir hata oluşmuşsa <i><tt>sonuç</tt></i> bir boş gösterici içerir ve işlev sıfırdan faklı bir değerle döner.
+</div></dd></dl><div style="padding:5px"></div><div class="para">
+Kullanıcı veritabanındaki tüm girdiler <b><tt>setpwent</tt></b>, <b><tt>getpwent</tt></b> ve <b><tt>endpwent</tt></b> işlevleri ile taranabilir.
+    </div>
+<a class="indexterm" name="idx3151" id="idx3151"></a>
+<a name="glibc-setpwent" id="glibc-setpwent"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>setpwent</tt></b></tt></td><td valign="top"><pre class="paramdef">(void)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev, kullanıcı veritabanını okumakta kullanılan <b><tt>getpwent</tt></b> ve <b><tt>getpwent_r</tt></b> işlevleri için bir akım ilklendirir.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx3152" id="idx3152"></a>
+<a name="glibc-getpwent" id="glibc-getpwent"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct passwd *<b><tt>getpwent</tt></b></tt></td><td valign="top"><pre class="paramdef">(void)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>getpwent</tt></b> işlevi <b><tt>setpwent</tt></b> işlevi ile ilklendirilen akımdan sonraki girdiyi okur. Yapı durağan olarak ayrıldığından sonraki <b><tt>getpwent</tt></b> çağrıları üzerine yazabilir. Aldığınız bilgiyi saklamak istiyorsanız yapıyı bir değişkene kopyalamalısınız.
+    </div><div class="para">
+Okunacak başka girdi kalmadığında işlev bir boş gösterici ile döner.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx3153" id="idx3153"></a>
+<a name="glibc-getpwent_r" id="glibc-getpwent_r"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>getpwent_r</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct passwd  *<i><tt>sonuç_tamponu</tt></i>,
+ char           *<i><tt>tampon</tt></i>,
+ int             <i><tt>tampon_uzunluğu</tt></i>,
+ struct passwd **<i><tt>sonuç</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev, <b><tt>setpwent</tt></b> işlevi ile ilklendirilen akımdan sonraki girdiyi döndüren <b><tt>getpwent</tt></b> işlevine benzer. İstenen bilgiyi <b><tt>fgetpwent_r</tt></b> işlevi gibi kullanıcı tanımlı <i><tt>sonuç_tamponu</tt></i> ve <i><tt>tampon</tt></i> tamponları ile döndürür.
+    </div><div class="para">
+Dönüş değerleri <b><tt>fgetpwent_r</tt></b> ile aynıdır.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx3154" id="idx3154"></a>
+<a name="glibc-endpwent" id="glibc-endpwent"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>endpwent</tt></b></tt></td><td valign="top"><pre class="paramdef">(void)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>getpwent</tt></b> veya
+<b><tt>getpwent_r</tt></b> tarafından kullanılan dahili akımı kapatır.
+    </div></dd></dl><div style="padding:5px"></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Lookup-User.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-User-Database.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Writing-a-User-Entry.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Bir Kullanıcı Hakkında Bilgi Alınması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Bir Kullanıcı Girdisinin Yazılması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

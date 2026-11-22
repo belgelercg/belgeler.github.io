@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:32+03:00" /><title>DCC (Distributed Checksum Clearinghouse)</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/antispam.html" title="Posta Sunucuları için Spam Önleme Araçları" /><link rel="previous" href="../howto/antispam-pyzor.html" title="Pyzor" /><link rel="next" href="../howto/antispam-clamav.html" title="Clamav Antivirus" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">DCC (Distributed Checksum Clearinghouse)</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/antispam-pyzor.html">Önceki</a> </td><th width="60%" align="center">Posta Sunucuları için Spam Önleme Araçları</th><td width="20%" align="right"> <a accesskey="n" href="../howto/antispam-clamav.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="antispam-dcc" id="antispam-dcc"></a>DCC (Distributed Checksum Clearinghouse)</div><dl><dd><div class="para">
+Eğer Razor ve Pyzor yetmedi diyorsanız işte size bir tane daha sunucu/istemci tabanlı antispam aracı. Çalışma şekli Razor ve Pyzor'la aynı prensiplere dayanıyor. Alınan her ileti DCC sunucularındaki spam veritabanı ile karşılaştırılıyor. Sorgulama sonucuna göre iletinin spam olup olmadığına karar veriliyor. Razor ve Pyzor'la beraber aynı sunucda çalışabilir. Fakat unutulmamalı ki, tüm bu araçların aynı anda çalışması sunucu performansını ve internet bant genişliğini önemli ölçüde düşürür. Gelen herbir ileti için internetten bu uygulamaların sunucularına bağlanılacak ve sorgulama yapılacaktır. Genelde SpamasAssasin ile birlikte Razor kullanılmaktadır. Bu haliyle dahi başarı % 95 üzerinde gerçekleşmektedir. DCC sendmail ile doğrudan bütünleştirilebilir ya da ProcMail gibi bir eposta süzücü ile de çalıştırılabilir. Ama biz her zamanki gibi SpamAssassin ile birlikte çalıştıracağız. Kurulum için <a class="ulink" href="http://www.rhyolite.com/anti-spam/dcc/source/dcc.tar.Z" target="_top">http://www.rhyolite.com/anti-spam/dcc/source/dcc.tar.Z</a> adresinden arşiv dosyasını indirin.
+  </div>
+<div class="para"><div align="right"><pre class="screen">tar -zxvf dcc-dccproc.tar.Z
+cd dcc-dccproc-*
+./configure --prefix=/usr
+make
+su -
+make install
+</pre></div></div>
+  <div class="para">
+kurulum bittikten sonraaşağıdaki komutu kullanarak DCC sunucularına bağlanabilirliğimizi sınıyoruz.
+  </div>
+<div class="para"><div align="right"><pre class="screen">cdcc info</pre></div></div>
+  <div class="para">
+komutun çıktısında aşağıdaki satırlara benzer satırlar görüyorsak sorun yok demektir.
+  </div>
+<div class="para"><div align="right"><pre class="screen">dcc1.dcc-servers.net,- RTT+0 ms anon
+dcc2.dcc-servers.net,- RTT+0 ms anon
+</pre></div></div>
+  <div class="para">
+Her zamanki gibi eğer güvenlik duvarı arkasından bağlanıyorsak DCC için gerekli ayarları yapmayı unutmamalıyız. DCC <tt>local UDP 1023</tt> ile <tt>remote UDP 6277</tt> portlarını kullanır. DCC bir çok ek yapılandırma seçeneğine sahiptir. Bunlarla ilgili daha ayrıntılı bilgi için <a class="ulink" href="http://www.rhyolite.com/anti-spam/dcc/" target="_top">http://www.rhyolite.com/anti-spam/dcc/</a> adresine bakınız. DCC'yi SpamAssassin ile birlikte çalıştırabilmek için <tt>/etc/mail/spamassassin/local.cf</tt> dosyasına şu satırı ekliyoruz.
+  </div>
+<div class="para"><pre class="literallayout">use_dcc 1</pre></div>
+  <div class="para">
+Daha sonra <b><tt>spamassassin</tt></b>'i yeniden başlatıyoruz. DCC'nin <b><tt>spamassassin</tt></b>'le çalışmasını sınamak için
+  </div>
+<div class="para"><div align="right"><pre class="screen">spamassassin --lint -D</pre></div></div>
+  <div class="para">
+komutun çıktısında DCC'nin sunucusuna bağlanabildiğini görmelisiniz.
+  </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/antispam-pyzor.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/antispam.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/antispam-clamav.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Pyzor </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Clamav Antivirus</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

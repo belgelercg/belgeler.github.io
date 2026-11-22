@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:44+03:00" /><title>Muteksler</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-POSIX-Threads.html" title="POSIX Evreleri" /><link rel="previous" href="../glibc/glibc-Cleanup-Handlers.html" title="Temizlik İşleyicileri" /><link rel="next" href="../glibc/glibc-Condition-Variables.html" title="Koşul Değişkenleri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Muteksler</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Cleanup-Handlers.html">Önceki</a> </td><th width="60%" align="center">POSIX Evreleri</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Condition-Variables.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Mutexes" id="glibc-Mutexes"></a>Muteksler</div><dl><dd><div class="para">
+Bir mutek bir Karşılıklı Dışlama (MUTual EXclusion) aygıtıdır ve paylaşılan veri yapılarını eşzamanlı değişikliklerden korumak için ve kritik bölümler ve görüntüleme birimlerini uygulamak için kullanışlıdır.
+   </div><div class="para">
+Bir muteksin iki durumu vardır: kilitsiz (herhangi bir evre tarafından sahiplenilmemiş) ve kilitli (bir evre tarafından sahiplenilmiş). Bir muteks hiçbir zaman aynı anda iki farklı evre tarafından sahiplenilemez. Kilitli bir muteksi kilitlemeye teşebbüs eden bir evre sahiplenen evre o muteksin kilidini açana kadar askıya alınır.
+   </div><div class="para">
+Muteks işlevlerinden hiçbiri bir iptal noktası değildir, hatta bir evreyi belirli aralılarla askıya alabilen <b><tt>pthread_mutex_lock</tt></b> bile. Evre işletilmeyi durdurmadan önce kilidinin açılması gereken muteksleri, iptal işleyicilerinin açmalarını sağlayarak, mutekslerin iptal noktalarındaki durumları önceden tahmin edilebilir. Sonuç olarak, ertelenmiş iptal kullanan evreler hiçbir zaman bir muteksi genişletilmiş zaman aralıklarıyla tutmamalıdırlar.
+   </div><div class="para">
+Muteks işlevlerini tek bir sinyal işleyiciden çağırmak güvenli değildir. Özellikle, tek bir sinyal işleyiciden <b><tt>pthread_mutex_lock</tt></b> veya <b><tt>pthread_mutex_unlock</tt></b> çağırmak, çağıran evreyi kısır döngüye sokabilir.
+   </div>
+<a class="indexterm" name="idx2920" id="idx2920"></a>
+<a name="glibc-pthread_mutex_init" id="glibc-pthread_mutex_init"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pthread_mutex_init</tt></b></tt></td><td valign="top"><pre class="paramdef">(pthread_mutex_t            *<i><tt>muteks</tt></i>,
+ const pthread_mutexattr_t *<i><tt>muteks_özelliği</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_mutex_init</tt></b> <i><tt>muteks_özelliği</tt></i> ile mutex özellikleri belirtilen <i><tt>muteks</tt></i> ile gösterilen muteks nesnesini hazırlar. Eğer <i><tt>muteks_özelliği</tt></i>  <b><tt>NULL</tt></b> ise, öntanımlı özellikler kullanılır.
+   </div><div class="para">
+LinuxThreads gerçeklemesi sadece bir muteks özelliğini desteklemektedir, bu "hızlı", "özyinelemeli" veya "hata denetimli" olan <i><tt>muteks türü</tt></i>dür.
+Mutex tipi, sahiplenildiği evre tarafından tekrar kilitlenebilirliğini belirler. Varsayılan "hızlı"dır.
+   </div><div class="para">
+<b><tt>pthread_mutex_t</tt></b> türündeki değişkenler de <b><tt>PTHREAD_MUTEX_INITIALIZER</tt></b> (zamanlı muteksler için), <b><tt>PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP</tt></b> (özyinelemeli muteksler için), <b><tt>PTHREAD_ADAPTIVE_MUTEX_INITIALIZER_NP</tt></b> (hızlı muteksler için) ve <b><tt>PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP</tt></b> (hata denetimli muteksler için) sabitleri kullanılarak ilk değerleri statik olarak alabilirler.
+   </div><div class="para">
+<b><tt>pthread_mutex_init</tt></b> daima 0 ile döner.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2921" id="idx2921"></a>
+<a name="glibc-pthread_mutex_lock" id="glibc-pthread_mutex_lock"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pthread_mutex_lock</tt></b></tt></td><td valign="top"><pre class="paramdef">(pthread_mutex_t *<i><tt>muteks</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_mutex_lock</tt></b> verilen muteksi kilitler. Muteks kilitli değilse, kilitlenir, çağıran evre tarafından sahiplenilir ve <b><tt>pthread_mutex_lock</tt></b> hemen döner. Eğer muteks zaten başka bir evre tarafından kilitlendiyse, <b><tt>pthread_mutex_lock</tt></b> muteksin kilidi açılana kadar çağıran evreyi askıya alır.
+   </div><div class="para">
+Eğer muteks çağıran evre tarafından önceden kilitlenmişse, <b><tt>pthread_mutex_lock</tt></b> davranışı muteks türüne bağlıdır. Eğer muteks "hızlı" türdeyse, çağıran evre askıya alınır. Sonsuza kadar askıda kalır, çünkü başka hiçbir evre muteksin kilidini açamaz. Eğer muteks "hata kontrollü" türdeyse, <b><tt>pthread_mutex_lock</tt></b> <b><tt>EDEADLK</tt></b> hata koduyla hemen döner. Mutex "özyinelemeli" türdeyse, <b><tt>pthread_mutex_lock</tt></b> başarılı olur ve çağıran evrenin muteksi kaç kez kilitlediğini kaydederek hemen döner.
+Muteksi kilitsiz hale düşürmek için eşit sayıda <b><tt>pthread_mutex_unlock</tt></b> işlemi uygulanmalıdır.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2922" id="idx2922"></a>
+<a name="glibc-pthread_mutex_trylock" id="glibc-pthread_mutex_trylock"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pthread_mutex_trylock</tt></b></tt></td><td valign="top"><pre class="paramdef">(pthread_mutex_t *<i><tt>muteks</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_mutex_trylock</tt></b> işlevi <b><tt>pthread_mutex_lock</tt></b> ile aynı davranır, farklı olarak eğer muteks başka bir evre tarafından (veya "hızlı" muteks türünde çağıran evre tarafından) önceden kilitlenmişse, çağıran evreyi askıya almaz. Bunun yerine, <b><tt>pthread_mutex_trylock</tt></b> hemen <b><tt>EBUSY</tt></b> hata koduyla döner.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2923" id="idx2923"></a>
+<a name="glibc-pthread_mutex_timedlock" id="glibc-pthread_mutex_timedlock"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pthread_mutex_timedlock</tt></b></tt></td><td valign="top"><pre class="paramdef">(pthread_mutex_t       *<i><tt>muteks</tt></i>,
+ const struct timespec *<i><tt>mutlak_zaman</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_mutex_timedlock</tt></b> işlevi <b><tt>pthread_mutex_lock</tt></b> işlevi ile aynıdır, fakat muteks başka bir evre tarafından kilitlendiğinde, sonsuza kadar askıya almaktansa <i><tt>mutlak_zaman</tt></i> ile belirtilen zamana erişildiğinde döner.
+   </div><div class="para">
+Bu işlev sadece standart ("zamanlı") ve "hata denetimli" mutekslerde kullanılabilir. Diğer bütün türler için <b><tt>pthread_mutex_lock</tt></b> gibi davranır.
+   </div><div class="para">
+Eğer muteks başarıyla kilitlendiyse, işlev sıfır döndürür. Eğer muteks kilitlenmeden <i><tt>mutlak_zaman</tt></i> süresi dolarsa, <b><tt>ETIMEDOUT</tt></b> döndürülür.
+   </div><div class="para">
+Bu işlev POSIX standartlarının POSIX.1d uyarlamasıyla tanıtılmıştır.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2924" id="idx2924"></a>
+<a name="glibc-pthread_mutex_unlock" id="glibc-pthread_mutex_unlock"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pthread_mutex_unlock</tt></b></tt></td><td valign="top"><pre class="paramdef">(pthread_mutex_t *<i><tt>muteks</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_mutex_unlock</tt></b> verilen muteksin kilidini açar.
+<b><tt>pthread_mutex_unlock</tt></b> işlevinin girişinde muteks kilitlenmiş ve çağıran evre tarafından sahiplenilmiş olarak kabul edilir.
+Eğer muteks "hızlı" türdeyse, <b><tt>pthread_mutex_unlock</tt></b> kilitsiz durumuna döndürür. Eğer "özyinelemeli" türdeyse, muteksin kilit sayısını azaltır (çağıran evre tarafından uygulanan <b><tt>pthread_mutex_lock</tt></b> işlemi sayısı),
+ve ancak bu sayı sıfıra ulaştığında muteks kilidi açılmış olur.
+   </div><div class="para">
+"Hata denetimli" mutekslerde, <b><tt>pthread_mutex_unlock</tt></b> aslında çalışma-anında muteksin kilitli olup olmadığını girişte kontol eder,
+ve o an <b><tt>pthread_mutex_unlock</tt></b> çağıranın kilitleyen evre olup olmadığına bakar. Eğer bu koşullar karşılanmadıysa, <b><tt>pthread_mutex_unlock</tt></b> işlevi <b><tt>EPERM</tt></b> döndürür,
+ve muteks değişmez. "Hızlı" ve "özyinelemeli" muteksler bu tür kontroller uygulamazlar,
+bu nedenle kilitli bir muteksin sahibinden başka bir evre tarafından kilidinin açılmasına izin verirler. Bu taşınabilir olmayan bir davranıştır ve güvenilemez.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2925" id="idx2925"></a>
+<a name="glibc-pthread_mutex_destroy" id="glibc-pthread_mutex_destroy"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pthread_mutex_destroy</tt></b></tt></td><td valign="top"><pre class="paramdef">(pthread_mutex_t *<i><tt>muteks</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_mutex_destroy</tt></b> bir muteks nesnesini, sahip olabileceği kaynakları serbest bırakarak yok eder. Girişte muteksin kilitlenmemiş olması gerekir. LinuxThreads gerçeklemesinde, muteks nesneleriyle hiçbir kaynak ilişkilendirilmemiştir,
+bu nedenle <b><tt>pthread_mutex_destroy</tt></b> aslında muteksin kilitli olup olmadığını kontrol etmekten başka bir şey yapmaz.
+   </div><div class="para">
+Eğer muteks bir evre tarafından kilitlendiyse, <b><tt>pthread_mutex_destroy</tt></b> işlevi <b><tt>EBUSY</tt></b> döndürür. Aksi takdirde 0 döndürür.
+      </div></dd></dl><div style="padding:5px"></div>
+    <div class="para">
+Eğer yukarıdaki işlevlerden herhangi biri (<b><tt>pthread_mutex_init</tt></b> dışında) hazırlanmamış bir mutekse uygulanırsa, sadece <b><tt>EINVAL</tt></b> döndürürler ve başka birşey yapmazlar.
+   </div><div class="para">
+Paylaşılan global bir <i><tt>x</tt></i> değişkeni bir muteks tarafından aşağıdaki gibi korunabilir:
+   </div>
+<div class="para"><div align="right"><pre class="screen">
+int x;
+pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER;
+</pre></div></div>
+   <div class="para">
+<i><tt>x</tt></i>'e yapılan bütün erişim ve değişiklikler <b><tt>pthread_mutex_lock</tt></b> ve <b><tt>pthread_mutex_unlock</tt></b> arasına aşağıdaki gibi alınmalıdır.
+   </div>
+<div class="para"><div align="right"><pre class="screen">
+pthread_mutex_lock(&amp;mut);
+/* x üzerindeki işlemler*/
+pthread_mutex_unlock(&amp;mut);
+</pre></div></div>
+   <div class="para">
+Muteks özellikleri muteksin oluşturulması sırasında <b><tt>pthread_mutex_init</tt></b>'e ikinci parametre olarak muteks özellik nesnesinin aktarılması ile belirtilebilirler. <b><tt>NULL</tt></b> aktarmak, bütün özellikleri öntanımlı değer verilmiş bir muteks özellik nesnesi aktarmakla eşdeğerdir.
+   </div>
+<a class="indexterm" name="idx2926" id="idx2926"></a>
+<a name="glibc-pthread_mutexattr_init" id="glibc-pthread_mutexattr_init"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pthread_mutexattr_init</tt></b></tt></td><td valign="top"><pre class="paramdef">(pthread_mutexattr_t *<i><tt>öznitelik</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_mutexattr_init</tt></b> işlevi <i><tt>öznitelik</tt></i> muteks özellik nesnesini hazırlar ve özelliklerini öntanımlı değerlerle doldurur.
+   </div><div class="para">
+Bu işlev her zaman 0 döndürür.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2927" id="idx2927"></a>
+<a name="glibc-pthread_mutexattr_destroy" id="glibc-pthread_mutexattr_destroy"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pthread_mutexattr_destroy</tt></b></tt></td><td valign="top"><pre class="paramdef">(pthread_mutexattr_t *<i><tt>öznitelik</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_mutexattr_destroy</tt></b> bir muteks özellik nesnesini yok eder, bu nesne tekrar hazırlanıncaya kadar tekrar kullanılmamalıdır. <b><tt>pthread_mutexattr_destroy</tt></b> LinuxThreads gerçeklemesinde birşey yapmaz.
+   </div><div class="para">
+Bu işlev her zaman 0 döndürür.
+      </div></dd></dl><div style="padding:5px"></div>
+    <div class="para">
+LinuxThreads sadece bir muteks özelliğini destekler: muteks türü.
+"hızlı" muteksler için <b><tt>PTHREAD_MUTEX_ADAPTIVE_NP</tt></b>,
+"özyinelemeli" muteksler için <b><tt>PTHREAD_MUTEX_RECURSIVE_NP</tt></b>,
+"zamanlı" muteksler için <b><tt>PTHREAD_MUTEX_TIMED_NP</tt></b> , veya
+"hata denetimli" muteksler için <b><tt>PTHREAD_MUTEX_ERRORCHECK_NP</tt></b> olabilir.
+<b><tt>NP</tt></b> ekinin de gösterdiği gibi, POSIX standardının taşınabilir olmayan bir oluşumudur ve taşınabilir yazılımlarda kullanılmamalıdır.
+   </div><div class="para">
+Muteks türü bir evre zaten sahip olduğu bir muteksi <b><tt>pthread_mutex_lock</tt></b> ile kilitlemeye çalıştığında ne olacağını belirler. Eğer muteks "hızlı" türdeyse, <b><tt>pthread_mutex_lock</tt></b> sadece çağıran evreyi sonsuza kadar askıya alır. Eğer muteks "hata denetimli" türdeyse, <b><tt>pthread_mutex_lock</tt></b> hemen <b><tt>EDEADLK</tt></b> hata koduyla döner. Eğer muteks "özyinelemeli" türdeyse, <b><tt>pthread_mutex_lock</tt></b>'a yapılan çağrı hemen bir başarı dönüş koduyla döner. Evrenin mutekse kaç kez sahip olduğu muteks içinde kayıtlanır. Muteksin kilitsiz duruma dönmesi için, sahip olan evre <b><tt>pthread_mutex_unlock</tt></b> işlevini aynı sayıda çağırmalıdır.
+   </div><div class="para">
+Varsayılan muteks türü <b><tt>PTHREAD_MUTEX_TIMED_NP</tt></b> olan "zamanlı"dır.
+   </div>
+<a class="indexterm" name="idx2928" id="idx2928"></a>
+<a name="glibc-pthread_mutexattr_settype" id="glibc-pthread_mutexattr_settype"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pthread_mutexattr_settype</tt></b></tt></td><td valign="top"><pre class="paramdef">(pthread_mutexattr_t *<i><tt>öznitelik</tt></i>,
+ int                  <i><tt>tür</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_mutexattr_settype</tt></b> işlevi <i><tt>öznitelik</tt></i> içindeki muteks türü özelliğini <i><tt>tür</tt></i> ile belirtilen değere ayarlar.
+   </div><div class="para">
+Eğer <i><tt>tür</tt></i> <b><tt>PTHREAD_MUTEX_ADAPTIVE_NP</tt></b>,
+<b><tt>PTHREAD_MUTEX_RECURSIVE_NP</tt></b>, <b><tt>PTHREAD_MUTEX_TIMED_NP</tt></b>, veya
+<b><tt>PTHREAD_MUTEX_ERRORCHECK_NP</tt></b> değilse, bu işlev <b><tt>EINVAL</tt></b>  döndürür ve <i><tt>öznitelik</tt></i> değerini değiştirmez.
+   </div><div class="para">
+Standart Unix98 tanıtıcıları olan
+<b><tt>PTHREAD_MUTEX_DEFAULT</tt></b>, <b><tt>PTHREAD_MUTEX_NORMAL</tt></b>,
+<b><tt>PTHREAD_MUTEX_RECURSIVE</tt></b> ve <b><tt>PTHREAD_MUTEX_ERRORCHECK</tt></b> değerlerine de izin verilmiştir.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2929" id="idx2929"></a>
+<a name="glibc-pthread_mutexattr_gettype" id="glibc-pthread_mutexattr_gettype"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pthread_mutexattr_gettype</tt></b></tt></td><td valign="top"><pre class="paramdef">(const pthread_mutexattr_t *<i><tt>öznitelik</tt></i>,
+ int                       *<i><tt>tür</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_mutexattr_gettype</tt></b> işlevi <i><tt>öznitelik</tt></i> içindeki geçerli muteks türü özelliğini alır ve <i><tt>tür</tt></i> ile gösterilen yerde saklar.
+   </div><div class="para">
+Bu işlev her zaman 0 döndürür.
+   </div></dd></dl><div style="padding:5px"></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Cleanup-Handlers.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-POSIX-Threads.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Condition-Variables.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Temizlik İşleyicileri </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Koşul Değişkenleri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

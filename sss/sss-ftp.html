@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:07+03:00" /><title>2. FTP</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../sss/sss-yonetim.html" title="11. Kısım - Sistem Yönetimi" /><link rel="previous" href="../sss/sss-yon-genel.html" title="1. Genel" /><link rel="next" href="../sss/sss-posta.html" title="3. Posta" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">2. FTP</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../sss/sss-yon-genel.html">Önceki</a> </td><th width="60%" align="center">11. Kısım - Sistem Yönetimi</th><td width="20%" align="right"> <a accesskey="n" href="../sss/sss-posta.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="sss-ftp" id="sss-ftp"></a>2. FTP</div><dl><dd><div class="qandaset"><dl><dt>2.1.  <a href="../sss/sss-ftp.html#sss-ftp_proftpd-root">
+Proftpd´de parola ile bağlanan kullanıcıların ev dizinlerini / şeklinde kök dizin olarak görmelerini nasıl sağlarım?
+  </a></dt><dt>2.2.  <a href="../sss/sss-ftp.html#sss-ftp_restricted-uid">
+Wu-ftp: Sistemde açılan kullanıcıların Ftp erişimi ile kendi dizinlerinden başka dizinleri gormememelerini ve kendi home dizinlerinden başka bir yere  gidememelerini nasıl sağlıyabilirim?
+  </a></dt><dt>2.3.  <a href="../sss/sss-ftp.html#sss-ftp_rh71-proftp">
+Redhat 7.1 kurulu makinaya proftp kurmak istiyorum, öntanımlı olan wuftp'yi kaldırmam gerekir mi?
+  </a></dt><dt>2.4.  <a href="../sss/sss-ftp.html#sss-ftp_anonim">
+Redhat7.2 sistemde wu-ftp kullanarak ftp için anonim erişim nasıl sağlanır. Hangi dosyaları ne şekilde yapılandırmam gerekiyor.
+  </a></dt><dt>2.5.  <a href="../sss/sss-ftp.html#sss-ftp_iprest-anon">
+Proftpd'de anonim girişler için IP sınırlaması nasıl yapılır?
+  </a></dt><dt>2.6.  <a href="../sss/sss-ftp.html#sss-ftp_proftp-timeout">
+Proftpd'de bir işlem yapılmadığında bağlantının kesilmesini nasıl  engeller veya bu süreyi nasıl uzatırım?
+  </a></dt></dl><div class="para"><hr /></div><dl><dt class="question"><a name="id1" id="id1"></a><a name="sss-ftp_proftpd-root" id="sss-ftp_proftpd-root"></a><b>2.1. </b> <b>
+Proftpd´de parola ile bağlanan kullanıcıların ev dizinlerini / şeklinde kök dizin olarak görmelerini nasıl sağlarım?
+  </b></dt><dd class="answer"><b></b> <div class="para">
+Yanıtlayan: <b>Alper Oğuz</b> <span class="email">&lt;alper (at) eksen.net&gt;</span>
+  </div><div class="para">
+Bunun için <tt>/etc/proftpd.conf</tt> dosyasına <tt>DefaultRoot ~</tt> seçeneğini eklemeniz gerekiyor:
+  </div></dd><dt class="question"><a name="id2" id="id2"></a><a name="sss-ftp_restricted-uid" id="sss-ftp_restricted-uid"></a><b>2.2. </b> <b>
+Wu-ftp: Sistemde açılan kullanıcıların Ftp erişimi ile kendi dizinlerinden başka dizinleri gormememelerini ve kendi home dizinlerinden başka bir yere  gidememelerini nasıl sağlıyabilirim?
+  </b></dt><dd class="answer"><b></b> <div class="para">
+Yanıtlayan: <b>Alper Özmalkoç</b> <span class="email">&lt;ozmalkoc (at) proda.com.tr&gt;</span>
+  </div><div class="para">
+<tt>/etc/ftpaccess</tt> dosyasının sonuna aşağıdaki satırlardan birini eklerseniz olur:
+  </div>
+<div class="para"><div align="right"><pre class="screen">restricted-uid %500-99999</pre></div></div>
+  <div class="para">ya da</div>
+<div class="para"><div align="right"><pre class="screen">restricted-uid root abidin osman ahmet</pre></div></div>
+  <div class="para">
+root, abidin, osman, ahmet kendi dizinleri dışına çıkamazlar.
+  </div></dd><dt class="question"><a name="id3" id="id3"></a><a name="sss-ftp_rh71-proftp" id="sss-ftp_rh71-proftp"></a><b>2.3. </b> <b>
+Redhat 7.1 kurulu makinaya proftp kurmak istiyorum, öntanımlı olan wuftp'yi kaldırmam gerekir mi?
+  </b></dt><dd class="answer"><b></b> <div class="para">
+Yanıtlayan: <b>Alper Özmalkoç</b> <span class="email">&lt;ozmalkoc (at) proda.com.tr&gt;</span>
+  </div><div class="para">
+Hayır <tt>wuftp</tt>'yi silmeniz gerekmez. RH <tt>xinetd</tt> kullanıyor. Onu hiç göremedim ama <tt>inetd</tt>'de ftp portundan  sorumlu satırdaki çalıştırılacak dosyayı değistirmek, diğer ftp sunucusunun çalıştırılmasını sağlar. <tt>xinetd</tt>'de de böyle bir çalıştırılabilir dosya satırı vardır.
+  </div></dd><dt class="question"><a name="id4" id="id4"></a><a name="sss-ftp_anonim" id="sss-ftp_anonim"></a><b>2.4. </b> <b>
+Redhat7.2 sistemde wu-ftp kullanarak ftp için anonim erişim nasıl sağlanır. Hangi dosyaları ne şekilde yapılandırmam gerekiyor.
+  </b></dt><dd class="answer"><b></b> <div class="para">
+Yanıtlayan: <b>Serdar Aytekin</b> <span class="email">&lt;serdar-linux (at) eximinter.com&gt;</span>
+  </div><div class="para">
+Anonim ftp kullanabilmek icin <tt>anon-ftp</tt> paketinin sistemde  kurulu olması gerekiyor. <tt>anon-ftp</tt>'yi rpm paketinden kurabilirsiniz. <tt>anon-ftp</tt>'yi kurduktan sonra <tt>/etc/ftpusers</tt> içerisinde de <tt>ftp</tt> ve  <tt>anonymous</tt> şeklinde kulllanıcı kaydının OLMAMASINA  dikkat ediniz.
+  </div><div class="para">
+<tt>/etc/ftpusers</tt> içersinde tanımlanan kullanıcılar sisteme ftp'den giriş yapamaz!!
+  </div><div class="para">
+Anonim Ftp için <tt>ftp</tt> ve <tt>anonymous</tt>'un o dosya içersinde olmaması gerekiyor.
+  </div></dd><dt class="question"><a name="id5" id="id5"></a><a name="sss-ftp_iprest-anon" id="sss-ftp_iprest-anon"></a><b>2.5. </b> <b>
+Proftpd'de anonim girişler için IP sınırlaması nasıl yapılır?
+  </b></dt><dd class="answer"><b></b> <div class="para">
+Yanıtlayan: <b>Alper Oğuz</b> <span class="email">&lt;alper (at) eksen.net&gt;</span>
+  </div><div class="para">
+Proftpd'de anonim giriş için IP sınırlaması yapmaya çalışıyordum. <tt>proftpd.conf</tt>'ta <tt>anonymous</tt> bölümüne  aşağıdakini ekleyince oldu. Yani belgedeki <tt>&lt;limit ALL&gt;</tt>'u  <tt>&lt;limit LOGIN&gt;</tt>'e çevirdim.
+  </div>
+<div class="para"><div align="right"><pre class="screen">&lt;limit LOGIN&gt;
+  order allow,deny
+  allow 1.2.3.4
+  denyall
+&lt;/limit&gt;
+</pre></div></div>
+  </dd><dt class="question"><a name="id6" id="id6"></a><a name="sss-ftp_proftp-timeout" id="sss-ftp_proftp-timeout"></a><b>2.6. </b> <b>
+Proftpd'de bir işlem yapılmadığında bağlantının kesilmesini nasıl  engeller veya bu süreyi nasıl uzatırım?
+  </b></dt><dd class="answer"><b></b> <div class="para">
+Yanıtlayan: <b>Devrim GÜNDÜZ</b> <span class="email">&lt;devrim (at) gunduz.org&gt;</span>
+  </div>
+<div class="para"><div align="right"><pre class="screen">TimeoutLogin         120
+TimeoutIdle          600
+TimeoutNoTransfer    900
+TimeoutStalled      3600
+</pre></div></div>
+  <div class="para">
+gibi satırlar işinizi görebilir. Ayrıntılar için <a class="ulink" href="http://www.proftpd.org/" target="_top">http://www.proftpd.org/</a>'daki örnekler işinize yarayacaktır.
+  </div></dd></dl></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../sss/sss-yon-genel.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../sss/sss-yonetim.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../sss/sss-posta.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">1. Genel </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> 3. Posta</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

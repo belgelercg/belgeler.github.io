@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:01+03:00" /><title>SVR4.2 Kabuğunun Oluşumsal Farkları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../bashref/bashref_differences.html" title="Ek B. Bash ile Bourne Kabuğu Arasındaki Başlıca Farklar" /><link rel="previous" href="../bashref/bashref_differences.html" title="Ek B. Bash ile Bourne Kabuğu Arasındaki Başlıca Farklar" /><link rel="next" href="../bashref/bashref_Copying-This-Manual.html" title="Ek C. Bu Kılavuzun Kopyalanması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">SVR4.2 Kabuğunun Oluşumsal Farkları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../bashref/bashref_differences.html">Önceki</a> </td><th width="60%" align="center">Ek B. Bash ile Bourne Kabuğu Arasındaki Başlıca Farklar</th><td width="20%" align="right"> <a accesskey="n" href="../bashref/bashref_Copying-This-Manual.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="bashref_differences-from-SVR4.2" id="bashref_differences-from-SVR4.2"></a>SVR4.2 Kabuğunun Oluşumsal Farkları</div><dl><dd><div class="para">
+Bash tamamen yeni bir oluşum olduğundan, SVR4.2 kabuğunun
+bir çok sınırlamasından muaftır. Örneğin:
+      </div>
+        <ul type="disc" class="itemizedlist"><li>
+Bash bir <b><tt>if</tt></b> veya <b><tt>while</tt></b>
+deyiminde olduğu gibi bir kabuk denetim yapısının içine ya da
+dışına yapılan yönlendirmelerde bir altkabuk çatallamaz.
+          </li><li>
+Bash kapanmamış tırnaklara icin vermez. SVR4.2 kabuğu aynı durumda
+hata vermeyerek kapatan tırnağı <tt>EOF</tt> konumunda
+yerleştirecektir. Bu da bulunması çok zor hatalara sebep olur.
+          </li><li>
+SVR4.2 kabuğu <tt>SIGSEGV</tt> sinyalinin yakalanmasına
+bağlı bir barok bellek yönetim şeması kullanır. Kabuk
+<tt>SIGSEGV</tt> ile bloklanmış (örneğin,
+<tt>system()</tt> C kütüphane işlevi çağrısı ile)
+bir süreçten başlatılırsa, oldukça yanlış davranır.
+          </li><li>
+Güvenlikte şüpheli bir teşebbüs halinde SVR4.2 kabuğu
+<tt>-p</tt> seçeneği olmaksızın çağrıldığında
+gerçek ve etkin UID ve GID'i bir sihirli eşik değerden
+(genelde 100) küçükse, gerçek ve etkin UID ve GID'ini
+değiştirecektir. Bu beklenmeyen sonuçlara yol açabilir.
+          </li><li>
+SVR4.2 kabuğu kullanıcıların <tt>SIGSEGV</tt>,
+<tt>SIGALRM</tt> ve <tt>SIGCHLD</tt> sinyalleri
+ile ilgili sinyal kapanı kurmalarına izin vermez.
+          </li><li>
+SVR4.2 kabuğu <tt>IFS</tt>,
+<tt>MAILCHECK</tt>, <tt>PATH</tt>,
+<tt>PS1</tt> ve <tt>PS2</tt> değişkenlerinin
+ortamdan kaldırlmasına izin vermez.
+          </li><li>
+SVR4.2 kabuğunda <tt>^</tt>,  <tt>|</tt>'ya
+eşdeğer olarak ele alınır.
+          </li><li>
+Bash seçeneklere çoklu argümanlar olarak (<tt>-x -v</tt>)
+izin verirken SVR4.2 kabuğu sadece tek argümanlık
+(<tt>-xv</tt>) seçenek belirtilmesine izin verir.
+Gerçekte, kabuğun bazı sürümleri ikinci argüman bir <tt>-</tt>
+ile başlıyorsa bellek dökümü ile çıkar (core dump).
+          </li><li>
+SVR4.2 kabuğunda bir betiğin içindeki bir yerleşik komut hata ile
+çıkarsa betikte çıkar. Bash'de ise sadece POSIX 1003.2 özel
+yerleşiklerinden biri başarısız olursa ve sadece POSIX 1003.2
+standardında sıralanmış başarısızlık hallerinde betik çıkar.
+          </li><li>
+SVR4.2 kabuğu <b><tt>jsh</tt></b> olarak çağrıldığında
+farklı davranır (iş denetimini etkinleştirir).
+          </li></ul>
+      </dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../bashref/bashref_differences.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../bashref/bashref_differences.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../bashref/bashref_Copying-This-Manual.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Ek B. Bash ile Bourne Kabuğu Arasındaki Başlıca Farklar </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Ek C. Bu Kılavuzun Kopyalanması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

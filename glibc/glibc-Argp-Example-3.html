@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2006-09-29T19:17:47+03:00" /><title>3. örnek</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Argp-Examples.html" title="Argp Örnekleri" /><link rel="previous" href="../glibc/glibc-Argp-Example-2.html" title="2. Örnek" /><link rel="next" href="../glibc/glibc-Argp-Example-4.html" title="4. Örnek" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">3. örnek</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Argp-Example-2.html">Önceki</a> </td><th width="60%" align="center">Argp Örnekleri</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Argp-Example-4.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="glibc-Argp-Example-3" id="glibc-Argp-Example-3"></a>3. örnek</div><dl><dd><div class="para">
+Bu yazılımda 2. örneğe ek olarak bazı kullanıcı seçenekleri ve argümanları kullanılmıştır.
+     </div><div class="para">
+Bu örnekte <b><tt>argp</tt></b>'nin ilk dört alanını kullandık (<a href="../glibc/glibc-Argp-Parsers.html" class="xref" title="Argp Çözümleyicisinin Belirtilmesi"> Argp Çözümleyicisinin Belirtilmesi</a>) ve çözümleyici işlev olarak <b><tt>parse_opt</tt></b> işlevini belirttik. Bkz. <a href="../glibc/glibc-Argp-Parser-Functions.html" class="xref" title="Argp Çözümleyici İşlevleri"> Argp Çözümleyici İşlevleri</a>.
+     </div><div class="para">
+Bu örnekte, <b><tt>main</tt></b> işlevinde <b><tt>parse_opt</tt></b> ile iletişim için bir yapı kullanıldığına dikkat edin. Bu yapı, bir gösterici olarak <b><tt>argp_parse</tt></b> tarafından <i><tt>input</tt></i> argümanında aktarılır. Bkz. <a href="../glibc/glibc-Argp.html" class="xref" title="Argp"> Argp</a>. <b><tt>parse_opt</tt></b> işlevi tarafından <i><tt>state</tt></i> argümanının <b><tt>input</tt></b> alanı ile alınır. Bkz. <a href="../glibc/glibc-Argp-Parsing-State.html" class="xref" title="Argp Çözümleme Durumu"> Argp Çözümleme Durumu</a>.  Şüphesiz bunun yerine genel değişkenler kullanmak mümkündür ama böyle bir yapı kullanmak biraz daha esnek ve temizdir.
+     </div>
+<div class="para" align="right"><pre class="screen">
+/* 3. Argp Örneği -- Argp arayüzünü ek seçenek ve argümanlarla
+   kullanan bir yazılım örneği
+*/
+
+/*  Bu yazılımda 2. örneğe ek olarak bazı kullanıcı seçenekleri ve
+    argümanları kullanılmıştır.
+
+    Bu örnekte <b><tt>argp</tt></b>'nin ilk dört alanını kullandık:
+      <b><tt>options</tt></b>  - <b><tt>argp_option</tt></b> vektörüne bir gösterici (aşağıya bakın)
+      <b><tt>parser</tt></b>   - <b><tt>argp</tt></b> tarafından çağrılan ve tek bir seçeneği çözümleyen işlev
+      <b><tt>args_doc</tt></b> - seçenek olmayan argümanların kullanımını açıklayan bir dizge
+      <b><tt>doc</tt></b>      - bu yazılımın açıklamasını içeren dizge; bir düşey sekme (\v)
+                 içeriyorsa, bundan sonraki parça seçeneklerden sonra basılır
+
+    <b><tt>parser</tt></b> işlevi şu argümanları alır:
+      <i><tt>key</tt></i>  - Seçeneğin türünü (<b><tt>argp_option</tt></b> yapısının KEY alanından alınarak)
+             ya da bunun dışında birşeyi belirten özel bir anahtar; burada
+             kullandığımız tek özel anahtar bir seçenek olmayan argüman
+             belirten <tt>ARGP_KEY_ARG</tt> anahtarıdır. <tt>ARGP_KEY_END</tt> anahtarı ise
+             tüm argümanların çözümlendiğini belirtir.
+      <i><tt>arg</tt></i>  - bir dizge olarak seçenek argümanı; argümansızsa <tt>NULL</tt>
+      <i><tt>state</tt></i> - <b><tt>argp_state</tt></b> yapısına bir gösterici; çözümleme durumu ile ilgili
+             faydalı bilgiler içerir. Burada kullanılan, <b><tt>argp_parse</tt></b> işlevinin
+             girdi argümanı olan <b><tt>input</tt></b> alanı ile çözümlenen
+             seçenek olmayan argümanın numarasını içeren <b><tt>arg_num</tt></b> alanıdır.
+    İşlev başarılı ise 0 ile belirtilen anahtar bilinmiyorsa <tt>ARGP_ERR_UNKNOWN</tt>
+    ile ya da başka bir hatayı belirten bir hata kodu ile dönmelidir.
+
+    Bu örnekte, <b><tt>main</tt></b> işlevinde <b><tt>parse_opt</tt></b> ile iletişim için bir yapı
+    kullanıldığına dikkat edin. Bu yapı, bir gösterici olarak <b><tt>argp_parse</tt></b>
+    tarafından <i><tt>input</tt></i> argümanında aktarılır. <b><tt>parse_opt</tt></b> işlevi tarafından
+    <i><tt>state</tt></i> argümanının <b><tt>input</tt></b> alanı ile alınır. Şüphesiz bunun yerine genel
+    değişkenler kullanmak mümkündür ama böyle bir yapı kullanmak biraz daha
+    esnek ve temizdir.
+
+    <b><tt>options</tt></b> alanı bir <b><tt>argp_option</tt></b> vektörüne bir gösterici içerir; bu yapı
+    aşağıdaki alanlara sahiptir (bu örnekteki gibi dizi ilklendirmesiyle
+    seçenek yapılarınıza atama yapıyorsanız, belirtilmeyen alanlar öntanımlı
+    olarak 0 olacak ve belirtilmeleri gerekmeyecektir):
+      <b><tt>name</tt></b>   - seçeneğin uzun seçenek ismi (sıfır olabilir)
+      <b><tt>key</tt></b>    - bu seçenek ve seçeneğin kısa seçenek ismi (basılabilen bir ascii
+               karakterse) çözümlenirken çözümleyici işleve aktarılacak anahtar.
+      <b><tt>arg</tt></b>    - varsa, bu seçeneğinin argümanının ismi
+      <b><tt>flags</tt></b>  - bu seçeneği açıklayan bayraklar; bazıları:
+               <tt>OPTION_ARG_OPTIONAL</tt> - bu seçeneğin argümanı isteğe bağlıdır
+               <tt>OPTION_ALIAS</tt>        - bu seçenek önceki seçeneğe bir takma addır.
+               <tt>OPTION_HIDDEN</tt>       - <b><tt>--help</tt></b> çıktısında bu seçenek gösterilmez.
+      <b><tt>doc</tt></b>    - <b><tt>--help</tt></b> çıktısında bu seçeneğin açıklamasını içeren dizge
+
+    Bir seçenek vektörü tüm alanları sıfır değeri içeren bir yapı ile
+    sonlanmalıdır.
+*/
+
+#include &lt;argp.h&gt;
+
+const char *argp_yazılım_version =
+  "argp-ex3 1.0";
+const char *argp_yazılım_bug_address =
+  "&lt;bug-gnu-utils@gnu.org&gt;";
+
+/* Yazılım açıklaması. */
+static char doc[] =
+  "Argp example #3 -- a program with options and arguments using argp";
+
+/* Kabul ettiğimiz argümanlar için bir açıklama. */
+static char args_doc[] = "ARG1 ARG2";
+
+/* Kabul ettiğimiz seçenekler. */
+static struct argp_option options[] = {
+  {"verbose",  'v', 0,      0,  "Produce verbose output" },
+  {"quiet",    'q', 0,      0,  "Don't produce any output" },
+  {"silent",   's', 0,      OPTION_ALIAS },
+  {"output",   'o', "FILE", 0,
+    "Output to FILE instead of standard output" },
+  { 0 }
+};
+
+/* parse_opt ile main iletişiminde kullanılır. */
+struct arguments
+{
+  char *args[2];                /* arg1 ve arg2 */
+  int silent, verbose;
+  char *output_file;
+};
+
+/* Tek bir seçeneği çözümlemek için. */
+static error_t
+parse_opt (int key, char *arg, struct argp_state *state)
+{
+  /* argp_parse'daki girdi argümanında bizim arguments
+     yapısına bir gösterci olduğunu biliyoruz. */
+  struct arguments *arguments = state-&gt;input;
+
+  switch (key)
+    {
+    case 'q': case 's':
+      arguments-&gt;silent = 1;
+      break;
+    case 'v':
+      arguments-&gt;verbose = 1;
+      break;
+    case 'o':
+      arguments-&gt;output_file = arg;
+      break;
+
+    case ARGP_KEY_ARG:
+      if (state-&gt;arg_num &gt;= 2)
+        /* Argümanlar fazla geldi. */
+        argp_usage (state);
+
+      arguments-&gt;args[state-&gt;arg_num] = arg;
+
+      break;
+
+    case ARGP_KEY_END:
+      if (state-&gt;arg_num &amp; 2)
+        /* Argümanlar yetersiz. */
+        argp_usage (state);
+      break;
+
+    default:
+      return ARGP_ERR_UNKNOWN;
+    }
+  return 0;
+}
+
+/* Argp çözümleyicimiz. */
+static struct argp argp = { options, parse_opt, args_doc, doc };
+
+int main (int argc, char **argv)
+{
+  struct arguments arguments;
+
+  /* Öntanımlı değerler. */
+  arguments.silent = 0;
+  arguments.verbose = 0;
+  arguments.output_file = "-";
+
+  /* Argümanlarımız çözümlensin;  parse_opt tarafından
+     görülen her seçenek arguments içine yansıyacak. */
+  argp_parse (&amp;argp, argc, argv, 0, 0, &amp;arguments);
+
+  printf ("ARG1 = %s\nARG2 = %s\nOUTPUT_FILE = %s\n"
+          "VERBOSE = %s\nSILENT = %s\n",
+          arguments.args[0], arguments.args[1],
+          arguments.output_file,
+          arguments.verbose ? "yes" : "no",
+          arguments.silent ? "yes" : "no");
+
+  exit (0);
+}
+</pre></div>
+      </dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Argp-Example-2.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Argp-Examples.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Argp-Example-4.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">2. Örnek </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> 4. Örnek</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

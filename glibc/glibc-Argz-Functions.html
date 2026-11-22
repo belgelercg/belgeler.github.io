@@ -1,240 +1,109 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="tr" xml:lang="tr">
-  <head>
-    <title>5.15.1. Argz İşlevleri</title>
-    <meta name="generator" content="DocBook XSL Stylesheets V-special (derived from DocBook XSL v1.79.1 for Turkish Linux Documentation Project by Nilgün Belma Bugüner - nilgun (at) tlbp.org.tr)" />
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="/style/nav.css" />
-    <link rel="icon" type="image/png" href="/images/belgeler-logo.png" />
-    <meta name="robots" content="index, follow" />
-  </head>
-  <body>
-    <header>
-      <div class="navbar">
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Argz-and-Envz-Vectors.html')">Önceki</button>
-          <div class="dropdown-content">5.15. Argz ve Envz Gösterici Dizileri</div>
-        </div>
-        <div style="width:34%" class="dropdown">
-          <button class="dropbtn">Yukarı</button>
-          <div class="dropdown-content">
-            <button type="button" class="dropbtn" onclick="window.location.assign('/index.html')">Baş Sayfa</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('/KiTAPLIK/index.html')">Kitaplık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc.html')">Ana Başlık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Argz-and-Envz-Vectors.html')">Üst Başlık</button>
-          </div>
-        </div>
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Envz-Functions.html')">Sonraki</button>
-          <div class="dropdown-content">5.15.2. Envz İşlevleri</div>
-        </div>
-      </div>
-    </header>
-    <section class="mainpage">
-      <div class="crumbs">
-        <p>  </p>
-      </div>
-      <section class="sect1" id="glibc-Argz-Functions">
-        <div class="titlepage">
-          <div>
-            <div>
-              <h2 class="title" style="clear: both">5.15.1. Argz İşlevleri</h2>
-            </div>
-          </div>
-        </div>
-        <p>
-    Her argz vektörü ilk elemanı gösteren <code class="type">char *</code> türünde bir gösterici ve dizi boyutunu belirten <a href="glibc-Important-Data-Types.html#glibc-tp-size_t"><strong class="type"><code>size_t</code></strong></a> türünde bir boyut ile temsil edilir. Her ikisi de boş argz vektörünü gösteren <code class="code">0</code> ile ilklendirilir. Tüm argz işlevleri ya bir gösterici ile bir boyut bağımsız değişkeni ya da her ikisinin de değişebileceği öngörüldüğü durumlarda her ikisi de gösterici olan bağımsız değişkenler alır.
-   </p>
-        <p>
-    Argz işlevleri dizge dizilerine bellek tahsisi için ya da tahsis edilmiş belleği büyütmek için <a href="glibc-Basic-Allocation.html#glibc-fn-malloc"><strong class="function"><code>malloc</code></strong></a>/<a href="glibc-Changing-Block-Size.html#glibc-fn-realloc"><strong class="function"><code>realloc</code></strong></a> işlevlerini kullanır. Böylece bu işlevler tarafından oluşturulan tüm argz vektörleri <a href="glibc-Freeing-after-Malloc.html#glibc-fn-free"><strong class="function"><code>free</code></strong></a> işlevi ile serbest bırakılabilir. Buna karşın, bir dizgeyi büyütebilen argz işlevlerinin dizgeyi tutacak belleği <a href="glibc-Basic-Allocation.html#glibc-fn-malloc"><strong class="function"><code>malloc</code></strong></a> kullanarak tahsis etmesi beklenir (bu tür argz işlevleri, bellek sıralaması ne olursa olsun, sadece kendi bağımsız değişkenlerini saptar ve onları değiştirmek için aynı alanı kullanır). Bkz. <a class="xref" href="glibc-Unconstrained-Allocation.html" title="3.2.3. Kısıtlanmamış Bellek Tahsisi">Kısıtlanmamış Bellek Tahsisi</a>.
-   </p>
-        <p>
-    Bellek tahsis işlemi de yapan tüm argz işlevleri <code class="type">error_t</code> türünde bir değer ile döner. Başarı durumunda bu değer <code class="code">0</code>’dır. Aksi takdirde, bir tahsis hatası oluşursa <a href="glibc-Error-Codes.html#glibc-vr-ENOMEM"><strong class="varname"><code>ENOMEM</code></strong></a> ile döner.
-   </p>
-        <p>
-    <span id="idm94455" class="indexterm"></span>
-    Bu işlevler <code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/argz.h;hb=HEAD" target="_top">argz.h</a></code> başlık dosyası içinde bildirilmiştir.
-   </p>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-   <span id="glibc-fn-argz_create" class="indexterm"></span>
-   <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/argz.h;hb=HEAD" target="_top">argz.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">error_t </code><strong><code class="function">argz_create</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">char *const </code><strong><code class="parameter">argv[]</code></strong><strong><code>, </code></strong><code class="type">char </code><strong class="type">**</strong><strong><code class="parameter">argz</code></strong><strong><code>, </code></strong><code class="type">size_t </code><strong class="type">*</strong><strong><code class="parameter">argz_len</code></strong><strong><code>)</code></strong></td></tr></table></div>
-   
-   <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-asunsafe">AS-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-heap">heap</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acunsafe">AC-Unsafe</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-mem">mem</a>
-   </div>
-   <p>
-    <code class="code">argz_create</code> işlevi <em class="parameter"><code>argv</code></em> Unix tarzı girdi vektörünü (normal C dizgelerine göstericilerden oluşmuş, <code class="code">(char *)0</code> ile sonlandırılmış bir diziye gösterici; bkz, ???) aynı elemanlarla argz vektörüne dönüştürüp <em class="parameter"><code>argz</code></em> ve <em class="parameter"><code>argz_len</code></em> olarak döndürür.
-   </p>
-  </div>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-   <span id="glibc-fn-argz_create_sep" class="indexterm"></span>
-   <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/argz.h;hb=HEAD" target="_top">argz.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">error_t </code><strong><code class="function">argz_create_sep</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">const char </code><strong class="type">*</strong><strong><code class="parameter">string</code></strong><strong><code>, </code></strong><code class="type">int </code><strong><code class="parameter">sep</code></strong><strong><code>, </code></strong><code class="type">char </code><strong class="type">**</strong><strong><code class="parameter">argz</code></strong><strong><code>, </code></strong><code class="type">size_t </code><strong class="type">*</strong><strong><code class="parameter">argz_len</code></strong><strong><code>)</code></strong></td></tr></table></div>
-   
-   <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-asunsafe">AS-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-heap">heap</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acunsafe">AC-Unsafe</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-mem">mem</a>
-   </div>
-   <p>
-    <code class="code">argz_create_sep</code> işlevi, <em class="parameter"><code>string</code></em> dizgesini her <em class="parameter"><code>sep</code></em> karakterinde bir eleman ayırarak (<em class="parameter"><code>argz</code></em> ve <em class="parameter"><code>argz_len</code></em> içinde döndürülen) bir argz vektörüne dönüştürür.
-   </p>
-  </div>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-   <span id="glibc-fn-argz_count" class="indexterm"></span>
-   <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/argz.h;hb=HEAD" target="_top">argz.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">size_t </code><strong><code class="function">argz_count</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">const char </code><strong class="type">*</strong><strong><code class="parameter">argz</code></strong><strong><code>, </code></strong><code class="type">size_t </code><strong><code class="parameter">argz_len</code></strong><strong><code>)</code></strong></td></tr></table></div>
-   
-   <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-assafe">AS-Safe</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acsafe">AC-Safe</a>
-   </div>
-   <p>
-    <em class="parameter"><code>argz</code></em> ve <em class="parameter"><code>argz_len</code></em> ile belirtilen argz vektörünün eleman sayısı ile döner.
-   </p>
-  </div>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-   <span id="glibc-fn-argz_extract" class="indexterm"></span>
-   <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/argz.h;hb=HEAD" target="_top">argz.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">void </code><strong><code class="function">argz_extract</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">const char </code><strong class="type">*</strong><strong><code class="parameter">argz</code></strong><strong><code>, </code></strong><code class="type">size_t </code><strong><code class="parameter">argz_len</code></strong><strong><code>, </code></strong><code class="type">char </code><strong class="type">**</strong><strong><code class="parameter">argv</code></strong><strong><code>)</code></strong></td></tr></table></div>
-   
-   <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-assafe">AS-Safe</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acsafe">AC-Safe</a>
-   </div>
-   <p>
-    <code class="code">argz_extract</code> işlevi, <em class="parameter"><code>argz</code></em> ve <em class="parameter"><code>argz_len</code></em> ile belirtilen argz vektörünü, (<em class="parameter"><code>argz</code></em> içindeki her elemana bir göstericiyi <code class="code">0</code> ile sonladırılmış olarak <em class="parameter"><code>argv</code></em> içindeki kendi konumuna yerleştirerek) <em class="parameter"><code>argv</code></em> içinde saklanan Unix tarzı girdi vektörüne dönüştürür. <em class="parameter"><code>argv</code></em>, <em class="parameter"><code>argz</code></em> dizisinin tüm elemanları artı sonlandırıcı <code class="code">(char *)0</code> için yeterince yer bulunan (yer olarak <code class="code">(<a href="glibc-Argz-Functions.html#glibc-fn-argz_count"><strong class="function"><code>argz_count</code></strong></a> (<em class="parameter"><code>argz</code></em>, <em class="parameter"><code>argz_len</code></em>) + 1) * <strong class="operator"><code>sizeof</code></strong> (<code class="type">char</code> *)</code> bayt yeterlidir) önceden tahsis edilmiş bir alanı göstermelidir. <em class="parameter"><code>argv</code></em> içindeki dizge göstericileri, <em class="parameter"><code>argz</code></em> içindeki alanları gösterdiğinden (kopyasını değil), <em class="parameter"><code>argz</code></em>'nin <em class="parameter"><code>argv</code></em> etkinken değişmemesi isteniyorsa ayrıca kopyalanmalıdır. Bu işlev <em class="parameter"><code>argz</code></em> içindeki elemanların bir <a class="link" href="glibc-Executing-a-File.html" title="26.5. Bir Dosyanın Çalıştırılması">exec işlevine</a> aktarılması için kullanışlıdır.
-   </p>
-  </div>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-   <span id="glibc-fn-argz_stringify" class="indexterm"></span>
-   <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/argz.h;hb=HEAD" target="_top">argz.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">void </code><strong><code class="function">argz_stringify</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">char </code><strong class="type">*</strong><strong><code class="parameter">argz</code></strong><strong><code>, </code></strong><code class="type">size_t </code><strong><code class="parameter">len</code></strong><strong><code>, </code></strong><code class="type">int </code><strong><code class="parameter">sep</code></strong><strong><code>)</code></strong></td></tr></table></div>
-   
-   <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-assafe">AS-Safe</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acsafe">AC-Safe</a>
-   </div>
-   <p>
-    <code class="code">argz_stringify</code> işlevi, <em class="parameter"><code>argz</code></em> içindeki <code class="code">'\0'</code> karakterlerini <em class="parameter"><code>sep</code></em> karakteri ile değiştirerek (dizgeyi sonlandıran boş bayt hariç) elemanları birleştirip normal bir dizgeye çevirir. Bu işlev, <em class="parameter"><code>argz</code></em>'nin okunabilir olarak yazdırılması gibi işlemler için faydalıdır.
-   </p>
-  </div>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-   <span id="glibc-fn-argz_add" class="indexterm"></span>
-   <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/argz.h;hb=HEAD" target="_top">argz.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">error_t </code><strong><code class="function">argz_add</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">char </code><strong class="type">**</strong><strong><code class="parameter">argz</code></strong><strong><code>, </code></strong><code class="type">size_t </code><strong class="type">*</strong><strong><code class="parameter">argz_len</code></strong><strong><code>, </code></strong><code class="type">const char </code><strong class="type">*</strong><strong><code class="parameter">str</code></strong><strong><code>)</code></strong></td></tr></table></div>
-   
-   <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-asunsafe">AS-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-heap">heap</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acunsafe">AC-Unsafe</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-mem">mem</a>
-   </div>
-   <p>
-    <code class="code">argz_add</code> işlevi, <em class="parameter"><code>str</code></em> dizisini *<em class="parameter"><code>argz</code></em> vektörünün sonuna ekleyip *<em class="parameter"><code>argz</code></em> ile *<em class="parameter"><code>argz_len</code></em> bağımsız değişkenlerini yeni duruma uygun olarak günceller.
-   </p>
-  </div>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-   <span id="glibc-fn-argz_add_sep" class="indexterm"></span>
-   <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/argz.h;hb=HEAD" target="_top">argz.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">error_t </code><strong><code class="function">argz_add_sep</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">char </code><strong class="type">**</strong><strong><code class="parameter">argz</code></strong><strong><code>, </code></strong><code class="type">size_t </code><strong class="type">*</strong><strong><code class="parameter">argz_len</code></strong><strong><code>, </code></strong><code class="type">const char </code><strong class="type">*</strong><strong><code class="parameter">str</code></strong><strong><code>, </code></strong><code class="type">int </code><strong><code class="parameter">delim</code></strong><strong><code>)</code></strong></td></tr></table></div>
-   
-   <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-asunsafe">AS-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-heap">heap</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acunsafe">AC-Unsafe</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-mem">mem</a>
-   </div>
-   <p>
-    <code class="code">argz_add_sep</code> işlevi <a href="glibc-Argz-Functions.html#glibc-fn-argz_add"><strong class="function"><code>argz_add</code></strong></a> işlevine benzer. Farklı olarak, <em class="parameter"><code>str</code></em> dizgesini <em class="parameter"><code>delim</code></em> baytına göre alt dizgelerine ayırıp *<em class="parameter"><code>argz</code></em> vektörünün sonuna ekler. Bu işlev, <em class="parameter"><code>delim</code></em> karakteri olarak <code class="code">':'</code> belirterek, <code class="varname">PATH</code> ortam değişkeni gibi bir değişkenin değerini oluşturan tüm elamanların ayrı birer dizge olarak eklenmek istenmesi durumunda yararlıdır.
-   </p>
-  </div>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-   <span id="glibc-fn-argz_append" class="indexterm"></span>
-   <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/argz.h;hb=HEAD" target="_top">argz.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">error_t </code><strong><code class="function">argz_append</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">char </code><strong class="type">**</strong><strong><code class="parameter">argz</code></strong><strong><code>, </code></strong><code class="type">size_t </code><strong class="type">*</strong><strong><code class="parameter">argz_len</code></strong><strong><code>, </code></strong><code class="type">const char </code><strong class="type">*</strong><strong><code class="parameter">buf</code></strong><strong><code>, </code></strong><code class="type">size_t </code><strong><code class="parameter">buf_len</code></strong><strong><code>)</code></strong></td></tr></table></div>
-   
-   <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-asunsafe">AS-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-heap">heap</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acunsafe">AC-Unsafe</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-mem">mem</a>
-   </div>
-   <p>
-    <code class="code">argz_append</code> işlevi, <em class="parameter"><code>buf_len</code></em> değerini *<em class="parameter"><code>argz_len</code></em>'e ve <em class="parameter"><code>buf</code></em>  ile başlayan dizgeyi yeniden tahsis edilen *<em class="parameter"><code>argz</code></em> vektörüne ekler.
-   </p>
-  </div>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-   <span id="glibc-fn-argz_delete" class="indexterm"></span>
-   <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/argz.h;hb=HEAD" target="_top">argz.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">void </code><strong><code class="function">argz_delete</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">char </code><strong class="type">**</strong><strong><code class="parameter">argz</code></strong><strong><code>, </code></strong><code class="type">size_t </code><strong class="type">*</strong><strong><code class="parameter">argz_len</code></strong><strong><code>, </code></strong><code class="type">char </code><strong class="type">*</strong><strong><code class="parameter">entry</code></strong><strong><code>)</code></strong></td></tr></table></div>
-   
-   <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-asunsafe">AS-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-heap">heap</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acunsafe">AC-Unsafe</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-mem">mem</a>
-   </div>
-   <p>
-    Eğer <em class="parameter"><code>entry</code></em>, *<em class="parameter"><code>argz</code></em> vektörünün elemanlarından birinin başlangıcını gösteriyorsa, <code class="code">argz_delete</code> işlevi bu girdiyi silip *<em class="parameter"><code>argz_len</code></em>'i ve yeniden tahsis edilen *<em class="parameter"><code>argz</code></em> vektörünü günceller. Eleman silen argz işlevleri genelde <em class="parameter"><code>argz</code></em> bağımsız değişkenleri için yeniden bellek tahsis ettiklerinden buradaki <em class="parameter"><code>entry</code></em> göstericisinde olduğu gibi kaldırılan elemanın göstericisi geçersiz duruma gelir.
-   </p>
-  </div>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-   <span id="glibc-fn-argz_insert" class="indexterm"></span>
-   <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/argz.h;hb=HEAD" target="_top">argz.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">error_t </code><strong><code class="function">argz_insert</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">char </code><strong class="type">**</strong><strong><code class="parameter">argz</code></strong><strong><code>, </code></strong><code class="type">size_t </code><strong class="type">*</strong><strong><code class="parameter">argz_len</code></strong><strong><code>, </code></strong><code class="type">char </code><strong class="type">*</strong><strong><code class="parameter">before</code></strong><strong><code>, </code></strong><code class="type">const char </code><strong class="type">*</strong><strong><code class="parameter">entry</code></strong><strong><code>)</code></strong></td></tr></table></div>
-   
-   <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-asunsafe">AS-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-heap">heap</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acunsafe">AC-Unsafe</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-mem">mem</a>
-   </div>
-   <p>
-    <code class="code">argz_insert</code> işlevi, <em class="parameter"><code>entry</code></em> dizgesini *<em class="parameter"><code>argz</code></em> vektörünün <em class="parameter"><code>before</code></em> ile gösterilen elemanının öncesine ekleyip <em class="parameter"><code>argz_len</code></em>'i ve yeniden tahsis edilen *<em class="parameter"><code>argz</code></em> vektörünü günceller. Eğer <em class="parameter"><code>entry</code></em> <code class="code">0</code> ise işlev <a href="glibc-Argz-Functions.html#glibc-fn-argz_add"><strong class="function"><code>argz_add</code></strong></a> işlevinin yaptığı gibi elemanı sona ekler. İlk eleman *<em class="parameter"><code>argz</code></em> ile aynı olduğundan <em class="parameter"><code>before</code></em> için *<em class="parameter"><code>argz</code></em> verilirse, <em class="parameter"><code>entry</code></em> dizgesi başa eklenir.
-   </p>
-  </div>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-   <span id="glibc-fn-argz_next" class="indexterm"></span>
-   <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/argz.h;hb=HEAD" target="_top">argz.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">char </code><strong class="type">*</strong><strong><code class="function">argz_next</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">const char </code><strong class="type">*</strong><strong><code class="parameter">argz</code></strong><strong><code>, </code></strong><code class="type">size_t </code><strong><code class="parameter">argz_len</code></strong><strong><code>, </code></strong><code class="type">const char </code><strong class="type">*</strong><strong><code class="parameter">entry</code></strong><strong><code>)</code></strong></td></tr></table></div>
-   
-   <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-assafe">AS-Safe</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acsafe">AC-Safe</a>
-   </div>
-   <p>
-    <code class="code">argz_next</code> işlevi <em class="parameter"><code>argz</code></em> vektöründeki elemanları yinelemek için uygun bir yol sağlar. <em class="parameter"><code>argz</code></em> vektöründe <em class="parameter"><code>entry</code></em> elemanından sonraki elemana ya bir gösterici ile döner ya da <em class="parameter"><code>entry</code></em> elemanını izleyen bir eleman yoksa <code class="code">0</code> ile döner. <em class="parameter"><code>entry</code></em> olarak <code class="code">0</code> verilirse, <em class="parameter"><code>argz</code></em> vektörünün ilk elemanı döner.
-   </p>
-   <p>
-    Bu davranış iki yineleme tarzını akla getirir:
-   </p>
-   <div class="example"><div class="example-title">Örnek: </div><div class="example-contents"><pre class="screen">char *entry = 0;
-while ((entry = argz_next (<em class="parameter"><code>argz</code></em>, <em class="parameter"><code>argz_len</code></em>, entry)))
-  <em class="replaceable"><code>eylem</code></em>;
-</pre><p>
-     (Çift yaylı ayraç kullanımı, bazı C derleyicilerinin <strong class="statement"><code>while</code></strong> sınaması sırasında şüpheli buldukları şeyler hakkında susmasını sağlamak için gereklidir.) ve:
-    </p><pre class="screen">
-char *entry;
-for (entry = <em class="parameter"><code>argz</code></em>;
-     entry;
-     entry = argz_next (<em class="parameter"><code>argz</code></em>, <em class="parameter"><code>argz_len</code></em>, entry))
-  <em class="replaceable"><code>eylem</code></em>;
-</pre><p>
-     İkincisi <em class="parameter"><code>argz</code></em> vektörünün boş olması durumunda boş bellek dilimine gösterici değil, <code class="code">0</code> değerinde olması gerekliliğine bağlıdır; bu sabit, buradaki işlevler tarafından oluşturulan argz işlevleri için sağlanmıştır.
-    </p></div></div><br class="example-break" />
-  </div>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-   <span id="glibc-fn-argz_replace" class="indexterm"></span>
-   <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/argz.h;hb=HEAD" target="_top">argz.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">error_t </code><strong><code class="function">argz_replace</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">char </code><strong class="type">**</strong><strong><code class="parameter">argz</code></strong><strong><code>, </code></strong><code class="type">size_t </code><strong class="type">*</strong><strong><code class="parameter">argz_len</code></strong><strong><code>, </code></strong><code class="type">const char </code><strong class="type">*</strong><strong><code class="parameter">str</code></strong><strong><code>, </code></strong><code class="type">const char </code><strong class="type">*</strong><strong><code class="parameter">with</code></strong><strong><code>, </code></strong><code class="type">unsigned int </code><strong class="type">*</strong><strong><code class="parameter">replace_count</code></strong><strong><code>)</code></strong></td></tr></table></div>
-   
-   <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-asunsafe">AS-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-heap">heap</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acunsafe">AC-Unsafe</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-mem">mem</a>
-   </div>
-   <p>
-    içindeki <em class="parameter"><code>str</code></em> dizgelerini <em class="parameter"><code>with</code></em> dizgesi ile değiştirir ve <em class="parameter"><code>argz</code></em> için gerekliyse yeniden bellek tahsis eder. <em class="parameter"><code>replace_count</code></em> sıfırdan farklı ise *<em class="parameter"><code>replace_count</code></em> uygulanan yer değiştirmenin sayısı kadar artırılır.
-   </p>
-  </div>
-      </section>
-      <footer>
-        <div align="center" class="footer">
-          <small>Bir <a href="http://belgeler.org.tr/">Linux Kitaplığı</a> Sayfası</small>
-        </div>
-      </footer>
-    </section>
-  </body>
-</html>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:26:20+03:00" /><title>Argz İşlevleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Argz-and-Envz-Vectors.html" title="Argz ve Envz Vektörleri" /><link rel="previous" href="../glibc/glibc-Argz-and-Envz-Vectors.html" title="Argz ve Envz Vektörleri" /><link rel="next" href="../glibc/glibc-Envz-Functions.html" title="Envz İşlevleri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Argz İşlevleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Argz-and-Envz-Vectors.html">Önceki</a> </td><th width="60%" align="center">Argz ve Envz Vektörleri</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Envz-Functions.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Argz-Functions" id="glibc-Argz-Functions"></a>Argz İşlevleri</div><dl><dd><div class="para">
+Her argz vektörü ilk elemanı gösteren <b><tt>char *</tt></b> türünde bir gösterici ve dizi boyutunu belirten <b><tt>size_t</tt></b> türünde bir gösterici ile temsil edilir. Her ikisi de bir boş argz vektörünü gösteren <b><tt>0</tt></b> ile ilklendirilir. Tüm argz işlevleri ya bir gösterici ile bir boyut argümanı ya da her ikisinin de değişebileceği öngörüldüğü durumlarda her ikisi de bir gösterici olan argümanlar alırlar.
+    </div><div class="para">
+Argz işlevleri dizge dizilerini ayırmak ya da büyütmek için <b><tt>malloc</tt></b>/<b><tt>realloc</tt></b> işlevlerini kullanır. Böylece bu işlevler tarafından oluşturulan tüm argz vektörleri <b><tt>free</tt></b> işlevi ile serbest bırakılabilir. Buna karşın, bir dizgeyi büyütebilen argz işlevlerinin dizgeyi <b><tt>malloc</tt></b> kullanarak ayırdığı umulur (bu tür argz işlevleri, bellek sıralaması ne olursa olsun, sadece kendi argümanlarını saptar ve onları değiştirmek için aynı alanı kullanır). Bakınız: <a href="../glibc/glibc-Unconstrained-Allocation.html" class="xref" title="Özgür Bellek Ayırma">Özgür Bellek Ayırma</a>.
+    </div><div class="para">
+Bellek ayırma işlemi de yapan tüm argz işlevleri <b><tt>error_t</tt></b> türünde bir değer ile döner. Başarı durumunda bu değer <b><tt>0</tt></b>’dır. Aksi takdirde, bir ayırma hatası oluşursa <b><tt>ENOMEM</tt></b> ile döner.
+    </div><div class="para">
+<a class="indexterm" name="idx574" id="idx574"></a>
+Bu işlevler standart bir başlık dosyası olan <tt>argz.h</tt> içinde bildirilmiştir.
+   </div><a name="glibc-argz_create" id="glibc-argz_create"></a>
+<a class="indexterm" name="idx575" id="idx575"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>error_t <b><tt>argz_create</tt></b></tt></td><td valign="top"><pre class="paramdef">(char *const <i><tt>argv</tt></i>[],
+ char      **<i><tt>argz</tt></i>,
+ size_t     *<i><tt>argz_boyu</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>argz_create</tt></b> işlevi <i><tt>argv</tt></i> Unix tarzı argüman vektörünü (normal C dizgelerine göstericilerden oluşmuş, <b><tt>(char *)0</tt></b> ile sonlandırılmış bir diziye gösterici; bkz, <a href="../glibc/glibc-Program-Arguments.html" class="xref" title="Yazılım Argümanları">Yazılım Argümanları</a>) aynı elemanlarla argz vektörüne dönüştürür ve <i><tt>argz</tt></i> ve <i><tt>argz_boyu</tt></i> ile döndürür.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-argz_create_sep" id="glibc-argz_create_sep"></a>
+<a class="indexterm" name="idx576" id="idx576"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>error_t <b><tt>argz_create_sep</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *<i><tt>dizge</tt></i>,
+ int         <i><tt>ayraç</tt></i>,
+ char      **<i><tt>argz</tt></i>,
+ size_t     *<i><tt>argz_boyu</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>argz_create_sep</tt></b> işlevi, boş karakter sonlandırmalı <i><tt>dizge</tt></i> dizgesini her <i><tt>ayraç</tt></i> karakteri için bir eleman olmak üzere bir argz vektörüne (<i><tt>argz</tt></i> ve <i><tt>argz_boyu</tt></i> içinde döndürerek) dönüştürür.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-argz_count" id="glibc-argz_count"></a>
+<a class="indexterm" name="idx577" id="idx577"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>size_t <b><tt>argz_count</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *<i><tt>argz</tt></i>,
+ size_t      <i><tt>argz_boyu</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<i><tt>argz</tt></i> ve <i><tt>argz_boyu</tt></i> ile belirtilen argz vektörünün eleman sayısı ile döner.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-argz_extract" id="glibc-argz_extract"></a>
+<a class="indexterm" name="idx578" id="idx578"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>argz_extract</tt></b></tt></td><td valign="top"><pre class="paramdef">(char  *<i><tt>argz</tt></i>,
+ size_t <i><tt>argz_boyu</tt></i>,
+ char **<i><tt>argv</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>argz_extract</tt></b> işlevi, <i><tt>argz</tt></i> ve <i><tt>argz_boyu</tt></i> ile belirtilen argz vektörünü, (<i><tt>argz</tt></i> içindeki her elemana bir göstericiyi <b><tt>0</tt></b> ile sonladırılmış olarak <i><tt>argv</tt></i> içindeki kendi konumuna yerleştirerek) <i><tt>argv</tt></i> içinde saklanan Unix tarzı argüman vektörüne dönüştürür. <i><tt>argv</tt></i>, <i><tt>argz</tt></i> dizisinin tüm elemanları artı sonlandırıcı <b><tt>(char *)0</tt></b> için yeterince yer bulunan önceden ayrılmış bir alanı göstermelidir (<b><tt>(argz_count (<i><tt>argz</tt></i>, <i><tt>argz_boyu</tt></i>) + 1) * sizeof (char *)</tt></b> bayt yeterlidir). <i><tt>argv</tt></i> içindeki dizge göstericileri, <i><tt>argz</tt></i> içindeki alanları gösterdiğinden (kopyalama yapılmaz), <i><tt>argz</tt></i>'nin <i><tt>argv</tt></i> etkinken değişmemesi isteniyorsa ayrıca kopyalanmalıdır. Bu işlev <i><tt>argz</tt></i> içindeki elemanların bir <a class="link" href="../glibc/glibc-Executing-a-File.html" title="Bir Dosyanın Çalıştırılması">exec işlevine</a> aktarılması için kullanışlıdır.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-argz_stringify" id="glibc-argz_stringify"></a>
+<a class="indexterm" name="idx579" id="idx579"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>argz_stringify</tt></b></tt></td><td valign="top"><pre class="paramdef">(char  *<i><tt>argz</tt></i>,
+ size_t <i><tt>uzunluk</tt></i>,
+ int    <i><tt>ayraç</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>argz_stringify</tt></b> işlevi, <i><tt>argz</tt></i> içindeki <b><tt>'\0'</tt></b> karakterlerini <i><tt>ayraç</tt></i> karakteri ile değiştirerek (dizgeyi sonlandıracak olan sonuncu boş karakter hariç) elemanları birleştirip normal bir dizgeye çevirir. Bu işlev, <i><tt>argz</tt></i>'nin okunabilir olarak basılması gibi işlemler için faydalıdır.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-argz_add" id="glibc-argz_add"></a>
+<a class="indexterm" name="idx580" id="idx580"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>error_t <b><tt>argz_add</tt></b></tt></td><td valign="top"><pre class="paramdef">(char      **<i><tt>argz</tt></i>,
+ size_t     *<i><tt>argz_boyu</tt></i>,
+ const char *<i><tt>dizge</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>argz_add</tt></b> işlevi, <i><tt>dizge</tt></i> dizisini *<i><tt>argz</tt></i> argz vektörünün sonuna ekler ve *<i><tt>argz</tt></i> ile *<i><tt>argz_boyu</tt></i> argümalarını yeni duruma uygun olarak günceller.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-argz_add_sep" id="glibc-argz_add_sep"></a>
+<a class="indexterm" name="idx581" id="idx581"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>error_t <b><tt>argz_add_sep</tt></b></tt></td><td valign="top"><pre class="paramdef">(char      **<i><tt>argz</tt></i>,
+ size_t     *<i><tt>argz_boyu</tt></i>,
+ const char *<i><tt>dizge</tt></i>,
+ int         <i><tt>ayraç</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>argz_add_sep</tt></b> işlevi <b><tt>argz_add</tt></b> işlevine benzer. Farklı olarak, <i><tt>dizge</tt></i> dizisini  <i><tt>ayraç</tt></i> karakterlerine göre alt dizgelerine ayırarak ekler. Bu işlev, PATH değişkeni gibi bir değişkenin değerini oluşturan tüm elamanların ayrı birer dizge olarak eklenmek istenmesi durumunda yararlıdır (<i><tt>ayraç</tt></i> karakteri olarak <b><tt>':'</tt></b> verilerek).
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-argz_append" id="glibc-argz_append"></a>
+<a class="indexterm" name="idx582" id="idx582"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>error_t <b><tt>argz_append</tt></b></tt></td><td valign="top"><pre class="paramdef">(char      **<i><tt>argz</tt></i>,
+ size_t     *<i><tt>argz_boyu</tt></i>,
+ const char *<i><tt>tampon</tt></i>,
+ size_t      <i><tt>tampon_boyu</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>argz_append</tt></b> işlevi, <i><tt>tampon_boyu</tt></i>’nu *<i><tt>argz_boyu</tt></i>’na ve <i><tt>tampon</tt></i>  ile başlayan dizgeyi *<i><tt>argz</tt></i> vektörüne ekler ve bunları bir arada tutan yeni bir *<i><tt>argz</tt></i> alanına yerleştirir (eskisi serbest bırakılır).
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-argz_delete" id="glibc-argz_delete"></a>
+<a class="indexterm" name="idx583" id="idx583"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>argz_delete</tt></b></tt></td><td valign="top"><pre class="paramdef">(char  **<i><tt>argz</tt></i>,
+ size_t *<i><tt>argz_boyu</tt></i>,
+ char   *<i><tt>girdi</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Eğer <i><tt>girdi</tt></i>, *<i><tt>argz</tt></i> vektörünün elemanlarından birinin başlangıcını gösteriyorsa,  <b><tt>argz_delete</tt></b> işlevi bu girdiyi kaldıracak ve *<i><tt>argz</tt></i> ile *<i><tt>argz_boyu</tt></i>’nu güncelleyerek *<i><tt>argz</tt></i> vektörüne yeniden yer ayıracaktır. Eleman silen <i><tt>argz</tt></i> işlevleri genelde <i><tt>argz</tt></i> argümanları için bellekte yeniden yer ayırdıklarından buradaki <i><tt>girdi</tt></i> gibi kaldırılan elemanın göstericisi geçersiz olur.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-argz_insert" id="glibc-argz_insert"></a>
+<a class="indexterm" name="idx584" id="idx584"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>error_t <b><tt>argz_insert</tt></b></tt></td><td valign="top"><pre class="paramdef">(char      **<i><tt>argz</tt></i>,
+ size_t     *<i><tt>argz_boyu</tt></i>,
+ char       *<i><tt>önce</tt></i>,
+ const char *<i><tt>girdi</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>argz_insert</tt></b> işlevi, <i><tt>girdi</tt></i> dizgesini *<i><tt>argz</tt></i> vektörünün <i><tt>önce</tt></i> ile gösterilen elemanının öncesine ekler ve *<i><tt>argz</tt></i> ile  *<i><tt>argz_boyu</tt></i>’nu güncelleyerek *<i><tt>argz</tt></i> için yeniden yer ayırır. Eğer <i><tt>önce</tt></i> <b><tt>0</tt></b> ise işlev <b><tt>argz_add</tt></b> işlevinin yaptığı gibi elemanı sona ekler.
+İlk eleman *<i><tt>argz</tt></i> ile aynı olduğundan <i><tt>önce</tt></i> için *<i><tt>argz</tt></i> verilirse, <i><tt>girdi</tt></i> dizgesi başa eklenir.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-argz_next" id="glibc-argz_next"></a>
+<a class="indexterm" name="idx585" id="idx585"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>char *<b><tt>argz_next</tt></b></tt></td><td valign="top"><pre class="paramdef">(char       *<i><tt>argz</tt></i>,
+ size_t      <i><tt>argz_boyu</tt></i>,
+ const char *<i><tt>girdi</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>argz_next</tt></b> işlevi <i><tt>argz</tt></i> vektöründeki elemanları yinelemek için uygun bir yol sağlar. <i><tt>argz</tt></i> vektöründe <i><tt>girdi</tt></i> elemanından sonraki elemana ya bir gösterici ile döner ya da <i><tt>girdi</tt></i> elemanını izleyen bir eleman yoksa <b><tt>0</tt></b> ile döner. <i><tt>girdi</tt></i> olarak <b><tt>0</tt></b> verilirse, <i><tt>argz</tt></i> vektörünün ilk elemanı döner.
+    </div><div class="para">
+Bu davranış iki yineleme tarzı akla getirir:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+    char *girdi = 0;
+    while ((girdi = argz_next (<i><tt>argz</tt></i>, <i><tt>argz_boyu</tt></i>, girdi)))
+      <i><tt>eylem</tt></i>;
+</pre></div></div><div class="para">
+(çift parantez kullanımı bazı C derleyicileri için gereklidir) ve:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+char *girdi;
+for (girdi = <i><tt>argz</tt></i>;
+     girdi;
+     girdi = argz_next (<i><tt>argz</tt></i>, <i><tt>argz_boyu</tt></i>, girdi))
+  <i><tt>eylem</tt></i>;
+</pre></div></div><div class="para">
+İkincisi <i><tt>argz</tt></i> vektörünün boş olması durumunda bir boş bellek bloğuna gösterici değil, <b><tt>0</tt></b> değerinde olması gerekliliğine bağlıdır; bu sabit, buradaki işlevler tarafından oluşturulan argz işlevleri için sağlanmıştır.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-argz_replace" id="glibc-argz_replace"></a>
+<a class="indexterm" name="idx586" id="idx586"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>error_t <b><tt>argz_replace</tt></b></tt></td><td valign="top"><pre class="paramdef">(char      **<i><tt>argz</tt></i>,
+ size_t     *<i><tt>argz_boyu</tt></i>,
+ const char *<i><tt>dizge</tt></i>,
+ const char *<i><tt>ile</tt></i>,
+ unsigned   *<i><tt>yineleme_sayısı</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<i><tt>argz</tt></i> içindeki <i><tt>dizge</tt></i> dizgelerini <i><tt>ile</tt></i> dizgesi ile değiştirir ve <i><tt>argz</tt></i> için gerekliyse yeniden yer ayırır. <i><tt>yineleme_sayısı</tt></i> sıfırdan farklı ise *<i><tt>yineleme_sayısı</tt></i> uygulanan yer değiştirmenin sayısı kadar arttırılır.
+       </div></dd></dl><div style="padding:5px"></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Argz-and-Envz-Vectors.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Argz-and-Envz-Vectors.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Envz-Functions.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Argz ve Envz Vektörleri </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Envz İşlevleri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

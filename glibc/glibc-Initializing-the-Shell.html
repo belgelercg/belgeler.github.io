@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:46+03:00" /><title>Kabuğun İlklendirilmesi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Implementing-a-Shell.html" title="Bir İş Denetim kabuğunun Gerçeklenmesi" /><link rel="previous" href="../glibc/glibc-Data-Structures.html" title="Kabuk için Veri Yapıları" /><link rel="next" href="../glibc/glibc-Launching-Jobs.html" title="İşlerin Başlatılması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Kabuğun İlklendirilmesi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Data-Structures.html">Önceki</a> </td><th width="60%" align="center">Bir İş Denetim kabuğunun Gerçeklenmesi</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Launching-Jobs.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Initializing-the-Shell" id="glibc-Initializing-the-Shell"></a>Kabuğun İlklendirilmesi</div><dl><dd><div class="para">
+<a class="indexterm" name="idx2979" id="idx2979"></a>
+<a class="indexterm" name="idx2980" id="idx2980"></a>
+Normalde iş denetimi yapan bir kabuk başlatıldığında, kendi iş denetimini yapan başka bir kabuk tarafından çalıştırılmışsa dikkatli olmak zorundadır.
+    </div><div class="para">
+Etkileşimli olarak çalışan bir altkabuk kendi iş denetimini etkinleştirmeden önce kendini çalıştıran kabuk tarafından önalana mı yerleştirildiğine bakmak zorundadır. <b><tt>getpgrp</tt></b> işlevi ile kendi süreç grup kimliğini öğrenip, bunu kendi denetim uçbiriminin önalan işinin süreç grup kimliği (<b><tt>tcgetpgrp</tt></b> işlevi ile öğrenebilir) ile karşılaştırarak yapar.
+    </div><div class="para">
+Eğer altkabuk bir önalan işi olarak çalışmıyorsa, kendi süreç grubuna bir <b><tt>SIGTTIN</tt></b> sinyali göndererek kendini durdurmalıdır. Kendini keyfi olarak önalana yerleştiremez; bunu kendini çalıştıran kabuğa kullanıcının söylemesini beklemek zorundadır. Eğer alt kabuk yine de devam ederse bu sınamayı tekrarlayıp hala önalanda değilse, kendini tekrar durdurmalıdır.
+    </div><div class="para">
+Bir alt kabuk kendini çalıştıran kabuk tarafından önalana yerliştirildikten sonra kendi iş denetimini etkinleştirebilir. Bunu <b><tt>setpgid</tt></b> işlevini çağırıp kendini, kendi süreç grubuna koyduktan sonra <b><tt>tcsetpgrp</tt></b> çağrısıyla bu süreç grubunu önalana yerleştirerek yapar.
+    </div><div class="para">
+Bir kabuk iş denetimini etkinleştirdiğinde, kendini tüm iş denetimi durdurma sinyallerini yoksaymaya ayarlayıp kazaen kendi kendini durdurma şansını ortadan kaldırmalıdır. Bunu tüm durdurma sinyalllerine eylem olarak <b><tt>SIG_IGN</tt></b> atayarak yapabilirsiniz.
+    </div><div class="para">
+Etklileşimsiz olarak çalışan bir kabuk iş denetimini destekleyemez ve desteklememelidir. Kendi süreç grubunda oluşturulan tüm süreçleri bırakmalıdır; bu onu etkileşimsiz kabuk yapar. Onun alt süreçleri kendini çalıştıran kabuğun tek tek işleri olarak ele alınır. Bunu yapmak kolaydır, iş denetim ilkellerini kullanmamak yeterlidir, ama bunu kabuğa yaptırmayı unutmamalısınız.
+    </div><div class="para">
+Burada bunun örnek kabuğumuz tarafından ilklendirme kodunda nasıl yapıldığı gösterilmiştir.
+    </div>
+<div class="para"><div align="right"><pre class="screen">/* Kabuğun özniteliklerini hatırlayalım.  */
+
+#include &lt;sys/types.h&gt;
+#include &lt;termios.h&gt;
+#include &lt;unistd.h&gt;
+
+pid_t shell_pgid;
+struct termios shell_tmodes;
+int shell_terminal;
+int shell_is_interactive;
+
+
+/* Başlamadan önce kabuğun önalan işi olarak etkileşimli
+   çalışacağından emin olalım. */
+
+void
+init_shell ()
+{
+
+  /* Etkileşimli mi çalışıyor acaba.  */
+  shell_terminal = STDIN_FILENO;
+  shell_is_interactive = isatty (shell_terminal);
+
+  if (shell_is_interactive)
+    {
+      /* Önalana geçinceye kadar döngüde kalsın.  */
+      while (tcgetpgrp (shell_terminal) != (shell_pgid = getpgrp ()))
+        kill (- shell_pgid, SIGTTIN);
+
+      /* Etkileşimli ve iş denetimi sinyallarini yoksayalım.  */
+      signal (SIGINT, SIG_IGN);
+      signal (SIGQUIT, SIG_IGN);
+      signal (SIGTSTP, SIG_IGN);
+      signal (SIGTTIN, SIG_IGN);
+      signal (SIGTTOU, SIG_IGN);
+      signal (SIGCHLD, SIG_IGN);
+
+      /* Kendimizi kendi süreç grubumuza koyalım.  */
+      shell_pgid = getpid ();
+      if (setpgid (shell_pgid, shell_pgid) &lt; 0)
+        {
+          perror ("Kabuk kendini kendi süreç grubuna yerleştiremedi");
+          exit (1);
+        }
+
+      /* Uçbirim denetimini ele geçirelim.  */
+      tcsetpgrp (shell_terminal, shell_pgid);
+
+      /* Kabuğun öntanımlı uçbirim öznitelikerini saklayalım.  */
+      tcgetattr (shell_terminal, &amp;shell_tmodes);
+    }
+}
+</pre></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Data-Structures.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Implementing-a-Shell.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Launching-Jobs.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Kabuk için Veri Yapıları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> İşlerin Başlatılması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

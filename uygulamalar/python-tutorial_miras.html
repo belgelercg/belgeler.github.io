@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:25:53+03:00" /><title>Miras</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../uygulamalar/python-tutorial_siniflar.html" title="Sınıflar" /><link rel="previous" href="../uygulamalar/python-tutorial_siniflar-aciklamalar.html" title="Bazı Açıklamalar" /><link rel="next" href="../uygulamalar/python-tutorial_ozel-deg.html" title="Özel Değişkenler" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Miras</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../uygulamalar/python-tutorial_siniflar-aciklamalar.html">Önceki</a> </td><th width="60%" align="center">Sınıflar</th><td width="20%" align="right"> <a accesskey="n" href="../uygulamalar/python-tutorial_ozel-deg.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="python-tutorial_miras" id="python-tutorial_miras"></a>Miras</div><dl><dd><div class="para">
+        Tabii ki, miras alma desteği olmayan bir “sınıf” adına layık olmaz.
+        Türetilmiş sınıf tanımının sözdizimi aşağıdaki gibidir:
+</div><div class="para"><div align="right"><pre class="screen">
+class turemisSinifAdi(TemelSinifAdi):
+    &lt;deyim-1&gt;
+    .
+    .
+    .
+    &lt;deyim-N&gt;
+</pre></div></div><div class="para">
+        <tt>TemelSinifAdi</tt> ismi türetilmiş sınıfın tanımının
+        bulunduğu etki alanında tanımlı olmalıdır. Temel sınıf adı yerine bir
+        ifade kullanmak da mümkündür. Bu temel sınıf adı başka bir modül
+        içinde tanımlı olduğunda yararlıdır:
+      </div><div class="para"><div align="right"><pre class="screen">class turemisSinifAdi(modulAdi.TemelSinifAdi):</pre></div></div><div class="para">
+        Bir türetilmiş sınıf tanımının işletilmesi bir temel sınıf ile aynıdır.
+        Bir sınıf nesnesi yaratıldığında temel sınıf hatırlanır. Bu özellik
+        başvurularını çözümlemede kullanılır; başvuruda bulunulan öznitelik o
+        sınıfta yok ise temel sınıfta aranır. Bu kural temel sınıfın kendisi
+        de başka bir sınıftan türetildiyse ardışık olarak çağırılır.
+      </div><div class="para">
+        Türetilmiş sınıftan nesne oluşturmanın özel bir tarafı yoktur:
+        <tt>turetilmisSinifAdi()</tt> o sınıfın yeni bir
+        nesnesini yaratır. Yöntem başvuruları şu şekilde çözümlenirler: ilgili
+        sınıf özelliği, gerekirse temel sınıflar zinciri taranarak, aranır ve
+        yöntem başvurusu geçerli ise bu bir işlev verir.
+      </div><div class="para">
+        Türetilmiş sınıflar
+        temel sınıflarının yöntemlerini bastırabilirler. Yöntemler aynı nesnenin
+        diğer yöntemlerini çağırırken özel önceliklere sahip olmadıkları için
+        aynı temel sınıfta tanımlı bir yöntemi çağıran temel sınıf yöntemi bunu
+        bastıran bir türetilmiş sınıf yöntemini çağırmış olabilir.
+        C++ programcıları için not: Tüm Python yöntemleri sanaldır (virtual).
+      </div><div class="para">
+        Türetilmiş sınıftaki bir bastıran yöntem aslında temel sınıftaki
+        yöntemin yerini almak yerine onu geliştirmek isteyebilir. Temel sınıf
+        yöntemini doğrudan çağırmanın basit bir yolu vardır:
+        <tt>temelSinifadi.yontemAdi(self, argumanlar)</tt>. Bu bazen
+        istemciler için de faydalıdır. Bunun sadece, temel sınıf, global etki
+        alanı içine doğrudan yüklendiyse çalıştığına dikkat edin.
+      </div> <div class="head3"><a name="id1" id="id1"></a>Çoklu Miras</div><dl><dd><div class="para">
+          Python çoklu miras almanın kıstlı bir şeklini destekler. Birçok temel
+          sınıfı olan bir sınıf tanımı aşağıdaki gibidir:
+</div><div class="para"><div align="right"><pre class="screen">
+class turemisSinifAdi(temel1, temel2, temel3):
+    &lt;ifade-1&gt;
+    .
+    .
+    .
+    &lt;ifade-N&gt;
+</pre></div></div><div class="para">
+          Burada sınıf özniteliği başvurularını çözümlemede kullanılan kuralı
+          açıklamamız gerekiyor. Bir öznitelik <tt>turemisSinifAdi</tt>
+          içinde bulunamazsa <tt>temel1</tt> içinde sonra
+          <tt>temel1</tt>'in temel sınıfları içerisinde ve burada da
+          bulunamazsa <tt>temel2</tt> içinde aranır vs.
+        </div><div class="para">
+          Bazı kişilere
+          <tt>temel1</tt>'den önce <tt>temel2</tt> ve
+          <tt>temel3</tt> içinde arama yapmak daha doğal gelir. Bu
+          <tt>temel1</tt>'in herhangi bir özniteliğinin
+          <tt>temel1</tt> içinde veya bunun temel sınıflarında
+          tanımlanmış olup olmadığını bilmenizi gerektir ki <tt>temel2</tt>
+          içindeki isimler ile çakışmalardan kaçınabilesiniz.
+        </div><div class="para">
+          Python'un kazara
+          oluşan isim çakışmalarına karşı usule dayanması çoklu kalıtımın rasgele
+          kullanımı programın bakımını yapan için bir kabus olduğu açıktır.
+          Çoklu kalıtımın iyi bilinen bir problemi aynı temel sınıfa sahip iki
+          sınıftan türetme yapmaktır. Bu durumda ne olduğunu anlamak kolaydır;
+          ancak bunun ne işe yarayacağı pek açık değildir.
+        </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../uygulamalar/python-tutorial_siniflar-aciklamalar.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../uygulamalar/python-tutorial_siniflar.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../uygulamalar/python-tutorial_ozel-deg.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Bazı Açıklamalar </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Özel Değişkenler</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

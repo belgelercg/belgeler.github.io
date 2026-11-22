@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:07+03:00" /><title>1. Genel</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../sss/sss-yonetim.html" title="11. Kısım - Sistem Yönetimi" /><link rel="previous" href="../sss/sss-yonetim.html" title="11. Kısım - Sistem Yönetimi" /><link rel="next" href="../sss/sss-ftp.html" title="2. FTP" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">1. Genel</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../sss/sss-yonetim.html">Önceki</a> </td><th width="60%" align="center">11. Kısım - Sistem Yönetimi</th><td width="20%" align="right"> <a accesskey="n" href="../sss/sss-ftp.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="sss-yon-genel" id="sss-yon-genel"></a>1. Genel</div><dl><dd><div class="qandaset"><dl><dt>1.1.  <a href="../sss/sss-yon-genel.html#sss-yonetim_rc">
+Bir programın veya betiğin Linux her açıldığında çalıştırılmasını nasıl sağlarım?
+    </a></dt><dt>1.2.  <a href="../sss/sss-yon-genel.html#sss-yonetim_userlist">
+Sistemde kayıtlı olan normal kullanıcıların listesini nasıl alabilirim?
+    </a></dt><dt>1.3.  <a href="../sss/sss-yon-genel.html#sss-yonetim_fstab-ext3">
+Dosya sistemi ext3 olan bir disk bölümünü her açılışta sistemime nasıl tanıtabilirim?
+    </a></dt><dt>1.4.  <a href="../sss/sss-yon-genel.html#sss-yonetim_backup">
+Eski linux'umu yeni kurduğum linux'e taşımak istiyorum.  Veri kaybı olmaması için hangi yolu izlemeliyim?
+    </a></dt><dt>1.5.  <a href="../sss/sss-yon-genel.html#sss-yonetim_inetd">
+RedHat 7.x sürümü kullanıyorum ve inetd deamon'ı bulamadım. Servisleri nasıl ayarlayabilirim?
+    </a></dt><dt>1.6.  <a href="../sss/sss-yon-genel.html#sss-yonetim_root-passwd">
+root parolasını unuttum. Ne yapabilirim?
+    </a></dt><dt>1.7.  <a href="../sss/sss-yon-genel.html#sss-yonetim_ulimit">
+Kullanıcıların çalıştırabileceği süreç sayısını veya benzer kısıtlamaları nasıl yapabilirim?
+    </a></dt><dt>1.8.  <a href="../sss/sss-yon-genel.html#sss-yonetim_cron">
+Belli aralıklarla yapılmasını istediğim işleri nasıl otomatikleştirebilirim?
+    </a></dt><dt>1.9.  <a href="../sss/sss-yon-genel.html#sss-yonetim_su">
+Sisteme root olarak girdiğim halde /usr/sbin gibi bazı dizinlerin PATH değişkeninde yer almadığını görüyorum. Hata nedir?
+    </a></dt></dl><div class="para"><hr /></div><dl><dt class="question"><a name="id1" id="id1"></a><a name="sss-yonetim_rc" id="sss-yonetim_rc"></a><b>1.1. </b> <b>
+Bir programın veya betiğin Linux her açıldığında çalıştırılmasını nasıl sağlarım?
+    </b></dt><dd class="answer"><b></b> <div class="para">
+Yanıtlayan:  <b>M. Umut Atasever</b> <span class="email">&lt;umut (at) teclinn.com&gt;</span> ve  <b>Murat Koç</b> <span class="email">&lt;murat.koc (at) frontsite.de&gt;</span>
+  </div><div class="para">
+Programınızı <tt>/etc/rc.local</tt> dosyasının sonuna eklerseniz sistem başlangıcında çalıştırılır.
+  </div><div class="para">
+<tt>rc</tt> betikleri genelde <tt>/etc/rc.d/</tt> veya  <tt>/etc/init.d</tt> dizinlerinin altında bulunur ki zaten  <tt>rc.d</tt> dizini de <tt>init.d</tt> dizinine bağ  durumundadır. Dolayısı ile dosyanın temel olarak olması gereken yer  <tt>/etc/rc.d/rc.local</tt>'dir. Fakat bazı dağıtımlarda bu ismi  <tt>/etc/rc.d/boot.local</tt> biçiminde de görebilirsiniz.
+  </div><div class="para">
+Benim asil eklemek istediğim ise <tt>rc.local</tt> veya <tt>boot.local</tt> betiklerini <tt>init</tt> işleminden sonra <tt>rc</tt>'den hemen sonra çalıştırılan betiktir. Dolayısı ile eğer ağ ile ilgili birşey yaptırmak istiyorsanız (samba'daki  bir paylaşımı bağlamak örneğin) bunu ağ ayarlarının düzenlenmesinden sonra  yapmanız gerekir.  Bundan dolayı temelde yapmanız gereken şey için bir  bash betiği yazmak bunun içine "start" ve "stop" parametrelerinde yapacağı işleri tanımlamak ve bunu hangi çalışma seviyesinde (runlevel)  çalıştıracaksanız onunla ilgili olan dizine <tt>Sxxservis Kxxservis</tt> biçiminde bağlamanız kontrolun daha fazla elinizde olmasını sağlayacaktır. Ama nispeten basit şeyler yapacaksanız bu durumda <tt>rc.local</tt> veya <tt>boot.local</tt> dosyasını gönül rahatlığı ile kullanabilirsiniz (Sxx ve Kxx'in anlamları için <tt>/etc/init.d</tt>'de README dosyası olur, genelde ona bakabilirsiniz).
+  </div></dd><dt class="question"><a name="id2" id="id2"></a><a name="sss-yonetim_userlist" id="sss-yonetim_userlist"></a><b>1.2. </b> <b>
+Sistemde kayıtlı olan normal kullanıcıların listesini nasıl alabilirim?
+    </b></dt><dd class="answer"><b></b> <div class="para">
+Yanıtlayan: <b>Görkem Çetin</b> <span class="email">&lt;gorkem (at) gelecek.com.tr&gt;</span>
+  </div><div class="para">
+Aşağıdaki komut ile kullanıcı numaraları 500'den fazla olanların kullanıcı isimlerini ekrana yazabilirsiniz:
+  </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>awk -F: '{ if ($3&gt;500) print $1 }' &lt; /etc/passwd</tt></b>
+</pre></div></div>
+    </dd><dt class="question"><a name="id3" id="id3"></a><a name="sss-yonetim_fstab-ext3" id="sss-yonetim_fstab-ext3"></a><b>1.3. </b> <b>
+Dosya sistemi ext3 olan bir disk bölümünü her açılışta sistemime nasıl tanıtabilirim?
+    </b></dt><dd class="answer"><b></b> <div class="para">
+Yanıtlayan: <b>Alper Oğuz</b> <span class="email">&lt;alper (at) eksen.net&gt;</span>
+    </div><div class="para">
+<tt>/etc/fstab</tt> dosyanızda ilgili satırda <tt>ext2    defaults</tt> yerine <tt>ext3    defaults,journal=update</tt> yazmalı ve
+  </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>tune2fs -i 0 -c 0</tt></b></pre></div></div>
+  <div class="para">
+çalıştırıp açılışta <tt>fsck</tt> yapılmasını engellemelisiniz.
+    </div></dd><dt class="question"><a name="id4" id="id4"></a><a name="sss-yonetim_backup" id="sss-yonetim_backup"></a><b>1.4. </b> <b>
+Eski linux'umu yeni kurduğum linux'e taşımak istiyorum.  Veri kaybı olmaması için hangi yolu izlemeliyim?
+    </b></dt><dd class="answer"><b></b> <div class="para">
+Yanıtlayan: <b>Barış Şimşek</b> <span class="email">&lt;simsek (at) sumela.bimel.com.tr&gt;</span>
+  </div><div class="para">
+Eski linux'unuzda çalışan servislerinize göre değişir. Ancak genel olarak konuşursak:
+  </div><div class="para">
+Dosya haklarının ve sahiplerinin korunması için <tt>/etc/passwd, /etc/shadow</tt> ve <tt>/etc/group</tt> dosyalarını almalısınız.
+  </div><div class="para">
+Kullanıcıların kendi kök dizinlerinde dosya varsa <tt>/home</tt> dizinini de tamamen almalısınız.
+  </div><div class="para">
+Bu makina eğer eposta sunuculuğu yapıyordu ise <tt>/var/spool/mail</tt> (kullanıcı epostaları) dizinindeki tüm dosyaları almalısınız. Tabii ki eposta sunucu yazılımınızın ayar dosyalarını da almalısınız.
+  </div><div class="para">
+Yetkili kullanıcının kök dizini <tt>/home</tt> altında olmayıp <tt>/root</tt> dizinidir. Bunu da almayı unutmayın.
+  </div><div class="para">
+<tt>/etc</tt> altında değişiklik yaptığınız ayar dosyaları varsa onları da yedekleyin.
+  </div><div class="para">
+Apache için <tt>httpd.conf</tt> ve bu dosyada belirtilen <tt>DocumentRoot</tt> dizinini, sanal web sayfası dizinlerini, <tt>.htacess</tt> ile korunan dizinlerin parola dosyalarını, varsa SSL dosyalarınızı (<tt>ssl.key, ssl.crt ...</tt>) yedekleyin.
+    </div></dd><dt class="question"><a name="id5" id="id5"></a><a name="sss-yonetim_inetd" id="sss-yonetim_inetd"></a><b>1.5. </b> <b>
+RedHat 7.x sürümü kullanıyorum ve inetd deamon'ı bulamadım. Servisleri nasıl ayarlayabilirim?
+    </b></dt><dd class="answer"><b></b> <div class="para">
+Yanıtlayan: <b>M. Umut Karabudak</b> <span class="email">&lt;ukarabudak (at) cizgi.com.tr&gt;</span>
+    </div><div class="para">
+RH 7.x sürümünden itibaren <tt>inetd</tt> yerine <tt>xinetd</tt> programını sürümüne dahil etti.  <tt>xinetd</tt> tek dosya yapısı yerine birden çok dosyadan  oluşmaktadır.
+  </div><div class="para">
+Program ayarları için <tt>/etc/xinetd.conf</tt> dosyasına, servis  ayarları için  <tt>/etc/xinetd.d</tt> dizinindeki ilgili servis  dosyasını düzenleyiniz.
+  </div><div class="para">
+Daha ayrıntılı bilgi için: <tt># man xinetd</tt>
+    </div></dd><dt class="question"><a name="id6" id="id6"></a><a name="sss-yonetim_root-passwd" id="sss-yonetim_root-passwd"></a><b>1.6. </b> <b>
+root parolasını unuttum. Ne yapabilirim?
+    </b></dt><dd class="answer"><b></b> <div class="para">
+<a href="../sss/sss-konsol.html#sss-konsol_root-passwd" class="xref" title="&#10;Eyvah! Linux root parolamı unuttum. Ne yapmalıyım?&#10;   ">Soru: 5.41.</a> sorusunun yanıtına bakın.
+    </div></dd><dt class="question"><a name="id7" id="id7"></a><a name="sss-yonetim_ulimit" id="sss-yonetim_ulimit"></a><b>1.7. </b> <b>
+Kullanıcıların çalıştırabileceği süreç sayısını veya benzer kısıtlamaları nasıl yapabilirim?
+    </b></dt><dd class="answer"><b></b> <div class="para">
+Yanıtlayan: <b>Murat Koç</b> <span class="email">&lt;murat.koc (at) frontsite.de&gt;</span>
+    </div><div class="para">
+<tt>pam</tt>'in yanında <tt>ulimit</tt> özellikle bu tür şeyleri engellemek için bulunmaktadır. Daha fazla bilgiyi <tt># man ulimit</tt> ile alabilirsiniz.
+    </div></dd><dt class="question"><a name="id8" id="id8"></a><a name="sss-yonetim_cron" id="sss-yonetim_cron"></a><b>1.8. </b> <b>
+Belli aralıklarla yapılmasını istediğim işleri nasıl otomatikleştirebilirim?
+    </b></dt><dd class="answer"><b></b> <div class="para">
+Yanıtlayan: <b>Barış Şimşek</b> <span class="email">&lt;simsek (at) sumela.bimel.com.tr&gt;</span>
+  </div><div class="para">
+Bu işleri yapacak programlarınızı <tt>crontab</tt>'a ekleyerek.
+  </div><div class="para">
+<tt>Crontab</tt>'a ekleme yapmak için <tt>crontab -e</tt> komutunu verin. Bu komut ile, o an bulunduğunuz kullanıcı için periyodik iş eklersiniz. Sistem dizinlerine erişen bir betik vb. programlamak için root olarak girip bu komutu vermelisiniz.
+  </div><div class="para">
+<tt>Crontab</tt> komutu şu şekildedir:
+  </div>
+<div class="para"><pre class="literallayout">
+<i>dakika saat aygun ay haftagun komut</i>
+</pre></div>
+    <div class="para">Örnekler:</div>
+<div class="para"><div align="right"><pre class="screen">38 4 * 1,3,6 * /usr/local/sbin/update_dat
+10,15,20,25,30,35,40,45,50,55,0 * * * * /root/scripts/checkdaemon
+50 5 * 6 * /root/scripts/getbackup
+</pre></div></div>
+  <div class="para">
+<tt>*</tt>, bulunduğu zaman diliminde her zaman demektir. İlk satır, her ayın her haftasının 1, 3 ve 6. günleri saat 4:38 de <tt>update_dat</tt> betiğini çalıştırır.
+    </div></dd><dt class="question"><a name="id9" id="id9"></a><a name="sss-yonetim_su" id="sss-yonetim_su"></a><b>1.9. </b> <b>
+Sisteme root olarak girdiğim halde /usr/sbin gibi bazı dizinlerin PATH değişkeninde yer almadığını görüyorum. Hata nedir?
+    </b></dt><dd class="answer"><b></b> <div class="para">
+Yanıtlayan: <b>Enver ALTIN</b> <span class="email">&lt;ealtin (at) casdb.com&gt;</span>
+  </div><div class="para">
+Anladığım kadarıyla <tt>su</tt> komutu ile root oluyorsunuz. <tt>su</tt> yerine, <tt>su -</tt> (sondaki - işareti, root kullanıcısının ortam değişkenlerinin de aktarılmasını sağlıyor) ile root olursanız sorun çözülecektir.
+    </div></dd></dl></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../sss/sss-yonetim.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../sss/sss-yonetim.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../sss/sss-ftp.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">11. Kısım - Sistem Yönetimi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> 2. FTP</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

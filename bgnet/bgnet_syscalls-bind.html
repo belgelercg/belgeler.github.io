@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:24+03:00" /><title>bind() -- Hangi Port Üzerindeyim?</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../bgnet/bgnet_syscalls.html" title="Sistem Çağrıları veya Felaketleri" /><link rel="previous" href="../bgnet/bgnet_syscalls-socket.html" title="socket() -- Al Şu Dosya Tanımlayıcıyı!" /><link rel="next" href="../bgnet/bgnet_syscalls-connect.html" title="connect()--Hey, sen!" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">bind() -- Hangi Port Üzerindeyim?</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../bgnet/bgnet_syscalls-socket.html">Önceki</a> </td><th width="60%" align="center">Sistem Çağrıları veya Felaketleri</th><td width="20%" align="right"> <a accesskey="n" href="../bgnet/bgnet_syscalls-connect.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="bgnet_syscalls-bind" id="bgnet_syscalls-bind"></a><tt>bind()</tt> -- Hangi Port Üzerindeyim?</div><dl><dd><div class="para">
+        Bir soket edindikten sonra bunu makinanızdaki bir "port" ile
+        ilişkilendirmek isteyeceksiniz<sup>[<a name="id138" href="#ftn.id138" id="id138">138</a>]</sup>.
+        Bu port numarası dediğimiz şey işletim sistemi çekirdeği tarafından
+        gelen bir paketi belli bir sürecin soket tanımlayıcısı ile
+        ilişkilendirebilmesi için gereklidir. Eğer tek yapacağınız bir yere
+        <tt>connect()</tt> ile bağlanmaksa o zaman buna gerek
+        yoktur tabii. Gene de okumaya devam edin, zevk alacaksınız.
+      </div><div class="para">
+        <tt>bind()</tt> sistem çağrısının özetine man komutu
+        ile bakacak olursanız şöyle bir şeyle karşılaşırsınız:
+      </div>
+<div class="para"><div align="right"><pre class="programlisting">
+#include &lt;sys/types.h&gt;
+#include &lt;sys/socket.h&gt;
+
+int bind(int sockfd, struct sockaddr *my_addr, int addrlen); 
+</pre></div></div>
+      <div class="para">
+        <i><tt>sockfd</tt></i> denilen şey <tt>socket()</tt>
+        tarafından döndürülen soket dosya tanımlayıcısıdır.
+        <i><tt>my_addr</tt></i> değişkeni <tt>struct sockaddr</tt>
+        türünde bir veriye işaret eder ve bu yapı da adresinizi yani port
+        numaranızı ve IP adresinizi barındırır. <i><tt>addrlen</tt></i>'in
+        değeri <tt>sizeof(struct sockaddr)</tt> olarak verilebilir.
+      </div><div class="para">
+        Vay canına. Bir seferde sindirmek için biraz fazla değil mi? Bir örnek
+        yapalım:
+      </div>
+<div class="para"><div align="right"><pre class="programlisting">
+#include &lt;string.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;netinet/in.h&gt;
+
+#define MYPORT 3490
+
+main()
+{
+    int sockfd;
+    struct sockaddr_in my_addr;
+
+    sockfd = socket(AF_INET, SOCK_STREAM, 0); // hata kontrolünü ihmal etmeyin!
+
+    my_addr.sin_family = AF_INET;         // konak bayt sıralaması
+    my_addr.sin_port = htons(MYPORT);     // short, ağ bayt sıralaması
+    my_addr.sin_addr.s_addr = inet_addr("10.12.110.57");
+    memset(&amp;(my_addr.sin_zero), '\0', 8); // yapının geriye kalanını sıfırlayalım
+
+    // bind() için hata kontrolü yapmayı unutmayın:
+    bind(sockfd, (struct sockaddr *)&amp;my_addr, sizeof(struct sockaddr));
+    .
+    .
+    . 
+</pre></div></div>
+      <div class="para">
+        Burada dikkat etmeniz gereken bazı şeyler var:
+        <i><tt>my_addr.sin_port</tt></i> Ağ Byte Sıralamasında, ve
+        tabii <i><tt>my_addr.sin_addr.s_addr</tt></i> de öyle.
+        Bir başka nokta ise en tepede çağrılmış olan başlık dosyaları
+        sistemden sisteme değişiklik gösterebilir. Kesin bilgi sahibi
+        olabilmek için sisteminizdeki <b><tt>man</tt></b> sayfalarına
+        bakmalısınız.
+      </div><div class="para">
+        <tt>bind()</tt> konusu ile ilgili son söyleyeceğim şey
+        IP ve port edinme işlemini biraz otomaktikleştirilebilir:
+      </div>
+<div class="para"><div align="right"><pre class="programlisting">
+my_addr.sin_port = 0; // kullanılmayan herhangi bir port'u seç
+my_addr.sin_addr.s_addr = INADDR_ANY;  // IP adresimi kullan 
+</pre></div></div>
+      <div class="para">
+        Gördüğünüz gibi <i><tt>my_addr.sin_port</tt></i> değişkeninin
+        değerini sıfır yaparak <tt>bind()</tt> işlevine diyoruz ki
+        "uygun olan bir port sayısını bizim için sen seç". Benzer şekilde
+        <i><tt>my_addr.sin_addr.s_addr</tt></i> değişkeninin değerini
+        <tt>INADDR_ANY</tt> yaparak üzerinde çalıştığı makinanın
+        IP adresini almasını söylemiş oluyoruz.
+      </div><div class="para">
+        Eğer dikkatli bir okuyucu iseniz bazı şeyleri fark etmiş
+        olabilirsiniz, mesela <tt>INADDR_ANY</tt> değerini Ağ
+        Bayt Sıralamasına dönüştürmedim! Ne kadar da yaramaz bir programcıyım!
+        Ama bildiğim bir şey var: <tt>INADDR_ANY</tt> zaten SIFIR
+        değerine karşılık geliyor! Yani hangi sırada dizerseniz dizin zaten
+        sıfır. Ancak takıntılı olan programcılar <tt>INADDR_ANY</tt>
+        sabitinin mesela 12 olarak belirlendiği bir paralel evrenden söz
+        açabilirler ve orada benim kodum çalışmaz. Tamam, sorun değil,
+        hallederiz:
+      </div>
+<div class="para"><div align="right"><pre class="programlisting">
+my_addr.sin_port = htons(0); // kullanılmayan herhangi bir port'u seç
+my_addr.sin_addr.s_addr = htonl(INADDR_ANY);  // IP adresimi kullan 
+</pre></div></div>
+      <div class="para">
+        Sistemimiz artık o kadar taşınabilir oldu ki yani bu kadar olur.
+        Bunu burada belirttim çünkü karşılaşacağınız kod örneklerinin çoğu
+        <tt>INADDR_ANY</tt> sabitini <tt>htonl()</tt>
+        işlevinden geçirmez, kafanız karışmasın.
+      </div><div class="para">
+        <tt>bind()</tt> eğer bir hata çıkarsa <tt>-1</tt>
+        değerini döndürür ve <i><tt>errno</tt></i> isimli hata kodu
+        değişkenine gerekli sayıyı yerleştir.
+      </div><div class="para">
+        <tt>bind()</tt> işlevini çağırırken dikkat etmeniz
+        gereken bir başka şey de şudur: port numarası olarak küçük bir
+        değer seçmeyin. 1024'ün altındaki tüm portlar REZERVE edilmiştir
+        (eğer superuser değilseniz!). Bu sayıdan başlayarak 65535'e kadar
+        olan sayılardan birini port numarası olarak kullanabilirsiniz
+        (tabii eğer seçtiğiniz numara başka bir program tarafından
+        kullanılmıyorsa).
+      </div><div class="para">
+        Bazen bir sunucuyu tekrar çalıştırmaya kalktığınızda <tt>bind()</tt>
+        işlevinin başarısız olduğunu ve "Adres kullanımda" ("Address already
+        in use.") mesajı verdiğiniz görürsünüz. Bu ne anlama gelir? Daha
+        önce kullanılmış bir soket hala çekirdek seviyesinde takılı kalmıştır
+        ve bu yüzden portun kullanılmasını engellemektedir. Ya kendiliğinden
+        iptal olmasını beklersiniz ki bu 1 dakika kadar sürebilir ya da
+        programınıza bu portu her halükârda kullanmasını sağlayacak kodu
+        eklersiniz:
+      </div>
+<div class="para"><div align="right"><pre class="programlisting">
+int yes=1;
+//char yes='1'; // Solaris programcıları bunu kullanır
+
+// "Address already in use" hata mesajından kurtul
+if (setsockopt(listener,SOL_SOCKET,SO_REUSEADDR,&amp;yes,sizeof(int)) == -1) {
+    perror("setsockopt");
+    exit(1);
+} 
+</pre></div></div>
+      
+        <div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">bind() ile ilgili ek bilgi</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">Kimi durumlarda bu işlev ile hiç işiniz olmaz. Mesela eğer
+        <tt>connect()</tt> ile uzaktaki bir makinaya bağlanıyor
+        ve yerel portunuzun ne olduğu ile ilgilenmiyorsanız
+        (<b><tt>telnet</tt></b> uygulamasında olduğu gibi önemli olan
+        sadece uzaktaki makinadaki port ise) kısaca
+        <tt>connect()</tt> işlevini çağırırsınız ve zaten bu
+        işlev de soketin bağlı olup olmadığını kontrol eder ve eğer soket
+        bağlı değil ise <tt>bind()</tt> işlevini kullanarak
+        bunu makinanızdaki kullanılmayan bir port numarasına bağlar.</div></td></tr></table></div>
+      <div class="footnotes"><br /><hr width="100" align="left" /><div class="footnote"><div class="para"><sup>[<a name="ftn.id138" href="#id138" id="ftn.id138">138</a>] </sup>Yani eğer
+        <tt>listen()</tt> kullanacaksanız genellikle böyle
+        bir şey yapmanız beklenir zaten. Mesela bir oyun sunucusuna
+        "telnet x.y.z port 6969" şeklinde bağlanmanız söylendiğinde karşı
+        tarafta tam da böyle bir hazırlık yapılmıştır.</div></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../bgnet/bgnet_syscalls-socket.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../bgnet/bgnet_syscalls.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../bgnet/bgnet_syscalls-connect.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">socket() -- Al Şu Dosya Tanımlayıcıyı! </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> connect()--Hey, sen!</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

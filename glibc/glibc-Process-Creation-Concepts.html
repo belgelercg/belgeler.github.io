@@ -1,76 +1,27 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="tr" xml:lang="tr">
-  <head>
-    <title>26.2. Süreç Oluşturma Kavramları</title>
-    <meta name="generator" content="DocBook XSL Stylesheets V-special (derived from DocBook XSL v1.79.1 for Turkish Linux Documentation Project by Nilgün Belma Bugüner - nilgun (at) tlbp.org.tr)" />
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="/style/nav.css" />
-    <link rel="icon" type="image/png" href="/images/belgeler-logo.png" />
-    <meta name="robots" content="index, follow" />
-  </head>
-  <body>
-    <header>
-      <div class="navbar">
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Running-a-Command.html')">Önceki</button>
-          <div class="dropdown-content">26.1. Komut Çalıştırmak</div>
-        </div>
-        <div style="width:34%" class="dropdown">
-          <button class="dropbtn">Yukarı</button>
-          <div class="dropdown-content">
-            <button type="button" class="dropbtn" onclick="window.location.assign('/index.html')">Baş Sayfa</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('/KiTAPLIK/index.html')">Kitaplık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc.html')">Ana Başlık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Processes.html')">Üst Başlık</button>
-          </div>
-        </div>
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Process-Identification.html')">Sonraki</button>
-          <div class="dropdown-content">26.3. Süreç Kimliği</div>
-        </div>
-      </div>
-    </header>
-    <section class="mainpage">
-      <div class="crumbs">
-        <p>  </p>
-      </div>
-      <section class="chapter" id="glibc-Process-Creation-Concepts">
-        <div class="titlepage">
-          <div>
-            <div>
-              <h2 class="title">26.2. Süreç Oluşturma Kavramları</h2>
-            </div>
-          </div>
-        </div>
-        <p>
-   Bu bölüm süreçlere genel bakış, adım adım süreç oluşturma ve süreçlerin başka bir yazılımı çalıştırmasını içermektedir.
-  </p>
-        <p>
-   <span id="idm138962" class="indexterm"></span>
-   <span id="idm138965" class="indexterm"></span>
-   Yeni bir süreç, <strong class="function"><code>posix_spawn</code></strong>, <a href="glibc-Creating-a-Process.html#glibc-fn-fork"><strong class="function"><code>fork</code></strong></a>, <a href="glibc-Creating-a-Process.html#glibc-fn-fork_"><strong class="function"><code>_Fork</code></strong></a> veya <a href="glibc-Creating-a-Process.html#glibc-fn-vfork"><strong class="function"><code>vfork</code></strong></a> işlevlerinden biri çağrıldığında oluşur. (<a href="glibc-Running-a-Command.html#glibc-fn-system"><strong class="function"><code>system</code></strong></a> ve <a href="glibc-Pipes-and-FIFOs.html#glibc-fn-popen"><strong class="function"><code>popen</code></strong></a> ayrıca yeni süreçleri dahili olarak oluşturur.) <a href="glibc-Creating-a-Process.html#glibc-fn-fork"><strong class="function"><code>fork</code></strong></a> işlevinin adından dolayı, yeni bir süreç oluşturma eylemine bazen <em class="wordasword">çatallama</em> adı verilir. Her yeni sürece (çocuk süreç veya alt süreç), üst sürecin süreç kimliğinden farklı bir  <em class="wordasword">süreç kimliği </em> atanır. Bkz. <a class="xref" href="glibc-Process-Completion.html" title="26.6. Süreç Tamamlama"><em>Süreç Tamamlama</em></a>.
-  </p>
-        <p>
-   <span id="idm138979" class="indexterm"></span>
-   <span id="idm138982" class="indexterm"></span>
-   <span id="idm138985" class="indexterm"></span>
-   <span id="idm138988" class="indexterm"></span>
-   Bir alt süreci çatalladıktan sonra, üst ve alt süreçler normal çalışmalarına devam eder. Yazılımın devam etmeden önce alt süreçlerin çalışması bitinceye kadar beklemesi isteniyorsa, çatallanma işleminden hemen sonra <a href="glibc-Process-Completion.html#glibc-fn-wait"><strong class="function"><code>wait</code></strong></a> veya <a href="glibc-Process-Completion.html#glibc-fn-waitpid"><strong class="function"><code>waitpid</code></strong></a> çağrılarıyla bunun açıkça yapılması gerekir (<a class="xref" href="glibc-Process-Completion.html" title="26.6. Süreç Tamamlama"><em>Süreç Tamamlama</em></a>). Bu işlevler alt sürecin neden sonlandırıldığı hakkında sınırlı bilgi verir -- örneğin, çıkış durum kodu gibi.
-  </p>
-        <p>
-   Yeni çatallanan alt süreç aynı yazılımı, <a href="glibc-Creating-a-Process.html#glibc-fn-fork"><strong class="function"><code>fork</code></strong></a> çağrısının döndüğü noktada, üst süreç olarak çalıştırmaya devam eder. <a href="glibc-Creating-a-Process.html#glibc-fn-fork"><strong class="function"><code>fork</code></strong></a> işlevinin dönüş değeri, yazılımın üst süreçte mi yoksa alt süreçte mi çalıştığını söylemek için kullanılabilir.
-  </p>
-        <p>
-   <span id="idm138998" class="indexterm"></span>
-   Aynı yazılımı çalıştıran çeşitli süreçlerin olması ara sıra kullanışlıdır. Fakat alt süreç <strong class="function"><code>exec</code></strong> işlevlerinden birini kullanarak başka bir yazılımı da çalıştırabilir; bkz. <a class="xref" href="glibc-Executing-a-File.html" title="26.5. Bir Dosyanın Çalıştırılması"><em>Bir Dosyanın Çalıştırılması</em></a>. Sürecin çalıştırdığı yazılıma <em class="wordasword">süreç imgesi</em> denir. Yeni yazılımın yürütülmeye başlanması, sürecin, önceki süreç imgesi hakkındaki herşeyi unutmasına sebep olur; yeni yazılım sonlandığında, önceki süreç imgesine dönülmez, süreç de sonlanır.
-  </p>
-      </section>
-      <footer>
-        <div align="center" class="footer">
-          <small>Bir <a href="http://belgeler.org.tr/">Linux Kitaplığı</a> Sayfası</small>
-        </div>
-      </footer>
-    </section>
-  </body>
-</html>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:41+03:00" /><title>Süreç Oluşturma Kavramları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Processes.html" title="XXVI. Oylum - Süreçler" /><link rel="previous" href="../glibc/glibc-Running-a-Command.html" title="Bir Komutun Çalıştırması" /><link rel="next" href="../glibc/glibc-Process-Identification.html" title="Süreç Kimliği" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Süreç Oluşturma Kavramları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Running-a-Command.html">Önceki</a> </td><th width="60%" align="center">XXVI. Oylum - Süreçler</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Process-Identification.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="glibc-Process-Creation-Concepts" id="glibc-Process-Creation-Concepts"></a>Süreç Oluşturma Kavramları</div></div></div><dl><dd><div class="para">
+Bu bölüm süreçlere genel bakış, adım adım süreç oluşturma ve süreçlerin başka bir yazılımı çalıştırmasını içermektedir.
+   </div><div class="para">
+<a class="indexterm" name="idx2845" id="idx2845"></a>
+<a class="indexterm" name="idx2846" id="idx2846"></a>
+Her süreç bir <span class="wordasword"><i>süreç kimliği</i></span> numarasıyla adlandırılır. Süreçler oluşturulurken her birine tek bir süreç kimliği ayrılır.
+Bir sürecin <span class="wordasword"><i>ömrü</i></span> üst sürecine sonlandırıldığı bildirildiğinde biter;
+o zaman, süreç kimliği dahil bütün süreç kaynakları serbest bırakılır.
+   </div><div class="para">
+<a class="indexterm" name="idx2847" id="idx2847"></a>
+<a class="indexterm" name="idx2848" id="idx2848"></a>
+<a class="indexterm" name="idx2849" id="idx2849"></a>
+<a class="indexterm" name="idx2850" id="idx2850"></a>
+Süreçler <b><tt>fork</tt></b> sistem çağrısı ile oluşturulurlar (bu nedenle yeni süreç oluşturma bazen süreci <span class="wordasword"><i>çatallamak</i></span> olarak anılır.)
+<b><tt>fork</tt></b> ile yaratılan bir<span class="wordasword"><i>alt süreç</i></span> orjinal <span class="wordasword"><i>üst süreç</i></span>in bir kopyasıdır, sadece kendisine ait süreç kimliği farklıdır.
+   </div><div class="para">
+Bir alt süreci çatalladıktan sonra, üst ve alt süreçler normal çalışmalarına devam ederler. Eğer yazılımınızın devam etmeden önce alt süreçleri çalışmalarını bitirinceye kadar beklemesini istiyorsanız, bunu çatallanma işleminden hemen sonra <b><tt>wait</tt></b> veya <b><tt>waitpid</tt></b> işlevlerini çağırarak açıkça yapmanız gerekir(<a href="../glibc/glibc-Process-Completion.html" class="xref" title="Süreç Tamamlama">Süreç Tamamlama</a>). Bu işlevler alt sürecin neden sonlandırıldığı hakkında sınırlı bilgi verirler--örneğin, çıkış durum kodu gibi.
+   </div><div class="para">
+Yeni çatallanan bir alt süreç aynı yazılımı, <b><tt>fork</tt></b> çağrısının döndüğü noktada, üst süreci olarak çalıştırmaya devam eder. <b><tt>fork</tt></b> işlevinin dönüş değerini yazılımın üst süreçte mi yoksa alt süreçte mi çalıştığını söylemek için kullanabilirsiniz.
+   </div><div class="para">
+<a class="indexterm" name="idx2851" id="idx2851"></a>
+Aynı yazılımı çalıştıran çeşitli süreçlerin olması ara sıra kullanışlıdır. Fakat alt süreç  <b><tt>exec</tt></b> işlevlerinden birini kullanarak bir başka yazılımı da çalıştırabilir; bkz. <a href="../glibc/glibc-Executing-a-File.html" class="xref" title="Bir Dosyanın Çalıştırılması">Bir Dosyanın Çalıştırılması</a>. Sürecin çalıştırdığı yazılıma
+<span class="wordasword"><i>süreç görüntüsü</i></span> denir. Yeni yazılımın çalıştırılmasının başlatılması, sürecin, önceki süreç görüntüsü hakkındaki herşeyi unutmasına sebep olur; yeni yazılım sonlandığında, önceki süreç görüntüsüne dönülmez, süreç de sonlanır.
+   </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Running-a-Command.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Processes.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Process-Identification.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Bir Komutun Çalıştırması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Süreç Kimliği</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

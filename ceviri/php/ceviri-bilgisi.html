@@ -1,0 +1,284 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="icon" type="image/png" href="images/belgeler-logo.png" />
+    <title>PHP Kılavuzu çevirmeninin kılavuzu</title>
+<style type="text/css">
+/*<![CDATA[*/
+body {
+font-family: "Courier New", courier, monospace;
+font-size: 15px;
+  margin: 0px 10px;
+  padding: 0px;
+  color: black;
+  background-color: white;
+}
+/*]]>*/
+</style>
+
+</head><body>
+
+<p>PHP Belgeleri NASIL çevrilir?</p>
+
+<p>PHP Belgelelerinin yapısı ve daha pek çok şey hakkında fikir edinmek için
+<a href="http://doc.php.net/tutorial/">http://doc.php.net/tutorial/</a>
+adresindeki belgeyi okuyun.</p>
+
+<p>Bizim çalışacağımız modülün ismi: doc-tr</p>
+
+<p>Yani, çalışma dizininiz için komut satırından vereceğiniz komut:
+svn co http://svn.php.net/repository/phpdoc/modules/doc-tr</p>
+
+<p>Bu komut doc-tr diye bir dizin açacak ve altına SVN deposundan bu modüle
+ait dosyaları indirecektir. Bundan sonra doc-tr dizininden bahsederken
+"çalışma dizini" diyeceğiz. Bunu yaptıktan sonra yeni bir çeviriye başlamaya
+karar vermeden önce çalışma dizininizde daima</p>
+
+<p>svn update</p>
+
+<p>komutunu vermelisiniz. Bu komut çalışma dizininizi son haline getirir.
+Onun için bir çeviriyi güncelliyorsanız bu komutu vermeyin. Yoksa
+çevirdikleriniz heba olabilir. tr/ dizininde sadece çevrilmiş ve çevirisi
+sürmekte olan dosyalar vardır. Yani çevireceğiniz dosya tr/ altında varsa
+başka bir dosya seçmeniz gerekecek. Çevireceğiniz dosyayı en/ dizini altından
+seçip tr/ altındaki yerine kopyalayacaksınız. Örneğin,
+'doc-tr/en/reference/apache/book.xml' dosyasını gözünüze kestirdiniz
+diyelim. Yapacağınız, çalışma dizininizin içinde</p>
+
+<p>cp en/reference/apache/book.xml tr/reference/apache/book.xml</p>
+
+<p>komutunu vermeye eşdeğer bir işlem olacak.</p>
+
+<p>SVN deposuyla çalışmak için masaüstü uygulamaları da var.
+Windows kullananlar için (GPL) http://www.tortoisesvn.net/
+öneririm. Linux kullananlar için seçenek çok. KDE kullananlar için kdesvn'yi
+önerebilirim. RapidSVN'de fena değil ama kdesvn baha daha kullanışlı geldi.
+Masaüstü uygulamalar ilk update'i kendiliğinden yapıyormuş gibi görünebilir,
+buna aldanmayın. Yaptığı işlem çalışma dizininizi güncellemez sadece bilgi
+amaçlıdır. Sizi ilgilendiren değişiklikler olduğunu görüyorsanız bunları
+çalışma dizininize yansıtmak için update işlemini yinelemeniz gerekir.</p>
+
+<p>Ama hemen çeviriye girişmeyeceksiniz. Bazı önişlemler var.</p>
+
+<p>** Bundan sonrası SVN hesabı bulunanları da ilgilendiriyor. **</p>
+
+<p>Dosyanın ilk satırı genelde şuna benzer bir girdi içerir:<br />
+  &lt;?xml version="1.0" encoding="utf-8"?&gt;<br />
+Bu satıra "XML başlığı" diyelim.</p>
+
+<p>Burada "utf-8", çeviri yaparken kullanacağınız karakter kodlamasıdır.
+Linux kullanıyorsanız, öntanımlı ayarları değiştirmediyseniz karakter
+kodlamanız UTF-8'dir. Windows kullanıyorsanız, muhtemelen CP1254'tür.
+Karakter kodlaması olarak UTF-8 kullanmayanlar iconv, recode gibi
+araçlarla karakter kodlamasını UTF-8'e çevirecekler. Şüphesiz bu amaçla
+PHP'yi de kullanabilirler ;-)</p>
+
+<p>XML başlığının altında bulunan SVN sürüm satırına dokunmuyoruz. O satırı
+SVN günceller. O satır bundan sonra yaptığınız çevirinin sürümünü içerecek.
+O satırın altına şöyle bir satır ekleyin:</p>
+
+<p>&lt;!-- EN-Revision: 123456 Maintainer: flarecaster Status: ready --&gt;</p>
+
+<p>Bu satıra "güncelleme satırı" diyelim.
+'123456' özgün belgenin sürüm numarası,'flarecaster' çevirmenin
+translation.xml dosyasında yazan kullanıcı adı (nick), sonuncusu ise dosyanın
+durumunu gösterecek. Çeviriye başlarken oraya "wip", tamamlandığında "ready"
+yazacaksınız.</p>
+
+<p>Böylece özgün belgenin sürüm numarası değiştiğinde en/ dizini altındaki
+dosya için</p>
+
+<p>svn diff -r&lt;EN-revision&gt; &lt;en/dizin/dosya&gt;</p>
+
+<p>komutuyla eski ve yeni sürümler arasındaki farkı kolayca görebilecek,
+tüm dosyayı yeni baştan çevirircesine elden geçirmekten kurtulacağız.
+Yani, çeviriyi güncellemek kolaylaşacak. Tabii, çeviriyi yapan
+güncelleyecek ;-)</p>
+
+<p>Güncelleme sırasında 123456 yerine özgün belgenin yeni sürüm numarasını
+yazmayı unutmuyoruz.</p>
+
+<p>Bu iki satır sayesinde çeviri istatistikleri oluşturuluyor:</p>
+<a href="http://doc.php.net/revcheck.php?p=translators&lang=tr">http://doc.php.net/revcheck.php?p=translators&lang=tr</a>
+
+<p>Güncelleme satırının altında bazı dosyalarda</p>
+
+<p>&lt;!-- CREDITS: cumhuronat, tpug, antimon, flarecaster --&gt;</p>
+
+<p>gibi satırlar göreceksiniz. Bu kişiler o belgenin çevirisiyle evvelce
+ilgilenmiş kişilerdir. Onları böyle bir satırla hatırlamış oluyoruz.</p>
+
+<p>Sıra geldi çeviride dikkat edilecek hususlara...<br />
+XML dosyalarla çalışırken dosyanın sekme karakterini (09) içermemesi gerekir.
+Eğer metin düzenleyiciniz yapabiliyorsa sekmeleri boşluklara çevirmeyi etkin
+kılın, yapamıyorsa bunu yapabilen bir metin düzenleyici bulun. Bulamıyorsanız,
+sekme yerine boşluk tuşuna basın. Zaten çalışacağınız XML dosyaların
+girintileri 1 karakter uzunlukta.</p>
+
+<p>78 sütundan daha geniş satırlar kullanmayın. Uzun satırlar farkları komut
+satırından görmek istediğinizde işinizi kolaylaştırmayacaktır.</p>
+
+<p>Dosyalar '&lt;para&gt;This extension requires PHP 5.&lt;/para&gt;' şeklinde HTML'ye benzer
+etiketler arasında bir takım metinler içerir. Bu etiketler XML belgenin yapı
+taşları olduğundan onları çevirmeyeceğiz. Bazı etiketlerin HTML
+etiketlerindeki gibi öznitelikleri vardır, onlara da dokunmuyoruz. Yani,
+yukarıdaki metni &lt;para&gt;Bu eklenti PHP 5 gerektirir.&lt;/para&gt; şeklinde
+çevireceğiz.</p>
+
+<p>Ayrıca dosyalarda bazen &amp; ile başlayıp ; ile biten bazı sözcüklere
+rastlayacaksınız. Onları cümlenin bir parçası haline getireceksiniz.
+Örneğin,
+&lt;para&gt;You must enable the &lt;literal&gt;foo&lt;/literal&gt; setting in &php.ini;&lt;/para&gt;
+yerine
+&lt;para&gt;&lt;literal&gt;foo&lt;/literal&gt; ayarını &amp;php.ini; içinde yapmış olmalısınız.&lt;/para&gt;
+yazacaksınız. Ancak bazı durumlarda bunu yapamayabiliriz. Değişken içindeki
+metin parçası cümle içinde kulanıldığında bir yerde doğruyken başka bir
+yerde imla hatasına yol açabilir. Böyle bir durumdan şüphe duyarsanız mevcut
+HTML belgeye bakıp ne yapacağınıza kendiniz karar vermelisiniz. XML belgeyle
+ilişkili HTML belgeye, genellikle, XML belgenin kök etiketindeki xml:id
+değerinin sonuna .html veya .php getirerek ulaşabilirsiniz.</p>
+
+<p>Tırnak karakteri yerine &amp;apos; kullanılmışsa siz de onu kullanın. Sizin cümle
+içinde tek tırnak imi kullanmanız gerekirse zor gelmeyecekse yine &amp;apos; kullanın.
+Böylece `' gibi farklı tırnak imleri yerine tek bir tırnak imi kullanmış oluruz.
+Ayrıca XML belgelerin HTML veya PHP'ye dönüştürülmesi sırasında olası bir
+tırnak ayırma hatasını da önlemiş oluruz. Bu durum belgelerin kılavuz
+sayfaları üretilirken bilhassa önem kazanmaktadır. Kılavuz (man) sayfalarında
+' iminden başkası (&amp;apos; olur, kendileri) görüntülenmez. Yani &amp;apos; yerine
+başka bir tırnak imi kullanmışsanız kılavuz sayfasında o tırnağı
+bulamayabilirsiniz.</p>
+
+<p>Çeviri bittikten sonra güncelleme satırındaki 'wip' dizgesini
+'ready' yapmayı unutmayın.</p>
+
+<p>Linux kullananların çeviriyi kate üzerinde yapmasını öneririm. XML
+dosyaları renklendirdiğinden çeviri daha kolay olur. Ayrıca XML dosyanın
+geçerliliğini de kate'e sınatabilirsiniz. Bazı etiketleri yanlışlıkla
+silerseniz, depoya hatalı dosya teslim etmekten kurtulabilirsiniz.</p>
+
+<p>Ama siz siz olun buna da fazla güvenmeyin. Çünkü kate DTD ile ilgili hatalara
+siz zorlamadıkça bakmaz. Son olarak dosyayı teslim etmeden önce
+doc-tr/doc-base dizininde şu komutunu kullanın:</p>
+
+<p>$ php configure.php --with-lang=tr</p>
+
+<p>Belgenizde kate'in saptayamadığı bir hata varsa bu komut size bilgi verir.
+Komut hata vermemişse ve bir SVN hesabınız varsa dosyayı depoya
+gönderebilirsiniz, SVN hesabınız yoksa dosyayı ekip liderine göndermelisiniz.
+Verdiği hatayı nasıl gidereceğinizi bilmiyorsanız listedekilere sorunuz.
+(Burada artık esr'nin ünlü belgesinden söz etmeyelim.) Hatalı dosyayı bana
+gönderebilirsiniz ama ASLA ve ASLA depoya teslim etmeyin. Bunu yaparsanız,
+site derlenemez ve dilimizi yine desteklenmeyen diller arasında buluruz.
+Unutmayın sizler bir programlama dilinin belgesini çeviriyorsunuz.
+Hele SVN hesabı olanlardan böyle hatalar hiç beklenmiyor. Bu bakımdan
+böyle bir durumun süreklilik kazanması halinde PHP ekibi hakkımızda
+ne karar verirse haklıdır.</p>
+
+<p>*********************</p>
+
+<p>Aşağıda İngilizce terimlerin bu çeviride kullandığımız Türkçe karşılıkları yazılmıştır.
+AMACIMIZ AYNI TERİMLERİ KULLANMAK, OKUYUCU FARKLI TERİMLERLE KAVRAM KARGAŞASI
+İÇİNDE BIRAKMAMAKTIR.<br />
+================================================<br />
+<pre>
+_               Altçizgi imi
+&amp;               Ve imi
+Abstract        Metin için "Özet" ifadeler için "soyut" veya "mutlak"
+Argument        Değiştirge
+Array           Dizi
+Associative Array  İlişkisel Dizi
+Attribute       Öznitelik
+Authentication  Kimlik doğrulama
+Authorization   Yetkilendirme
+Automatically   Özdevinimli olarak
+Backslash       Ters bölü
+Binary          Programsa kastedilen "çalıştırılabilir", kendisi bir veri
+                türü ise çevrilmez, veri türünü niteliyorsa "ikil", bir
+                işleci niteliyorsa "iki terimli".
+Bitwise         Bitsel
+Boolean         Kendisi veri türü ise çevrilmez. Türü niteliyorsa "mantıksal"
+Built-in        Yerleşik
+Callback        Geriçağırım
+Class           Sınıf
+Compile         Derleme
+Configuration   Yapılandırma
+Constants       Sabitler (Değişmezler değil!)
+Control Structure    Denetim Yapısı
+Default         Öntanımlı
+Detail          Ayrıntı (lütfen "detay" diye çevirmeyin)
+Digest          Özet
+Directive       Yönerge
+double quote    çift tırnak "
+Dynamically     Devingen olarak
+Escape          Escape tuşu için çevrilmez.
+Escape character  Önceleme karakteri
+Exception       İstisna
+Executable      Çalıştırılabilir
+Extention       Eklenti
+Float           Gerçek sayı, kayan noktalı sayı
+Form            Form
+Function        İşlev
+Idle            Boşakoşum
+Include         dahil etme
+Index           (diziler için) indis
+Initialize      İlklendirmek
+Instantiate     Örnekleme (sınıfın nesnel bir örneğini oluşturma)
+Interpreter     Yorumlayıcı
+integer         tamsayı
+Label           Yafta
+Matrix          Dizey
+Method          Yöntem
+mixed           karışık
+Module          Modül
+Multithread     Çok evreli
+Multibyte       Çok baytlı
+Object          Nesne
+Operand	        Terim
+Operator        İşleç
+Original        Özgün
+Outputs         Çıktılar
+Override        Geçersiz kılmak
+Parameter       Değiştirge
+Parse error     Çözümleme hatası
+Parser          Çözümleyici
+Pass into       İçe aktarmak
+Pointer         Fare oku sözkonusu ise "imleç", C tarzı ise "gösterici"
+Predefined      Önceden tanımlanmış
+Procedure       Yordam
+Protocol        Protokol
+Ouery string    Sorgu dizgesi
+Reference       gönderim, atıf yapmak
+Regular expression	Düzenli ifade
+Resource        Özkaynak
+root user       root kullanıcı (Linux'ta en yetkili kullanıcı root'dur).
+Runtime         Çalışma anı
+Scalar          Sayıl
+Scope           Etki Alanı
+Serialize       Dizgileştirme
+Server          Sunucu
+single quote    tek tırnak '
+Slash           Bölü imi
+Static          Duruk
+Statement       Deyim
+String          Dizge
+Script          Betik
+Scripting       Kodlama, kod yazma
+Ternary         Üç terimli
+Thread          Evre
+Tag             İmlenim dilleri (*ML) için "etiket"
+Type            "Tür" veya "veri türü"
+Unary           Tek terimli
+Unserialize     Nesneleştirme
+Validation      Geçerlilik
+Variable        Değişken
+Vector          Yöney
+Web Server      HTTP Sunucusu
+Widget          Gereç
+Version.Revision.Patch   Biz bunun tamamına ve parçalarına sürüm numarası
+                diyoruz. Bu kılavuzun okuyucusu için sürüm numarasını oluşturan
+                parçaların isimlerinin bir önemi olmayacaktır.
+================================================
+</pre></p></body></html>

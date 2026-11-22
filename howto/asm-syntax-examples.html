@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:01+03:00" /><title>A. Örnek Kodlar</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/asm-syntax.html" title="Linux ile Sembolik Makina Dili Kullanımı" /><link rel="previous" href="../howto/asm-syntax-links.html" title="Bağlantılar" /><link rel="next" href="../howto/linux-inline-assembly.html" title="Linux için Satıriçi Sembolik Makina Dili (Inline Assembly)" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">A. Örnek Kodlar</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/asm-syntax-links.html">Önceki</a> </td><th width="60%" align="center">Linux ile Sembolik Makina Dili Kullanımı</th><td width="20%" align="right"> <a accesskey="n" href="../howto/linux-inline-assembly.html">Sonraki</a></td></tr></table></td></tr></table><div class="appendix"> <div class="titlepage"><div><div class="head2" style="clear: both;"><a name="asm-syntax-examples" id="asm-syntax-examples"></a>A. Örnek Kodlar</div></div></div><dl><dd><dl class="example"><dt class="example"><a class="example" name="idxmp72" id="idxmp72"></a><b>Örnek 9.7. defines.h</b></dt><dd class="example"><div class="para"><div align="right"><pre class="screen">
+/* defines.h */
+
+SYS_exit              = 1
+SYS_fork              = 2
+SYS_write             = 4
+SYS_open              = 5
+SYS_close             = 6
+SYS_execve            = 11
+SYS_lseek             = 19
+SYS_dup2              = 63
+SYS_mmap              = 90
+SYS_munmap            = 91
+SYS_socketcall        = 102
+SYS_socketcall_socket = 1
+SYS_socketcall_bind   = 2
+SYS_socketcall_listen = 4
+SYS_socketcall_accept = 5
+
+SEEK_END              = 2
+PROT_READ             = 1
+MAP_SHARED            = 1
+
+AF_INET               = 2
+SOCK_STREAM           = 1
+IPPROTO_TCP           = 6
+
+STDOUT                = 1
+</pre></div></div></dd></dl><dl class="example"><dt class="example"><a class="example" name="idxmp73" id="idxmp73"></a><b>Örnek 9.8. daemon.s</b></dt><dd class="example"><div class="para"><div align="right"><pre class="screen">
+/* daemon.s */
+
+BIND_PORT = 0xff00   // 255
+
+.data
+SOCK:
+  .long 0x0
+LEN:
+  .long 0x10
+SHELL:
+  .string "/bin/sh"
+
+.text
+.globl _start
+_start:
+  subl $0x20,%esp
+
+// socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+  movl $SYS_socketcall,%eax
+  movl $SYS_socketcall_socket,%ebx
+  movl $AF_INET,(%esp)
+  movl $SOCK_STREAM,0x4(%esp)
+  movl $IPPROTO_TCP,0x8(%esp)
+  movl %esp,%ecx
+  int  $0x80
+
+// save sockfd
+  movl %eax,SOCK
+
+  xorl  %edx,%edx
+// bind(%eax, %esp+0xc, 0x10);
+  movw $AF_INET,0xc(%esp)
+  movw $BIND_PORT,0xe(%esp)
+  movl %edx,0x10(%esp)
+  movl %eax,(%esp)
+  leal 0xc(%esp),%ebx
+  movl %ebx,0x4(%esp)
+  movl $0x10,0x8(%esp)
+  movl $SYS_socketcall,%eax
+  movl $SYS_socketcall_bind,%ebx
+  int  $0x80
+
+  movl  SOCK,%eax
+
+// listen(%eax, 0x1);
+  movl %eax,(%esp)
+  movl $0x1,0x4(%esp)
+  movl $SYS_socketcall,%eax
+  movl $SYS_socketcall_listen,%ebx
+  int  $0x80
+
+  movl  SOCK,%eax
+
+// accept(%eax, %esp+0xc, LEN);
+  movl  %eax,(%esp)
+  leal  0xc(%esp),%ebx
+  movl  %ebx,0x4(%esp)
+  movl  $LEN,0x8(%esp)
+  movl  $SYS_socketcall,%eax
+  movl  $SYS_socketcall_accept,%ebx
+  int   $0x80
+
+// for(i=2;i&gt;-1;;i--) dup2(%eax,i)
+  movl $0x2,%ecx
+DUP2LOOP:
+  pushl %eax
+  movl  %eax,%ebx
+  mov   $SYS_dup2,%eax
+  int   $0x80
+  dec   %ecx
+  popl  %eax
+  jns   DUP2LOOP
+
+// execve(SHELL, { SHELL, NULL }, NULL );
+  movl $SYS_execve,%eax
+  movl $SHELL,%ebx
+  movl %ebx,(%esp)
+  movl %edx,0x4(%esp)
+  movl %esp,%ecx
+  int  $0x80
+
+// _exit(0)
+  movl $SYS_exit,%eax
+  movl %edx,%ebx
+  int  $0x80
+
+  ret
+</pre></div></div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/asm-syntax-links.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/asm-syntax.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/linux-inline-assembly.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Bağlantılar </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Linux için Satıriçi Sembolik Makina Dili (Inline Assembly)</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

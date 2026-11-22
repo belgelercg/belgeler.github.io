@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:14+03:00" /><title>SVID Rasgele Sayı İşlevleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Pseudo-Random-Numbers.html" title="Rasgeleymiş gibi Görünen Sayılar" /><link rel="previous" href="../glibc/glibc-BSD-Random.html" title="BSD Rasgele Sayı İşlevleri" /><link rel="next" href="../glibc/glibc-FP-Function-Optimizations.html" title="Hızlı Kod mu, Küçük Kod mu Tercih Edilir?" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">SVID Rasgele Sayı İşlevleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-BSD-Random.html">Önceki</a> </td><th width="60%" align="center">Rasgeleymiş gibi Görünen Sayılar</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-FP-Function-Optimizations.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-SVID-Random" id="glibc-SVID-Random"></a>SVID Rasgele Sayı İşlevleri</div><dl><dd><div class="para">
+SVID sistemlerdeki C kütüphanesi rasgele sayı üretim işlevlerinin daha farklı çeşitlerini içerir. Kullanıcı farklı biçimlerde rasgele bitler döndüren işlevler arasından seçim yapabilir.
+    </div><div class="para">
+Genel olarak iki çeşit işlev vardır. İlki çeşitli işlevler ve sürecin tüm evreleri tarafından paylaşılan bir rasgele sayı üreteci durumunu kullanır. İkincisi ise durumu kullanıcının elde etmesini gerektirir.
+    </div><div class="para">
+Tüm işlevler aynı sabitlerle aynı benzeş<sup>[<a name="id97" href="#ftn.id97" id="id97">97</a>]</sup> formülü kullanırlar. Bu formül:
+    </div>
+<div class="para"><pre class="literallayout">
+    Y = (a * X + c) mod m
+</pre></div>
+    <div class="para">
+Burada, <i><tt>X</tt></i> üretecin başlangıçtaki durumu, <i><tt>Y</tt></i> ise son durumudur.  <b><tt>a</tt></b> ve <b><tt>c</tt></b> üretecin çalışma yöntemini belirleyen sabitlerdir. Öntanımlı olarak bunlar:
+    </div>
+<div class="para"><pre class="literallayout">
+    a = 0x5DEECE66D = 25214903917
+    c = 0xb = 11
+</pre></div><div class="para">
+Ancak, bunlar kullanıcı tarafından değiştirilebilir. <b><tt>m</tt></b> ise, durum bilgisi 48 bitlik bir diziden oluştuğundan 2^48'dir.
+    </div><div class="para">
+Bu işlevlerin prototipleri <b><tt>stdlib.h</tt></b> başlık dosyasındadır.
+<a class="indexterm" name="idx2063" id="idx2063"></a>
+    </div>
+<a class="indexterm" name="idx2064" id="idx2064"></a>
+<a name="glibc-drand48" id="glibc-drand48"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>double <b><tt>drand48</tt></b></tt></td><td valign="top"><pre class="paramdef">(void)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev <b><tt>double</tt></b> türünde <b><tt>0.0</tt></b> ile <b><tt>1.0</tt></b> (hariç) arasında bir değerle döner.  Rasgele bitler C kütüphanesindeki rasgele sayı üretecinin genel durum bilgisi tarafından belirlenir.
+    </div><div class="para">
+IEEE 754'de <b><tt>double</tt></b> türü 52 bitlik ondalık kısımdan oluştuğundan bunun 4 biti rasgele sayı üreteci tarafından ilklendirilemez. Bunlar (şüphesiz) en kıymetsiz bitlerden seçilir ve <b><tt>0</tt></b>'a ilklendirilir.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2065" id="idx2065"></a>
+<a name="glibc-erand48" id="glibc-erand48"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>double <b><tt>erand48</tt></b></tt></td><td valign="top"><pre class="paramdef">(unsigned short int <i><tt>xsubi</tt></i>[3])</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev <b><tt>drand48</tt></b> işlevi gibi <b><tt>double</tt></b> türünde <b><tt>0.0</tt></b> ile <b><tt>1.0</tt></b> (hariç) arasında bir değerle döner. Argüman rasgele sayı üretecinin durumunu ifade eden bir dizidir.
+    </div><div class="para">
+Bu işlev rasgele sayıları garantilemek için diziyi güncellediğinden ardarda çağrılabilir. Dizi, yeniden üretilebilir sonuç sağlamak için ilk kullanımdan önce ilklendirilmelidir.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2066" id="idx2066"></a>
+<a name="glibc-lrand48" id="glibc-lrand48"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>long int <b><tt>lrand48</tt></b></tt></td><td valign="top"><pre class="paramdef">(void)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>lrand48</tt></b> işlevi <b><tt>0</tt></b> ile <b><tt>2^31</tt></b> (hariç) arasında bir tamsayı değerle döner. Dönen değerin türü <b><tt>long int</tt></b> olsa bile 32 bitten daha geniş değildir, dolayısıyla daha yüksek bir değer dönmez. Rasgele bitler C kütüphanesindeki rasgele sayı üretecinin genel durum bilgisi tarafından belirlenir.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2067" id="idx2067"></a>
+<a name="glibc-nrand48" id="glibc-nrand48"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>long int <b><tt>nrand48</tt></b></tt></td><td valign="top"><pre class="paramdef">(unsigned short int <i><tt>xsubi</tt></i>[3])</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev <b><tt>lrand48</tt></b> işlevi gibi <b><tt>0</tt></b> ile <b><tt>2^31</tt></b> (hariç) arasında bir tamsayı değerle döner, ama rasgele bitleri üretmekte kullanılan rasgele sayı üreteci durum bilgisi işleve parametre olarak verilen dizi tarafından belirlenir.
+    </div><div class="para">
+Bu işlev rasgele sayıları garantilemek için diziyi güncellediğinden ardarda çağrılabilir. Dizi, yeniden üretilebilir sonuç sağlamak için ilk kullanımdan önce ilklendirilmelidir.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2068" id="idx2068"></a>
+<a class="indexterm" name="idx2069" id="idx2069"></a>
+<a name="glibc-mrand48" id="glibc-mrand48"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>long int <b><tt>mrand48</tt></b></tt></td><td valign="top"><pre class="paramdef">(void)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>mrand48</tt></b> işlevi <b><tt>-2^31</tt></b> ile <b><tt>2^31</tt></b> (hariç) arasında sayı döndürmesi dışında <b><tt>lrand48</tt></b> işlevi gibidir.
+</div></dd></dl><div style="padding:5px"></div>
+<a name="glibc-jrand48" id="glibc-jrand48"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>long int <b><tt>jrand48</tt></b></tt></td><td valign="top"><pre class="paramdef">(unsigned short int <i><tt>xsubi</tt></i>[3])</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>jrand48</tt></b> işlevi <b><tt>-2^31</tt></b> ile <b><tt>2^31</tt></b> (hariç) arasında sayı döndürmesi dışında <b><tt>lrand48</tt></b> işlevi gibidir. <b><tt>xsubi</tt></b> parametresi için gereksinimler aynıdır.
+</div></dd></dl><div style="padding:5px"></div><div class="para">
+Rasgele sayı üretecinin ilk durumu çeşitli yollarla ilklendirilebilir. Yöntemler sağlanan bilginin bütünlüğüne bağlı olarak değişir.
+</div>
+<a class="indexterm" name="idx2070" id="idx2070"></a>
+<a name="glibc-srand48" id="glibc-srand48"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>srand48</tt></b></tt></td><td valign="top"><pre class="paramdef">(long int <i><tt>tohum</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>srand48</tt></b> işlevi rasgele sayı üretecinin dahili durumunun en kıymetli 32 bitine, <i><tt>tohum</tt></i> parametresinin en kıymetsiz 32 bitini yerleştirir. Alt 16 bit <b><tt>0x330E</tt></b> değeri ile ilklendirilir. <b><tt>long int</tt></b> türü 32 bitten daha fazla bit içerse bile sadece alt 32 biti kullanılır.
+    </div><div class="para">
+Bu sınırlamayla, bu işlevin durumu ilklendirmesi çok kullanışlı değildir, ama <b><tt>srand48 (time (0))</tt></b> gibi bir kullanım onu kolay kullanılır yapar.
+    </div><div class="para">
+Bu işlevin bir yan etkisi, dahili durumda benzetimli formüldeki <b><tt>a</tt></b> ve <b><tt>c</tt></b> değerleri yukarıda verilen öntanımlı değerlere ayarlanır.  This is of importance once the user has called the <b><tt>lcong48</tt></b> function (see below).
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2071" id="idx2071"></a>
+<a name="glibc-seed48" id="glibc-seed48"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>unsigned short int *<b><tt>seed48</tt></b></tt></td><td valign="top"><pre class="paramdef">(unsigned short int <i><tt>tohum16</tt></i>[3])</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>seed48</tt></b> işlevi dahili rasgele sayı üretecinin durumunun 48 bitinin tamamını <i><tt>tohum16</tt></i> parametresinin içeriğinden ilklendirir. Burada <i><tt>tohum16</tt></i> dizisinin ilk elemanının alt 16 biti dahili durumun en kıymetsiz 16 bitini ilklendirir, <i><tt>tohum16</tt></i><tt>[1]</tt>'in alt 16 biti durumun ortadaki 16 bitini ilklendirir, <i><tt>tohum16</tt></i><tt>[2]</tt>'nin alt 16 biti de durumun en kıymetli 16 bitini ilklendirir.
+    </div><div class="para">
+<b><tt>srand48</tt></b> işlevinin tersine bu işlev kullanıcının durumun tüm 48 bitini ilklendirmesini sağlar.
+    </div><div class="para">
+İşlevin dönüş değeri dahili durumun değişmeden önceki değerini içeren bir dizidir. Bu dizi rasgele sayı üretecini belirli bir durumdan tekrar başlatmak için kullanılabilir. Aksi takdirde değer yoksayılabilir.
+    </div><div class="para">
+<b><tt>srand48</tt></b>'deki gibi benzetimli formüldeki  <b><tt>a</tt></b> ve <b><tt>c</tt></b> değerleri öntanımlı değerlere ayarlanır.
+</div></dd></dl><div style="padding:5px"></div><div class="para">
+Rasgele sayı üretecini ilklendirmek için benzetimli formüldeki parametreleri değiştirebilmenizi sağlayarak daha fazla bilgi belirtebilmenizi mümkün kılan bir işlev daha vardır.
+    </div>
+<a class="indexterm" name="idx2072" id="idx2072"></a>
+<a name="glibc-lcong48" id="glibc-lcong48"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>lcong48</tt></b></tt></td><td valign="top"><pre class="paramdef">(unsigned short int <i><tt>param</tt></i>[7])</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>lcong48</tt></b> işlevi rasgele sayı üretecinin durumunu tamamen değiştirebilmenizi mümkün kılar.  <b><tt>srand48</tt></b> ve <b><tt>seed48</tt></b> işlevlerinin aksine, bu işlev ile ayrıca benzetimli formüldeki sabitleri de değiştirebilirsiniz.
+    </div><div class="para">
+<i><tt>param</tt></i> dizisindeki 7 elemandan 0, 1, 2 indisli elemanlardaki girdilerin en kıymetsiz 16 biti ilk durumu belirler; 3, 4, 5 indisli elemanlardaki girdiler 48 bitlik <b><tt>a</tt></b> sabitini, 6. elemanın girdisi ise 16 bitlik <b><tt>c</tt></b> değerini belirler.
+</div></dd></dl><div style="padding:5px"></div><div class="para">
+Yukardaki işlevlerin hepsi ortak olarak benzetimli formüldeki genel parametreleri kullanır. Çok evreli yazılımlarda kimi zaman farklı evrelerde farklı parametrelere sahip olmak kullanışlı olabilir. Bu sebeple yukardaki işlevlerin tümünün rasgele sayı üreteci durumunu genel durum yerine kullanıcı tanımlı bir tamponda tutarak çalışan sürümleri de vardır.
+    </div><div class="para">
+Tüm evrelerin durumu içeren bir diziye gösterici alan işlevleri kullanması durumunda böyle bir sorunun olmayacağına dikkat edin. Aşağıda hesaplanan rasgele sayılar aynı döngüyü izler ama eğer dizideki durum farklıya tüm evrelerin kendilerine özel bir rasgele sayı üreteci olacaktır.
+    </div><div class="para">
+Kulanıcı tanımlı tampon <b><tt>struct drand48_data</tt></b> türünde olmalıdır. Bu türün şeffaf olmadığı kabul edilir, dolayısıyla doğrudan değiştirilmemelidir.
+    </div>
+<a class="indexterm" name="idx2073" id="idx2073"></a>
+<a name="glibc-drand48_r" id="glibc-drand48_r"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>drand48_r</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct drand48_data *<i><tt>tampon</tt></i>,
+ double              *<i><tt>sonuç</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev, genel rasgele sayı üreteci parametrelerini değiştirmemesi, ama bunun yerine <i><tt>tampon</tt></i> göstericisi üzerinden sağlanan tampondaki parametreleri değiştirmesi ile <b><tt>drand48</tt></b> işlevinden farklıdır. Rasgele sayı <i><tt>sonuç</tt></i> ile gösterilen değişkende döndürülür.
+    </div><div class="para">
+İşlevin dönüş değeri çağrının başarısını gösterir. Eğer dönüş değeri <b><tt>0</tt></b>'dan küçükse bir hata oluşmuştur. Bu durumda <i><tt>errno</tt></i> değişkenine hata durumu atanır.
+    </div><div class="para">
+Bu işlev bir GNU oluşumu olduğundan taşınabilir yazılımlarda kullanılmamalıdır.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2074" id="idx2074"></a>
+<a name="glibc-erand48_r" id="glibc-erand48_r"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>erand48_r</tt></b></tt></td><td valign="top"><pre class="paramdef">(unsigned short int   <i><tt>xsubi</tt></i>[3],
+ struct drand48_data *<i><tt>tampon</tt></i>,
+ double              *<i><tt>sonuç</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>erand48_r</tt></b> işlevi <b><tt>erand48</tt></b> gibi çalışır, ama rasgele sayı üretecini ifade eden bir  <i><tt>tampon</tt></i> argümanı alır. Rasgele sayı üretecinin durumu <b><tt>xsubi</tt></b> dizisinden alınır. Rasgele sayı <i><tt>sonuç</tt></i> ile gösterilen değişkende döndürülür.
+    </div><div class="para">
+Çağrı başarılı olmuşsa dönüş değeri negatif bir değer değildir.
+    </div><div class="para">
+Bu işlev bir GNU oluşumu olduğundan taşınabilir yazılımlarda kullanılmamalıdır.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2075" id="idx2075"></a>
+<a name="glibc-lrand48_r" id="glibc-lrand48_r"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>lrand48_r</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct drand48_data *<i><tt>tampon</tt></i>,
+ double              *<i><tt>sonuç</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev <b><tt>lrand48</tt></b> işlevine benzer, ama ek olarak <b><tt>drand48</tt></b> işlevindeki gibi rasgele sayı üretecinin durumunu ifade eden tampona bir gösterici alır.
+    </div><div class="para">
+İşlevin dönüş değeri negatif değilse sonuç <i><tt>sonuç</tt></i> ile gösterilen değişkende döndürülür. Aksi takdirde bir hata oluşmuş demektir.
+    </div><div class="para">
+Bu işlev bir GNU oluşumu olduğundan taşınabilir yazılımlarda kullanılmamalıdır.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2076" id="idx2076"></a>
+<a name="glibc-nrand48_r" id="glibc-nrand48_r"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>nrand48_r</tt></b></tt></td><td valign="top"><pre class="paramdef">(unsigned short int   <i><tt>xsubi</tt></i>[3],
+ struct drand48_data *<i><tt>tampon</tt></i>,
+ long int            *<i><tt>sonuç</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>nrand48_r</tt></b> işlevi <b><tt>nrand48</tt></b> işlevi gibi <b><tt>0</tt></b> ile <b><tt>2^31</tt></b> arasında bir rasgele sayı üretir. Fakat, benzetimli formül için genel parametreleri kullanmak yerine <i><tt>tampon</tt></i> ile gösterilen tampondaki bilgiyi kullanır. Durum <i><tt>xsubi</tt></i> dizisindeki değerlerle ifade edilir.
+    </div><div class="para">
+İşlevin dönüş değeri negatif değilse sonuç <i><tt>sonuç</tt></i> ile gösterilen değişkende döndürülür.
+    </div><div class="para">
+Bu işlev bir GNU oluşumu olduğundan taşınabilir yazılımlarda kullanılmamalıdır.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2077" id="idx2077"></a>
+<a name="glibc-mrand48_r" id="glibc-mrand48_r"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>mrand48_r</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct drand48_data *<i><tt>tampon</tt></i>,
+ double              *<i><tt>sonuç</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev <b><tt>mrand48</tt></b> işlevine benzer. Fakat bu işlev ailesinin diğer evresel işlevleri gibi bu işlev de <i><tt>tampon</tt></i> ile gösterilen tampondaki değerle ifade edilen rasgele sayı üretecini kullanır.
+    </div><div class="para">
+İşlevin dönüş değeri negatif değilse sonuç <i><tt>sonuç</tt></i> ile gösterilen değişkende döndürülür.
+    </div><div class="para">
+Bu işlev bir GNU oluşumu olduğundan taşınabilir yazılımlarda kullanılmamalıdır.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2078" id="idx2078"></a>
+<a name="glibc-jrand48_r" id="glibc-jrand48_r"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>jrand48_r</tt></b></tt></td><td valign="top"><pre class="paramdef">(unsigned short int   <i><tt>xsubi</tt></i>[3],
+ struct drand48_data *<i><tt>tampon</tt></i>,
+ long int            *<i><tt>sonuç</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>jrand48_r</tt></b> işlevi <b><tt>jrand48</tt></b> işlevine benzer. Fakat bu işlev ailesinin diğer evresel işlevleri gibi bu işlev de benzetimli formülün parametrelerini <i><tt>tampon</tt></i> ile gösterilen tampondan kullanır.
+    </div><div class="para">
+İşlevin dönüş değeri negatif değilse sonuç <i><tt>sonuç</tt></i> ile gösterilen değişkende döndürülür.
+    </div><div class="para">
+Bu işlev bir GNU oluşumu olduğundan taşınabilir yazılımlarda kullanılmamalıdır.
+</div></dd></dl><div style="padding:5px"></div><div class="para">
+Yukarıdaki evresel işlevleri kullanmadan önce <b><tt>struct drand48_data</tt></b> türündeki tampon ilklendirilmelidir. Bunu yapmanın en kolay yolu tüm tamponu boş karakterle doldurmaktır:
+    </div>
+<div class="para"><div align="right"><pre class="screen">memset (buffer, '\0', sizeof (struct drand48_data));
+</pre></div></div><div class="para">
+Bundan sonra bu ailenin evresel işlevlerinin kullanılması rasgele sayı üretecini durum ve benzetimli formülün parametreleri için öntanımlı değerlere özdevinimli olarak ilklendirecektir.
+    </div><div class="para">
+Diğer bir olasılık, işlevleri tamponu açıkça ilklendirerek kullanmaktır.  İşlevin parametrelerine bakarak tamponun nasıl ilklendirileceği açıkça belli olduğuna göre sonuç daima umduğunuz olmayacağından bu işlevleri kullanmanızı hararetle tavsiye ediyoruz.
+    </div>
+<a class="indexterm" name="idx2079" id="idx2079"></a>
+<a name="glibc-srand48_r" id="glibc-srand48_r"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>srand48_r</tt></b></tt></td><td valign="top"><pre class="paramdef">(long int             <i><tt>tohum</tt></i>,
+ struct drand48_data *<i><tt>tampon</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Rasgele sayı üreteci <b><tt>srand48</tt></b> işlevindeki gibi <i><tt>tampon</tt></i> içindeki bilgi ile ifade edilir. Durum <i><tt>tohum</tt></i> parametresinden ilklendirilir ve benzetimli formülün parametreleri de öntanımlı değerleriyle ilkelendirilir.
+    </div><div class="para">
+İşlevin dönüş değeri negatif değilse işlev başarılıdır.
+    </div><div class="para">
+Bu işlev bir GNU oluşumu olduğundan taşınabilir yazılımlarda kullanılmamalıdır.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2080" id="idx2080"></a>
+<a name="glibc-seed48_r" id="glibc-seed48_r"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>seed48_r</tt></b></tt></td><td valign="top"><pre class="paramdef">(unsigned short int   <i><tt>tohum16</tt></i>[3],
+ struct drand48_data *<i><tt>tampon</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev <b><tt>srand48_r</tt></b> işlevine benzer ama  <b><tt>seed48</tt></b> işlevi gibi durumun 48 bitinin tamamını <i><tt>tohum16</tt></i> parametresinden ilklendirir.
+    </div><div class="para">
+İşlevin dönüş değeri negatif değilse işlev başarılıdır.  <b><tt>seed48</tt></b> işlevinin yaptığı gibi rasgele sayı üretecininönceki durumuna bir gösterici döndürmez. Eğer kullanıcı daha sonra kullanmak üzere durum bilgisini saklamak isterse <i><tt>tampon</tt></i> ile gösterilen tamponun tamamını kopyalayabilir.
+    </div><div class="para">
+Bu işlev bir GNU oluşumu olduğundan taşınabilir yazılımlarda kullanılmamalıdır.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2081" id="idx2081"></a>
+<a name="glibc-lcong48_r" id="glibc-lcong48_r"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>lcong48_r</tt></b></tt></td><td valign="top"><pre class="paramdef">(unsigned short int   <i><tt>param</tt></i>[7],
+ struct drand48_data *<i><tt>tampon</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev <i><tt>tampon</tt></i> ile ifade edilen rasgele sayı üretecininin tüm özelliklerini <i><tt>param</tt></i> içindeki veri ile ilklendirir. Burada işlevin <i><tt>param</tt></i> ve <i><tt>tampon</tt></i> içeriklerini kopyalamaktan daha fazlasını yaptığı bir gerçektir. Daha fazla çalışma gerektirmesi ve bundan dolayı bu işlevi kullanmak rasgele sayı üretecini doğrudan ilklendirmekten daha iyidir.
+    </div><div class="para">
+İşlevin dönüş değeri negatif değilse işlev başarılıdır.
+    </div><div class="para">
+Bu işlev bir GNU oluşumu olduğundan taşınabilir yazılımlarda kullanılmamalıdır.
+    </div></dd></dl><div style="padding:5px"></div><div class="footnotes"><br /><hr width="100" align="left" /><div class="footnote"><div class="para"><sup>[<a name="ftn.id97" href="#id97" id="ftn.id97">97</a>] </sup>Ç.N.: Benim, "benzeş formül" diye adlandırdığım formülden özgün metinde "congruential formula" ismiyle bahsedilmiş. Bunun kullanımda olan bir türkçe karşılığı var mı bilmiyorum ama tam tarifi şöyle: özgün formülle tıpatıp aynısı olmasa da benzer sonucu veren (ve belki hesaplama kolaylığı getiren) bir başka formül. -- [NBB]</div></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-BSD-Random.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Pseudo-Random-Numbers.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-FP-Function-Optimizations.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">BSD Rasgele Sayı İşlevleri </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Hızlı Kod mu, Küçük Kod mu Tercih Edilir?</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:48+03:00" /><title>NSS Yapılandırmasındaki Eylemler</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-NSS-Configuration-File.html" title="NSS Yapılandırma Dosyası" /><link rel="previous" href="../glibc/glibc-Services-in-the-NSS-configuration.html" title="NSS Yapılandırma Dosyasındaki Hizmetler" /><link rel="next" href="../glibc/glibc-Notes-on-NSS-Configuration-File.html" title="NSS Yapılandırma Dosyası için İpuçları" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">NSS Yapılandırmasındaki Eylemler</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Services-in-the-NSS-configuration.html">Önceki</a> </td><th width="60%" align="center">NSS Yapılandırma Dosyası</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Notes-on-NSS-Configuration-File.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Actions-in-the-NSS-configuration" id="glibc-Actions-in-the-NSS-configuration"></a>NSS Yapılandırmasındaki Eylemler</div><dl><dd><div class="para">
+Belirtimdeki ikinci öğe, kullanıcıya arama sürecini daha iyi denetleme imkanı verir. Eylem öğeleri iki hizmet ismi arasına yerleştirilir ve köşeli parantezlerin arasına yazılır. Genel biçimi şöyledir:
+    </div>
+<div class="para"><pre class="literallayout">
+    [ ( !? <i><tt>durum</tt></i>=<i><tt>eylem</tt></i> )+ ]
+</pre></div><div class="para">Burada:</div>
+<div class="para"><pre class="literallayout">
+    <i><tt>durum</tt></i> =&gt; success | notfound | unavail | tryagain
+    <i><tt>eylem</tt></i> =&gt; return | continue
+</pre></div><div class="para">
+olabilir. Sözcüklerin harf büyüklükleri önemsizdir. <i><tt>durum</tt></i> değerleri belirli bir hizmetin bir arama işlevinin çağrısının sonucudur. Bunların anlamları:
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>success</tt></span></dt><dd class="varlist"><div class="para">
+Bir hata oluşmadan istenen girdi döndü. Öntanımlı eylem  <b><tt>return</tt></b>, dön'dür.
+       </div></dd><dt><span class="term"><tt>notfound</tt></span></dt><dd class="varlist"><div class="para">
+Arama süreci tamamlandı ama gerekli değer bulunamadı. Öntanımlı eylem <b><tt>continue</tt></b>, aramaya devam et'tir.
+       </div></dd><dt><span class="term"><tt>unavail</tt></span></dt><dd class="varlist"><div class="para">
+<a class="indexterm" name="idx3033" id="idx3033"></a>
+Hizmet geçici olarak kullanımdışıdır. Bu ya gerekli dosyanın olmadığı ya da DNS için, hizmetin kullanımdışı olduğunu veya sorguya izin vermediğini belirtir. Öntanımlı eylem <b><tt>continue</tt></b>, aramaya devam et'tir.
+       </div></dd><dt><span class="term"><tt>tryagain</tt></span></dt><dd class="varlist"><div class="para">
+Hizmet geçici olarak kullanımdışıdır. Bu bir dosyanın kilitli olduğu ya da bir sunucunun o an artık bağlantı kabul edemediğini belirtir. Öntanımlı eylem  <b><tt>continue</tt></b>, aramaya devam et'tir.
+       </div></dd></dl></div><div class="para">
+Şöyle bir satırımız varsa:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+ethers: nisplus [NOTFOUND=return] db files
+</pre></div></div><div class="para">
+bu satır şuna eşdeğerdir (hepsinin bir satıra yazılması zorunluluğu dışında):
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+ethers: nisplus [SUCCESS=return NOTFOUND=return UNAVAIL=continue
+                 TRYAGAIN=continue]
+        db      [SUCCESS=return NOTFOUND=continue UNAVAIL=continue
+                 TRYAGAIN=continue]
+        files
+</pre></div></div><div class="para">
+Eylemlerin öntanımlı değeri normalde sizin ne istediğinizi gösterir ve sadece olağandışı durumlarda değiştirmek gerekir.
+    </div><div class="para">
+Eğer <i><tt>durum</tt></i> dizgesinden önce bir <b><tt>!</tt></b> varsa (isteğe bağlıdır), belirtilen eylemin dışındaki tüm eylemlerin geçerli olduğu anlamına gelir. Yani, <b><tt>!</tt></b> işleci C dilindeki gibi "bundan farklı her şey" anlamına gelir.
+    </div><div class="para">
+Bu eylem öğesini gerekli yapan olağandışılığı açıklamadan önce bir kaç yorum: <b><tt>files</tt></b> hizmetinden sonra bir eylem öğesi eklemenin bir faydası olmadığı açıktır. Eylem <i>daima</i> <b><tt>return</tt></b> olacağından bundan sonra başka bir hizmet belirtilmez.
+    </div><div class="para">
+<a class="indexterm" name="idx3034" id="idx3034"></a>
+Şimdi, bu <b><tt>[NOTFOUND=return]</tt></b> eylemi neden kullanışlıdır? Sebebini anlayabilmek için <b><tt>nisplus</tt></b> hizmetinin çoğunlukla bir bütünlük arzettiğini bilmemiz gerekir. Yani, bir girdi NIS+ tablolarında mevcut değilse başka hiçbir yerde bulunamaz. Bu durum bu eylem öğesinin neden böyle belirtildiğini açıklar: diğer hizmetler zaten bir sonuç vermeyeceğinden onlara bakmak gereksizdir.
+    </div><div class="para">
+<a class="indexterm" name="idx3035" id="idx3035"></a>
+NIS+ hizmetinin makinenin yeniden başlatılması nedeniyle yokluğu farklı bir durum olurdu. Bu durumda arama işlevinin dönüş değeri <b><tt>notfound</tt></b> değil, <b><tt>unavail</tt></b> olur. Yukarıdaki satırın açılımda da görebileceğiniz gibi bu durumda <b><tt>db</tt></b> ve <b><tt>files</tt></b> hizmetleri kullanılır. Güzel değil mi? Sistem çalışmaya tamamen hazır olmadığı bir anda (sistem açılışı, kapanışı ya da bir ağ sorunu nedeniyle) sistem yöneticisinin özel bir çaba harcaması gerekmeyecektir.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Services-in-the-NSS-configuration.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-NSS-Configuration-File.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Notes-on-NSS-Configuration-File.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">NSS Yapılandırma Dosyasındaki Hizmetler </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> NSS Yapılandırma Dosyası için İpuçları</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

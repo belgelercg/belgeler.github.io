@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:24+03:00" /><title>
+      sendto() ve recvfrom()
+      -- Benimle UDP'ce Konuş
+    </title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../bgnet/bgnet_syscalls.html" title="Sistem Çağrıları veya Felaketleri" /><link rel="previous" href="../bgnet/bgnet_syscalls-sendrecv.html" title="&#10;      send() ve recv() --&#10;      Konuş Benimle Bebeğim!&#10;    " /><link rel="next" href="../bgnet/bgnet_syscalls-closedown.html" title="&#10;        close() ve shutdown()&#10;        -- Düş Yakamdan!&#10;      " /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">
+      sendto() ve recvfrom()
+      -- Benimle UDP'ce Konuş
+    </th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../bgnet/bgnet_syscalls-sendrecv.html">Önceki</a> </td><th width="60%" align="center">Sistem Çağrıları veya Felaketleri</th><td width="20%" align="right"> <a accesskey="n" href="../bgnet/bgnet_syscalls-closedown.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="bgnet_syscalls-sendtorecv" id="bgnet_syscalls-sendtorecv"></a>
+      <tt>sendto()</tt> ve <tt>recvfrom()</tt>
+      -- Benimle UDP'ce Konuş
+    </div><dl><dd><div class="para">
+      "Buraya dek çok güzeldi," dediğinizi duyar gibiyim, "fakat bu bilgileri
+      bağlantısız veri paketi soketleri üzerinde nasıl kullanabilirim ki?".
+      No problemo, amigo. İşte derdine çare.
+    </div><div class="para">
+      UDP soketleri uzaktaki bir konağa bağlı olmadığından kılavuz paketi
+      yollamadan önce hangi bilgiyi vermemiz gerekiyor? Doğru tahmin!
+      Hedef adres! Kısaca:
+    </div>
+<div class="para"><div align="right"><pre class="programlisting">
+int sendto(int sockfd, const void *msg, int len, unsigned int flags,
+           const struct sockaddr *to, int tolen); 
+</pre></div></div>
+    <div class="para">
+      <tt>send()</tt> işlevine ne kadar da benziyor değil mi?
+      Tek farkı fazladan iki bilgi parçası var. <i><tt>to</tt></i>
+      dediğimiz <tt>struct sockaddr</tt> türünde bir değişkeni
+      gösteren işaretçidir (normalde <tt>struct sockaddr_in</tt>
+      türündedir ve siz son anda gerekli tür dönüşümünü yaparsınız) ve
+      hedef IP adresi ile port numarasını barındırır.
+      <i><tt>tolen</tt></i> değişkeni <tt>sizeof(struct sockaddr)</tt>
+      değerini almalıdır.
+    </div><div class="para">
+      Tıpkı <tt>send()</tt> gibi, <tt>sendto()</tt>
+      işlevi de gönderilen bayt miktarını döndürür (bu beklediğinizden az
+      olabilir tabii ki!) ve eğer hata oldu ise <tt>-1</tt>
+      değerini döndürür.
+    </div><div class="para">
+      Tahmin edebileceğiniz gibi <tt>recv()</tt> ve
+      <tt>recvfrom()</tt> işlevleri birbirlerine çok benzerdir.
+      Kısaca <tt>recvfrom()</tt> işlevine bakarsak:
+    </div>
+<div class="para"><div align="right"><pre class="programlisting">
+int recvfrom(int sockfd, void *buf, int len, unsigned int flags,
+             struct sockaddr *from, int *fromlen); 
+</pre></div></div>
+    <div class="para">
+      Benzer olduğunu söylemiştim yani: <tt>recv()</tt>
+      işlevinde olduğu gibi, sadece birkaç ek değişkene ihtiyacı var.
+      <i><tt>from</tt></i> yerel bir <tt>struct sockaddr</tt>
+      türünde değişkenin adresini gösteren göstergedir ki bu değişken de
+      mesajın geldiği ilgili makinanın IP adresini ve port numarasını
+      barındıracaktır. <i><tt>fromlen</tt></i> yerel ve
+      <tt>int</tt> türünde bir göstergedir ve söz konusu
+      değişkenin alması gereken ilk değer
+      <tt>sizeof(struct sockaddr)</tt>'dir. İşlev, çalışıp bir
+      değer döndürünce <i><tt>fromlen</tt></i> değişkeni
+      <i><tt>from</tt></i> değişkenindeki adresin boyunu depoluyor
+      olacaktır.
+    </div><div class="para">
+      <tt>recvfrom()</tt> işlevi okuduğu bayt sayısını veya bir
+      hata oluşması durumunda <tt>-1</tt> değerini döndürür
+      (ve <i><tt>errno</tt></i> değişkenine uygun hata kodunu
+      yerleştirir).
+    </div><div class="para">
+      Unutmayın, eğer <tt>connect()</tt> ile bir UDP soketine
+      bağlantı kurarsanız <tt>send()</tt> ve
+      <tt>recv()</tt> işlevlerini kullanmanızda bir sakınca
+      yoktur. Soketin kendisi hala bir bağlantısız veri paketi soketidir
+      ve gidip gelen paketler de hala UDP protokolünü kullanır. Fakat
+      soket arayüzü otomatik olarak sizin yerinize gerekli hedef ve
+      kaynak bilgisini pakete ekler.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../bgnet/bgnet_syscalls-sendrecv.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../bgnet/bgnet_syscalls.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../bgnet/bgnet_syscalls-closedown.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">
+      send() ve recv() --
+      Konuş Benimle Bebeğim!
+     </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> 
+        close() ve shutdown()
+        -- Düş Yakamdan!
+      </td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:44+03:00" /><title>POSIX Semaforları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-POSIX-Threads.html" title="POSIX Evreleri" /><link rel="previous" href="../glibc/glibc-Condition-Variables.html" title="Koşul Değişkenleri" /><link rel="next" href="../glibc/glibc-Thread-Specific-Data.html" title="Evreye Özgü Veri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">POSIX Semaforları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Condition-Variables.html">Önceki</a> </td><th width="60%" align="center">POSIX Evreleri</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Thread-Specific-Data.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-POSIX-Semaphores" id="glibc-POSIX-Semaphores"></a>POSIX Semaforları</div><dl><dd><div class="para">
+<a class="indexterm" name="idx2938" id="idx2938"></a>
+Semaforlar evreler arasında paylaşılan kaynaklar için sayaçtırlar. Semaforlar üzerindeki temel işlemler: sayacı atomik olarak artırmak ve sayaç sıfırdan farklı oluncaya kadar beklemek ve atomik olarak azaltmak.
+   </div><div class="para">
+Semaforların azami bir değeri vardır ve bunu geçemezler. <b><tt>SEM_VALUE_MAX</tt></b> makrosu bu azami değer olmak için tanımlanmıştır.
+
+GNU C kütüphanesinde, <b><tt>SEM_VALUE_MAX</tt></b> ile <b><tt>INT_MAX</tt></b> eşittir. (Bkz. <a href="../glibc/glibc-Data-Type-Measurements.html#glibc-Range-of-Type" class="xref" title="Bir Tamsayı Türün Aralığı">Bir Tamsayı Türün Aralığı</a>), fakat diğer sistemlerde oldukça küçük olabilir.
+   </div><div class="para">
+POSIX evreleri kütüphanesi POSIX 1003.1b semaforlarını gerçeklemektedir. Bunlar System V semaforlarıyla (<b><tt>ipc</tt></b>, <b><tt>semctl</tt></b> ve <b><tt>semop</tt></b>) karıştırılmamalıdır.
+   </div><div class="para">
+Bütün semafor işlevleri ve makroları <tt>semaphore.h</tt> içinde tanımlıdır.
+   </div>
+<a class="indexterm" name="idx2939" id="idx2939"></a>
+<a name="glibc-sem_init" id="glibc-sem_init"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>sem_init</tt></b></tt></td><td valign="top"><pre class="paramdef">(sem_t       *<i><tt>sem</tt></i>,
+ int          <i><tt>paylaşımlı</tt></i>,
+ unsigned int <i><tt>değer</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>sem_init</tt></b> <i><tt>sem</tt></i> ile gösterilen semafor nesnesini hazırlar. Semafor ile ilişkili sayı ilk değer olarak <i><tt>değer</tt></i> alır.
+<i><tt>paylaşımlı</tt></i> argümanı semaforun geçerli sürece yerel (sıfır ise) veya süreçler arasında paylaşımlı (sıfırdan farklı ise) olduğunu belirtir.
+   </div><div class="para">
+Başarı halinde <b><tt>sem_init</tt></b> 0 döndürür. Başarısızlık halinde -1 döndürür ve <i><tt>errno</tt></i> değerini aşağıdakilerden biri yapar:
+   </div>
+   <div class="variablelist"><dl><dt><span class="term"><tt>EINVAL</tt></span></dt><dd class="varlist"><div class="para"><i><tt>değer</tt></i> azami sayaç değeri <b><tt>SEM_VALUE_MAX</tt></b> değerini aşmaktadır.
+     </div></dd><dt><span class="term"><tt>ENOSYS</tt></span></dt><dd class="varlist"><div class="para"><i><tt>paylaşımlı</tt></i> sıfır değildir. LinuxThreads henüz süreç-paylaşımlı semaforları desteklememektedir.
+         (Bu aslında değişecek.)
+     </div></dd></dl></div>
+</dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2940" id="idx2940"></a>
+<a name="glibc-sem_destroy" id="glibc-sem_destroy"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>sem_destroy</tt></b></tt></td><td valign="top"><pre class="paramdef">(sem_t * <i><tt>sem</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>sem_destroy</tt></b> semafor nesnesini sahip olabileceği kaynakları serbest bırakarak yok eder. Eğer herhangi bir evre <b><tt>sem_destroy</tt></b> çağrıldığında semaforda bekliyorsa, başarısız olur ve <i><tt>errno</tt></i> değerini <b><tt>EBUSY</tt></b> yapar.
+   </div><div class="para">
+LinuxThreads gerçeklemesinde, semafor nesneleriyle hiçbir kaynak ilişkilendirilmemiştir, bu nedenle <b><tt>sem_destroy</tt></b> aslında semaforda hiçbir evrenin beklemekte olmadığını sınamaktan başka birşey yapmaz. Bu süreç-paylaşımlı semaforlar gerçeklendiğinde değişecektir.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2941" id="idx2941"></a>
+<a name="glibc-sem_wait" id="glibc-sem_wait"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>sem_wait</tt></b></tt></td><td valign="top"><pre class="paramdef">(sem_t * <i><tt>sem</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>sem_wait</tt></b> <i><tt>sem</tt></i> ile gösterilen semafor sıfır olmayan sayıya sahip oluncaya kadar çağıran evreyi askıya alır. Ardından atomik olarak semafor sayısını bir azaltır.
+   </div><div class="para">
+<b><tt>sem_wait</tt></b> bir iptal noktasıdır. Herzaman 0 döndürür.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2942" id="idx2942"></a>
+<a name="glibc-sem_trywait" id="glibc-sem_trywait"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>sem_trywait</tt></b></tt></td><td valign="top"><pre class="paramdef">(sem_t * <i><tt>sem</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>sem_trywait</tt></b> işlevi <b><tt>sem_wait</tt></b>'in durdurmayan bir türevidir. Eğer <i><tt>sem</tt></i> ile gösterilen semafor sıfırdan farklı bir sayıya sahipse, sayı atomik olarak azaltılır ve <b><tt>sem_trywait</tt></b> hemen 0 döndürür. Eğer semafor sayısı sıfırsa, <b><tt>sem_trywait</tt></b> hemen -1 döndürür ve hata kodunu <b><tt>EAGAIN</tt></b> yapar.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2943" id="idx2943"></a>
+<a name="glibc-sem_post" id="glibc-sem_post"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>sem_post</tt></b></tt></td><td valign="top"><pre class="paramdef">(sem_t * <i><tt>sem</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>sem_post</tt></b> işlevi <i><tt>sem</tt></i> ile gösterilen semafor sayısını atomik olarak artırır. Bu işlev hiçbir zaman durdurmaz.
+   </div><div class="para">
+Atomik karşılaştırma-ve-değiştirme destekleyen işlemcilerde (Intel 486, Pentium ve sonrası, Alpha, PowerPC, MIPS II, Motorola 68k, Ultrasparc), <b><tt>sem_post</tt></b> işlevi sinyal işleyicilerden güvenle çağrılabilir. Bu POSIX evreleri tarafından desteklenen zamanuyumsuz-sinyal güvenli tek evre eşzamanlama işlevidir. Intel 386 ve eski Sparc kıymıklarında, <b><tt>sem_post</tt></b>'un geçerli LinuxThreads gerçeklemesi zamanuyumsuz-sinyal güvenli değildir, çünkü donanım gerekli olan atomik işlemleri desteklememektedir.
+   </div><div class="para">
+<b><tt>sem_post</tt></b> semafor sayısı artırıldıktan sonra <b><tt>SEM_VALUE_MAX</tt></b> aşılmadığı sürece hep başarılı olur ve 0 döndürür. Bu durumda <b><tt>sem_post</tt></b> -1 döndürür ve <i><tt>errno</tt></i> hata kodunu <b><tt>EINVAL</tt></b> yapar. Semafor sayısı değiştirilmeden bırakılır.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2944" id="idx2944"></a>
+<a name="glibc-sem_getvalue" id="glibc-sem_getvalue"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>sem_getvalue</tt></b></tt></td><td valign="top"><pre class="paramdef">(sem_t * <i><tt>sem</tt></i>,
+ int   * <i><tt>semdeg</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>sem_getvalue</tt></b> işlevi <i><tt>sem</tt></i> semaforunun geçerli sayısını <i><tt>semdeg</tt></i> ile gösterilen yerde saklar. Hep 0 döndürür.
+      </div></dd></dl><div style="padding:5px"></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Condition-Variables.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-POSIX-Threads.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Thread-Specific-Data.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Koşul Değişkenleri </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Evreye Özgü Veri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:28:51+03:00" /><title>Kaşlı Ayraçların Yorumlanması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../bashref/bashref_shell.expansions.html" title="Kabuk Yorumları" /><link rel="previous" href="../bashref/bashref_shell.expansions.html" title="Kabuk Yorumları" /><link rel="next" href="../bashref/bashref_shell.expansions-tilde.html" title="Yaklaşık (~) Yorumlaması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Kaşlı Ayraçların Yorumlanması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../bashref/bashref_shell.expansions.html">Önceki</a> </td><th width="60%" align="center">Kabuk Yorumları</th><td width="20%" align="right"> <a accesskey="n" href="../bashref/bashref_shell.expansions-tilde.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="bashref_shell.expansions-brace" id="bashref_shell.expansions-brace"></a>Kaşlı Ayraçların Yorumlanması</div><dl><dd><a class="indexterm" name="idx91" id="idx91"></a><a class="indexterm" name="idx92" id="idx92"></a><div class="para">
+Kaşlı ayraç yorumlaması, keyfi dizgeler üretmek amacıyla kullanılan
+bir mekanizma sağlar. Bu mekanizma <a href="../bashref/bashref_shell.expansions-fname.html" class="xref" title="Dosyaismi Yorumlaması">Dosyaismi Yorumlaması</a>na benzer,  ancak üretilen
+dizgeler mevcut dosya isimleri olmak zorunda değildir. Kaşlı ayraç
+yorumlamasına esas alınacak kalıplar, isteğe bağlı bir <i>öndizge</i> ile
+başlar, kaşlı ayraçlar içine alınmış virgül ayraçlı dizgelerden veya bir dizilim ifadesinden sonra
+gelen yine isteğe bağlı bir <i>sondizge</i> ile biter.
+Yorumlama daima soldan sağa doğru yapılır.
+    </div><div class="para">
+Kaşlı ayraç yorumlaması iç içe olabilir. Dizgelerin yorumlanması
+soldan sağa yapılması dışında bir sıraya bağlı değildir. Örneğin:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>bash$</tt> <b><tt>echo a{d,c,b}e</tt></b>
+ade ace abe
+</pre></div></div>
+    <div class="para">
+Bir dizilim ifadesi
+    </div>
+<div class="para"><pre class="literallayout">
+      {<i><tt>x</tt></i>..<i><tt>y</tt></i>}
+</pre></div>
+    <div class="para">
+biçimindedir, burada <i><tt>x</tt></i> ve <i><tt>y</tt></i> ya tamsayılardır ya da tek karakterlik dizgelerdir. Tamsayı olarak verildiklerinde, ifade <i><tt>x</tt></i> ve <i><tt>y</tt></i> (dahil) arasındaki sayılara genişletilir. Karakter olarak verildiklerinde ise ifade <i><tt>x</tt></i> ve <i><tt>y</tt></i> (dahil) arasındaki alfabetik sırada harflere genişletilir. <i><tt>x</tt></i> ve <i><tt>y</tt></i> değerlerinin aynı türde olması gerektiğine dikkat ediniz.
+    </div><div class="para">
+Kaşlı ayraç yorumlaması diğer bütün yorumlamalardan önce yapılır ve
+diğer yorumlamalara özel karakterlerin hepsi korunur. Yorumlama tamamen
+metinseldir.  Bash yorumlanan kalıba ya da parantezler içindeki metne
+herhangi bir sözdizimsel yorumlama uygulamaz. Parametre yorumlaması ile
+karışmaması için <tt>${</tt> dizgesi kaşlı ayraç
+yorumlamasında işlenmez.
+    </div><div class="para">
+Kurallara uygun oluşturulmuş bir kaşlı ayraç yorumlamasında, kaşlı
+ayraçlar tırnaklar arasında olmamalı ve en azından bir tırnaksız
+virgül veya geçerli bir dizilim ifadesi bulunmalıdır.
+Aksi takdirde yorumlama uygulanmaz, verilen kalıp
+değişmeden kalır.
+    </div><div class="para">
+Bir <b><tt>{</tt></b> veya <b><tt>,</tt></b> bir kaşlı ayraç ifadesinin parçası olarak yorumlanmamaları için bir tersbölü karakteri ile öncelenebilir. Parametre yorumlaması ile çelişmekten kaçınmak için <b><tt>${</tt></b> dizgesi kaşlı ayraç yorumlaması için seçilebilir varsayılmaz.
+    </div><div class="para">
+Bu yapı genellikle yukarıdaki örnektekinden daha uzun ve
+aynı öneke sahip çok sayıda dizge olduğunda benzer şeyleri
+defalarca yazmamak için bir kısayol olarak kullanılır:
+    </div>
+<div class="para"><div align="right"><pre class="screen"><b><tt>mkdir /usr/local/src/bash/{old,new,dist,bugs}</tt></b>
+</pre></div></div><div class="para">veya</div>
+<div class="para"><div align="right"><pre class="screen"><b><tt>chown root /usr/{ucb/{ex,edit},lib/{ex?.?*,how_ex}}</tt></b>
+</pre></div></div>
+    </dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../bashref/bashref_shell.expansions.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../bashref/bashref_shell.expansions.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../bashref/bashref_shell.expansions-tilde.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Kabuk Yorumları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Yaklaşık (~) Yorumlaması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

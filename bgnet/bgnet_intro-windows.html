@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:22+03:00" /><title>Windows Programcılarının Dikkat Etmesi Gerekenler</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../bgnet/bgnet_intro.html" title="Giriş" /><link rel="previous" href="../bgnet/bgnet_intro-solaris.html" title="Solaris/SunOS Programcılarının Dikkat Etmesi Gerekenler" /><link rel="next" href="../bgnet/bgnet_intro-emailpolicy.html" title="E-posta Politikası" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Windows Programcılarının Dikkat Etmesi Gerekenler</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../bgnet/bgnet_intro-solaris.html">Önceki</a> </td><th width="60%" align="center">Giriş</th><td width="20%" align="right"> <a accesskey="n" href="../bgnet/bgnet_intro-emailpolicy.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="bgnet_intro-windows" id="bgnet_intro-windows"></a>Windows Programcılarının Dikkat Etmesi Gerekenler</div><dl><dd><div class="para">
+        Windows'dan pek hoşlandığım söylenemez bu yüzden de bu belgeyi okuyan
+        tüm Windows programcılarını GNU/Linux, BSD ya da UNIX denemeye davet
+        ediyorum. Bu laflardan sonra, evet, örnek kodları Windows üzerinde
+        kullanma imkanınız var.
+      </div><div class="para">
+        Öncelikle burada bahsettiğim birçok sistem başlık dosyasını unutun.
+        Tek yapmanız gereken aşağıdakileri programınıza katmak:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+#include &lt;winsock.h&gt;
+</pre></div></div>
+      <div class="para">
+        Bir dakika! Aynı zamanda <tt>WSAStartup()</tt> işlevini de
+        soket kitaplıkları ile herhangi bir iş yapmadan önce çağırmanız gerekiyor.
+        Bunu yapmak için gerekli kod şöyle bir şey:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+#include &lt;winsock.h&gt;
+
+{
+    WSADATA wsaData;   // if this doesn't work
+    //WSAData wsaData; // then try this instead
+
+    if (WSAStartup(MAKEWORD(1, 1), &amp;wsaData) != 0) {
+        fprintf(stderr, "WSAStartup failed.\n");
+        exit(1);
+    }
+</pre></div></div>
+      <div class="para">
+        Tabii derleyicinize Winsock'u da bağlamasını söylemelisiniz. Bunun için
+        gerekli dosyanın ismi genellikle şudur: <tt>wsock32.lib</tt>
+        veya <tt>winsock32.lib</tt> veya benzer bir şey. VC++
+        ortamında iseniz, bunun için <tt>Project</tt> menüsünden,
+        <tt>Settings...</tt> kısmına gidin ve <tt>Link</tt>
+        sekmesine gelip <tt>Object/library modules</tt> kutusunu bulun.
+        <tt>wsock32.lib</tt> dosyasını bu listeye ekleyin.
+      </div><div class="para">
+        En azından ben böyle duydum.
+      </div><div class="para">
+        Ve son olarak da <tt>WSACleanup()</tt> işlevini çağırmanız
+        gerekir soket kitaplığı ile işiniz bittiğinde. Ayrıntılı bilgi için
+        derleyicinizin yardım belgelerine bakın.
+      </div><div class="para">
+        Bunu yaptığınızda bu belgedeki örneklerin hemen hepsi genel olarak
+        çalışabilir durumda olmalı belki birkaç küçük değişiklik yapmanız
+        gerekebilir ama hepsi bu. Dikkat etmeniz gerekenler: Soketi kapatmak
+        için <tt>close()</tt> işlevini kullanamazsınız -- bunun
+        için <tt>closesocket()</tt> işlevini kullanmalısınız.
+        Ayrıca <tt>select()</tt> işlevi sadece soket tanımlayıcılar
+        içindir, dosya tanımlayıcılar (standart girdi için 0 kullanılması gibi)
+        için değildir.
+      </div><div class="para">
+        Aynı zamanda, <tt>CSocket</tt> isimli bir soket sınıfı da mevcuttur.
+        Ayrıntılı bilgi için derleyicinizin belgelerini karıştırın.
+      </div><div class="para">
+        Winsock hakkında ayrıntılı bilgi için şu adrese bakabilirsiniz: <a class="ulink" href="http://tangentsoft.net/wskfaq/" target="_top">Winsock FAQ</a>
+      </div><div class="para">
+        Son olarak da bildiğim kadarı ile Windows ortamında <tt>fork()</tt>
+        isimli işlev yok ve maalesef örneklerde bu işlevi kullanmak durumdayım.
+        Belki de bir POSIX kitaplığına programınızı bağlamanız gerekebilir veya
+        <tt>CreateProcess()</tt> işlevini kullanabilirsiniz.
+        <tt>fork()</tt> işlevi herhangi bir argüman almaz ama
+        <tt>CreateProcess()</tt> işlevi 48 milyar argüman alır.
+        Eğer bu gözünüzü biraz korkuttu ise <tt>CreateThread()</tt>
+        işlevi biraz daha kolay bir alternatif olabilir ancak "multithreading"
+        tartışması bu belgenin sınırlarının ötesindedir. Windows konusunu böylece
+        burada kapatıyoruz!
+      </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../bgnet/bgnet_intro-solaris.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../bgnet/bgnet_intro.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../bgnet/bgnet_intro-emailpolicy.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Solaris/SunOS Programcılarının Dikkat Etmesi Gerekenler </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> E-posta Politikası</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

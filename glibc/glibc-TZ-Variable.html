@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:24+03:00" /><title>Zaman Diliminin TZ ile Belirtilmesi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Calendar-Time.html" title="Mutlak Zaman" /><link rel="previous" href="../glibc/glibc-Parsing-Date-and-Time.html" title="Tarih ve Saatin Yerel Zamana Dönüştürülmesi" /><link rel="next" href="../glibc/glibc-Time-Zone-Functions.html" title="Zaman Dilimi Değişkenleri ve İşlevleri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Zaman Diliminin TZ ile Belirtilmesi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Parsing-Date-and-Time.html">Önceki</a> </td><th width="60%" align="center">Mutlak Zaman</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Time-Zone-Functions.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-TZ-Variable" id="glibc-TZ-Variable"></a>Zaman Diliminin <tt>TZ</tt> ile Belirtilmesi</div><dl><dd><div class="para">
+POSIX sistemlerde, bir kullanıcı zaman dilimini <b><tt>TZ</tt></b> ortam değişkeni ile belirtebilir. Ortam değişkenlerine nasıl değer atandığı ile ilgili belgi almak isterseniz <a href="../glibc/glibc-Environment-Variables.html" class="xref" title="Ortam Değişkenleri">Ortam Değişkenleri</a> bölümüne bakınız. Zaman dilimine erişim için kullanılan işlevler <tt>time.h</tt> başlık dosyasında bildirilmiştir.
+<a class="indexterm" name="idx2420" id="idx2420"></a>
+<a class="indexterm" name="idx2421" id="idx2421"></a>
+     </div><div class="para">
+Normalde <b><tt>TZ</tt></b> değişkenine bir değer atamak zorunda kalmazsınız. Eğer sistem olması gerektiği gibi yapılandırılmışsa öntanımlı zaman dilimi doğru olacaktır. Eğer bilgisayarınız farklı zaman dilimindeki bir ağa bağlıysa ve zaman diliminizin kendi zaman diliminiz değil de ağın zaman dilimi olarak raporlanmasını istiyorsanız  <b><tt>TZ</tt></b> değişkenine ağın zaman dilimini atayabilirsiniz.
+    </div><div class="para">
+POSIX.1 sistemlerde <b><tt>TZ</tt></b> değişkeninin değeri üç biçimden biri olabilir. GNU C kütüphanesi ile en ortak biçim olan sonuncusunda zaman dilimi geniş bir veri tabanından yapılan bir seçimle belirtilir. İlk iki biçim ise zaman dilimi bilgisini doğrudan açıklamak için kullanılır, daha az kesin ve çok hantaldırlar. Ama POSIX.1 standardı sadece bu ilk iki biçimin ayrıntılarını belirlemiştir. Bu nedenle zaman dilimi bilgileri veritabanı desteği bulunmayan POSIX.1 sistemlerde bunlarla karşılaşabileceğinizden onlar hakkında bilgi sahibi olmanız iyi olacaktır.
+    </div><div class="para">
+İlk biçim yaz saati uygulaması yapılmayan zaman dilimlerinde kullanılır:
+    </div>
+<div class="para"><div align="right"><pre class="screen"><i><tt>std</tt></i><i><tt>fark</tt></i></pre></div></div>
+    <div class="para">
+<i><tt>std</tt></i> dizgesi zaman diliminin ismidir. En az üç karakter uzunlukta olmalı, başlangıcında iki nokta üstüste olmamalı, içinde rakam, virgül, artı ya da - işareti bulunmamalıdır.
+string specifies the name of the time zone.  It must be three or more characters long and must not contain a leading colon, embedded digits, commas, nor plus and minus signs.  There is no space character separating the time zone name from the <i><tt>far</tt></i> ile zaman dilimi arasında herhangi bir boşluk karakteri olmamalıdır. Bu sınırlamalar belirtimin çözümlenebilmesi için gereklidir.
+    </div><div class="para">
+<i><tt>fark</tt></i>, yerel zamanı elde etmek için UTC değerine eklenecek saat farkıdır. Sözdizimi şöyledir:
+    </div>
+<div class="para"><pre class="literallayout">    [<b><tt>+</tt></b>|<b><tt>-</tt></b>]<i><tt>ss</tt></i>[<b><tt>:</tt></b><i><tt>dd</tt></i>[<b><tt>:</tt></b><i><tt>SS</tt></i>]]
+</pre></div>
+    <div class="para">
+Yerel zaman dilimi ilk meridyenin batısındaysa pozitif, aksi yöndeyse negatiftir. Saatler <b><tt>0</tt></b> ile <b><tt>23</tt></b> arasında, dakika ve saniyeler ise <b><tt>0</tt></b> ile <b><tt>59</tt></b> arasına belirtilmelidir.
+    </div><div class="para">
+Örneğin, Doğu Standart Zamanını yaz saati uygulaması olmaksızın belirtmek isterseniz:
+    </div>
+<div class="para"><div align="right"><pre class="screen">EST+5</pre></div></div>
+    <div class="para">
+    </div>
+<div class="para"><pre class="literallayout">
+<i><tt>std fark yer</tt></i> [<i><tt>fark</tt></i>],<i><tt>başlangıç</tt></i>[/<i><tt>saat</tt></i>],<i><tt>bitiş</tt></i>[/<i><tt>saat</tt></i>]
+</pre></div><div class="para">
+İlk <i><tt>std</tt></i> ve <i><tt>fark</tt></i> yukarıda açıklandığı gibi standart zaman dilimini belirtir. Sonraki <i><tt>yer</tt></i> dizgesi ve <i><tt>fark</tt></i> ise yaz saati uygulama bölgesinin ismini ve saat farkını belirtir. <i><tt>fark</tt></i> belirtilmemişse bir saatlik fark öntanımlıdır.
+    </div><div class="para">
+Belirtimin kalanı yaz saatinin nasıl uygulanacağını belirtir. <i><tt>başlangıç</tt></i> yaz saatinin uygulanmaya başlayacağı zamanı, <i><tt>bitiş</tt></i> ise uygulamanın sonlandırılıp normal zamana dönülecek zamanı belirtir. Bu alanlarda şu biçimler kullanılabilir:
+   </div><dl><dt><span class="glossterm">
+   <b><tt>J</tt></b><i><tt>n</tt></i>
+   </span></dt><dd class="halfpara"><div class="para">
+Jülyen takvimine göre gün belirtir. <i><tt>n</tt></i>, <b><tt>1</tt></b> ile <b><tt>365</tt></b> arasında bir değer alabilir. 29 Şubat, artık yıllarda bile sayılmaz.
+   </div></dd><dt><span class="glossterm">
+   <i><tt>n</tt></i>
+   </span></dt><dd class="halfpara"><div class="para">
+Jülyen takvimine göre gün belirtir. <i><tt>n</tt></i>, <b><tt>0</tt></b> ile <b><tt>365</tt></b> arasında bir değer alabilir. 29 Şubat, artık yıllarda hesaba katılır.
+   </div></dd><dt><span class="glossterm">
+   <b><tt>M</tt></b><i><tt>a</tt></i>.<i><tt>h</tt></i>.<i><tt>g</tt></i>
+   </span></dt><dd class="halfpara"><div class="para">
+<i><tt>a</tt></i>ıncı ayın <i><tt>h</tt></i>ıncı haftasının <i><tt>g</tt></i>inci gününü belirtir. <i><tt>g</tt></i> haftanın ilk günü Pazar olmak üzere <b><tt>0</tt></b> ile <b><tt>6</tt></b> arasında, <i><tt>h</tt></i> ise <b><tt>1</tt></b> ile <b><tt>5</tt></b> arasında olmalıdır; <b><tt>1</tt></b>. hafta <i><tt>g</tt></i>inci günü içeren ilk hafta, <b><tt>5</tt></b>. hafta ise <i><tt>g</tt></i>inci günü içeren son haftadır. <i><tt>a</tt></i> ise <b><tt>1</tt></b> ile <b><tt>12</tt></b> arasında olmalıdır.
+    </div></dd></dl><div class="para">
+<i><tt>saat</tt></i> alanı, yaz saati uygulamasının başlayacağı ve biteceği saati belirtmek için kullanılır. Verilmezse, öntanımlı olarak <b><tt>02:00:00</tt></b> kabul edilir.
+    </div><div class="para">
+Örnek olarak ABD'de Doğu zaman diliminde yaz saati uygulamasının nasıl belirtileceğine bakalım. UTC'ye göre saat farkı 5 saat; ilk meridyenin batısında olduğundan işareti pozitif; yaz saati uygulaması Nisan ayının ilk Pazar günü öğleden önce 2:00'da başlayıp Ekim ayının son Pazar günü öğleden önce 2:00'da sona ersin dersek, bunu şöyle belirtiriz:
+    </div><div class="para"><div align="right"><pre class="screen">
+EST+5EDT,M4.1.0/2,M10.5.0/2
+</pre></div></div><div class="para">
+Yaz saati uygulamasının zamanlaması bir takım karar organlarınca zaman içinde değiştirilebilir. Ancak bu biçim zamanlamanın yıldan yıla nasıl değişeceğinin belirtilebileceği hiçbir oluşuma sahip değildir. Tam doğru zaman dilimi belirtimi için en iyisi zaman dilimi bilgileri veritabanı kullanmaktır.
+    </div><div class="para">
+Üçüncü biçim ise şöyledir:
+    </div>
+<div class="para"><pre class="literallayout">:<i><tt>karakterler</tt></i></pre></div><div class="para">
+Her işletim sistemi bu biçimi farklı yorumlar; GNU C kütüphanesinde <i><tt>karakterler</tt></i>, zaman dilimi bilgilerini içeren bir dosyanın ismidir.
+    </div><div class="para">
+<a class="indexterm" name="idx2422" id="idx2422"></a>
+<b><tt>TZ</tt></b> ortam değişkenine bir değer atanmamışsa, işlem öntanımlı olarak bir zaman dilimi seçer. GNU C kütüphanesinde öntanımlı zaman dilimi <b><tt>TZ=:/etc/localtime</tt></b> (veya GNU C kütüphanesinin derlenişine bağlı olarak,  <b><tt>TZ=:/usr/local/etc/localtime</tt></b>; bkz. <a href="../glibc/glibc-Installation.html" class="xref" title="Ek C. GNU C Kütüphanesinin Kurulması">GNU C Kütüphanesinin Kurulması</a>) gibi bir belirtimdir.  Diğer C kütüphaneleri öntanımlı zaman dilimin seçerken kendi kurallarını kullanırlar ve bunlar hakkında burada pek az şey söyleyebiliriz.
+    </div><div class="para">
+<a class="indexterm" name="idx2423" id="idx2423"></a>
+<a class="indexterm" name="idx2424" id="idx2424"></a>
+<i><tt>karakterler</tt></i> bir bölü çizgisi ile başlıyorsa, bir mutlak dosya ismi gösterir; aksi takdirde kütüphane <b><tt>/share/lib/zoneinfo/</tt></b><i><tt>karakterler</tt></i> dosyasına bakar.  The <b><tt>zoneinfo</tt></b> dizini dünyanın farklı yerlerinde yerel zaman dilimleri hakkında bilgiler içeren veri dosyaları içerir. Bunlar, coğrafik bölge dizinleri içinde büyük şehirlerin isimlerini taşıyan dosyalardır; örneğin,<b><tt>America/New_York</tt></b>, <b><tt>Europe/London</tt></b>, <b><tt>Asia/Hong_Kong</tt></b> gibi. Bu veri dosyalarını sistem yöneticisi kurar ve yerel zaman dilimini <b><tt>/etc/localtime</tt></b> dosyasıyla belirtir.  GNU C kütüphanesi, dünyanın hemen her yerindeki gönüllüler tarafından sağlanmış zaman dilimi bilgilerinden oluşturulmuş büyük bir veritabanı ile gelir.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Parsing-Date-and-Time.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Calendar-Time.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Time-Zone-Functions.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Tarih ve Saatin Yerel Zamana Dönüştürülmesi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Zaman Dilimi Değişkenleri ve İşlevleri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:26:32+03:00" /><title>wordexp çağrısı</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Word-Expansion.html" title="Kabuk Usulü Sözcük Yorumlama" /><link rel="previous" href="../glibc/glibc-Expansion-Stages.html" title="Sözcük Yorumlama Katmanları" /><link rel="next" href="../glibc/glibc-Flags-for-Wordexp.html" title="Sözcük Yorumlama Seçenekleri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">wordexp çağrısı</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Expansion-Stages.html">Önceki</a> </td><th width="60%" align="center">Kabuk Usulü Sözcük Yorumlama</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Flags-for-Wordexp.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Calling-Wordexp" id="glibc-Calling-Wordexp"></a><tt>wordexp</tt> çağrısı</div><dl><dd><div class="para">
+Sözcük yorumlaması ile ilgili tüm işlevler, sabitler ve veri türleri <tt>wordexp.h</tt> başlık dosyasında bulunur.
+    </div><div class="para">
+Sözcük yorumlaması sonuç olarak bir dizge göstericileri dizisi üretir. Bu dizgeyi döndürmek için <b><tt>wordexp</tt></b> işlevi bir yapı olan özel bir veri türü, <b><tt>wordexp_t</tt></b> kullanır.  <b><tt>wordexp</tt></b> işlevine bu yapının adresini aktarırsanız, işlev sonuç hakkında bilgiyi, bu yapının elemanlarına kaydederek döndürür.
+    </div><a name="glibc-wordexp_t" id="glibc-wordexp_t"></a>
+<a class="indexterm" name="idx765" id="idx765"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt><b><tt>wordexp_t</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+Bu veri türü, bir sözcük göstericileri dizisine bir gösterici tutar. Daha açık ifade etmek gerekirse, sözcük göstericileri dizisinin adresini ve eleman sayısının kaydını tutar.
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>we_wordc</tt></span></dt><dd class="varlist"><div class="para">
+Gösterici dizisinin eleman sayısı.
+       </div></dd><dt><span class="term"><tt>we_wordv</tt></span></dt><dd class="varlist"><div class="para">
+Gösterici dizisinin adresi. Bu alan <b><tt>char ** </tt></b> türündedir.
+       </div></dd><dt><span class="term"><tt>we_offs</tt></span></dt><dd class="varlist"><div class="para">
+Gösterici dizisindeki ilk gerçek elemanın konumu veya ilk gerçek elemana erişmek için <b><tt>we_wordv</tt></b> alanındaki adrese eklenecek sayı. Diğer alanların aksine bu alan işlev için bir girdidir; işlev diğer alanları çıktıyı döndürmek için kullanır.
+       </div><div class="para">
+Konum olarak sıfırdan farklı bir değer belirtirseniz, dizinin bu elemanından önceki elemanları boş kalır (işlev, bu konumları boş göstericilerle doldurur).
+       </div><div class="para">
+<b><tt>we_offs</tt></b> alanı sadece <b><tt>WRDE_DOOFFS</tt></b> seçeneği etkinse anlamlıdır. Aksi takdirde bu alanın içerdiği değere bakılmaksızın gösterici dizisinin ilk elemanının sıfırıncı eleman olduğu varsayılır.
+       </div></dd></dl></div>
+</dd></dl><div style="padding:5px"></div><a name="glibc-wordexp" id="glibc-wordexp"></a>
+<a class="indexterm" name="idx766" id="idx766"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>wordexp</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *<i><tt>sözcükler</tt></i>,
+ wordexp_t  *<i><tt>gst-dizisi</tt></i>,
+ int         <i><tt>derleme-seçenekleri</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+İşlev, <i><tt>sözcükler</tt></i> dizgesine sözcük yorumlaması uygular ve sonucu ayırdığı bir gösterici dizisinde saklayarak bu dizinin adresini ve eleman sayısını <i><tt>*gst-dizisi</tt></i> içinde döndürür.  <i><tt>derleme-seçenekleri</tt></i> argümanını bit değerli seçenekleri belirtmek için kullanabilirsiniz; bu seçenekler için <a href="../glibc/glibc-Flags-for-Wordexp.html" class="xref" title="Sözcük Yorumlama Seçenekleri">Sözcük Yorumlama Seçenekleri</a> bölümüne bakınız.
+    </div><div class="para">
+<i><tt>sözcükler</tt></i> dizgesinde <b><tt>|;</tt></b> karakterlerini tersbölü karakteri ile öncelemeden kullanmamalısınız. Aksi takdirde <b><tt>WRDE_BADCHAR</tt></b> hata kodunu alırsınız. Bir sözcük yorumlama oluşumunu sarmalamak dışında parantez ve kaşlı ayraç kullanmayın. Eğer tırnak karakteri olarak <b><tt>"</tt></b> karakterini kullanıyorsanız, bir ikincisi ile kapatmalısınız.
+    </div><div class="para">
+Sözcük yorumlamasının sonucu bir sözcük dizisidir. <b><tt>wordexp</tt></b> işlevi sonuçlanan her sözcük için bir dizge ve bu dizgelerin göstericilerinden oluşan <b><tt>char **</tt></b> türünde bir dizi ayırır. Gösterici dizisinin son elemanı bir boş göstericidir. Bu diziye <span><i>dizge göstericileri dizisi</i></span> denir.
+    </div><div class="para">
+<b><tt>wordexp</tt></b> dizinin adresini ve eleman sayısını (sonlandırıcı boş gösterici hariç) <i><tt>gst-dizisi</tt></i> ile gösterilen yapı içinde döndürür.
+    </div><div class="para">
+<b><tt>wordexp</tt></b> başarılı olduğu takdirde 0 ile aksi takdirde şu hata kodlarından biri ile döner:
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>WRDE_BADCHAR</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>sözcükler</tt></i> girdi dizgesi <b><tt>|</tt></b> gibi öncelenmemiş geçersiz karakter içeriyor.
+       </div></dd><dt><span class="term"><tt>WRDE_BADVAL</tt></span></dt><dd class="varlist"><div class="para">
+Girdi dizgesi tanımlanmamış bir kabuk değişkenini ifade ediyor ve bu tür ifadeleri yasaklayan <b><tt>WRDE_UNDEF</tt></b> seçeneğini belirtmişsiniz.
+       </div></dd><dt><span class="term"><tt>WRDE_CMDSUB</tt></span></dt><dd class="varlist"><div class="para">
+Girdi dizgesi komut ikamesi içeriyor ve siz bunların kullanımını  <b><tt>WRDE_NOCMD</tt></b> seçeneğini kullanarak yasaklamışsınız.
+       </div></dd><dt><span class="term"><tt>WRDE_NOSPACE</tt></span></dt><dd class="varlist"><div class="para">
+Sonucu yerleştirmek için bellek ayrılamıyor. Bu durumda işlev yer ayırabildiği kadar sonuçla döner.
+       </div></dd><dt><span class="term"><tt>WRDE_SYNTAX</tt></span></dt><dd class="varlist"><div class="para">
+Girdi dizgesinde bir sözdizimi hatası var. Örneğin, tırnak karakterinin eşi yoksa bu bir sözdizimi hatasıdır.
+       </div></dd></dl></div>
+</dd></dl><div style="padding:5px"></div><a name="glibc-wordfree" id="glibc-wordfree"></a>
+<a class="indexterm" name="idx767" id="idx767"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>wordfree</tt></b></tt></td><td valign="top"><pre class="paramdef">(wordexp_t *<i><tt>gst-dizisi</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<i><tt>*gst-dizisi</tt></i> yapısında adresi belirtilen gösterici dizisini serbest bırakır. İşlev <i><tt>*gst-dizisi</tt></i>'nin kendisini serbest bırakmaz.
+</div></dd></dl><div style="padding:5px"></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Expansion-Stages.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Word-Expansion.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Flags-for-Wordexp.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Sözcük Yorumlama Katmanları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Sözcük Yorumlama Seçenekleri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

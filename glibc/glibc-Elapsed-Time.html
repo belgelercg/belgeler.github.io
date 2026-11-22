@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:22+03:00" /><title>Süre</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Date-and-Time.html" title="XXI. Oylum - Tarih ve Zaman" /><link rel="previous" href="../glibc/glibc-Time-Basics.html" title="Zaman Kavramları" /><link rel="next" href="../glibc/glibc-Processor-And-CPU-Time.html" title="İşlemci Zamanı ve İşlemci Süresi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Süre</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Time-Basics.html">Önceki</a> </td><th width="60%" align="center">XXI. Oylum - Tarih ve Zaman</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Processor-And-CPU-Time.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="glibc-Elapsed-Time" id="glibc-Elapsed-Time"></a>Süre</div></div></div><dl><dd><div class="para">
+<a class="indexterm" name="idx2351" id="idx2351"></a>
+Süreyi göstermenin tek yolu basit bir aritmetik veri türünü kullanmaktır. Aşağıdaki işlev iki mutlak zaman arasındaki süreyi hesaplar. Bu işlev <tt>time.h</tt> başlık dosyasında tanımlanmıştır.
+   </div>
+<a class="indexterm" name="idx2352" id="idx2352"></a>
+<a name="glibc-difftime" id="glibc-difftime"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>double <b><tt>difftime</tt></b></tt></td><td valign="top"><pre class="paramdef">(time_t <i><tt>zaman1</tt></i>,
+ time_t <i><tt>zaman0</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>difftime</tt></b> işlevi <i><tt>zaman1</tt></i> ve time <i><tt>zaman0</tt></i> mutlak zamanları arasındaki süreyi <b><tt>double</tt></b> türünde saniye cinsinden bir değer olarak hesaplar. Artık süre desteği etkinleştirilmedikçe farkın artık süresi yoksayılır.
+   </div><div class="para">
+GNU sisteminde, <b><tt>time_t</tt></b> değerleri arasında basitçe bir çıkarma işlemi yapabilirsiniz. Fakat diğer sistemlerde <b><tt>time_t</tt></b> başka bir kodlamaya karşılık olabileceğinden doğrudan çıkarma işlemi ile doğru sonuç alınamayabilir.
+</div></dd></dl><div style="padding:5px"></div><div class="para">
+GNU C kütüphanesinde özellikle süreyi ifade edebilen iki veri türü vardır. Bunlar çeşitli kütüphane işlevlerince kullanılmıştır ve siz de amaçlarınıza uygun olarak bunları kullanabilirsiniz. İkisi de aslında aynı olmakla birlikte biri saniye cinsinden bir çözünürlük içinken diğeri nanosaniye cinsinden bir çözünürlük içindir.
+   </div>
+<a class="indexterm" name="idx2353" id="idx2353"></a>
+<a class="indexterm" name="idx2354" id="idx2354"></a>
+<a name="glibc-struct-timeval" id="glibc-struct-timeval"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct <b><tt>timeval</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+<tt>struct </tt><b><tt>timeval</tt></b> yapısı süreyi göstermekte kullanılır. <tt>sys/time.h</tt> başlık dosyasında bildirilmiş olan yapı şu üyelere sahiptir:
+   </div><dl><dt><span class="glossterm">
+   <tt>long int <b><tt>tv_sec</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Sürenin tam saniyelerden oluşan kısmını içerir (ondalık ayracın solundaki kısım).
+   </div></dd><dt><span class="glossterm">
+   <tt>long int <b><tt>tv_usec</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Sürenin saniyeden küçük kısmını (ondalık ayracın sağındaki kısım) mikrosaniye cinsinden içerir. Daima bir milyondan küçüktür.
+    </div></dd></dl>
+</dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2355" id="idx2355"></a>
+<a class="indexterm" name="idx2356" id="idx2356"></a>
+<a name="glibc-struct-timespec" id="glibc-struct-timespec"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct <b><tt>timespec</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+<tt>struct </tt><b><tt>timespec</tt></b> yapısı süreyi göstermekte kullanılır. <tt>time.h</tt> başlık dosyasında bildirilmiş olan yapı şu üyelere sahiptir:
+   </div><dl><dt><span class="glossterm">
+   <tt>long int <b><tt>tv_sec</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Sürenin tam saniyelerden oluşan kısmını içerir (ondalık ayracın solundaki kısım).
+   </div></dd><dt><span class="glossterm">
+   <tt>long int <b><tt>tv_nsec</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Sürenin saniyeden küçük kısmını (ondalık ayracın sağındaki kısım) nanosaniye cinsinden içerir. Daima bir milyardan küçüktür.
+   </div></dd></dl><div class="para">
+Çoğunlukla <b><tt>struct timeval</tt></b> veya <b><tt>struct timespec</tt></b> türündeki iki değeri birbirinden çıkarmak gerekir. Burada en iyi yol budur.  <b><tt>tv_sec</tt></b> üyesinin veri türünün işaretsiz veri türlerinden biri olduğu kendine özgü işletim sistemlerinde bile bu çalışır.
+   </div>
+<div class="para"><div align="right"><pre class="screen">
+/* `struct timeval' değerleri olan X ve Y arasında çıkarma yap
+    ve sonucu RESULT içinde sakla.
+    Fark negatifse 1 ile değilse 0 ile dön.  */
+
+int
+timeval_subtract (result, x, y)
+      struct timeval *result, *x, *y;
+{
+  /* Elde 1 diyelim. */
+  if (x-&gt;tv_usec &lt; y-&gt;tv_usec) {
+    int nsec = (y-&gt;tv_usec - x-&gt;tv_usec) / 1000000 + 1;
+    y-&gt;tv_usec -= 1000000 * nsec;
+    y-&gt;tv_sec += nsec;
+  }
+  if (x-&gt;tv_usec - y-&gt;tv_usec &gt; 1000000) {
+    int nsec = (x-&gt;tv_usec - y-&gt;tv_usec) / 1000000;
+    y-&gt;tv_usec += 1000000 * nsec;
+    y-&gt;tv_sec -= nsec;
+  }
+
+  /* Şimdi hesaplayalım. tv_usec kesinlikle pozitif. */
+  result-&gt;tv_sec = x-&gt;tv_sec - y-&gt;tv_sec;
+  result-&gt;tv_usec = x-&gt;tv_usec - y-&gt;tv_usec;
+
+  /* Sonuç negatifse 1 dönsün. */
+  return x-&gt;tv_sec &lt; y-&gt;tv_sec;
+}
+</pre></div></div></dd></dl><div style="padding:5px"></div><div class="para">
+<b><tt>struct timeval</tt></b> kullanan işlevler <b><tt>gettimeofday</tt></b> ve <b><tt>settimeofday</tt></b> işlevleridir.
+   </div><div class="para">
+Doğrudan özellikle sürelerle çalışan hiçbir GNU C kütüphanesi işlevi olmamakla birlikte, mutlak zaman, işlemci süresi, alarm ve uyku ile ilgili işlevler sürelerle ilgili birşeyler yaparlar.
+   </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Time-Basics.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Date-and-Time.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Processor-And-CPU-Time.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Zaman Kavramları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> İşlemci Zamanı ve İşlemci Süresi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

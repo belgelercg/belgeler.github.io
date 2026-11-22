@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:23+03:00" /><title>Yüksek Çözünürlüklü Zaman</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Calendar-Time.html" title="Mutlak Zaman" /><link rel="previous" href="../glibc/glibc-Simple-Calendar-Time.html" title="Basit Zaman" /><link rel="next" href="../glibc/glibc-Broken-down-Time.html" title="Yerel Zaman" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Yüksek Çözünürlüklü Zaman</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Simple-Calendar-Time.html">Önceki</a> </td><th width="60%" align="center">Mutlak Zaman</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Broken-down-Time.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-High-Resolution-Calendar" id="glibc-High-Resolution-Calendar"></a>Yüksek Çözünürlüklü Zaman</div><dl><dd><div class="para">
+<b><tt>time_t</tt></b> veri türü basit zamanları bir saniyelik hassasiyet ile göstermekte kullanılır. Bazı uygulamalarda ise daha yüksek hassasiyet gerekir.
+    </div><div class="para">
+Bu nedenle, GNU C kütüphanesi mutlak zamanı bir saniyeden daha yüksek hassasiyetle hesaplayabilen işlevler de içerir. Bu bölümde bahsi geçen veri türleri ve işlevler  <tt>sys/time.h</tt> başlık dosyasında bildirilmiştir.
+<a class="indexterm" name="idx2382" id="idx2382"></a>
+    </div>
+<a class="indexterm" name="idx2383" id="idx2383"></a>
+<a name="glibc-struct-timezone" id="glibc-struct-timezone"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct <b><tt>timezone</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+<b><tt>struct timezone</tt></b> yapısı yerel zaman dilimi ile ilgili mümkün olan en az bilgiyi saklamak için kullanılır. Şu üyelere sahiptir:
+   </div><dl><dt><span class="glossterm">
+   <tt>int <b><tt>tz_minuteswest</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+UTC'nin batısındaki dakika sayısıdır.
+   </div></dd><dt><span class="glossterm">
+   <tt>int <b><tt>tz_dsttime</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Sıfırdan farklıysa, yılın belli bir döneminde yaz saati uygulanır.
+   </div></dd></dl><div class="para">
+<b><tt>struct timezone</tt></b> türü artık atıl olmuştur ve asla kullanılmamalıdır. Buradaki bu veri türü ile ilgili oluşumlar yerine, <a href="../glibc/glibc-Time-Zone-Functions.html" class="xref" title="Zaman Dilimi Değişkenleri ve İşlevleri">Zaman Dilimi Değişkenleri ve İşlevleri</a> bölümünde anlatılan oluşumlar kullanılmalıdır.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2384" id="idx2384"></a>
+<a name="glibc-gettimeofday" id="glibc-gettimeofday"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>gettimeofday</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct timeval  *<i><tt>zaman</tt></i>,
+ struct timezone *<i><tt>zamandilimi</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>gettimeofday</tt></b> işlevi, mutlak zaman başlangıcından beri geçen süreyi <i><tt>zaman</tt></i> ile gösterilen <b><tt>struct timeval</tt></b> yapısı ile döndürür. Zaman dilimi bilgisi ise <i><tt>zamandilimi</tt></i> ile gösterilen yapı içinde döner. <i><tt>zamandilimi</tt></i> bir boş gösterici olarak verilmişse, zaman dilimi bilgisi yoksayılır.
+    </div><div class="para">
+Eğer işlev başarılı olursa sıfır değeri ile döner. Aksi takdirde, <b><tt>-1</tt></b> ile döner ve  <b><tt>errno</tt></b> değişkenine şu değer atanır:
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>ENOSYS</tt></span></dt><dd class="varlist"><div class="para">
+İşletim sistemi zaman dilimi bilgisinin alınmasını desteklemiyor. GNU işletim sistemi zaman dilimi gösteriminde 4.3 BSD'nin atıl bir özelliği olan <b><tt>struct timezone</tt></b> kullanımını desteklemez. Bunun yerine  <a href="../glibc/glibc-Time-Zone-Functions.html" class="xref" title="Zaman Dilimi Değişkenleri ve İşlevleri">Zaman Dilimi Değişkenleri ve İşlevleri</a> bölümünde açıklanan oluşumları kullanın.
+       </div></dd></dl></div>
+</dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2385" id="idx2385"></a>
+<a name="glibc-settimeofday" id="glibc-settimeofday"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>settimeofday</tt></b></tt></td><td valign="top"><pre class="paramdef">(const struct timeval  *<i><tt>zaman</tt></i>,
+ const struct timezone *<i><tt>zamandilimi</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>settimeofday</tt></b> işlevi sistem saatini argümanlarındaki değerlerle ayarlar. <b><tt>gettimeofday</tt></b> işlevindeki gibi mutlak zaman, mutlak zaman başlangıcından (epoch) beri geçen süre olarak ifade edilirken zaman dilimi bilgisi de <i><tt>zamandilimi</tt></i> bir boş gösterici ise yoksayılır.
+    </div><div class="para">
+<b><tt>settimeofday</tt></b> işlevini kullanırken süper kullanıcı olmak zorundasınız.
+    </div><div class="para">
+Bazı çekirdekler sistem saatini donanım saati gibi bir kaynaktan açılış sırasında ayarlar. Linux gibi diğerleri ise, sistem saatini "geçersiz" bir duruma getirir (saat okunmaya çalışılır ve başarısız olur). Sistem başlatma betikleri ile yapılan bir <b><tt>stime</tt></b> çağrısı ile sistem saati geçersiz durumdan çıkarılır.
+    </div><div class="para">
+<b><tt>settimeofday</tt></b> işlevi, sistem saatinin beklenmedik şekilde ileri ya da geri kalmasına ve sistemde çeşitli sorunlar çıkmasına sebep olur. Sistem saatini geçici olarak hızlandırarak ya da yavaşlatarak bir zamandan diğerine yumuşak bir geçiş yapmak için aşağıdaki <b><tt>adjtime</tt></b> işlevini kullanın.
+    </div><div class="para">
+Linux çekirdeği ile, <b><tt>adjtimex</tt></b> işlevi aynı şeyi yapar, ayrıca sistem saatinin hızında kalıcı değişiklikler yaparak sık sık düzeltme yapma ihtiyacını ortadan kaldırır.
+    </div><div class="para">
+Eğer işlev başarılı olursa sıfır değeri ile döner. Aksi takdirde, <b><tt>-1</tt></b> ile döner ve  <b><tt>errno</tt></b> değişkenine şu değer atanır:
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>EPERM</tt></span></dt><dd class="varlist"><div class="para">
+Yetkileri yetersiz olduğundan bu süreç saati ayarlayamaz.
+       </div></dd><dt><span class="term"><tt>ENOSYS</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>zamandilimi</tt></i> bir boş gösterici değil ama işletim sistemi zaman dilimi bilgisi ayarını desteklemiyor.
+       </div></dd></dl></div>
+</dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2386" id="idx2386"></a>
+<a name="glibc-adjtime" id="glibc-adjtime"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>adjtime</tt></b></tt></td><td valign="top"><pre class="paramdef">(const struct timeval *<i><tt>delta</tt></i>,
+ struct timeval       *<i><tt>eskidelta</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev sistem saatini aşamalı olarak hızlandırır ya da yavaşlatır. Böyle ayarlanan sistem saati mutlak zamanı düzenli bir artışla gösterir. Saatin ayarını basitçe değiştirirseniz bu böyle olmaz.
+    </div><div class="para">
+<i><tt>delta</tt></i> argümanı bir göreli ayar belirtir. Negatifse belirtilen süre tamamlanıncaya kadar saat yavaşlatılır, pozitifse hızlandırılır.
+    </div><div class="para">
+<i><tt>eskidelta</tt></i> argümanı bir boş gösterici değilse, işlev henüz tamamlanmamış olan ayarın önceki ayar bilgisi ile döner.
+    </div><div class="para">
+Bu işlev genellikle sistem saatini yerel ağın saati ile eşzamanlamak için kullanılır. İşlevi kullanabilmek için yetkili kullanıcı olmalısınız.
+    </div><div class="para">
+Linux çekirdeği ile saat hızını kalıcı olarak değiştirmek için <b><tt>adjtimex</tt></b> işlevini kullanabilirsiniz.
+    </div><div class="para">
+Eğer işlev başarılı olursa sıfır değeri ile döner. Aksi takdirde, <b><tt>-1</tt></b> ile döner ve  <b><tt>errno</tt></b> değişkenine şu değer atanır:
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>EPERM</tt></span></dt><dd class="varlist"><div class="para">
+Saati ayarlamak için yetkileriniz yetersiz.
+       </div></dd></dl></div>
+</dd></dl><div style="padding:5px"></div>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Taşınabilirlik Bilgisi</th></tr><tr><td align="left" valign="top" class="admon"><div class="para"><b><tt>gettimeofday</tt></b>, <b><tt>settimeofday</tt></b> ve <b><tt>adjtime</tt></b> işlevleri BSD'den alınmıştır.</div></td></tr></table></div>
+    <div class="para">
+Aşağıdaki işlevle ilgili semboller <tt>sys/timex.h</tt> başlık dosyasında bildirilmiştir.
+    </div>
+<a class="indexterm" name="idx2387" id="idx2387"></a>
+<a name="glibc-adjtimex" id="glibc-adjtimex"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>adjtimex</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct timex *<i><tt>timex</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>adjtimex</tt></b> işlevi <b><tt>ntp_adjtime</tt></b> işlevi ile aynıdır. Bkz. <a href="../glibc/glibc-High-Accuracy-Clock.html" class="xref" title="Yüksek Doğrulukta Saat">Yüksek Doğrulukta Saat</a>.
+    </div><div class="para">
+Bu işlev sadece Linux çekirdeği ile kullanılabilir.
+  </div></dd></dl><div style="padding:5px"></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Simple-Calendar-Time.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Calendar-Time.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Broken-down-Time.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Basit Zaman </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Yerel Zaman</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:31+03:00" /><title>Seri Konsol</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../embedded/embedded-seri_portlar.html" title="Seri Portların Kullanımı" /><link rel="previous" href="../embedded/embedded-seri_dosya.html" title="Seri Porttan Dosya Aktarımı" /><link rel="next" href="../embedded/embedded-linux_init.html" title="Linux Açılış Süreci" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Seri Konsol</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../embedded/embedded-seri_dosya.html">Önceki</a> </td><th width="60%" align="center">Seri Portların Kullanımı</th><td width="20%" align="right"> <a accesskey="n" href="../embedded/embedded-linux_init.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="embedded-seri_konsol" id="embedded-seri_konsol"></a>Seri Konsol</div><dl><dd><div class="para">
+Seri port kullanarak Linux sisteminize erişebilmek, özellikle SBC'ye bir monitor takmak istemediğinizde oldukça faydalı bir özelliktir. Bu yöntemde de <i>seri iletişim kablosu</i> kullanılmalıdır. Seri konsol hakkında ayrıntılı bilgiler Linux çekirdek kaynak kodlarından çıkan <tt> Documentation/serial-console.txt</tt> belgesinde mevcuttur. Burada hızlıca seri konsolu nasıl ayarlabileceğinizden bahsedeceğim.
+  </div><div class="para">
+Öncelikle işe çekirdekten başlamak gerekiyor. Seri konsol üzerinden bir Linux sistemine erişilecek ise, o sistemde kullanılacak olan çekirdekte bu destek etkin hale getirilmelidir. İlgili seçenek, çekirdek bileşenlerini seçim menülerinden <i>Character devices</i> bölümü altındaki <i>Support for console on serial port</i> seçeneğidir.
+  </div><div class="para">
+Çekirdek kısmı tamamlandıktan sonra şimdi bir seri portu bu amaçla kullanacağımızı belirtmemiz gerekiyor. Bunun için <tt>/etc/inittab</tt> dosyasının altına aşağıdaki gibi bir kayıt eklemeliyiz:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+ttyS1::respawn:/sbin/getty -L ttyS1 38400 vt100
+</pre></div></div>
+  <div class="para">
+Bu örnekte <tt>ttyS1</tt> yani COM2 portuna seri konsol olarak bağlanılabileceğini belirtiyoruz. İletişim hızı 38400 bps olarak ayarlanmış başka bir sistemden, seri port aracılığıyla bu sistemin COM2 portuna veri gönderildiğinde <b><tt>getty</tt></b> programı devreye girecek ve kimlik doğrulama aşamasından sonra kabuğa düşülebilecektir. Bu amaçla *NIX sistemlerde <b><tt>minicom</tt></b>, windows sistemlerde ise <b><tt>HyperTerminal</tt></b> gibi programlar kullanılabilir.
+  </div><div class="para">
+Yukarıdaki gibi ayarlamış olduğumuz bir seri konsol ile SBC sistemini yükledikten sonra (ve de <b><tt>/sbin/init</tt></b> çalıştıktan sonra) seri porttan sisteme girmemiz mümkün olmaktadır. Ancak bazen LILO satırına da müdahale etmemiz gerekebilir veya Linux çekirdeğinin yüklenirken normalde ekrana çıkardığı mesajları görmek isteyebiliriz. Bu aşamada henüz <b><tt>init</tt></b> programı çalışmaya başlamadığından seri konsol kullanımımıza hazır değildir. Seri konsolu LILO'dan itibaren kullanmak istediğimizde bu defa  <tt>/etc/lilo.conf</tt> ayar dosyası içerisine aşağıdakine benzer bir kayıt ekleyerek <b><tt>lilo</tt></b> programına seri konsolu kullanmak istediğimizi belirtebilir ve istemiş olduğumuz verileri normalde olduğu gibi seri port üzerinden başka bir sisteme alabiliriz.
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+## Ortak ayarlar kısmına aşağıdaki satır eklenir
+<b><tt>serial = 1,38400n8    ## 1 = ttyS1, 38400 baud rate, no parity, 8 bits</tt></b>
+
+## çekirdek ayarları kısmına aşağıdaki satır eklenir
+## Böyle bir kullanımda çıktı hem COM2 portuna hem de tty0'a gönderilir
+<b><tt>append = "console=ttyS1,38400n8 console=tty0"</tt></b>
+</pre></div></div>
+  <div class="para">
+Bu satırları ekledikten sonra değişikliklerin etkin olması için <b><tt>lilo -v</tt></b> komutunu çalıştırmalısınız.
+  </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+GRUB kullanmadığım için aynı işlemlerin GRUB'da nasıl yapıldığı hakkında bir fikrim yok, yapan biri olursa ve bana da iletirse buraya ekleyebilirim.
+  </div></td></tr></table></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../embedded/embedded-seri_dosya.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../embedded/embedded-seri_portlar.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../embedded/embedded-linux_init.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Seri Porttan Dosya Aktarımı </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Linux Açılış Süreci</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

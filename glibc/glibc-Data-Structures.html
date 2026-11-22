@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:46+03:00" /><title>Kabuk için Veri Yapıları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Implementing-a-Shell.html" title="Bir İş Denetim kabuğunun Gerçeklenmesi" /><link rel="previous" href="../glibc/glibc-Implementing-a-Shell.html" title="Bir İş Denetim kabuğunun Gerçeklenmesi" /><link rel="next" href="../glibc/glibc-Initializing-the-Shell.html" title="Kabuğun İlklendirilmesi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Kabuk için Veri Yapıları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Implementing-a-Shell.html">Önceki</a> </td><th width="60%" align="center">Bir İş Denetim kabuğunun Gerçeklenmesi</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Initializing-the-Shell.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Data-Structures" id="glibc-Data-Structures"></a>Kabuk için Veri Yapıları</div><dl><dd><div class="para">
+Bu kısımdaki yazılım örneklerinin hepsi basit bir kabuk yazılımının parçalarıdır. Bu bölümdeki veri yapıları ve işlevler örnekte kullanmak içindir.
+    </div><div class="para">
+Örnek kabukta başlıca iki veri yapısı bulunur.  <b><tt>job</tt></b> türü, birbirine borularla bağlanan altsüreçlerden oluşan bir iş ile ilgili bilgileri içerir. <b><tt>process</tt></b> türü ise, tek bir altsüreç hakkında bilgi içerir. Bu veri yapılarının bildirimleri:
+    </div>
+ <div class="para"><div align="right"><pre class="screen">/* process yapısı tek bir süreçle ilgilidir.  */
+typedef struct process
+{
+  struct process *next;       /* boruhattındaki sonraki süreç */
+  char **argv;                /* exec için */
+  pid_t pid;                  /* süreç kimliği */
+  char completed;             /* süreç tamamlanmışsa doğru */
+  char stopped;               /* süreç durmuşsa doğru */
+  int status;                 /* raporlanan durum değeri */
+} process;
+
+/* job yapısı boruhattıyla bağlı süreçlerden oluşur.  */
+typedef struct job
+{
+  struct job *next;           /* sonraki etkin iş */
+  char *command;              /* komut satırı, iletiler için */
+  process *first_process;     /* bu işteki süreçlerin listesi */
+  pid_t pgid;                 /* süreç grubu kimliği */
+  char notified;              /* duran iş için kullanıcıya uyarı varsa doğru */
+  struct termios tmodes;      /* kayıtlı uçbirim kipleri */
+  int stdin, stdout, stderr;  /* standart g/ç kanalları */
+} job;
+
+/* Etkin iş bir listeyle ilintilenir.  Bu onun başıdır.   */
+job *first_job = NULL;
+</pre></div></div><div class="para">
+<b><tt>job</tt></b> nesneleri üzerinde işlem yapan bazı işlevler:
+    </div>
+<div class="para"><div align="right"><pre class="screen">/* pgid ile belirtilen etkin işi bul.  */
+job *
+find_job (pid_t pgid)
+{
+  job *j;
+
+  for (j = first_job; j; j = j-&gt;next)
+    if (j-&gt;pgid == pgid)
+      return j;
+  return NULL;
+}
+
+/* İşteki tüm süreçler durmuş ya da tamamlanmışsa "doğru" ile dön.  */
+int
+job_is_stopped (job *j)
+{
+  process *p;
+
+  for (p = j-&gt;first_process; p; p = p-&gt;next)
+    if (!p-&gt;completed &amp;&amp; !p-&gt;stopped)
+      return 0;
+  return 1;
+}
+
+/* İşteki tüm süreçler tamamlanmışsa "doğru" ile dön.  */
+int
+job_is_completed (job *j)
+{
+  process *p;
+
+  for (p = j-&gt;first_process; p; p = p-&gt;next)
+    if (!p-&gt;completed)
+      return 0;
+  return 1;
+}
+</pre></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Implementing-a-Shell.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Implementing-a-Shell.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Initializing-the-Shell.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Bir İş Denetim kabuğunun Gerçeklenmesi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Kabuğun İlklendirilmesi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:28:00+03:00" /><title>Köken Arama Listeleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Debugging-Support.html" title="XXXIII. Oylum - Hata Ayıklama Desteği" /><link rel="previous" href="../glibc/glibc-Debugging-Support.html" title="XXXIII. Oylum - Hata Ayıklama Desteği" /><link rel="next" href="../glibc/glibc-Language-Features.html" title="Ek A. Kütüphanedeki C Dili Oluşumları" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Köken Arama Listeleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Debugging-Support.html">Önceki</a> </td><th width="60%" align="center">XXXIII. Oylum - Hata Ayıklama Desteği</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Language-Features.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="glibc-Backtraces" id="glibc-Backtraces"></a>Köken Arama Listeleri</div></div></div><dl><dd><div class="para">
+<a class="indexterm" name="idx3299" id="idx3299"></a>
+<a class="indexterm" name="idx3300" id="idx3300"></a>
+<a class="indexterm" name="idx3301" id="idx3301"></a>
+Bir <span><i>köken arama listesi</i></span> (backtrace), bir evre içindeki o an etkin olan işlev çağrılarının bir listesidir. Bir yazılımın köken arama listesini elde etmenin en uygun yolu <b><tt>gdb</tt></b> gibi harici bir hata ayıklayıcı kullanmaktır. Ancak, kimi zaman bir köken arama listesini günlük tutma, tanı koyma gibi amaçlarla yazılım içinde kodlayarak elde etmek de gerekebilir.
+<a class="indexterm" name="idx3302" id="idx3302"></a>
+   </div><div class="para">
+Geçerli evrenin köken arama listesini elde eden ve onunla çalışan üç işlev vardır ve bunlar <tt>execinfo.h</tt> başlık dosyasında bildirilmiştir.
+   </div>
+<a class="indexterm" name="idx3303" id="idx3303"></a>
+<a name="glibc-backtrace" id="glibc-backtrace"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>backtrace</tt></b></tt></td><td valign="top"><pre class="paramdef">(void **<i><tt>tampon</tt></i>,
+ int    <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>backtrace</tt></b> işlevi o anki evrenin köken arama listesini elde eder ve bir liste göstericisi olarak <i><tt>tampon</tt></i> içine yerleştirir.  <i><tt>boyut</tt></i> argümanı <i><tt>tampon</tt></i> içinde bulunacak <b><tt>void *</tt></b> türündeki elemanların sayısı olmalıdır. İşlev <i><tt>tampon</tt></i> içine konmuş olan listenin eleman sayısı ile döner.
+   </div><div class="para">
+<i><tt>tampon</tt></i> içine yerleştirilen göstericiler aslında araştırılan yığıttan edinilen dönüş adresleridir, yani her yığıt çerçevesi için bir dönüş adresi vardır.
+   </div><div class="para">
+Belli derleyici eniyilemelerinin edinilen bir geçerli köken arama listesi ile etkileşeceğini gözardı etmemelisiniz. Satıriçine alma işlemi satıriçi işlevlerin bir yığıt çerçevesine sahip olmamasına sebep olur; uç çağrı eniyilemesi bir yığıt çerçevesini bir diğeri ile değiştirir; çerçeve göstericisi elemesi yığıt içeriğinin <b><tt>backtrace</tt></b> tarafından doğru olarak yorumlanmasının engelleyecektir.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx3304" id="idx3304"></a>
+<a name="glibc-backtrace_symbols" id="glibc-backtrace_symbols"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>char **<b><tt>backtrace_symbols</tt></b></tt></td><td valign="top"><pre class="paramdef">(void *const *<i><tt>tampon</tt></i>,
+ int          <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>backtrace_symbols</tt></b> işlevi <b><tt>backtrace</tt></b> işleviyle edinilen listeyi bir dizge dizisine dönüştürür. <i><tt>tampon</tt></i> argümanı <b><tt>backtrace</tt></b> işleviyle elde edilen adres dizisinin göstericisi, <i><tt>boyut</tt></i> ise bu dizinin eleman sayısı (<b><tt>backtrace</tt></b> işlevinin dönüş değeri) olmalıdır.
+   </div><div class="para">
+İşlevin dönüş değeri <i><tt>boyut</tt></i> dizgelik dizge dizisine bir göstericidir. Her dizge <i><tt>tampon</tt></i> içindeki her elemanın basılabilir içeriğini gösterir. Saptanabiliyorsa işlev ismi, işleve bir başlangıç konumu ve geçerli dönüş adresini (onaltılık tabanda) içerir.
+   </div><div class="para">
+Şimdilik işlev ismi ve başlangıç konumu sadece kütüphaneler ve uygulamalar için ELF ikilik biçimi kullanılan sistemlerde elde edilebilmektedir. Diğer sistemlerde ise sadece onaltılık tabandaki dönüş adresi elde edilebilmektedir. Ayrıca, yazılımın işlev isimlerini içermesi için ilintileyiciye ek seçenekler belirtilebilir. (Örneğin, GNU <b><tt>ld</tt></b>'ye <tt>--rdynamic</tt> seçeneğini aktarabilirsiniz.)
+   </div><div class="para">
+<b><tt>backtrace_symbols</tt></b> işlevinin dönüş değeri <b><tt>malloc</tt></b> işlevi üzerinden edinilen ve <b><tt>free</tt></b> ile serbest bırakılması gereken bir göstericidir. Yalnız, sadece dönüş değeri serbest bırakılmalı, içerdiği dizgeler serbest bırakılmamalıdır.
+   </div><div class="para">
+Edinilen dizgeleri saklamak için bellek yetersizse işlev <b><tt>NULL</tt></b> ile döner.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx3305" id="idx3305"></a>
+<a name="glibc-backtrace_symbols_fd" id="glibc-backtrace_symbols_fd"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>backtrace_symbols_fd</tt></b></tt></td><td valign="top"><pre class="paramdef">(void *const *<i><tt>tampon</tt></i>,
+ int          <i><tt>boyut</tt></i>,
+ int          <i><tt>dosyatanıtıcı</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>backtrace_symbols_fd</tt></b> işlevi <b><tt>backtrace_symbols</tt></b> işlevinin yaptığı dönüşümün aynısını yapar, ancak farklı olarak, dizgelere bir gösterici döndürmek yerine her dizge bir satır olmak üzere dizgeleri <i><tt>dosyatanıtıcı</tt></i> tanıtıcısına yazar. <b><tt>malloc</tt></b> işlevini kullanmaz ve dosya tanıtıcılara yazan işlevlerin başarısız olmasına sebep olan durumlarda bu işlev de başarısız olabilir.
+</div></dd></dl><div style="padding:5px"></div><div class="para">
+Aşağıdaki yazılımda bu işlevlerin kullanımı gösterilmiştir. <b><tt>backtrace</tt></b> tarafından döndürülen gösterici dizisinin adresinin yığıt üzerine ayrıldığına dikkat edin. Bu bakımdan, bu kod  <b><tt>malloc</tt></b> üzerinden bellek ayrılamayan sistemlerde kullanılabilir (bu gibi durumlarda <b><tt>backtrace_symbols</tt></b> yerine <b><tt>backtrace_symbols_fd</tt></b> işlevi de kullanılabilir). Dönüş adreslerinin sayısı normalde çok fazla olmayacaktır. Nadiren diyelim ki 50'den fazla iç içelik içeren çok karmaşık yazılımlarda bile 200 girdi olabilir.
+   </div>
+<div class="para"><div align="right"><pre class="screen">#include &lt;execinfo.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+/* Köken arama listesini edinip stdout'a basalım. */
+void
+print_trace (void)
+{
+  void *array[10];
+  size_t size;
+  char **strings;
+  size_t i;
+
+  size = backtrace (array, 10);
+  strings = backtrace_symbols (array, size);
+
+  printf ("%zd yığıt çerçevesi elde edildi.\n", size);
+
+  for (i = 0; i &lt; size; i++)
+      printf ("%s\n", strings[i]);
+
+  free (strings);
+}
+
+/* Köken arama listesini biraz daha ilginç hale getirmek
+   için (iç içelik olsun diye) bir işlev. */
+void
+dummy_function (void)
+{
+  print_trace ();
+}
+
+int
+main (void)
+{
+  dummy_function ();
+  return 0;
+}
+</pre></div></div>
+</dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Debugging-Support.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Debugging-Support.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Language-Features.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">XXXIII. Oylum - Hata Ayıklama Desteği </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Ek A. Kütüphanedeki C Dili Oluşumları</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

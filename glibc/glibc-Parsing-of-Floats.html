@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:21+03:00" /><title>Gerçek Sayıların Çözümlenmesi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Parsing-of-Numbers.html" title="Dizgelerdeki Sayıların Çözümlenmesi" /><link rel="previous" href="../glibc/glibc-Parsing-of-Integers.html" title="Tamsayıların Çözümlenmesi" /><link rel="next" href="../glibc/glibc-System-V-Number-Conversion.html" title="Eski Moda System V Sayıdan Dizgeye Dönüşüm İşlevleri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Gerçek Sayıların Çözümlenmesi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Parsing-of-Integers.html">Önceki</a> </td><th width="60%" align="center">Dizgelerdeki Sayıların Çözümlenmesi</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-System-V-Number-Conversion.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Parsing-of-Floats" id="glibc-Parsing-of-Floats"></a>Gerçek Sayıların Çözümlenmesi</div><dl><dd><div class="para">
+<a class="indexterm" name="idx2324" id="idx2324"></a>
+<b><tt>str</tt></b> işlevleri <tt>stdlib.h</tt> dosyasında, <b><tt>wcs</tt></b> ile başlayan işlevler <tt>wchar.h</tt> dosyasında bildirilmiştir.  Bu bölümdeki işlevlerin prototiplerinde <b><tt>restrict</tt></b> kullanımı şaşırtıcı olabilir. Kullanışsız görünür ama ISO C standardı onu kullandığı için (burada tanımlı işlevler için) biz de kullandık.
+    </div>
+<a class="indexterm" name="idx2325" id="idx2325"></a>
+<a name="glibc-strtod" id="glibc-strtod"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>double <b><tt>strtod</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *restrict <i><tt>dizge</tt></i>,
+ char **restrict      <i><tt>kalan-dizge</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>strtod</tt></b> ("string-to-double" kısaltması) işlevi <i><tt>dizge</tt></i> dizgesinin baştarafını bir gerçek sayıya dönüştürür ve sonucu <b><tt>double</tt></b> türünde bir değer olarak döndürür.
+    </div><div class="para">
+İşlev <i><tt>dizge</tt></i>'yi şu şekilde analiz etmeye çalışır:
+    </div><ul type="disc" class="itemizedlist"><li><div class="para">
+Boşluk karakterlerinden oluşan bir dizge (muhtemelen boş). Boşluk karakterleri <b><tt>isspace</tt></b> işlevi ile saptanır ve bunlar iptal edilir (bkz. <a href="../glibc/glibc-Classification-of-Characters.html" class="xref" title="Karakterlerin Sınıflandırılması">Karakterlerin Sınıflandırılması</a>).
+      </div></li><li><div class="para">
+İsteğe bağlı artı ya da eksi işareti (<b><tt>+</tt></b> veya <b><tt>-</tt></b>).
+      </div></li><li><div class="para">
+Onluk ya da onaltılık biçimde bir gerçek sayı. Onluk biçim şöyle çözümlenmeye çalışılır:
+      </div><ul type="circle" class="itemizedlist"><li><div class="para">
+İsteğe bağlı olarak gösterimi yerele bağlı bir ondalık nokta (normalde <b><tt>.</tt></b>) içeren ve aralarında boşluk bulunmayan rakamlar. (Bkz. <a href="../glibc/glibc-The-Lame-Way-to-Locale-Data.html#glibc-General-Numeric" class="xref" title="Soysal Sayısal Biçimleme Parametreleri">Soysal Sayısal Biçimleme Parametreleri</a>).
+        </div></li><li><div class="para">
+İsteğe bağlı üstel kısım. <b><tt>e</tt></b> veya <b><tt>E</tt></b> karakteri ile isteğe bağlı bir işaret ve rakamlardan oluşur.
+        </div></li></ul><div class="para">
+Onaltılık biçim şöyle çözümlenmeye çalışılır:
+      </div><ul type="circle" class="itemizedlist"><li><div class="para">
+0x veya 0X ile başlayan, isteğe bağlı olarak gösterimi yerele bağlı bir ondalık nokta (normalde <b><tt>.</tt></b>) içeren ve aralarında boşluk bulunmayan rakamlar. (Bkz. <a href="../glibc/glibc-The-Lame-Way-to-Locale-Data.html#glibc-General-Numeric" class="xref" title="Soysal Sayısal Biçimleme Parametreleri">Soysal Sayısal Biçimleme Parametreleri</a>).
+        </div></li><li><div class="para">
+İsteğe bağlı ikilik üstel kısım. <b><tt>p</tt></b> veya <b><tt>P</tt></b> karakteri ile isteğe bağlı bir işaret ve rakamlardan oluşur.
+        </div></li></ul>
+      </li><li><div class="para">
+Dizgede kalan karakterler. Eğer <i><tt>kalan-dizge</tt></i> bir boş gösterici değilse işlev bu artıkları <i><tt>*kalan-dizge</tt></i> içine yerleştirir.
+      </div></li></ul><div class="para">
+Eğer dizge boşsa, sadece boşluk karakterleri içeriyorsa ya da başlangıçtaki altdizge bir gerçek sayı için umulan sözdizimine sahip değilse hiçbir dönüşüm yapılmaz. Bu durumda, işlev sıfırla döner ve <i><tt>dizge</tt></i> değeri <i><tt>*kalan-dizge</tt></i> içine yerleştirir.
+</div></dd></dl><div style="padding:5px"></div><div class="para">
+Yerel, standart <b><tt>"C"</tt></b> ya da <b><tt>"POSIX"</tt></b> yerellerinden farklıysa, bu işlev gerçeklemeye bağlı olarak ek sözdizimini tanıyabilir.
+    </div><div class="para">
+Eğer dizge bir gerçek sayı için geçerli sözdizimine sahip olduğu halde değer <b><tt>double</tt></b> türün kapsamı dışındaysa, <b><tt>strtod</tt></b> işlevi <a href="../glibc/glibc-Math-Error-Reporting.html" class="xref" title="Hataların Matematiksel İşlevlerce Raporlanması">Hataların Matematiksel İşlevlerce Raporlanması</a> bölümünde açıklandığı gibi üstten ya da alttan taşma sinyalleyecektir.
+    </div><div class="para">
+<b><tt>strtod</tt></b> işlevi dört özel girdi dizgesi tanır. Bu dizgelerden <b><tt>"inf"</tt></b> ve <b><tt>"infinity"</tt></b> ya <tt>oo</tt>'a ya da gerçek sayı biçimi sonsuzlukları desteklemiyorsa gösterilebilir en büyük sayıya dönüştürülür. Önlerine işareti belirtmek için bir  <b><tt>"+"</tt></b> veya <b><tt>"-"</tt></b> konulabilir. Bu dizgelerde harf büyüklüğünün önemi yoktur.
+    </div><div class="para">
+<b><tt>"nan"</tt></b> ve <b><tt>"nan(<i><tt>karakterler</tt></i>)"</tt></b> dizgeleri ise NaN'a dönüştürülür. Yine harf büyüklüğünün önemi yoktur. Eğer <i><tt>karakterler</tt></i> belirtilmişse, NaN'ın kısmi bir gösterimine (herşey olabilir) karşılık olarak kullanılır.
+    </div><div class="para">
+Sıfır geçerli bir sonuç olduğu kadar hata oluştuğunu da belirtebilir. Hatayı sınamak için <i><tt>errno</tt></i> ve <i><tt>kalan-dizge</tt></i>'yi <b><tt>strtol</tt></b> işlevinin açıklamasında anlatıldığı gibi  kullanmalısınız.
+    </div>
+<a class="indexterm" name="idx2326" id="idx2326"></a>
+<a class="indexterm" name="idx2327" id="idx2327"></a>
+<a name="glibc-strtof" id="glibc-strtof"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>float <b><tt>strtof</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *<i><tt>dizge</tt></i>,
+ char      **<i><tt>kalan-dizge</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><a name="glibc-strtold" id="glibc-strtold"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>long double<b><tt>strtold</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *<i><tt>dizge</tt></i>,
+ char      **<i><tt>kalan-dizge</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlevler <b><tt>strtod</tt></b> işlevinin benzeri olmakla birlikte, sırayla <b><tt>float</tt></b> ve <b><tt>long double</tt></b> değerle dönerler.  Hataları <b><tt>strtod</tt></b> gibi raporlarlar. Hassasiyeti daha düşük olduğundan <b><tt>strtof</tt></b> işlevi <b><tt>strtod</tt></b> işlevinden daha hızlı olabilir; tersine, hassasiyeti daha yüksek olduğundan <b><tt>strtold</tt></b> daha yavaş olabilir (<b><tt>long double</tt></b> türünün ayrı bir tür olduğu sistemlerde).
+    </div><div class="para">
+Bu işlevler ISO C99'da yeni olmasına rağmen evvelce GNU oluşumuydular.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2328" id="idx2328"></a>
+<a class="indexterm" name="idx2329" id="idx2329"></a>
+<a class="indexterm" name="idx2330" id="idx2330"></a>
+<a name="glibc-wcstod" id="glibc-wcstod"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>double <b><tt>wcstod</tt></b></tt></td><td valign="top"><pre class="paramdef">(const wchar_t *restrict <i><tt>dizge</tt></i>,
+wchar_t **restrict       <i><tt>kalan-dizge</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><a name="glibc-wcstof" id="glibc-wcstof"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>float <b><tt>wcstof</tt></b></tt></td><td valign="top"><pre class="paramdef">(const wchar_t *<i><tt>dizge</tt></i>,
+ wchar_t      **<i><tt>kalan-dizge</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><a name="glibc-wcstold" id="glibc-wcstold"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>long double <b><tt>wcstold</tt></b></tt></td><td valign="top"><pre class="paramdef">(const wchar_t *<i><tt>dizge</tt></i>,
+ wchar_t      **<i><tt>kalan-dizge</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>wcstod</tt></b>, <b><tt>wcstof</tt></b> ve <b><tt>wcstol</tt></b> işlevleri sırayla <b><tt>strtod</tt></b>, <b><tt>strtof</tt></b> ve <b><tt>strtold</tt></b> işlevleriyle geniş arakterleri kabul etmeleri dışında hemen herşeyleriyle benzerdirler.
+    </div><div class="para">
+<b><tt>wcstod</tt></b> işlevi ISO C90'ın 1. düzeltmesinde vardı.   <b><tt>wcstof</tt></b> ve <b><tt>wcstold</tt></b> işlevleri ise ISO C99'da tanıtıldı.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2331" id="idx2331"></a>
+<a name="glibc-atof" id="glibc-atof"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>double <b><tt>atof</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *<i><tt>dizge</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev alttan ve üstten taşma hatalarının saptanmasını gerektirmemesi dışında <b><tt>strtod</tt></b> işlevine benzer. <b><tt>atof</tt></b> işlevi mevcut kodla uyumluluk adına vardır; <b><tt>strtod</tt></b> kullanım bakımından daha güçlüdür.
+</div></dd></dl><div style="padding:5px"></div><div class="para">
+GNU C kütüphanesi ayrıca bu işlevlerin dönüşümde yerel kullanmak için bir ek argüman alan <b><tt>_l</tt></b> sürümlerini de içerir. Bkz. <a href="../glibc/glibc-Parsing-of-Integers.html" class="xref" title="Tamsayıların Çözümlenmesi">Tamsayıların Çözümlenmesi</a>.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Parsing-of-Integers.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Parsing-of-Numbers.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-System-V-Number-Conversion.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Tamsayıların Çözümlenmesi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Eski Moda System V Sayıdan Dizgeye Dönüşüm İşlevleri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

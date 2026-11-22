@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:26:55+03:00" /><title>Bir Alt Sürece Boru Hattı</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Pipes-and-FIFOs.html" title="XV. Oylum - Borular ve FIFOlar" /><link rel="previous" href="../glibc/glibc-Creating-a-Pipe.html" title="Bir Borunun Oluşturulması" /><link rel="next" href="../glibc/glibc-FIFO-Special-Files.html" title="FIFO Özel Dosyaları" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Bir Alt Sürece Boru Hattı</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Creating-a-Pipe.html">Önceki</a> </td><th width="60%" align="center">XV. Oylum - Borular ve FIFOlar</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-FIFO-Special-Files.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="glibc-Pipe-to-a-Subprocess" id="glibc-Pipe-to-a-Subprocess"></a>Bir Alt Sürece Boru Hattı</div></div></div><dl><dd><div class="para">
+<a class="indexterm" name="idx1426" id="idx1426"></a>
+<a class="indexterm" name="idx1427" id="idx1427"></a>
+<a class="indexterm" name="idx1428" id="idx1428"></a>
+Boruların genel kullanım şekli alt süreç olarak çalışan bir yazılım ile veri alışverişidir.
+Bunu yapmanın bir yolu  <b><tt>pipe</tt></b> (boru oluşturmak için), <b><tt>fork</tt></b> (alt süreç oluşturmak için), <b><tt>dup2</tt></b> (bir alt süreci bir boruyu standart girdi veya çıktı kanalı olarak kullanmaya zorlamak için) ve <b><tt>exec</tt></b> (yeni bir yazılımı çalıştırmak için) birleşimini kullanmaktır.  Ya da, <b><tt>popen</tt></b> ve <b><tt>pclose</tt></b> işlevlerini kullanabilirsiniz..
+   </div>
+<b><tt>popen</tt></b> ve <b><tt>pclose</tt></b> kullanmanın yararı arayüzünün daha basit ve kullanımının kolay oluşudur. Ancak düşük seviyeli işlevleri doğrudan kullanma esnekliği yoktur.
+<a class="indexterm" name="idx1429" id="idx1429"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>FILE *<b><tt>popen</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *<i><tt>komut</tt></i>,
+ const char *<i><tt>kip</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>popen</tt></b> işlevi <b><tt>system</tt></b> işlevleriyle yakından ilgilidir;  bkz. <a href="../glibc/glibc-Running-a-Command.html" class="xref" title="Bir Komutun Çalıştırması">Bir Komutun Çalıştırması</a>. <i><tt>komut</tt></i> kabuk komutunu alt süreç olarak çalıştırır.  Fakat, komutun bitmesini beklemek yerine, bir alt süreç borusu oluşturur ve boruyla ilişkili bir akım döndürür.
+   </div><div class="para">
+Eğer <i><tt>kip</tt></i> argümanı için <b><tt>"r"</tt></b> belirtirseniz, alt sürecin standart çıktı kanalındaki veriyi almak için akımdan okuma yapabilirsiniz. Alt süreç, standart girdi kanalının özelliklerini üst süreçten (miras) alır.
+   </div><div class="para">
+Benzer bir şekilde, <i><tt>kip</tt></i> argümanı için <b><tt>"w"</tt></b> belirtirseniz, alt sürecin standart girdi kanalına veri göndermek için akıma yazabilirsiniz. Alt süreç, standart çıktı kanalının özelliklerini üst süreçten alır.
+   </div><div class="para">
+Hata durumunda <b><tt>popen</tt></b> boş gösterici ile döner. Bu boru veya akım oluturulamadığında veya yazılım çalıştırılamadığında olabilir.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-pclose" id="glibc-pclose"></a>
+<a class="indexterm" name="idx1430" id="idx1430"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pclose</tt></b></tt></td><td valign="top"><pre class="paramdef">(FILE *<i><tt>akım</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pclose</tt></b> işlevi <b><tt>popen</tt></b> tarafından oluşturulan <i><tt>akım</tt></i>ı kapatmak için kullanılır. <b><tt>system</tt></b> işlevinin yaptığı gibi, alt sürecin bitmesi için bekler ve onun durum değerini döndürür.
+</div></dd></dl><div style="padding:5px"></div><div class="para">
+Burada <b><tt>popen</tt></b> ve <b><tt>pclose</tt></b> işlevlerinin, çıktının <b><tt>more</tt></b> sayfalama yazılımı gibi başka bir yazılımla filtrelenmesi için nasıl kullanıldığını gösteren bir örnek görüyoruz.
+   </div>
+<div class="para"><div align="right"><pre class="screen">
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+void
+write_data (FILE * akim)
+{
+  int i;
+  for (i = 0; i &lt; 100; i++)
+    fprintf (akim, "%d\n", i);
+  if (ferror (akim))
+    {
+      fprintf (stderr, "Akıma yazılamadı.\n");
+      exit (EXIT_FAILURE);
+    }
+}
+
+int
+main (void)
+{
+  FILE *cikti;
+
+  cikti = popen ("more", "w");
+  if (!cikti)
+    {
+      fprintf (stderr,
+                "ya parametre yanlis ya da dosya sayisi fazla.\n");
+      return EXIT_FAILURE;
+    }
+  write_data (cikti);
+  if (pclose (cikti) != 0)
+    {
+      fprintf (stderr,
+                "Artik calistirilamiyor veya baska bir hata var.\n");
+    }
+  return EXIT_SUCCESS;
+}
+</pre></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Creating-a-Pipe.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Pipes-and-FIFOs.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-FIFO-Special-Files.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Bir Borunun Oluşturulması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> FIFO Özel Dosyaları</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

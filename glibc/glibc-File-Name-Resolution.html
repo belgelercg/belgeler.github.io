@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:26:33+03:00" /><title>Dosya İsmi Çözümlemesi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-File-Names.html" title="Dosya İsimleri" /><link rel="previous" href="../glibc/glibc-Directories.html" title="Dizinler" /><link rel="next" href="../glibc/glibc-File-Name-Errors.html" title="Dosya İsmi Hataları" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Dosya İsmi Çözümlemesi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Directories.html">Önceki</a> </td><th width="60%" align="center">Dosya İsimleri</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-File-Name-Errors.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-File-Name-Resolution" id="glibc-File-Name-Resolution"></a>Dosya İsmi Çözümlemesi</div><dl><dd><div class="para">
+Bir dosya ismi bölü çizgisi (<b><tt>/</tt></b>) karakterleri ile ayrılmış dosya ismi bileşenlerinden oluşur. GNU C kütüphanesinin desteklendiği sistemlerde çok sayıda peşpeşe verilen <b><tt>/</tt></b> karakterleri tek bir <b><tt>/</tt></b> karakterine eşdeğerdir.
+      </div><div class="para">
+<a class="indexterm" name="idx778" id="idx778"></a>
+Bir dosya isminin hangi dosyaya ait olduğunun saptanması işlemi <span class="wordasword"><i>dosya ismi çözümlemesi</i></span> adını alır. Bu işlem dosya ismi üzerinde soldan sağa ilerleyerek bileşenleri saptamak ve önceki bileşen tarafından isimlendirilen dizindeki ardışık bileşenlere tekrar aynı işlemi uygulamak şeklindedir. Şüphesiz, her dosya ismini oluşturan dizinler normal dosya isimleri yerine  dizinler olarak mevcut olmalı ve ilgili izinler sürecin erişimi için yeterli olmalıdır; aksi takdirde, dosya ismi çözümlemesi başarısız olur.
+      </div><div class="para">
+
+<a class="indexterm" name="idx779" id="idx779"></a>
+<a class="indexterm" name="idx780" id="idx780"></a>
+Bir dosya ismi bir <b><tt>/</tt></b> karakteri ile başlıyorsa, dosya ismindeki ilk bileşen sürecin <span class="wordasword"><i>kök dizini</i></span>’dir (genellikle sistem üzerindeki tüm süreçler aynı kök dizini paylaşır). Böyle, kök dizin ile başlayan bir dosya ismi <span class="wordasword"><i>mutlak dosya ismi</i></span> adını alır.
+      </div><div class="para">
+<a class="indexterm" name="idx781" id="idx781"></a>
+Aksi takdirde, dosya ismindeki ilk bileşen <a class="link" href="../glibc/glibc-Working-Directory.html" title="Çalışma dizini">çalışma dizini</a> olur. Bu tür dosya isimlerine <span class="wordasword"><i>göreli dosya ismi</i></span> denir.
+      </div><div class="para">
+<a class="indexterm" name="idx782" id="idx782"></a>
+<b><tt>.</tt></b> (nokta) ve <b><tt>..</tt></b> (nokta nokta) bileşenleri özel anlama sahiptir. Her dizin bu dosya ismi bileşenlerini içerir. Bu bileşenlerden <b><tt>.</tt></b> (nokta) dizinin kendisini, <b><tt>..</tt></b> (nokta nokta) ise <span class="wordasword"><i>üst dizin</i></span>’i yani bu dizini içeren dizine bir bağ belirtir. Özel bir durum olarak kök dizindeki <b><tt>..</tt></b> (nokta nokta) kök dizinin üst dizini olmadığından kendisini belirtir; bu durumda <b><tt>/..</tt></b> ile <b><tt>/</tt></b> eşdeğerdir.
+      </div><div class="para">
+Bazı dosya ismi örnekleri:
+      </div>
+        <div class="variablelist"><dl><dt><span class="term"><tt>/a</tt></span></dt><dd class="varlist"><div class="para">
+Kök dizindeki <tt>a</tt> isimli dosya.
+          </div></dd><dt><span class="term"><tt>/a/b</tt></span></dt><dd class="varlist"><div class="para">
+Kök dizindeki <tt>a</tt> isimli dizindeki <tt>b</tt> isimli dosya.
+          </div></dd><dt><span class="term"><tt>a</tt></span></dt><dd class="varlist"><div class="para">
+İçinde olduğumuz dizindeki <tt>a</tt> isimli dosya.
+          </div></dd><dt><span class="term"><tt>/a/./b</tt></span></dt><dd class="varlist"><div class="para">
+<tt>/a/b</tt> ile aynı.
+          </div></dd><dt><span class="term"><tt>./a</tt></span></dt><dd class="varlist"><div class="para">
+İçinde olduğumuz dizindeki <tt>a</tt> isimli dosya.
+          </div></dd><dt><span class="term"><tt>../a</tt></span></dt><dd class="varlist"><div class="para">
+İçinde olduğumuz dizinin üst dizinindeki <tt>a</tt> isimli dosya.
+          </div></dd></dl></div>
+      <div class="para">
+Bir dosya ismi isteğe bağlı olarak bir <b><tt>/</tt></b> ile bitebilir. Kök dizini için dosya ismi olarak <b><tt>/</tt></b> belirtebilirsiniz, ancak boş dizge bir dosya ismi olarak anlamlı değildir. İçinde olduğunuz dizini belirtmek için dosya ismi olarak <b><tt>.</tt></b> veya  <b><tt>./</tt></b> kullanın.
+      </div><div class="para">
+GNU sisteminde başka bazı sistemlerin aksine dosya isimleri sözdiziminin parçası olarak dosya türleri (veya dosya uzantısı) ve dosya sürümleri için yerleşik bir destek yoktur. Bir çok uygulama dosya isimleri için bu tür kabullerde bulunurlar, örneğin C kaynak dosyaları için genellikle <b><tt>.c</tt></b> soneki kullanılır, ancak dosya sisteminin kendisinde bu çeşit kabuller bulunmaz.
+      </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Directories.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-File-Names.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-File-Name-Errors.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Dizinler </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Dosya İsmi Hataları</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

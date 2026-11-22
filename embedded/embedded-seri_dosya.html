@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:31+03:00" /><title>Seri Porttan Dosya Aktarımı</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../embedded/embedded-seri_portlar.html" title="Seri Portların Kullanımı" /><link rel="previous" href="../embedded/embedded-seri_portlar.html" title="Seri Portların Kullanımı" /><link rel="next" href="../embedded/embedded-seri_konsol.html" title="Seri Konsol" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Seri Porttan Dosya Aktarımı</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../embedded/embedded-seri_portlar.html">Önceki</a> </td><th width="60%" align="center">Seri Portların Kullanımı</th><td width="20%" align="right"> <a accesskey="n" href="../embedded/embedded-seri_konsol.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="embedded-seri_dosya" id="embedded-seri_dosya"></a>Seri Porttan Dosya Aktarımı</div><dl><dd><div class="para">
+Önceki bölümde anlatılan niteliklere uygun seri iletişim kablosu edinebildiyseniz şimdi seri portlar arasından dosya transferi için gerekli ayarlamaları yapabiliriz. Bunun için çok gerekli olmamakla birlikte, seri portu kullanacak isek başka amaçlar için de bize yardımcı olabilecek <b><tt>minicom</tt></b> uygulamasını sisteme kurabiliriz. Hemen gerekli kütüphanelerin neler olduğunu öğrenelim:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>laptop:~/docbook/embedded$ </tt><b><tt>ldd /usr/bin/minicom</tt></b>
+        libncurses.so.5 =&gt; /lib/libncurses.so.5 (0x4001b000)
+        libc.so.6 =&gt; /lib/libc.so.6 (0x4005a000)
+        /lib/ld-linux.so.2 =&gt; /lib/ld-linux.so.2 (0x40000000)
+</pre></div></div>
+  <div class="para">
+Çıktıdan görüldüğü gibi <b><tt>minicom</tt></b> uygulamasının yanısıra SBC sistemimizde henüz bulunmayan <tt>libncurses.so.5</tt> kütüphanesinin de taşınması gereklidir. Bu dosyaları (ağ bağlantımızın olmadığını varsayarsak) disketle SBC üzerine taşımalıyız.
+  </div><div class="para">
+<b><tt>minicom</tt></b> uygulamasının çalışabilmesi için <tt>/usr/share/terminfo</tt> dizini altında kullanacağımız uçbirim türlerine uygun dosyalar bulunmalıdır (Aslında bu gereklilik kullanılan <tt>ncurses</tt> kütüphanesinden kaynaklanmaktadır). SBC üzerinde <tt>linux</tt>, <tt>xterm</tt> ve <tt>xterm-color</tt> uçbirim türlerinin kullanılacak olduğunu düşünerek Linux yüklü sistemden aşağıdaki dosyaları, SBC üzerinde aynı dizine taşıyın:
+  </div>
+<div class="para"><pre class="literallayout">
+    /usr/share/terminfo/l/linux
+    /usr/share/terminfo/x/xterm
+    /usr/share/terminfo/x/xterm-color
+</pre></div>
+  <div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+SBC üzerinde bu dizinler olmadığından oluşturmalısınız:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+mkdir -p /usr/share/terminfo/l
+mkdir -p /usr/share/terminfo/x
+</pre></div></div>
+  </td></tr></table></div><div class="para">
+Programı <b><tt>minicom -c on</tt></b> komutuyla çalıştırırsanız renk desteğini etkin hale getirebilir daha güzel bir ekran ile çalışabilirsiniz.
+  </div><div class="para">
+Her iki sistemde <b><tt>minicom</tt></b>'u çalıştırıp seri port ayarlarını yaptıktan sonra (port, baudrate vb.) dosya aktarım işlemlerini gerçekleştirebiliriz. Bunun için <tt>ZModem</tt> protokolünü kullanabiliriz. <b><tt>minicom</tt></b> tek başına bunu yapamaz, <b><tt>lrzsz</tt></b> uygulamasından  çıkan <b><tt>sz</tt></b> ve <b><tt>rz</tt></b> programlarına ihtiyaç duymaktadır. Linux yüklü sisteminizden <tt>/usr/bin/sz</tt> ve <tt>/usr/bin/rz</tt> uygulamalarını SBC üzerine aktardıktan sonra <b><tt>minicom</tt></b> uygulaması içerisinden <b><tt>Ctrl - A - S</tt></b> ile dosya aktarım menüsüne ulaşabilir, oradan <tt>ZModem</tt> protokolünü ve aktarmak istediğiniz dosyaları seçerek iki sistem arasında veri alışverişi yapabilirsiniz (her iki tarafta <b><tt>minicom</tt></b> uygulaması açık olmalı).
+  </div><div class="figure"><div class="formaltitle"><b>Şekil 7.1. Minicom ile dosya transferi</b></div><span class="inlinemediaobject"><img src="images/minicom.jpg" class="imagedata" alt="" /></span></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../embedded/embedded-seri_portlar.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../embedded/embedded-seri_portlar.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../embedded/embedded-seri_konsol.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Seri Portların Kullanımı </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Seri Konsol</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

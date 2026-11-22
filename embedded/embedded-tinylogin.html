@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:30+03:00" /><title>Tinylogin Kullanımı</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../embedded/embedded-ayarlamalar.html" title="Temel Ayarlamalar" /><link rel="previous" href="../embedded/embedded-busybox.html" title="Busybox Kullanımı" /><link rel="next" href="../embedded/embedded-init.html" title="Açılış Ayarları" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Tinylogin Kullanımı</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../embedded/embedded-busybox.html">Önceki</a> </td><th width="60%" align="center">Temel Ayarlamalar</th><td width="20%" align="right"> <a accesskey="n" href="../embedded/embedded-init.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="embedded-tinylogin" id="embedded-tinylogin"></a>Tinylogin Kullanımı</div><dl><dd><div class="para">
+<b><tt>busybox</tt></b> kurulumu sonrasında ihtiyaç duyduğumuz temel uygulamaların neredeyse tamamı SBC sistemimize yüklenmiş oldu. Ancak <b><tt>busybox</tt></b> içerisinden sisteme girişler, erişim denetimi, kullanıcılar üzerinde işlemler vb. yapabilecek uygulamalar mevcut değildir. Bu uygulamalar <b><tt>busybox</tt></b> projesinin tamamlayıcısı niteliğinde olan <b><tt>tinylogin</tt></b> içerisinden çıkmaktadır. <b><tt>busybox</tt></b> için söylediklerimizin hepsi <b><tt>tinylogin</tt></b> için de geçerlidir ve aradaki tek fark, her iki uygulamanın içerdiği işlevlerdedir. Yakın bir gelecekte <b><tt>tinylogin</tt></b>'in tamamen <b><tt>busybox</tt></b> içerisine dahil edildiğini görürseniz şaşırmayın.
+  </div><div class="para">
+<b><tt>tinylogin</tt></b> uygulamasını hazırlamak için önce <a class="ulink" href="http://www.busybox.net/downloads/" target="_top">http://www.busybox.net/downloads/</a> adresinden kaynak kod arşivini indiriyoruz. Arşivi açtıktan sonra gene <b><tt>busybox</tt></b>'ta olduğu gibi <b><tt>tinylogin</tt></b> içerisine dahil etmek istediğimiz özellikleri belirleyebiliyoruz:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+#define CONFIG_PASSWD
+//#define CONFIG_SU
+// Enable using shadow passwords
+//#define CONFIG_FEATURE_SHADOWPASSWDS
+// Enable using sha passwords
+//#define CONFIG_FEATURE_SHA1_PASSWORDS
+</pre></div></div>
+  <div class="para">
+Burada istediğiniz özellikleri seçtikten sonra dosyayı kaydedin <b><tt>make &amp;&amp; make install</tt></b> komutunu verin. <b><tt>busybox</tt></b>'da olduğu gibi gene <tt>_install</tt> adında bir alt dizin oluşacak, burada <b><tt>tinylogin</tt></b> uygulaması ve olması gereken sembolik bağlar oluşturulacaktır. Bu dizin yapısını SBC üzerine taşımak için izlediğimiz yol öncekiyle aynıdır:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>laptop:/usr/src/tinylogin-1.4$ </tt><b><tt>cd _install</tt></b>
+<tt>laptop:/usr/src/tinylogin-1.4$ </tt><b><tt>tar cvfz /tmp/tiny-bin.tgz .</tt></b>
+...
+</pre></div></div>
+  <div class="para">
+Ardından oluşan <tt>tiny-bin.tgz</tt> dosyasını disket ile SBC sistemi üzerine taşıyıp disketi bağladıktan sonra:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>cd /hedef</tt></b>
+<tt># </tt><b><tt>cp /floppy/tiny-bin.tgz .</tt></b>
+<tt># </tt><b><tt>tar zxvf tiny-bin.tgz</tt></b>
+...
+</pre></div></div>
+  <div class="para">
+Artık sistemimize <b><tt>tinylogin</tt></b> uygulaması kurulmuş oldu. Derlediğimiz <b><tt>tinylogin</tt></b> içerisinden nelere destek verildiğini görelim:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>/hedef/bin/tinylogin</tt></b>
+Tinylogin v1.4 (2003.05.29-21:22+0000) multi-call binary
+
+Usage: tinylogin [function] [arguments]...
+  or: [function] [arguments]...
+
+      TinyLogin is a multi-call binary that combines several tiny Unix
+      utilities for handling logins, user authentication, changing passwords,
+      and otherwise maintaining users and groups on an embedded system.  Most
+      people will create a link to TinyLogin for each function they wish to
+      use, and TinyLogin will act like whatever it was invoked as.
+
+Currently defined functions:
+      addgroup, adduser, delgroup, deluser, getty, passwd, tinylogin,
+      vlock
+</pre></div></div>
+  <div class="para">
+<b><tt>busybox</tt></b> ve <b><tt>tinylogin</tt></b> kurulumu tamamlandığında elimizde çalışabilir bir sistem olmaktadır. Şimdi yapmamız gereken bu sistemin kendi başına açılabilmesini sağlamak amacıyla gerekli düzenlemelerdir.
+  </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../embedded/embedded-busybox.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../embedded/embedded-ayarlamalar.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../embedded/embedded-init.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Busybox Kullanımı </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Açılış Ayarları</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

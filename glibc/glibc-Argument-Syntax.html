@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:36+03:00" /><title>Yazılım Argümanları için Sözdizimi Uzlaşımları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Program-Arguments.html" title="Yazılım Argümanları" /><link rel="previous" href="../glibc/glibc-Program-Arguments.html" title="Yazılım Argümanları" /><link rel="next" href="../glibc/glibc-Parsing-Program-Arguments.html" title="Yazılım Argümanlarının Çözümlenmesi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Yazılım Argümanları için Sözdizimi Uzlaşımları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Program-Arguments.html">Önceki</a> </td><th width="60%" align="center">Yazılım Argümanları</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Parsing-Program-Arguments.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Argument-Syntax" id="glibc-Argument-Syntax"></a>Yazılım Argümanları için Sözdizimi Uzlaşımları</div><dl><dd><div class="para">
+<a class="indexterm" name="idx2749" id="idx2749"></a>
+<a class="indexterm" name="idx2750" id="idx2750"></a>
+<a class="indexterm" name="idx2751" id="idx2751"></a>
+POSIX komut satırı argümanları için şu uzlaşımları tavsiye eder. <b><tt>getopt</tt></b> (<a href="../glibc/glibc-Getopt.html" class="xref" title="getopt">getopt</a>) ve <b><tt>argp_parse</tt></b> (<a href="../glibc/glibc-Argp.html" class="xref" title="Argp">Argp</a>) işlevleri ile bunların gerçeklenmesi kolaylaştırılmıştır.
+    </div><ul type="disc" class="itemizedlist"><li>
+Tire (<b><tt>-</tt></b>) ile başlayan argümanlar seçeneklerdir.
+      </li><li>
+Argüman almayan seçenekler, tek bir tire işaretinden sonra aralarında boşluk bırakmaksızın tek bir sözcük olarak belirtilebilir. Yani, <b><tt>-abc</tt></b> ile <b><tt>-a -b -c</tt></b> eşdeğerdir.
+      </li><li>
+Seçenek isimleri tek bir alfanümerik karakterden (<b><tt>isalnum</tt></b> kapsamındaki karakterler) oluşur; bkz. <a href="../glibc/glibc-Classification-of-Characters.html" class="xref" title="Karakterlerin Sınıflandırılması">Karakterlerin Sınıflandırılması</a>.
+      </li><li>
+Bazı seçenekler bir argüman gerektirebilir. Örneğin, <b><tt>ld</tt></b> komutunun <b><tt>-o</tt></b> seçeneği bir argüman gerektirir: bir çıktı dosyası ismi.
+      </li><li>
+Bir seçenek ile argümanı arasında bir ayraç olabilir de olmayabilir de. (Başka bir deyişle aralarında bir boşluk bırakılması isteğe bağlıdır.) Yani <b><tt>-o foo</tt></b> ile <b><tt>-ofoo</tt></b> eşdeğerdir.
+      </li><li><div class="para">
+Seçenekler genellikle seçenek olmayan argümanlardan önce gelir.
+      </div><div class="para">
+GNU C kütüphanesindeki <b><tt>getopt</tt></b> ve <b><tt>argp_parse</tt></b> gerçeklemeleri, kullanıcı seçeneklerle seçenek olmayan argümanları karışık olarak vermiş olsa bile, çözümlemenin doğası gereği onları seçenekler önce görünecek duruma getirir. Bu davranış standartdışıdır; bunu istemiyorsanız <b><tt>_POSIX_OPTION_ORDER</tt></b> ortam değişkenini tanımlayın. Bkz. <a href="../glibc/glibc-Standard-Environment.html" class="xref" title="Standart Ortam Değişkenleri">Standart Ortam Değişkenleri</a>.
+      </div></li><li><b><tt>--</tt></b> argümanı tüm seçeneklerin sonunu belirtir; bu argümandan sonra gelen argümanlar tire işareti ile başlasalar bile seçenek olarak ele alınmazlar.
+      </li><li>
+Tek başına bir tire işareti sıradan bir seçenek-olmayan-argüman olarak değerlendirilir. Teamülen (uzlaşımsal olarak), standart girdi ve standart çıktı için girdi ve çıktı belirtmekte kullanılır.
+      </li><li>
+Seçenekler herhangi bir sırada verilebilir ya da defalarca belirtilebilir. Yorumlanması yazılımın yeteneğine bırakılır.
+      </li></ul><div class="para">
+<a class="indexterm" name="idx2752" id="idx2752"></a>
+GNU bu uzlaşımlara <span class="wordasword"><i>uzun seçenekler</i></span>i ekler. Uzun seçenekler iki tire işareti ile başlayan ve çok sayıda alfanümerik karakter ve tire işaretinden oluşabilen bir dizgedir. Uzun seçeneklerin isimleri genellikle en çok üç sözcük uzunlukta olurlar ve bu sözcükler arasında bir tire işareti bulunur. Kullanıcılar seçenek isimlerini eşsizliğini koruyarak kısaltılmış olarak kullanabilirler.
+    </div><div class="para">
+Bir uzun seçenek için bir argüman belirtmek gerekirse, <b><tt>--<i><tt>isim</tt></i>=<i><tt>değer</tt></i></tt></b> yazılır. Bu sözdizimi bir uzun seçeneğin isteğe bağlı bir argüman kabul etmesini sağlar.
+    </div><div class="para">
+Neticede, GNU sistemi kabukta uzun seçeneklerin tamamlanmasını sağlayacaktır.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Program-Arguments.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Program-Arguments.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Parsing-Program-Arguments.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Yazılım Argümanları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Yazılım Argümanlarının Çözümlenmesi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

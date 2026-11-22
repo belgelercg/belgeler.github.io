@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:01+03:00" /><title>Hızlı başlangıç</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/assembly-howto.html" title="Linux Makina Dili NASIL" /><link rel="previous" href="../howto/assembly-howto-s-call.html" title="Çağrı Uzlaşımları" /><link rel="next" href="../howto/assembly-howto-s-res.html" title="Özkaynaklar" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Hızlı başlangıç</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/assembly-howto-s-call.html">Önceki</a> </td><th width="60%" align="center">Linux Makina Dili NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/assembly-howto-s-res.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="assembly-howto-s-quick" id="assembly-howto-s-quick"></a>Hızlı başlangıç</div><dl><dd> <div class="head3"><a name="id1" id="id1"></a>Giriş</div><dl><dd><div class="para">
+Son olarak, eğer hala bu çılgınca fikri denemek ve sembolik makina kodu yazmak istiyorsanız (eğer bu kısma ulaştıysanız gerçekten de bir sembolik makina hayranısınızdır), başlangıç için gerekenleri bu kısımda bulacaksınız.
+</div><div class="para">
+Daha önce de okuduğunuz gibi, Linux için değişik şekillerde yazabilirsiniz; size <i>doğrudan</i> sistem çağrılarını nasıl yapacağınızı göstereceğim, çünkü bu çekirdek servislerini çağırmanın en hızlı yoludur; kodumuz hiç bir kütüphaneye bağlı değildir, ELF yorumlayıcısını kullanmayınız, çünkü çekirdek ile doğrudan iletişim kurar.
+</div><div class="para">
+Aynı kodu <b><tt>nasm</tt></b> ve <b><tt>gas</tt></b> için göstereceğim ve böylelikle Intel ve AT&amp;T söz dizimini de göstermiş olacağım.
+</div><div class="para">
+Aynı zamanda <a class="ulink" href="http://linuxassembly.org/intro.html" target="_top">Unix bembolik makne dili ile programlamaya giriş kılavuzu</a>nu okumak isteyebilirsiniz; UNIX benzeri işletim sistemleri için örnek kodlar da içermektedir.
+</div> <div class="head4"><a name="id11" id="id11"></a>İhtiyacınız olan araçlar</div><dl><dd><div class="para">
+Herşeyden önce bir çeviriciye (derleyici) ihtiyacınız vardır - <b><tt>nasm</tt></b> veya <b><tt>gas</tt></b>
+</div><div class="para">
+İkinci olarak, bir ilintileyiciye (linker) ihtiyacınız vardır - <b><tt>ld</tt></b>, çünkü çeviriciler sadece nesne kodunu üretmektedir. Hemen her dağıtım gas ve ld'yi binutils içerisinde sunmaktadır.
+</div><div class="para">
+nasm'a gelince, Linux için paketleri ve belgeleri <a class="link" href="../howto/assembly-howto-s-assem.html#assembly-howto-p-nasm-where" title="NASM'ı nereden bulurum">nasm sayfasından</a> indirip kurmanız gerekebilir, pekçok dağıtımın (Stampede, Debian, SuSe, Mandrake) nasm'ı kendi sürümleri içerisinde barındırdıklarını unutmayın, önce bir kontrol edin.
+</div><div class="para">
+Eğer daha derine inecekseniz, işletim sisteminizin başlık dosyalarını ve mümkünse çekirdek kaynak paketini edinmelisiniz.
+</div></dd></dl></dd></dl> <div class="head3"><a name="assembly-howto-hello" id="assembly-howto-hello"></a>Merhaba Dünyalı <tt>:-)</tt></div><dl><dd> <div class="head4"><a name="id12" id="id12"></a>Yerleşim</div><dl><dd><div class="para">
+Linux, 32 bitliktir, korumalı kipte çalışır, düz bellek modeline sahiptir ve ikilikler için ELF biçimini kullanır.
+</div><div class="para">
+Bir program bölümlere ayrılabilir: kodunuz için <tt>.text</tt> kısnı (salt-okunur), verileriniz için <tt>.data</tt> kısmı (oku-yaz), ilklendirilmemiş veriler için <tt>.bss</tt> kısmı (oku-yaz); aslında bir kaç tane daha, kullanıcı tanımlı bölüm yanında, standart bölüm olabilir, fakat onların kullanılacakları durumlar çok nadir olmaktadır ve bizim ilgi alanımız dışındalar. Bir program en azından <tt>.text</tt> kısmına sahip olmalıdır.
+</div><div class="para">
+Şimdi ilk programımızı yazacağız.
+</div></dd></dl> <div class="head4"><a name="id22" id="id22"></a>NASM (hello.asm)</div><dl><dd><div class="para"><div align="right"><pre class="programlisting">
+section .text                           ;bölüm bildirimi
+
+                           ;giriş noktasını ELF ilintileyiciye veya yükleyiciye
+    global _start          ;göndermeliyiz (export). Giriş noktasını uzlaşımsal
+                           ;olarak _start ile belirtiriz. Öntanımlı durumu
+                           ;değiştirmek için: ld -e foo kullanın.
+
+_start:
+
+;dizgemizi stdout'a yazar
+
+        mov     edx,len    ;üçüncü argüman: ileti uzunluğu
+        mov     ecx,msg    ;ikinci argüman: yazılacak iletinin göstericisi
+        mov     ebx,1      ;ilk argüman: dosya tutucu (stdout)
+        mov     eax,4      ;sistem çağrısı numarası (sys_write)
+        int     0x80       ;çekirdeği çağır
+
+;ve çık
+
+        mov     ebx,0      ;ilk sistem çağrısı argümanı: çıkış kodu
+        mov     eax,1      ;sistem çağrı numarası (sys_exit)
+        int     0x80       ;çekirdeği çağır
+
+section .data              ;bölüm bildirimi
+
+        msg     db      "Hello, world!",0xa     ;sevgili dizgemiz
+        len     equ     $ - msg                 ;sevgili dizgemizin boyu
+</pre></div></div></dd></dl> <div class="head4"><a name="id32" id="id32"></a>GAS (hello.S)</div><dl><dd><div class="para"><div align="right"><pre class="programlisting">
+.text                         # bölüm bildirimi
+
+                           ;giriş noktasını ELF ilintileyiciye veya yükleyiciye
+    global _start          ;göndermeliyiz (export). Giriş noktasını uzlaşımsal
+                           ;olarak _start ile belirtiriz. Öntanımlı durumu
+                           ;değiştirmek için: ld -e foo kullanın.
+
+_start:
+
+# dizgemizi stdout'a yazar
+
+        movl    $len,%edx     # üçüncü argüman: ileti uzunluğu
+        movl    $msg,%ecx     # ikinci argüman: yazılacak iletinin göstericisi
+        movl    $1,%ebx       # ilk argüman: dosya tutucu (stdout)
+        movl    $4,%eax       # sistem çağrı numarası
+        int     $0x80         # çekirdeği çağır
+
+# ve çık
+
+        movl    $0,%ebx       # ilk sistem çağrısı argümanı: çıkış kodu
+        movl    $1,%eax       # sistem çağrı numarası (sys_exit)
+        int     $0x80         # çekirdeği çağır
+
+.data                         # bölüm bildirimi
+
+        msg:
+                .ascii  "Hello, world!\n"       # sevgili dizgemiz
+                len = . - msg                   # sevgili dizgemizin boyu
+</pre></div></div></dd></dl></dd></dl> <div class="head3"><a name="assembly-howto-build" id="assembly-howto-build"></a>Çaliştırılabilir bir kod üretmek</div><dl><dd> <div class="head4"><a name="id13" id="id13"></a>Nesne kodu üretimi</div><dl><dd><div class="para">
+Çalıştırılabilir bir kod elde etmenin ilk adımı nesne dosyasını kaynaktan derlemek (veya çevirmek)tir:
+</div><div class="para">
+Nasm örneği için:
+</div><div class="para"><div align="right"><pre class="screen">$ <b><tt>nasm -f elf hello.asm</tt></b>
+</pre></div></div><div class="para">
+gas örneği için
+</div><div class="para"><div align="right"><pre class="screen">$ <b><tt>as -o hello.o hello.S</tt></b>
+</pre></div></div><div class="para">
+Bu <tt>hello.o</tt> nesne dosyasını oluşturur.
+</div></dd></dl> <div class="head4"><a name="id23" id="id23"></a>Çalıştırılabilir üretmek</div><dl><dd><div class="para">
+İkinci adım ilintileyiciyi çağırarak nesne dosyasının kendisinden çalıştırılabilir bir dosya üretmektir:
+</div><div class="para"><div align="right"><pre class="screen">$ <b><tt>ld -s -o hello hello.o</tt></b>
+</pre></div></div><div class="para">
+Sonuç olarak bu <tt>hello</tt> çalıştırılabilir dosyasını üretecektir.
+   </div><div class="para">
+Hey, çalıştırmayı deneyin... Çalıştı mı? İşte bu. Oldukça basit.
+</div></dd></dl></dd></dl> <div class="head3"><a name="id4" id="id4"></a>MIPS Örneği</div><dl><dd><div class="para">
+Gerçek dünyada x86 sülalesi dışında da bir evren var. Aşağıda Spencer Parkin tarafından sunulan ve MIPS işlemciler için yazılmış bir örnek vardır. Buraya kadar gelmişken <a class="ulink" href="http://www.cuillin.demon.co.uk/nazz/trivia/hw/hw_assembler.html" target="_top">http://www.cuillin.demon.co.uk/nazz/trivia/hw/hw_assembler.html</a> adresindeki Bir Grup Sembolik Makina Dili ile Yazılmış Merhaba Dünya Programına bakabilirsiniz.
+   </div><div class="para"><div align="right"><pre class="programlisting">
+# hello.S       by Spencer T. Parkin
+
+# Bu benim ilk MIPS-RISC sembolik makina dili programım!
+# Derlemek için:
+# &gt; gcc -o hello hello.S -non_shared
+
+# Bu program PlayStation2 MIPS R5900 (EE Çekirdek)
+# üzerinde hatasız ve uyarısız derlenir.
+# EE Duygu Makinası (Emotion Engine) anlamına gelir
+
+# -non_shared seçeneği gcc'ye
+# yeniden tahsis edilebilir kod ile ilgilenmediğimizi söyler.
+# Eğer isteseydik, PIC-ABI çağrım kurallarını
+# ve diğer protokolleri kullanmalıydık
+
+#include &lt;asm/regdef.h&gt;         // Anaşılabilir yazmaç adları için
+#include &lt;asm/unistd.h&gt;         // Sistem servisleri için
+
+        .rdata                  # yalnız okunabilir veri bölümüne başlangıç
+        align          2        # belleğin yapım şeklinden dolayı böyle
+
+hello:  .asciz  "Hello, world!\n"  # Null ile sonlanmış bir karakter dizisi
+        .align  4               # belleğin yapım şeklinden dolayı
+length: .word   .- hello        # length = IC - (hello-addr)
+
+        .text                   # kod bölümü başlangıcı
+        .globl  main            # gcc/ld bağlamasından dolayı
+        .ent    main            # gdp hata ayıklama bilgisi
+
+main:                           # gcc'ye bir -non_shared alanı sunmalıyız
+                                # ya da aşağıdaki üç satır etkin olmalı
+#       .set    noreorder       # yeniden komut sıralamasını kapat
+#       .cpload t9              # PIC ABI zırvası
+#       .set    reorder         # yeniden komut sıralaması aktif
+
+        move    a0,$0           # dosya tanımlayıcısı standart çıktıyı göstersin
+        la      a1,hello        # karakter dizisi adresini yükle
+        lw      a2,length       # karakter dizisi boyunu yükle
+        li      v0,__NR_write   # sistem yazma servislerini belirt
+        syscall                 # çekirdeği çağır (karakter dizisini yaz)
+        li      v0,0            # geri dönüş kodunu yükle
+        j       ra              # çağırana dönüş
+        .end    main            # dgb için hata ayıklama bilgisi
+
+# hepsi bu kadar millet!
+</pre></div></div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/assembly-howto-s-call.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/assembly-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/assembly-howto-s-res.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Çağrı Uzlaşımları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Özkaynaklar</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

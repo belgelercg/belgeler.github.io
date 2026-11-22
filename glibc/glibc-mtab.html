@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:56+03:00" /><title>mtab</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Mount-Information.html" title="Bağlama Bilgileri" /><link rel="previous" href="../glibc/glibc-fstab.html" title="fstab" /><link rel="next" href="../glibc/glibc-Mount-Unmount-Remount.html" title="Bağlama, Ayırma, Yeniden Bağlama" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">mtab</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-fstab.html">Önceki</a> </td><th width="60%" align="center">Bağlama Bilgileri</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Mount-Unmount-Remount.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="glibc-mtab" id="glibc-mtab"></a><tt>mtab</tt></div><dl><dd><div class="para">
+Aşağıdaki işlevler ve veri yapısı <tt>mtab</tt> dosyasına erişim için kullanılır.
+     </div>
+<a class="indexterm" name="idx3218" id="idx3218"></a>
+<a name="glibc-struct-mntent" id="glibc-struct-mntent"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct <b><tt>mntent</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+Bu yapı <b><tt>getmntent</tt></b>, <b><tt>getmntent_t</tt></b>, <b><tt>addmntent</tt></b> ve <b><tt>hasmntopt</tt></b> işlevleriyle kullanılır.
+   </div><dl><dt><span class="glossterm">
+   <tt>char *<b><tt>mnt_fsname</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Bu eleman bağlı dosya sistemini içeren özel aygıtın ismi olan bir dizgeye bir gösterici içerir. Bu eleman <b><tt>struct fstab</tt></b> yapısının <b><tt>fs_spec</tt></b> üyesinin karşılığıdır.
+   </div></dd><dt><span class="glossterm">
+   <tt>char *<b><tt>mnt_dir</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Dosya sisteminin bağlama noktasını belirten dizgeye bir göstericidir. Bu eleman <b><tt>struct fstab</tt></b> yapısının <b><tt>fs_file</tt></b> üyesinin karşılığıdır.
+   </div></dd><dt><span class="glossterm">
+   <tt>char *<b><tt>mnt_type</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+<b><tt>mnt_type</tt></b> dosya sistemini açıklar ve <b><tt>struct fstab</tt></b> yapısının <b><tt>fs_vfstype</tt></b> üyesinin karşılığıdır. Bu dizgenin içerebileceği sabitler <tt>mntent.h</tt> dosyasında tanımlanmıştır. Fakat çekirdek dosya sistemlerini keyfi isimlerle destekleyebildiğinden bunları sembolik isimler olarak vermenin bir yararı yoktur. Sembolik ismi bilen biri dosya sistemi ismini de bilir ve bu sembollerin listesini <tt>mntent.h</tt> dosyasında bulabilirsiniz.
+        </div><div class="variablelist"><dl><dt><span class="term"><b><tt>MNTTYPE_IGNORE</tt></b></span></dt><dd class="varlist"><div class="para">
+Bu sembol <b><tt>"ignore"</tt></b> dizgesinin karşılığıdır. Değer kimi zaman  <tt>fstab</tt> dosyasındaki bir girdiyi silmeden kullanılamaz duruma getirmek için kullanılır.
+           </div></dd><dt><span class="term"><b><tt>MNTTYPE_NFS</tt></b></span></dt><dd class="varlist"><div class="para">
+<b><tt>"nfs"</tt></b> dizgesinin karşılığıdır. Bu makronun kullanımı, öntanımlı NFS gerçeklemesi ile ilgilidir ve  2. ve 3. sürümleri desteklemektedir.
+           </div></dd><dt><span class="term"><b><tt>MNTTYPE_SWAP</tt></b></span></dt><dd class="varlist"><div class="para">
+Bu sembol <b><tt>"swap"</tt></b> dizgesinin karşılığıdır. <tt>fstab</tt> dosyasında çok sayıda olabilen takas bölümleri ile ilgili girdileri isimlendirir.
+           </div></dd></dl></div>
+   </dd><dt><span class="glossterm">
+   <tt>char *<b><tt>mnt_opts</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Bu eleman dosya sistemi bağlanırken kullanılan seçenekleri içeren bir dizgedir. <b><tt>struct fstab</tt></b> yapısının <b><tt>fs_mntops</tt></b> üyesinin karşılığı olarak bu dizgenin parçalarına erişmek için <b><tt>getsubopt</tt></b> işlevini kullanmak en iyi yöntemdir; bkz. <a href="../glibc/glibc-Suboptions.html" class="xref" title="Alt Seçeneklerin Çözümlenmesi">Alt Seçeneklerin Çözümlenmesi</a>.
+        </div><div class="para">
+<tt>mntent.h</tt> dosyasında, çekirdek tarafından anlamlandırılabilen bazı seçeneklerin karşılığı olan dizge değerli makrolar tanımlanmıştır. Bu makrolarla kapsanmayan başka seçenekler de olabilir, bunlar mevcut olanların listesidir:
+        </div><div class="variablelist"><dl><dt><span class="term"><b><tt>MNTOPT_DEFAULTS</tt></b></span></dt><dd class="varlist"><div class="para">
+<b><tt>"defaults"</tt></b> dizgesinin karşılığıdır. Bu seçenek tek başına kullanılır, çünkü özelleştirilebilir değerlerin uygun seçilmesi ile oluşturulan bir dizgenin öntanımlı karşılığıdır.
+           </div></dd><dt><span class="term"><b><tt>MNTOPT_RO</tt></b></span></dt><dd class="varlist"><div class="para">
+<b><tt>"ro"</tt></b> dizgesinin karşılığıdır.  Dosya sisteminin salt okunur bağlanması anlamına gelen <b><tt>FSTAB_RO</tt></b> değerine bakınız.
+           </div></dd><dt><span class="term"><b><tt>MNTOPT_RW</tt></b></span></dt><dd class="varlist"><div class="para">
+<b><tt>"rw"</tt></b> dizgesinin karşılığıdır. Dosya sisteminin oku/yaz erişimiyle bağlanması anlamına gelen <b><tt>FSTAB_RW</tt></b> değerine bakınız.
+           </div></dd><dt><span class="term"><b><tt>MNTOPT_SUID</tt></b></span></dt><dd class="varlist"><div class="para">
+<b><tt>"suid"</tt></b> dizgesinin karşılığıdır. Dosya sisteminden bir uygulama başlatıldığında SUID bitine riayet edilecek anlamındadır; bkz. <a href="../glibc/glibc-How-Change-Persona.html" class="xref" title="Bir Sürecin Aidiyeti Nasıl Değiştirilir?">Bir Sürecin Aidiyeti Nasıl Değiştirilir?</a>.
+           </div></dd><dt><span class="term"><b><tt>MNTOPT_NOSUID</tt></b></span></dt><dd class="varlist"><div class="para">
+<b><tt>"nosuid"</tt></b> dizgesinin karşılığıdır. Dosya sisteminden bir uygulama başlatıldığında SUID biti yoksayılacak anlamında olup <b><tt>MNTOPT_SUID</tt></b> makrosunun zıddıdır.
+           </div></dd><dt><span class="term"><b><tt>MNTOPT_NOAUTO</tt></b></span></dt><dd class="varlist"><div class="para">
+<b><tt>"noauto"</tt></b> dizgesinin karşılığıdır. Sistem açılışında <b><tt>mount</tt></b> uygulaması <tt>fstab</tt> dosyasındaki tüm bağlanabilir dosya sistemlerini bağlamasını belirten <b><tt>-a</tt></b> seçeneği ile çalıştırıldığında bu girdi yoksayılacaktır.
+           </div></dd></dl></div>
+        <div class="para">
+Önceki bölümlerde <b><tt>FSTAB_*</tt></b> girdilerinde bahsedildiği gibi eşitlik sınaması yapmak için <b><tt>strcmp</tt></b> kullanılması önemlidir.
+   </div></dd><dt><span class="glossterm">
+   <b><tt>mnt_freq</tt></b>
+   </span></dt><dd class="halfpara"><div class="para">
+Bu eleman <b><tt>fs_freq</tt></b>'in karşılığıdır ve ayrıca dökümlemenin yapılma sıklığını gün cinsinden belirtir.
+   </div></dd><dt><span class="glossterm">
+   <b><tt>mnt_passno</tt></b>
+   </span></dt><dd class="halfpara"><div class="para">
+<b><tt>dump</tt></b> gibi uygulamaların bu dosya sistemi ile ilgilenmemesi anlamında olan <b><tt>fs_passno</tt></b>'nun karşılığıdır.
+        </div></dd></dl>
+</dd></dl><div style="padding:5px"></div><div class="para">
+<tt>mtab</tt> dosyasının içeriğinin tamamının okunması amacıyla GNU C kütüphanesi birbiriyle uyumlu çalışan üç işlev içerir. <tt>fstab</tt> dosyası ile çalışan işlevelerin tersine bu işlevler bir sabit dosyaya erişmez ve ayrıca get işlevlerinin evresel sürümleri de vardır. Bunun yanında GNU C kütüphanesi dosyayı değiştirmek ve bazı seçenekleri sınamak için de işlevler içerir.
+    </div>
+<a class="indexterm" name="idx3219" id="idx3219"></a>
+<a name="glibc-setmntent" id="glibc-setmntent"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>FILE *<b><tt>setmntent</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *<i><tt>dosya</tt></i>,
+ const char *<i><tt>kip</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>setmntent</tt></b> işlevi, ailenin diğer işlevlerinin ihtiyaçlarına uygun olarak kullanılmak üzere <tt>fstab</tt> ve <tt>mtab</tt> biçiminde <i><tt>dosya</tt></i> isimli dosyayı hazırlar. <i><tt>kip</tt></i> parameresi <b><tt>fopen</tt></b> işlevinin <i><tt>açıştürü</tt></i> parametrsinin seçiminde kullanılan yolla seçilebilir (bkz. <a href="../glibc/glibc-Opening-Streams.html" class="xref" title="Akımların Açılması">Akımların Açılması</a>). Eğer dosya yazma amacıyla açılıyorsa ayrıca boş olmasına da izin verilir.
+     </div><div class="para">
+İşlev dosyayı başarıyla açmışsa kullanılacak akım ile döner. Aksi takdirde <b><tt>NULL</tt></b> döner ve hata durumu <b><tt>errno</tt></b> değişkenine atanır.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx3220" id="idx3220"></a>
+<a name="glibc-endmntent" id="glibc-endmntent"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>endmntent</tt></b></tt></td><td valign="top"><pre class="paramdef">(FILE *<i><tt>akım</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev önceki bir <b><tt>setmntent</tt></b> çağrısından dönen <i><tt>akım</tt></i> akımını kapatır ve tüm özkaynaklarını serbest bırakır.
+     </div><div class="para">
+Hata durumunda 0 aksi takdirde 1 ile döner.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx3221" id="idx3221"></a>
+<a name="glibc-getmntent" id="glibc-getmntent"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct mntent *<b><tt>getmntent</tt></b></tt></td><td valign="top"><pre class="paramdef">(FILE *<i><tt>akım</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev önceki bir <b><tt>setmntent</tt></b> çağrısından dönen <i><tt>akım</tt></i> akımını argüman olarak alır ve dosyadan sonraki girdiyi içeren <b><tt>struct mntent</tt></b> türünde bir değişkene gösterici ile döner.
+     </div><div class="para">
+Kullanılan dosya biçimi gereğince alanları ayırmak için boşluklar ve sekme karakterleri kullanılır. Bu durum, bu karakterleri içeren isimlerin kullanılmasını güçleştirir. Bu bakımdan bu karakterleri dosyalarda kodlarken ve <b><tt>getmntent</tt></b> işlevinde çözümlerken dikkatli olunmalıdır. Bir boşluk karakteri <tt>'\040'</tt> ile, bir sekme karakteri <tt>'\011'</tt> ile, satırsonu karakteri <tt>'\012'</tt> ile ve tersbölü karakteri  <tt>'\\'</tt> ile kodlanır.
+     </div><div class="para">
+Bir hata oluşursa ya da dosya sonuna gelinmişse işlev <b><tt>NULL</tt></b> ile döner.
+     </div><div class="para">
+Bu işlevin çağrıları aynı durağan değişkene bir gösterici ile döndüğünden işlev evresel değildir. Dosyaya çok evreli erişim için <b><tt>getmntent_r</tt></b> işlevi kullanılmalıdır.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx3222" id="idx3222"></a>
+<a name="glibc-getmntent_r" id="glibc-getmntent_r"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct mntent *<b><tt>getmntent_r</tt></b></tt></td><td valign="top"><pre class="paramdef">(FILE           *<i><tt>akım</tt></i>,
+ struct mentent *<i><tt>sonuç</tt></i>,
+ char           *<i><tt>tampon</tt></i>,
+ int             <i><tt>tamponboyu</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>getmntent_r</tt></b> işlevi <b><tt>getmntent</tt></b> işlevinin evresel benzeridir. Ayrıca dosyadaki sonraki girdiye bir gösterici ile döner. Döndürdüğü değişken aslında durağan değildir. Döndürdüğü değeri  <i><tt>sonuç</tt></i> parametresi ile belirtilen göstericinin gösterdiği değişkende saklar. Ek bilgiler (sonucun elemanları ile gösterilen dizgeler) uzunluğu <i><tt>tamponboyu</tt></i> kadar olan <i><tt>tampon</tt></i> tamponunda saklanır.
+     </div><div class="para">
+Öncelemeli karakterler (boşluk, sekme, tersbölü) <b><tt>getmentent</tt></b> işlevindeki gibi geri dönüştürülür.
+     </div><div class="para">
+İşlev bir hata durmunda bir boş gösterici ile döner. Olası hatalar:
+     </div>
+     <ul type="disc" class="itemizedlist"><li>dosya okunurken hata oluştu,
+     </li><li>dosyanın sonuna gelindi,
+     </li><li><i><tt>tamponboyu</tt></i> tam bir girdiyi okumak için yetersiz.
+     </li></ul>
+</dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx3223" id="idx3223"></a>
+<a name="glibc-addmntent" id="glibc-addmntent"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>addmntent</tt></b></tt></td><td valign="top"><pre class="paramdef">(FILE                *<i><tt>akım</tt></i>,
+ const struct mntent *<i><tt>girdi</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>addmntent</tt></b> işlevi önceki bir <b><tt>setmntent</tt></b> çağrısı ile açılan dosyaya yeni bir girdi eklemeye imkan verir. Yeni girdi daima dosyanın sonuna eklenir. Yani dosya konumlayıcı dosyanın sonunda olmasa bile bu işlev girdiyi dosya konumlayıcının bulunduğu yere değil daima dosyanın sonuna yazar.
+     </div><div class="para">
+Bunun sonucu olarak bir dosyadan bir girdiyi silmek için bu girdiyi içermeyen  yeni bir dosya oluşturmak, bu dosyayı kapatmak ve eski dosyayı silip yeni dosyanın adını eskisi olarak değiştirmek gerekir.
+     </div><div class="para">
+Bu işlev isimlerin içindeki boşluklar ve sekmeler bakımından dikkatlidir. Bunları ve tersbölü karakterlerini evvelce <b><tt>getmntent</tt></b> işlevinde açıklandığı gibi dönüştürür.
+     </div><div class="para">
+İşlev başarı durumunda 0, aksi takdirde 1 değeri ile döner ve hata durumu <b><tt>errno</tt></b> değişkenine atanır.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx3224" id="idx3224"></a>
+<a name="glibc-hasmntopt" id="glibc-hasmntopt"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>char *<b><tt>hasmntopt</tt></b></tt></td><td valign="top"><pre class="paramdef">(const struct mntent *<i><tt>girdi</tt></i>,
+ const char          *<i><tt>seçenek</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev, <i><tt>girdi</tt></i> ile gösterilen yapının <b><tt>mnt_opts</tt></b> elemanının içerdiği dizgede <i><tt>seçenek</tt></i> dizgesi var mı diye bakar. <i><tt>seçenek</tt></i> bir boş gösterici değilse <b><tt>mnt_opts</tt></b> içindeki seçeneğin başlangıcına bir gösterici ile döner. Böyle bir seçenek yoksa işlev boş gösterici döndürür.
+     </div><div class="para">
+Bu işlev belli bir seçeneğin varlığını sınamak için kullanışlıdır ama tüm seçenekler işlenmek zorunda olduğunda dizgedeki tüm seçenekler üzerinde yinelenen <b><tt>getsubopt</tt></b> işlevini kullanmak daha iyidir.
+        </div></dd></dl><div style="padding:5px"></div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-fstab.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Mount-Information.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Mount-Unmount-Remount.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">fstab </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Bağlama, Ayırma, Yeniden Bağlama</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

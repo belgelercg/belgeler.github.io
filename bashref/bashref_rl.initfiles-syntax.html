@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:28:58+03:00" /><title>Readline İlklendirme Dosyasının Sözdizimi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../bashref/bashref_rl.initfiles.html" title="Readline İlklendirme Dosyası" /><link rel="previous" href="../bashref/bashref_rl.initfiles.html" title="Readline İlklendirme Dosyası" /><link rel="next" href="../bashref/bashref_rl.initfiles-conditionals.html" title="Koşullu İlklendirme Yapıları" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Readline İlklendirme Dosyasının Sözdizimi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../bashref/bashref_rl.initfiles.html">Önceki</a> </td><th width="60%" align="center">Readline İlklendirme Dosyası</th><td width="20%" align="right"> <a accesskey="n" href="../bashref/bashref_rl.initfiles-conditionals.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="bashref_rl.initfiles-syntax" id="bashref_rl.initfiles-syntax"></a>Readline İlklendirme Dosyasının Sözdizimi</div><dl><dd><div class="para">
+Readline ilklendirme dosyasında izin verilen bir kaç temel yapı vardır.
+Boş satırlar yoksayılır. <tt>#</tt> ile başlayan satırlarda
+açıklamalar verilebilir. <tt>$</tt> ile başlayan satırlar
+koşullu yapılardır (<a href="../bashref/bashref_rl.initfiles-conditionals.html" class="xref" title="Koşullu İlklendirme Yapıları">Koşullu İlklendirme Yapıları</a>
+bölümüne bakınız). Diğer satırlar değişken atamaları ve tuş kısayolları
+olarak ele alınır.
+    </div> <div class="head3"><a name="id1" id="id1"></a>Değişken Atamaları</div><dl><dd><div class="para">
+Readline'ın çalışma anı davranışlarını, Readline değişkenlerine
+ilklendirme dosyasında <b><tt>set</tt></b> komutuyla
+değer atayarak değiştirebilirsiniz. Sözdizimi basittir:
+      </div>
+<div class="para"><pre class="literallayout">
+    <b><tt>set</tt></b> <i>değişken değer</i>
+</pre></div>
+      <div class="para">
+Burada, örneğin öntanımlı Emacs benzeri tuş kısayollarını
+<b><tt>vi</tt></b> satır düzenleme komutları ile değiştirmek
+için komutu şöyle yazabilirsiniz:
+      </div>
+<div class="para"><pre class="literallayout">
+    <b><tt>set</tt></b> editing-mode vi
+</pre></div>
+      <div class="para">
+Değişken isimleri ve değerleri uygun kullanıldığında harf büyüklüklerine
+bakılmaksızın tanınır. Bilinmeyen değişken isimleri yoksayılır.
+      </div><div class="para">
+Mantıksal değişkenlerden (açık veya kapalı olabilenler) değerleri boş, null, <tt>on</tt> (harf büyüklüğü önemsiz) veya 1 olanlar açık (<tt>on</tt>) kabul edilir; bunların dışındaki herhangi bir değere sahip olanlar kapalı (<tt>off</tt>) kabul edilir.
+      </div><div class="para">
+<a class="link" href="../bashref/bashref_bash.builtins-bind.html" title="bind Yerleşiği"><b><tt>bind</tt></b><tt> -V</tt></a> komutu o anki Readline değişken isimlerini ve değerlerini listeler.
+      </div><div class="para">
+Çalışma anı davranışlarının büyük kısmı aşağıdaki değişkenlerle
+değiştirilebilir:
+      </div><dl><a class="indexterm" name="idx358" id="idx358"></a><dt><span class="glossterm"><a name="bashref-bell-style" id="bashref-bell-style"></a><tt>bell-style</tt></span></dt><dd class="halfpara"><div class="para">
+Readline uçbirim çanını çaldırmak istediğinde neler olacağını
+kontrol eder. Değer olarak <tt>none</tt> atanırsa,
+çan hiç çalmaz. <tt>visible</tt> atanırsa ve
+bir görünür çan kullanılabilir durumdaysa Readline kullanır.
+<tt>audible</tt> atanırsa (öntanımlıdır), Readline
+uçbirim çanını çalmaya çalışır.
+</div></dd><a class="indexterm" name="idx359" id="idx359"></a><dt><span class="glossterm"><a name="bashref-bind-tty-special-chars" id="bashref-bind-tty-special-chars"></a> <tt>bind-tty-special-chars</tt></span></dt><dd class="halfpara"><div class="para">
+Değeri <b><tt>on</tt></b> ise Readline, çekirdeğin uçbirim sürücüsü tarafından özel olarak ele alınan kontrol karakterlerini Readline eşdeğerlerine bağlamaya çalışır.
+</div></dd><a class="indexterm" name="idx360" id="idx360"></a><dt><span class="glossterm"><a name="bashref-comment-begin" id="bashref-comment-begin"></a> <tt>comment-begin</tt></span></dt><dd class="halfpara"><div class="para">
+<b><tt>insert-comment</tt></b> komutu çalıştırıldığında
+satırın başına yerleştirilecek dizge. Öntanımlı değeri: "<tt>#</tt>".
+</div></dd><a class="indexterm" name="idx361" id="idx361"></a><dt><span class="glossterm"><a name="bashref-completion-ignore-case" id="bashref-completion-ignore-case"></a> <tt>completion-ignore-case</tt></span></dt><dd class="halfpara"><div class="para">
+<tt>on</tt> değeri atanırsa, Readline harf büyüklüğüne
+duyarlı dosyaismi eşleştirmesi ve tamamlaması uygular.
+Öntanımlı değeri: <tt>off</tt>.
+</div></dd><a class="indexterm" name="idx362" id="idx362"></a><dt><span class="glossterm"><a name="bashref-completion-query-items" id="bashref-completion-query-items"></a> <tt>completion-query-items</tt></span></dt><dd class="halfpara"><div class="para">
+Kullanıcıya olasılıkların listesini görmek isteyip istemediği
+sorulurken saptanan olası tamamlamaların sayısı. Olası
+tamamlamaların sayısı bu değerden yüksekse Readline kullanıcıya
+onları görmek isteyip istemediğini soracaktır; aksi takdirde,
+basitçe listelenecektir. Bu değişkene sıfırdan büyük ya da eşit bir
+tamsayı atanabilir. Negatif bir değer asla sorulmayacak anlamına gelir.
+Öntanımlı değeri: 100.
+</div></dd><a class="indexterm" name="idx363" id="idx363"></a><dt><span class="glossterm"><a name="bashref-convert-meta" id="bashref-convert-meta"></a><tt>convert-meta</tt></span></dt><dd class="halfpara"><div class="para">
+<tt>on</tt> değeri atanırsa, Readline karakterlerin
+sekizinci bitini ayırıp sekizinci bite bir ASCII tuş dizisi
+atayarak ve onları meta önekli tuş dizisine çeviren
+<tt>ESC</tt> karakteri ile önceleyerek karakterleri
+dönüştürecektir. Öntanımlı değeri: <tt>on</tt>.
+</div></dd><a class="indexterm" name="idx364" id="idx364"></a><dt><span class="glossterm"><a name="bashref-disable-completion" id="bashref-disable-completion"></a><tt>disable-completion</tt></span></dt><dd class="halfpara"><div class="para">
+<tt>On</tt> değeri atandığında, Readline sözcük
+tamamlamasını iptal eder. Tamamlama karakterleri nasıl girildiyse
+o şekilde satıra yerleştirilir. Öntanımlı değeri: <tt>off</tt>.
+</div></dd><a class="indexterm" name="idx365" id="idx365"></a><dt><span class="glossterm"><a name="bashref-editing-mode" id="bashref-editing-mode"></a><tt>editing-mode</tt></span></dt><dd class="halfpara"><div class="para">
+<tt>editing-mode</tt> değişkeni kullanılan öntanımlı tuş
+kısayollarının kipini kontrol eder. Öntanımlı olarak Readline
+tuş kısayolları Emacs'ınkine çok benzeyen Emacs düzenleme kipinde
+başlar. Bu değişkene ya <tt>emacs</tt> ya da
+<tt>vi</tt> atanabilir.
+</div></dd><a class="indexterm" name="idx366" id="idx366"></a><dt><span class="glossterm"><a name="bashref-enable-keypad" id="bashref-enable-keypad"></a><tt>enable-keypad</tt></span></dt><dd class="halfpara"><div class="para">
+<tt>on</tt> değeri atandığında, Readline uygulama
+çağrıldığında sayısal tuş takımını etkinleştirmeye çalışacaktır.
+Bazı sistemler ok tuşlarının kullanılabilmesi için sayısal tuş
+takımının etkinleştirilmesine ihtiyaç duyar. Öntanımlı değeri:
+<tt>off</tt>.
+</div></dd><a class="indexterm" name="idx367" id="idx367"></a><dt><span class="glossterm"><a name="bashref-expand-tilde" id="bashref-expand-tilde"></a><tt>expand-tilde</tt></span></dt><dd class="halfpara"><div class="para">
+<tt>on</tt> değeri atanırsa, Readline sözcük tamamlaması
+yapmaya çalışırken yaklaşık yorumlaması uygular. Öntanımlı değeri:
+<tt>off</tt>.
+</div></dd><a class="indexterm" name="idx368" id="idx368"></a><dt><span class="glossterm"><a name="bashref-history-preserve-point" id="bashref-history-preserve-point"></a> <tt>history-preserve-point</tt></span></dt><dd class="halfpara"><div class="para">
+<tt>on</tt> değeri atanırsa, komut geçmişi kodu imleci
+<tt>previous-history</tt> veya <tt>next-history</tt>
+ile alınan her geçmiş satırında aynı konuma yerleştirmeye
+çalışır. Öntanımlı değeri: <tt>off</tt>.
+</div></dd><a class="indexterm" name="idx369" id="idx369"></a><dt><span class="glossterm"><a name="bashref-horizontal-scroll-mode" id="bashref-horizontal-scroll-mode"></a> <tt>horizontal-scroll-mode</tt></span></dt><dd class="halfpara"><div class="para">
+<tt>on</tt> değeri atanırsa, düzenlenen metnin
+satırlarının uzunluğu ekran genişliğinden fazlaysa imleci
+bir alt satıra indirmek yerine, satır kaydırılır. Öntanımlı
+değeri: <tt>off</tt>.
+</div></dd><a class="indexterm" name="idx370" id="idx370"></a><dt><span class="glossterm"><a name="bashref-input-meta" id="bashref-input-meta"></a><tt>input-meta</tt></span></dt><dd class="halfpara"><div class="para">
+<tt>on</tt> değeri atanırsa, uçbirimin destek için
+ne gerektirdiğine bakılmaksızın, Readline sekiz bitlik
+girdileri etkinleştirir (okunurken sekizinci bit temizlenmeyecektir).
+<tt>meta-flag</tt> bu değişkenle eşanlamlıdır.
+Öntanımlı değeri: <tt>off</tt>.
+</div></dd><a class="indexterm" name="idx371" id="idx371"></a><dt><span class="glossterm"><a name="bashref-isearch-terminators" id="bashref-isearch-terminators"></a><tt>isearch-terminators</tt></span></dt><dd class="halfpara"><div class="para">
+Bir arttırımlı aramayı sonlandıracak karakter dizisi
+(<a href="../bashref/bashref_rl.interaction-history.html" class="xref" title="Geçmiş içinde Komutların Aranması">Geçmiş içinde Komutların Aranması</a> bölümüne bakınız).
+Bu değiken bir değerle atanmamışsa bir arttırımlı arama
+<tt>ESC</tt> ve <tt>C-J</tt> ile
+sonlandırılır.
+</div></dd><a class="indexterm" name="idx372" id="idx372"></a><dt><span class="glossterm"><a name="bashref-keymap" id="bashref-keymap"></a><tt>keymap</tt></span></dt><dd class="halfpara"><div class="para">
+Tuş kısayolları için kullanılacak tuşeşlemi atanır. Kabul edilen
+tuşeşlemi isimleri
+<tt>emacs</tt>, <tt>emacs-standard</tt>,
+<tt>emacs-meta</tt>, <tt>emacs-ctlx</tt>,
+<tt>vi</tt>, <tt>vi-move</tt>,
+<tt>vi-command</tt> ve <tt>vi-insert</tt>.
+<tt>vi</tt> ile <tt>vi-command</tt> ve
+<tt>emacs</tt> ile <tt>emacs-standard</tt>
+eşdeğerdir. Öntanımlı değeri <tt>emacs</tt>'dır.
+Ayrıca <tt>editing-mode</tt> değişkeni de öntanımlı
+tuşeşlemini etkiler.
+</div></dd><a class="indexterm" name="idx373" id="idx373"></a><dt><span class="glossterm"><a name="bashref-mark-directories" id="bashref-mark-directories"></a><tt>mark-directories</tt></span></dt><dd class="halfpara"><div class="para">
+<tt>on</tt> değeri atanırsa,, tamamlanmış dizin
+isimlerine bir <tt>/ </tt> eklenir. Öntanımlı değeri:
+<tt>on</tt>.
+</div></dd><a class="indexterm" name="idx374" id="idx374"></a><dt><span class="glossterm"><a name="bashref-mark-modified-lines" id="bashref-mark-modified-lines"></a> <tt>mark-modified-lines</tt></span></dt><dd class="halfpara"><div class="para">
+<tt>on</tt> değeri atanırsa, değiştirilmiş geçmiş
+satırlarını Readline başına bir <tt>*</tt> ekleyerek
+gösterir. Öntanımlı değeri: <tt>off</tt>.
+</div></dd><a class="indexterm" name="idx375" id="idx375"></a><dt><span class="glossterm"><a name="bashref-mark-symlinked-directories" id="bashref-mark-symlinked-directories"></a> <tt>mark-symlinked-directories</tt></span></dt><dd class="halfpara"><div class="para">
+<b><tt>on</tt></b> yapılırsa, dizinlere sembolik bağ olan tamamlanmış isimlere bir / eklenmiş olur (<tt>mark-directories</tt> değerine konu). Öntanımlı değeri: <tt>off</tt>.
+</div></dd><a class="indexterm" name="idx376" id="idx376"></a><dt><span class="glossterm"><a name="bashref-match-hidden-files" id="bashref-match-hidden-files"></a><tt>match-hidden-files</tt></span></dt><dd class="halfpara"><div class="para">
+<tt>on</tt> değeri atanırsa, dosyaismi
+tamamlaması uygularken, dosyaisminin tamamlanmasında baştaki
+<tt>.</tt> kullanıcı tarafından verilmedikçe,
+Readline'ın <tt>.</tt> ile başlayan dosya isimlerini
+eşleştirmesini sağlar. Öntanımlı değeri: <tt>on</tt>.
+</div></dd><a class="indexterm" name="idx377" id="idx377"></a><dt><span class="glossterm"><a name="bashref-output-meta" id="bashref-output-meta"></a><tt>output-meta</tt></span></dt><dd class="halfpara"><div class="para">
+<tt>on</tt> değeri atanırsa Readline, karakterleri
+bir meta önekli öteleme dizileri olarak değil sekizinci
+biti etkin olarak gösterecektir. Öntanımlı değeri: <tt>off</tt>.
+</div></dd><a class="indexterm" name="idx378" id="idx378"></a><dt><span class="glossterm"><a name="bashref-page-completions" id="bashref-page-completions"></a> <tt>page-completions</tt></span></dt><dd class="halfpara"><div class="para">
+<b><tt>on</tt></b> yapılırsa, Readline olası tamamlamaları bir defada bir tam ekran göstermek için <b><tt>more</tt></b> benzeri bir dahili sayfalayıcı kullanır. Öntanımlı değeri: <tt>on</tt>.
+</div></dd><a class="indexterm" name="idx379" id="idx379"></a><dt><span class="glossterm"><a name="bashref-print-completions-horizontally" id="bashref-print-completions-horizontally"></a> <tt>print-completions-horizontally</tt></span></dt><dd class="halfpara"><div class="para">
+<tt>on</tt> değeri atanırsa, Readline tamamlamalarla
+eşleşmeleri ekranda yukardan aşağı dizmek yerine alfabetik sırada
+yanyana gösterecektir. Öntanımlı değeri:
+<tt>off</tt>.
+</div></dd><a class="indexterm" name="idx380" id="idx380"></a><dt><span class="glossterm"><a name="bashref-show-all-if-ambiguous" id="bashref-show-all-if-ambiguous"></a> <tt>show-all-if-ambiguous</tt></span></dt><dd class="halfpara"><div class="para">
+Tamamlama işlevlerinin öntanımlı davranışını değiştirir.
+<tt>on</tt> değeri atanırsa, birden fazla olası
+tamamlaması olan sözcüklerin eşleşmelerinin çanı çaldırmak yerine
+listelenmesini sağlar. Öntanımlı değeri:
+<tt>off</tt>.
+</div></dd><a class="indexterm" name="idx381" id="idx381"></a><dt><span class="glossterm"><a name="bashref-show-all-if-unmodified" id="bashref-show-all-if-unmodified"></a> <tt>show-all-if-unmodified</tt></span></dt><dd class="halfpara"><div class="para">
+Tamamlama işlevlerinin öntanımlı davranışlarını <i><tt>show-all-if-ambiguous</tt></i>'a benzer bir şekilde değiştirir. Değeri <b><tt>on</tt></b> yapılırsa herhangi bir kısmi tamamlama olmaksızın (olası tamamlamalar ortak bir önek paylaşmazlar)  tek olası tamamlamadan fazlasına sahip sözcükler çanı çaldırmak yerine eşleşenlerin hemen listelenmesine sebep olur.
+Öntanımlı değeri: <tt>off</tt>.
+</div></dd><a class="indexterm" name="idx382" id="idx382"></a><dt><span class="glossterm"><a name="bashref-visible-stats" id="bashref-visible-stats"></a><tt>visible-stats</tt></span></dt><dd class="halfpara"><div class="para">
+<tt>on</tt> değeri atanırsa, dosya türünü gösteren
+bir karakter, olası tamamlamalar listelenirken dosya ismine eklenir.
+Öntanımlı değeri: <tt>off</tt>.
+</div></dd></dl></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Tuş Kısayolları</div><dl><dd><div class="para">
+İlklendirme dosyasında tuş kısayollarının kontrol edilmesi için
+kullanılan sözdizimi basittir. Önce değiştirmek istediğiniz komutun
+ismini bulmanız gerekir. Aşağıda komut isimlerini, öntanımlı tuş
+kısayollarını ve varsa komutun ne yaptığını anlatan bir kısa açıklamanın
+da bulunduğu bir liste bulacaksınız.
+      </div><div class="para">
+Komutun ismini öğrendikten sonra, ilklendirme dosyasında bir satıra,
+önce komuta kısayol olarak atayacağınız tuşun ismini yazın, bir
+<tt>:</tt> işareti koyun ve komutun ismini yazın. Tuşun ismi ile ikinokta imi arasında boşluk olmayabilir, bu durumda ikinokta imi tuş isminin bir parçası olarak yorumlanır. Tuşun ismini kolayınıza gelen farklı yollarla ifade edebilirsiniz.
+      </div><div class="para">
+Komut isimlerine ek olarak, Readline tuşlara basıldığında bir dizge
+basmalarını sağlamak üzere bir dizge atanmasına da izin verir (bir
+<i>makro</i>).
+      </div><div class="para">
+<a class="link" href="../bashref/bashref_bash.builtins.html" title="Bash Yerleşik Komutları"><b><tt>bind</tt></b><tt> -p</tt> komutu</a> Readline işlev isimleri ve
+kısayollarını bir ilklendirme dosyasına doğrudan konulabilecek
+biçemde gösterir.
+      </div><dl><dt><span class="glossterm"><i><tt>tuşismi: işlev-ismi veya makro</tt></i></span></dt><dd class="halfpara"><div class="para">
+<i><tt>tuşismi</tt></i>, bir tuşun İngilizce ismidir. Örnek:
+      </div>
+<div class="para"><pre class="literallayout">
+    Control-u: universal-argument
+    Meta-Rubout: backward-kill-word
+    Control-o: "&gt; çıktı"
+</pre></div>
+      <div class="para">
+Bu örnekte, <tt>C-u</tt> tuşlarına
+<tt>universal-argument</tt> işlevi,
+<tt>M-DEL</tt> tuşlarına
+<tt>backward-kill-word</tt> işlevi ve
+<tt>C-o</tt> tuşlarına çalıştırılacak bir makro
+(satıra <tt>&gt; çıktı</tt> dizgesini girer)
+atanmıştır.
+      </div><div class="para">
+Tuş kısayollarını tanımlarken kullanılabilecek sembolik karakter
+isimlerinin sözdizimleri: <i>DEL</i>,
+<i>ESC</i>, <i>ESCAPE</i>,
+<i>LFD</i>, <i>NEWLINE</i>,
+<i>RET</i>, <i>RETURN</i>,
+<i>RUBOUT</i>, <i>SPACE</i>,
+<i>SPC</i> ve <i>TAB</i>.
+      </div></dd><dt><span class="glossterm">"<i><tt>tuşdizisi</tt></i>": <i><tt>işlev-ismi veya makro</tt></i></span></dt><dd class="halfpara"><div class="para">
+<i><tt>tuşdizisi  tuşismi</tt></i>'nden
+dizgenin çift tırnak içine alınmış olması ile farklıdır.
+Bazı GNU Emacs tarzı tuş ötelemeleri aşağıdaki örnekteki
+gibi kullanılabilmesine karşın özel karakter isimleri kullanılamaz.
+      </div>
+<div class="para"><pre class="literallayout">  "\C-u": universal-argument
+  "\C-x\C-r": re-read-init-file
+  "\e[11~": "İşlev tuşu 1"
+</pre></div>
+      <div class="para">
+Bu örnekte, <tt>C-u</tt> tuşlarına
+<tt>universal-argument</tt> işlevini (ilk örnekteki gibi),
+<tt>C-x C-r</tt> tuşlarına
+<tt>re-read-init-file</tt> işlevini ve
+<tt>ESC [ 1 1 ~</tt> ise
+<tt>İşlev tuşu 1</tt> metnini girmek üzere atanmıştır.
+      </div></dd></dl><div class="para">
+Aşağıdaki GNU Emacs tarzı tuş ötelemeleri, tuş dizilerini belirtirken
+kullanılabilir:
+     </div><dl><dt><span class="glossterm"><tt>\C-</tt></span></dt><dd class="halfpara"><div class="para">Kontrol öneki</div></dd><dt><span class="glossterm"><tt>\M-</tt></span></dt><dd class="halfpara"><div class="para">Meta öneki</div></dd><dt><span class="glossterm"><tt>\e</tt></span></dt><dd class="halfpara"><div class="para">öteleme karakteri</div></dd><dt><span class="glossterm"><tt>\\</tt></span></dt><dd class="halfpara"><div class="para">tersbölü</div></dd><dt><span class="glossterm"><tt>\"</tt></span></dt><dd class="halfpara"><div class="para">", bir çift tırnak işareti</div></dd><dt><span class="glossterm"><tt>\'</tt></span></dt><dd class="halfpara"><div class="para">, bir tek tırnak işareti</div></dd></dl><div class="para">
+GNU Emacs tarzı tuş ötelemelerine ek olarak, tersbölü öncelemeli
+karakterler de mevcuttur:
+   </div><dl><dt><span class="glossterm"><tt>\a</tt></span></dt><dd class="halfpara"><div class="para">sesli uyarı (bell)</div></dd><dt><span class="glossterm"><tt>\b</tt></span></dt><dd class="halfpara"><div class="para">gerisilme</div></dd><dt><span class="glossterm"><tt>\d</tt></span></dt><dd class="halfpara"><div class="para">silme</div></dd><dt><span class="glossterm"><tt>\f</tt></span></dt><dd class="halfpara"><div class="para">sayfa ilerletme</div></dd><dt><span class="glossterm"><tt>\n</tt></span></dt><dd class="halfpara"><div class="para">satırsonu</div></dd><dt><span class="glossterm"><tt>\r</tt></span></dt><dd class="halfpara"><div class="para">satırbaşı</div></dd><dt><span class="glossterm"><tt>\t</tt></span></dt><dd class="halfpara"><div class="para">yatay sekme</div></dd><dt><span class="glossterm"><tt>\v</tt></span></dt><dd class="halfpara"><div class="para">düşey sekme</div></dd><dt><span class="glossterm"><tt>\nnn</tt></span></dt><dd class="halfpara"><div class="para">
+sekizlik değeri <tt>nnn</tt> olan sekiz bitlik karakter
+(1, 2 ya da 3 haneli olabilir).
+     </div></dd><dt><span class="glossterm"><tt>\xHH</tt></span></dt><dd class="halfpara"><div class="para">
+       onaltılık değeri <tt>HH</tt> olan sekiz bitlik
+       karakter (1 ya da 2 haneli olabilir).
+     </div></dd></dl><div class="para">
+Bir makro metnini girerken, bir makro tanımını belirtmek için
+çift ya da tek tırnaklar arasına alınmalıdır. Tırnaksız metinler
+bir işlev ismi olarak kabul edilir. Makro gövdesinde tersbölü
+öncelemeli karakterler yukarıda açıklandığı gibi yorumlanır.
+Makro metni içindeki tırnak içine alınmış yerlerde tırnak işaretleri
+<tt>"</tt> ve <tt>'</tt> tersbölü ile
+öncelenmelidir. Örneğin aşağıdaki atama <tt>C-x \</tt>
+tuşlarıyla bir tek <tt>\</tt> basar:
+      </div>
+<div class="para"><pre class="literallayout">    "\C-x\\": "\\"</pre></div>
+      </dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../bashref/bashref_rl.initfiles.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../bashref/bashref_rl.initfiles.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../bashref/bashref_rl.initfiles-conditionals.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Readline İlklendirme Dosyası </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Koşullu İlklendirme Yapıları</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:25:29+03:00" /><title>FETCH</title><link rel="icon" type="image/png" href="../../images/belgeler-logo.png" /><link rel="stylesheet" href="../../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../../man/man7/man7.html" title="SQL Deyimleri, Makro Paketleri vs." /><link rel="previous" href="../../man/man7/man7-explain.html" title="EXPLAIN" /><link rel="next" href="../../man/man7/man7-move.html" title="MOVE" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">FETCH</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../../man/man7/man7-explain.html">Önceki</a> </td><th width="60%" align="center">SQL Deyimleri, Makro Paketleri vs.</th><td width="20%" align="right"> <a accesskey="n" href="../../man/man7/man7-move.html">Sonraki</a></td></tr></table></td></tr></table><div class="refentry"><a name="tr-man7-fetch" id="tr-man7-fetch"></a><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="25%"><b>FETCH(7)</b></td><td class="mheadfoot" align="center" width="50%"><b>SQL - Dil Deyimleri</b> </td><td class="mheadfoot" align="right" width="25%"><b>FETCH(7)</b></td></tr></table></div><dl><dt class="head3">İSİM</dt><dd>FETCH — bir gösterici kullanarak bir sorgudan satırları çeker<br /></dd><dd><div class="para"></div></dd><dt class="head3">KULLANIM</dt><dd><div class="para"><div class="para"><div align="center"><pre class="synopsis"><b><tt>FETCH</tt></b> [ <i>yön</i> { <b><tt>FROM</tt></b> | <b><tt>IN</tt></b> } ] <i>gösterici_ismi</i>
+
+burada <i>yön</i> ya boş ya da şunlardan biri olabilir:
+
+    <b><tt>NEXT</tt></b>
+    <b><tt>PRIOR</tt></b>
+    <b><tt>FIRST</tt></b>
+    <b><tt>LAST</tt></b>
+    <b><tt>ABSOLUTE</tt></b> <i>miktar</i>
+    <b><tt>RELATIVE</tt></b> <i>miktar</i>
+    <i>miktar</i>
+    <b><tt>ALL</tt></b>
+    <b><tt>FORWARD</tt></b>
+    <b><tt>FORWARD</tt></b> <i>miktar</i>
+    <b><tt>FORWARD ALL</tt></b>
+    <b><tt>BACKWARD</tt></b>
+    <b><tt>BACKWARD</tt></b> <i>miktar</i>
+    <b><tt>BACKWARD ALL</tt></b>
+</pre></div></div></div></dd><dt class="head3">Açıklama</dt><dd><div class="para">
+<b><tt>FETCH</tt></b> evvelce oluşturulmuş bir göstericiyi kullanarak satırları çeker.
+  </div><div class="para">
+Bir gösterici <b><tt>FETCH</tt></b> tarafından da kullanılan ortak bir konuma sahiptir. Göstericinin konumu sorgu sonucunun ilk satırının öncesinde, herhangi bir satırında veya son satırının sonrasında olabilir. İlk oluşturulduğunda bir gösterici ilk satırın öncesine konumlanır. Satırlar çekildikten sonra gösterici en son alınan satıra konumlanır.  <b><tt>FETCH</tt></b>'in satırları çekip çalışması durduğunda gösterici son satırın sonrasına ya da eğer geriye çekilmişse ilk satırın öncesine konumlanır. <b><tt>FETCH ALL</tt></b> göstericiyi daima son satırın sonrasına, <b><tt>FETCH BACKWARD ALL</tt></b> ise daima ilk satırın öncesine konumlandırır.
+  </div><div class="para">
+<b><tt>NEXT</tt></b> (sonraki), <b><tt>PRIOR</tt></b> (önceki), <b><tt>FIRST</tt></b> (ilk), <b><tt>LAST</tt></b> (son), <b><tt>ABSOLUTE</tt></b> (mutlak), <b><tt>RELATIVE</tt></b> (göreli) biçimleri göstericiyi ilgili konuma taşıdıktan sonra tek bir satırı çeker. O konumda bir satır yoksa, sonuç boş olarak döner ve gösterici duruma göre ya ilk satırın öncesine ya da son satırın sonrasına konumlanır.
+  </div><div class="para">
+<b><tt>FORWARD</tt></b> (ileri) ve <b><tt>BACKWARD</tt></b> (geri) biçimleri, ileri ya da geri yönde belirtilen miktarda satırı çekmek için kullanılabilir. Gösterici son çekilen satıra konumlanmış olarak bırakılır (eğer <i><tt>miktar</tt></i> alınabilecek satır sayısından fazla ise, gösterici duruma göre son satırın sonrasına ya da ilk satırın öncesine konumlanır).
+  </div><div class="para">
+<b><tt>RELATIVE 0</tt></b>, <b><tt>FORWARD 0</tt></b>, ve <b><tt>BACKWARD 0</tt></b> biçimlerinin hepsi gösterici hareket ettirilmeden o anki satırın çekilmesini sağlar, yani son çekilen satır yeniden çekilir. Bu, ancak, gösterici ilk satırın öncesinde ya da son satırın sonrasında değilse bir satırın çekilmesini sağlar; aksi takdirde, bir satır döndürülmez.
+  </div></dd><dt class="head3">Parametreler</dt><dd><div class="variablelist"><dl><dt><i><tt>yön</tt></i></dt><dd class="varlist"><div class="para">Çekim yönünü ve çekilecek satır sayısını tanımlar. Aşağıdakilerden biri olabilir:
+    </div><div class="variablelist"><dl><dt><b><tt>NEXT</tt></b></dt><dd class="varlist"><div class="para">Sonraki satırı çeker. <i><tt>yön</tt></i> belirtilmezse bu öntanımlıdır.
+        </div></dd><dt><b><tt>PRIOR</tt></b></dt><dd class="varlist"><div class="para">Önceki satırı çeker.
+        </div></dd><dt><b><tt>FIRST</tt></b></dt><dd class="varlist"><div class="para">Sorgunun ilk satırını çeker (<b><tt>ABSOLUTE 1</tt></b> ile aynıdır).
+        </div></dd><dt><b><tt>LAST</tt></b></dt><dd class="varlist"><div class="para">Sorgunun son satırını çeker (<b><tt>ABSOLUTE -1</tt></b> ile aynıdır).
+        </div></dd><dt><b><tt>ABSOLUTE </tt></b><i><tt>miktar</tt></i></dt><dd class="varlist"><div class="para"><i><tt>miktar</tt></i> pozitifse, sorgunun <i><tt>miktar</tt></i>'ıncı satırını; negatifse, sondan <tt><b><tt>abs</tt></b>(<i>miktar</i>)</tt>'ıncı satırını çeker. <i><tt>miktar</tt></i> gereğinden büyükse, gösterici duruma göre ya ilk satırın öncesine ya da son satırın sonrasına konumlanır; özellikle, <b><tt>ABSOLUTE 0</tt></b> göstericinin ilk satırın öncesine konumlanmasını sağlar.
+        </div></dd><dt><b><tt>RELATIVE </tt></b><i><tt>miktar</tt></i></dt><dd class="varlist"><div class="para">Göstericinin konumuna göre, <i><tt>miktar</tt></i> pozitifse, sonraki <i><tt>miktar</tt></i>'ıncı satırı; negatifse, önceki <tt><b><tt>abs</tt></b>(<i>miktar</i>)</tt>'ıncı satırı çeker. <tt>RELATIVE 0</tt> o anki satırı varsa yeniden çeker.
+        </div></dd><dt><i><tt>miktar</tt></i></dt><dd class="varlist"><div class="para">Sonraki <i><tt>miktar</tt></i> satırı çeker (<b><tt>FORWARD </tt></b><i><tt>miktar</tt></i> ile aynıdır).
+        </div></dd><dt><b><tt>ALL</tt></b></dt><dd class="varlist"><div class="para">Kalan satırların hepsini çeker (<b><tt>FORWARD ALL</tt></b> ile aynıdır).
+        </div></dd><dt><b><tt>FORWARD</tt></b></dt><dd class="varlist"><div class="para">Sonraki satırı çeker (<b><tt>NEXT</tt></b> ile aynıdır).
+        </div></dd><dt><b><tt>FORWARD <i><tt>miktar</tt></i></tt></b></dt><dd class="varlist"><div class="para">Sonraki <i><tt>miktar</tt></i> satırı çeker. <b><tt>FORWARD 0</tt></b> o anki satırı yeniden çeker.
+        </div></dd><dt><b><tt>FORWARD ALL</tt></b></dt><dd class="varlist"><div class="para">Kalan satırların hepsini çeker.
+        </div></dd><dt><b><tt>BACKWARD</tt></b></dt><dd class="varlist"><div class="para">Önceki satırı çeker (<b><tt>PRIOR</tt></b> ile aynı).
+        </div></dd><dt><b><tt>BACKWARD <i><tt>miktar</tt></i></tt></b></dt><dd class="varlist"><div class="para">Önceki <i><tt>miktar</tt></i> satırı çeker. <b><tt>BACKWARD 0</tt></b> o anki satırı yeniden çeker.
+        </div></dd><dt><b><tt>BACKWARD ALL</tt></b></dt><dd class="varlist"><div class="para">Önceki tüm satırları çeker (geriye doğru tarama).
+        </div></dd></dl></div>
+     </dd><dt><i><tt>miktar</tt></i></dt><dd class="varlist"><div class="para">Konumu ya da çekilecek satır sayısını belirtmek üzere kullanılan bir işaretli tamsayıdır. <b><tt>FORWARD</tt></b> ve <b><tt>BACKWARD</tt></b> için belirtilen bir negatif <i><tt>miktar</tt></i> yönün değişmesine sebep olur.
+     </div></dd><dt><i><tt>gösterici_ismi</tt></i></dt><dd class="varlist"><div class="para">Açık bir göstericinin ismi.
+     </div></dd></dl></div></dd><dt class="head3">Çıktılar</dt><dd><div class="para">
+<b><tt>FETCH</tt></b> başarılı olduğunda şöyle bir çıktı döndürür:
+  </div>
+<div class="para"><div align="right"><pre class="screen">    FETCH <i><tt>miktar</tt></i></pre></div></div>
+  <div class="para">
+Burada, <i><tt>miktar</tt></i> çekilen satırların sayısıdır (sıfır olabilir). Yalnız, psql'de komutun ismi çıktıda gösterilmez, sadece çekilen satır sayısı gösterilir.
+  </div></dd><dt class="head3">Ek Bilgi</dt><dd><div class="para">
+<b><tt>FETCH</tt></b> cümlesinin, pozitif bir miktar ile <b><tt>FETCH NEXT</tt></b> veya <b><tt>FETCH FORWARD</tt></b> biçimleri dışında bir biçimle kullanılması düşünülüyorsa, gösterici <b><tt>SCROLL</tt></b> seçeneği ile bildirilmelidir. Basit sorgular için PostgreSQL<sup>TM</sup>, <b><tt>SCROLL</tt></b> ile bildirilmemiş göstericilerden geriye doğru satır çekilmesine izin verir, fakat bu davranışın en iyisi olduğuna güvenmeyin. Eğer gösterici <b><tt>NO SCROLL</tt></b> ile bildirilmişse geri yönde satır çekmeye izin verilmez.
+  </div><div class="para">
+<b><tt>ABSOLUTE</tt></b> ile satır çekimleri istenen satırı bir göreli hareketle çekmekten daha hızlı değildir: temel gerçeklenim aradaki satırların tümünü bir şekilde geçmelidir. Negatif mutlak çekimlerin durumu daha bile kötüdür: Sorgunun, son satırı bulana kadar tüm satırları okuması ve buradan, çekilecek satıra kadar olan satırları tekrar geçmesi gerekir. Yine de, sorgunun başa dönmesi hızlı olur (<b><tt>FETCH ABSOLUTE 0</tt></b> ile olduğu gibi).
+  </div><div class="para">
+Gösterici üzerinden güncelleme PostgreSQL<sup>TM</sup> tarafından şimdilik desteklenmemektedir.
+  </div><div class="para">
+Bir götericiyi tanımlamak için <tt><b>DECLARE</b>[<a href="../../man/man7/man7-declare.html">declare(7)</a>]</tt> kullanılır.  Veri döndürmeksizin göstericiyi hareket ettirmek için  <tt><b>MOVE</b>[<a href="../../man/man7/man7-move.html">move(7)</a>]</tt> kullanabilirsiniz.
+  </div></dd><dt class="head3">Örnekler</dt><dd><div class="para">
+Aşağıdaki örnekte bir tablo gösterici kullanılarak incelenmektedir:
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">BEGIN WORK;
+
+-- Göstericiyi bildirelim:
+DECLARE liahona SCROLL CURSOR FOR SELECT * FROM films;
+
+-- liahona göstericisinden ilk 5 satırı çekelim:
+FETCH FORWARD 5 FROM liahona;
+
+ code  |          title          | did | date_prod  |   kind   |  len
+-------+-------------------------+-----+------------+----------+-------
+ BL101 | The Third Man           | 101 | 1949-12-23 | Drama    | 01:44
+ BL102 | The African Queen       | 101 | 1951-08-11 | Romantic | 01:43
+ JL201 | Une Femme est une Femme | 102 | 1961-03-12 | Romantic | 01:25
+ P_301 | Vertigo                 | 103 | 1958-11-14 | Action   | 02:08
+ P_302 | Becket                  | 103 | 1964-02-03 | Drama    | 02:28
+
+-- Önceki satırı çekelim:
+FETCH PRIOR FROM liahona;
+
+ code  |  title  | did | date_prod  |  kind  |  len
+-------+---------+-----+------------+--------+-------
+ P_301 | Vertigo | 103 | 1958-11-14 | Action | 02:08
+
+-- Göstericiyi kapatıp hareketi sonlandıralım:
+CLOSE liahona;
+COMMIT WORK;
+</pre></div></div>
+  </dd><dt class="head3">Uyumluluk</dt><dd><div class="para">
+SQL standardındaki <b><tt>FETCH</tt></b> deyimini sadece gömülü SQL'de kullanmak içindir. Burada açıklanan <b><tt>FETCH</tt></b> ise, veriyi bir konak değişkenine yerleştirilmiş olarak değil, bir <b><tt>SELECT</tt></b> sonucu gibi döndürür. Bunun dışında  <b><tt>FETCH</tt></b>, SQL standardı ile tamamen uyumludur.
+  </div><div class="para">
+<b><tt>FORWARD</tt></b> ve <b><tt>BACKWARD</tt></b> biçimleriyle <b><tt>FORWARD</tt></b> örtük olma üzere <b><tt>FETCH </tt></b><i><tt>miktar</tt></i> ve <b><tt>FETCH ALL</tt></b> biçimleri birer PostgreSQL<sup>TM</sup> oluşumudur.
+  </div><div class="para">
+SQL standardı <b><tt>FROM</tt></b> deyimine sadece ismin önünde izin verir; <b><tt>IN</tt></b> kullanımı bir PostgreSQL<sup>TM</sup> oluşumudur.
+  </div></dd><dt class="head3">İlgili Belgeler</dt><dd><div class="para">
+<tt><b>CLOSE</b>[<a href="../../man/man7/man7-close.html">close(7)</a>]</tt>,
+<tt><b>DECLARE</b>[<a href="../../man/man7/man7-declare.html">declare(7)</a>]</tt>,
+<tt><b>MOVE</b>[<a href="../../man/man7/man7-move.html">move(7)</a>]</tt>.
+ </div></dd><dt class="head3">Çeviren</dt><dd><div class="para">
+Nilgün Belma Bugüner <span class="email">&lt;nilgun (at) belgeler·gen·tr&gt;</span>, Nisan 2005
+</div></dd></dl><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="30%"><b>PostgreSQL</b></td><td class="mheadfoot" align="center" width="40%"></td><td class="mheadfoot" align="right" width="30%"><b>FETCH(7)</b></td></tr></table></div></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../../man/man7/man7-explain.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../../man/man7/man7.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../../man/man7/man7-move.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">EXPLAIN </td><td width="20%" align="center"><a accesskey="h" href="../../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> MOVE</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

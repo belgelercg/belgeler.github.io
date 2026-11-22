@@ -1,162 +1,58 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="tr" xml:lang="tr">
-  <head>
-    <title>14.2.6. Dizin İçeriğinin Taranması</title>
-    <meta name="generator" content="DocBook XSL Stylesheets V-special (derived from DocBook XSL v1.79.1 for Turkish Linux Documentation Project by Nilgün Belma Bugüner - nilgun (at) tlbp.org.tr)" />
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="/style/nav.css" />
-    <link rel="icon" type="image/png" href="/images/belgeler-logo.png" />
-    <meta name="robots" content="index, follow" />
-  </head>
-  <body>
-    <header>
-      <div class="navbar">
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Random-Access-Directory.html')">Önceki</button>
-          <div class="dropdown-content">14.2.5. Dizin Akımında Rastgele Erişim</div>
-        </div>
-        <div style="width:34%" class="dropdown">
-          <button class="dropbtn">Yukarı</button>
-          <div class="dropdown-content">
-            <button type="button" class="dropbtn" onclick="window.location.assign('/index.html')">Baş Sayfa</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('/KiTAPLIK/index.html')">Kitaplık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc.html')">Ana Başlık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Accessing-Directories.html')">Üst Başlık</button>
-          </div>
-        </div>
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Simple-Directory-Lister-Mark-II.html')">Sonraki</button>
-          <div class="dropdown-content">14.2.7. Bir Dizinin İçeriğini Listeleyen İkinci Örnek</div>
-        </div>
-      </div>
-    </header>
-    <section class="mainpage">
-      <div class="crumbs">
-        <p>  </p>
-      </div>
-      <section class="sect1" id="glibc-Scanning-Directory-Content">
-        <div class="titlepage">
-          <div>
-            <div>
-              <h2 class="title" style="clear: both">14.2.6. Dizin İçeriğinin Taranması</h2>
-            </div>
-          </div>
-        </div>
-        <p>
-    Dizinlerle çalışan işlevlerin daha yüksek seviyedeki bir arayüzü de  <a href="glibc-Scanning-Directory-Content.html#glibc-fn-scandir"><strong class="function"><code>scandir</code></strong></a> işlevidir. Bu işlevin yardımıyla, bir dizin içindeki girdilerin bir kısmı seçilebilir, sıralanabilir ve bir isim listesi alınabilir.
-   </p>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-    <span id="glibc-fn-scandir" class="indexterm"></span>
-    <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/dirent.h;hb=HEAD" target="_top">dirent.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">int </code><strong><code class="function">scandir</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">const char </code><strong class="type">*</strong><strong><code class="parameter">dir</code></strong><strong><code>, </code></strong><code>struct dirent ***<em class="parameter"><code>namelist</code></em></code><strong><code>, </code></strong><code>int (*<em class="parameter"><code>selector</code></em>) (const struct dirent *)</code><strong><code>, </code></strong><code>int (*<em class="parameter"><code>cmp</code></em>) (const struct dirent **, const struct dirent **)</code><strong><code>)</code></strong></td></tr></table></div>
-    
-    <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-asunsafe">AS-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-heap">heap</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acunsafe">AC-Unsafe</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-mem">mem</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-fd">fd</a>
-    </div>
-    <p>
-     <code class="code">scandir</code> işlevi <em class="parameter"><code>dir</code></em> ile belirtilen dizinin içeriğini tarar. Sonucu döndüren *<em class="parameter"><code>namelist</code></em> seçilen dizin girdilerini içeren <a href="glibc-Directory-Entries.html#glibc-tp-dirent"><strong class="type"><code>struct dirent</code></strong></a> türündeki göstericilerin dizisidir ve <a href="glibc-Basic-Allocation.html#glibc-fn-malloc"><strong class="function"><code>malloc</code></strong></a> kullanılarak tahsis edilir. Dizindeki tüm girdilerin değil de sadece seçilen girdilerin döndürülmesi için işlev, kullanıcı tarafından sağlanan <em class="parameter"><code>selector</code></em> işlevini çağırır. <em class="parameter"><code>selector</code></em> işlevinin yalnızca sıfırdan farklı bir değer döndürdüğü girdiler seçilir.
-    </p>
-    <p>
-     Son olarak, *<em class="parameter"><code>namelist</code></em> içindeki girdiler kullanıcı tarafından sağlanan <em class="parameter"><code>cmp</code></em> işlevi çağrılarak sıraya dizilir. <em class="parameter"><code>cmp</code></em> işlevine aktarılan bağımsız değişkenler <code class="code">struct dirent **</code> türündedir, bu bakımdan <a href="glibc-String-Array-Comparison.html#glibc-fn-strcmp"><strong class="function"><code>strcmp</code></strong></a> veya <a href="glibc-Collation-Functions.html#glibc-fn-strcoll"><strong class="function"><code>strcoll</code></strong></a> işlevleri doğrudan kullanılamaz. Kullanılabilecek işlevler için aşağıya <a href="glibc-Scanning-Directory-Content.html#glibc-fn-alphasort"><strong class="function"><code>alphasort</code></strong></a> ve <a href="glibc-Scanning-Directory-Content.html#glibc-fn-versionsort"><strong class="function"><code>versionsort</code></strong></a> işlevlerine bakınız.
-    </p>
-    <p>
-     İşlevin normal dönüş değeri *<em class="parameter"><code>namelist</code></em> listesine yerleştirilen girdilerin sayısıdır. <code class="code">-1</code> dönmüşse bir hata saptanmış demektir (ya dizin okumak için açılamamıştır ya da <a href="glibc-Basic-Allocation.html#glibc-fn-malloc"><strong class="function"><code>malloc</code></strong></a> başarısız olmuştur). Bu durumda <a href="glibc-Checking-for-Errors.html#glibc-vr-errno"><strong class="varname"><code>errno</code></strong></a> değişkenine hata durumu atanır.
-    </p>
-   </div>
-        <p>
-    Yukarıda açıklanan <a href="glibc-Scanning-Directory-Content.html#glibc-fn-scandir"><strong class="function"><code>scandir</code></strong></a> işlevinin dördüncü bağımsız değişkeni sıralama işlevine göstericidir. Yazılımcıya kolaylık olarak GNU C Kütüphanesi bu amaca uygun olarak gerçeklenmiş işlevler içerir.
-   </p>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-    <span id="glibc-fn-alphasort" class="indexterm"></span>
-    <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/dirent.h;hb=HEAD" target="_top">dirent.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">int </code><strong><code class="function">alphasort</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">const struct dirent </code><strong class="type">**</strong><strong><code class="parameter">a</code></strong><strong><code>, </code></strong><code class="type">const struct dirent </code><strong class="type">**</strong><strong><code class="parameter">b</code></strong><strong><code>)</code></strong></td></tr></table></div>
-    
-    <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-locale">locale</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-asunsafe">AS-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-heap">heap</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acunsafe">AC-Unsafe</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-mem">mem</a>
-    </div>
-    <p>
-     <code class="code">alphasort</code> işlevi <a href="glibc-Collation-Functions.html#glibc-fn-strcoll"><strong class="function"><code>strcoll</code></strong></a> işlevi gibi davranır (bkz. <a class="xref" href="glibc-String-Array-Comparison.html" title="5.7. Dizi/Dizge Karşılaştırması"><em>Dizi/Dizge Karşılaştırması</em></a>).  Aradaki fark, bağımsız değişkenlerin dizge göstericisi değil <code class="code">struct dirent **</code> türünde olmasıdır.
-    </p>
-    <p>
-     <code class="code">alphasort</code> işlevinin dönüş değeri <em class="parameter"><code>a</code></em> ve <em class="parameter"><code>b</code></em> girdilerinin karşılaştırılmasına bağlı olarak sıfırdan küçük, sıfır ya da sıfırdan büyük bir değer olur.
-    </p>
-   </div>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-    <span id="glibc-fn-versionsort" class="indexterm"></span>
-    <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/dirent.h;hb=HEAD" target="_top">dirent.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">int </code><strong><code class="function">versionsort</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">const struct dirent </code><strong class="type">**</strong><strong><code class="parameter">a</code></strong><strong><code>, </code></strong><code class="type">const struct dirent </code><strong class="type">**</strong><strong><code class="parameter">b</code></strong><strong><code>)</code></strong></td></tr></table></div>
-    
-    <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-locale">locale</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-assafe">AS-Safe</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acsafe">AC-Safe</a>
-    </div>
-    <p>
-     <code class="code">versionsort</code> işlevi dahili olarak <a href="glibc-String-Array-Comparison.html#glibc-fn-strverscmp"><strong class="function"><code>strverscmp</code></strong></a> işlevini kullanması dışında <a href="glibc-Scanning-Directory-Content.html#glibc-fn-alphasort"><strong class="function"><code>alphasort</code></strong></a> işlevi gibidir.
-    </p>
-   </div>
-        <p>
-    Eğer dosya sistemi büyük dosyaları destekliyorsa, <a href="glibc-Directory-Entries.html#glibc-tp-dirent"><strong class="type"><code>struct dirent</code></strong></a> yapısının tüm bilgiyi içermesi mümkün olmadığından <a href="glibc-Scanning-Directory-Content.html#glibc-fn-scandir"><strong class="function"><code>scandir</code></strong></a> işlevi kullanılamaz. LFS sistemi için yeni bir tür, <code class="type">struct dirent64</code> ve bunu kullanmak için de yeni bir işlev vardır.
-   </p>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-    <span id="glibc-fn-scandir64" class="indexterm"></span>
-    <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/dirent.h;hb=HEAD" target="_top">dirent.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">int </code><strong><code class="function">scandir64</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">const char </code><strong class="type">*</strong><strong><code class="parameter">dir</code></strong><strong><code>, </code></strong><code>struct dirent64 ***<em class="parameter"><code>namelist</code></em></code><strong><code>, </code></strong><code>int (*<em class="parameter"><code>selector</code></em>) (const struct dirent64 *)</code><strong><code>, </code></strong><code>int (*<em class="parameter"><code>cmp</code></em>) (const struct dirent64 **, const struct dirent64 **)</code><strong><code>)</code></strong></td></tr></table></div>
-    
-    <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-asunsafe">AS-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-heap">heap</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acunsafe">AC-Unsafe</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-mem">mem</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-fd">fd</a>
-    </div>
-    <p>
-     <code class="code">scandir64</code> işlevi dizin girdilerini <code class="type">struct dirent64</code> türünde döndürmesi dışında <a href="glibc-Scanning-Directory-Content.html#glibc-fn-scandir"><strong class="function"><code>scandir</code></strong></a> işlevi gibidir. <em class="parameter"><code>selector</code></em> ile gösterilen işlev yine, istenen girdileri seçmek için kullanılır, ama işlev bu sefer <code class="code">struct dirent64 *</code> türünde bir bağımsız değişken alır.
-    </p>
-    <p>
-     Benzer şekilde, <em class="parameter"><code>cmp</code></em> işlevi de <code class="code">struct dirent64 **</code> türünde iki bağımsız değişken alır.
-    </p>
-   </div>
-        <p>
-    <em class="parameter"><code>cmp</code></em> bu sefer farklı türde bağımsız değişkenler aldığından ve <a href="glibc-Scanning-Directory-Content.html#glibc-fn-alphasort"><strong class="function"><code>alphasort</code></strong></a> ve <a href="glibc-Scanning-Directory-Content.html#glibc-fn-versionsort"><strong class="function"><code>versionsort</code></strong></a> işlevleri bu türde bağımsız değişken almadıklarından burada kullanılamaz. Bu bakımdan iki işlev daha tanımlanmıştır.
-   </p>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-    <span id="glibc-fn-alphasort64" class="indexterm"></span>
-    <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/dirent.h;hb=HEAD" target="_top">dirent.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">int </code><strong><code class="function">alphasort64</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">const struct dirent64 </code><strong class="type">**</strong><strong><code class="parameter">a</code></strong><strong><code>, </code></strong><code class="type">const struct dirent64 </code><strong class="type">**</strong><strong><code class="parameter">b</code></strong><strong><code>)</code></strong></td></tr></table></div>
-    
-    <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-locale">locale</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-asunsafe">AS-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-heap">heap</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acunsafe">AC-Unsafe</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-mem">mem</a>
-    </div>
-    <p>
-     <code class="code">alphasort64</code> işlevi <a href="glibc-Collation-Functions.html#glibc-fn-strcoll"><strong class="function"><code>strcoll</code></strong></a> işlevi gibi davranır (bkz. <a class="xref" href="glibc-String-Array-Comparison.html" title="5.7. Dizi/Dizge Karşılaştırması"><em>Dizi/Dizge Karşılaştırması</em></a>).  Aradaki fark, bağımsız değişkenlerin dizge göstericisi değil <code class="code">struct dirent64 **</code> türünde olmasıdır.
-    </p>
-    <p>
-     <code class="code">alphasort64</code> işlevinin dönüş değeri <em class="parameter"><code>a</code></em> ve <em class="parameter"><code>b</code></em> girdilerinin karşılaştırılmasına bağlı olarak sıfırdan küçük, sıfır ya da sıfırdan büyük bir değer olur.
-    </p>
-   </div>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-    <span id="glibc-fn-versionsort64" class="indexterm"></span>
-    <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/dirent.h;hb=HEAD" target="_top">dirent.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">int </code><strong><code class="function">versionsort64</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">const struct dirent64 </code><strong class="type">**</strong><strong><code class="parameter">a</code></strong><strong><code>, </code></strong><code class="type">const struct dirent64 </code><strong class="type">**</strong><strong><code class="parameter">b</code></strong><strong><code>)</code></strong></td></tr></table></div>
-    
-    <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-locale">locale</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-assafe">AS-Safe</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acsafe">AC-Safe</a>
-    </div>
-    <p>
-     <code class="code">versionsort64</code> işlevi dahili olarak <a href="glibc-String-Array-Comparison.html#glibc-fn-strverscmp"><strong class="function"><code>strverscmp</code></strong></a> işlevini kullanması dışında <a href="glibc-Scanning-Directory-Content.html#glibc-fn-alphasort64"><strong class="function"><code>alphasort64</code></strong></a> işlevi gibidir.
-    </p>
-   </div>
-        <p>
-    <code class="code">scandir</code> kullanırken 64 bitlik karşılaştıma işlevlerini kullanmamak (ya da tam tersi) önemlidir. Bunun çalıştığı sistemler varsa da diğerleri ümitsizce başarısız olacaktır.
-   </p>
-      </section>
-      <footer>
-        <div align="center" class="footer">
-          <small>Bir <a href="http://belgeler.org.tr/">Linux Kitaplığı</a> Sayfası</small>
-        </div>
-      </footer>
-    </section>
-  </body>
-</html>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:26:51+03:00" /><title>Dizin İçeriğinin Taranması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Accessing-Directories.html" title="Dizinlere Erişim" /><link rel="previous" href="../glibc/glibc-Random-Access-Directory.html" title="Dizin Akımında Rasgele Erişim" /><link rel="next" href="../glibc/glibc-Simple-Directory-Lister-Mark-II.html" title="Bir Dizinin İçeriğini Listeleyen İkinci Örnek" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Dizin İçeriğinin Taranması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Random-Access-Directory.html">Önceki</a> </td><th width="60%" align="center">Dizinlere Erişim</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Simple-Directory-Lister-Mark-II.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Scanning-Directory-Content" id="glibc-Scanning-Directory-Content"></a>Dizin İçeriğinin Taranması</div><dl><dd><div class="para">
+Dizinlerle çalışan işlevlerin daha yüksek seviyedeki bir arayüzü de  <b><tt>scandir</tt></b> işlevidir. Onun yardımıyla, bir dizin içindeki girdilerin bir kısmı seçilebilir, sıralanabilir ve bir isim listesi alınabilir.
+    </div><a name="glibc-scandir" id="glibc-scandir"></a>
+<a class="indexterm" name="idx1249" id="idx1249"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>scandir</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char      *<i><tt>dizin</tt></i>,
+ struct dirent ***<i><tt>isimlistesi</tt></i>,
+ int            (*<i><tt>seçici</tt></i>) (const struct dirent *),
+ int            (*<i><tt>sıralayıcı</tt></i>) (const void *, const void *))</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>scandir</tt></b> işlevi <i><tt>dizin</tt></i> ile belirtilen dizinin içeriğini tarar. Sonucu döndüren <i><tt>*isimlistesi</tt></i> seçilen dizin girdilerini içeren <b><tt>struct dirent</tt></b> türündeki göstericilerin dizisidir ve <b><tt>malloc</tt></b> kullanılarak ayrılır. Dizindeki tüm girdilerin değilde sadece seçilen girdilerin döndürülmesi için işlev kullanıcı tarafından sağlanan <i><tt>seçici</tt></i> işlevi çağırır. Sadece <i><tt>seçici</tt></i> işlevin sıfırdan farklı bir değer döndürdüğü girdiler seçilir.
+    </div><div class="para">
+Son olarak, <i><tt>*isimlistesi</tt></i> içindeki girdiler kullanıcı tarafından sağlanan <i><tt>sıralayıcı</tt></i> işlevi çağrılarak sıraya sokulur. <i><tt>sıralayıcı</tt></i> işlevine aktarılan argümanlar <b><tt>struct dirent **</tt></b> türündedir, bu bakımdan <b><tt>strcmp</tt></b> veya <b><tt>strcoll</tt></b> işlevleri doğrudan kullanılamaz. Kullanılabilecek işlevler için aşağıya <b><tt>alphasort</tt></b> ve <b><tt>versionsort</tt></b> işlevlerine bakınız.
+    </div><div class="para">
+İşlevin normal dönüş değeri <i><tt>*isimlistesi</tt></i>'ne yerleştirilen girdilerin sayısıdır. <b><tt>-1</tt></b> dönmüşse bir hata saptanmış demektir (ya dizin okumak için açılamamıştır ya da malloc başarısız olmuştur). Bu durumda <b><tt>errno</tt></b> değişkenine hata durumu atanır.
+</div></dd></dl><div style="padding:5px"></div><div class="para">
+Yukarıda açıklanan <b><tt>scandir</tt></b> işlevinin dördüncü argümanı bir sıralama işlevine bir göstericidir. Yazılımcıya kolaylık olarak GNU C kütüphanesi bu amaca uygun olarak gerçeklenmiş işlevler içerir.
+    </div><a name="glibc-alphasort" id="glibc-alphasort"></a>
+<a class="indexterm" name="idx1250" id="idx1250"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>alphasort</tt></b></tt></td><td valign="top"><pre class="paramdef">(const void *<i><tt>a</tt></i>,
+ const void *<i><tt>b</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>alphasort</tt></b> işlevi <b><tt>strcoll</tt></b> işlevi gibi davranır (bkz. <a href="../glibc/glibc-String-Array-Comparison.html" class="xref" title="Dizi/Dizge Karşılaştırması">Dizi/Dizge Karşılaştırması</a>).  Aradaki fark, argümanların dizge göstericisi değil <b><tt>struct dirent **</tt></b> türünde olmasıdır.
+    </div><div class="para">
+<b><tt>alphasort</tt></b> işlevinin dönüş değeri <i><tt>a</tt></i> ve <i><tt>b</tt></i> girdilerinin karşılaştırılmasına bağlı olarak sıfırdan küçük bir değer, sıfır ya da sıfırdan büyük bir değer olur.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-versionsort" id="glibc-versionsort"></a>
+<a class="indexterm" name="idx1251" id="idx1251"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>versionsort</tt></b></tt></td><td valign="top"><pre class="paramdef">(const void *<i><tt>a</tt></i>,
+ const void *<i><tt>b</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>versionsort</tt></b> işlevi dahili olarak <b><tt>strverscmp</tt></b> işlevini kullanması dışında <b><tt>alphasort</tt></b> işlevi gibidir.
+</div></dd></dl><div style="padding:5px"></div><div class="para">
+Eğer dosya sistemi büyük dosyaları destekliyorsa, <b><tt>dirent</tt></b> yapısının tüm bilgiyi içermesi mümkün olmadığından <b><tt>scandir</tt></b> işlevi kullanılamaz. LFS sistemi için yeni bir tür, <b><tt>struct dirent64</tt></b>, bunu kullanmak için de yeni bir işlev vardır.
+    </div><a name="glibc-scandir64" id="glibc-scandir64"></a>
+<a class="indexterm" name="idx1252" id="idx1252"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>scandir64</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char        *<i><tt>dizin</tt></i>,
+ struct dirent64 ***<i><tt>isimlistesi</tt></i>,
+ int              (*<i><tt>seçici</tt></i>) (const struct dirent64 *),
+ int              (*<i><tt>sıralayıcı</tt></i>) (const void *, const void *))</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>scandir64</tt></b> işlevi dizin girdilerini <b><tt>struct dirent64</tt></b> türünde döndürmesi dışında <b><tt>scandir</tt></b> işlevi gibidir. <i><tt>seçici</tt></i> ile gösterilen işlev yine, istenen girdileri seçmek için kullanılır, ama işlev bu sefer <b><tt>struct dirent64 *</tt></b> türünde bir parametre alır.
+    </div><div class="para">
+Benzer şekilde, <i><tt>sıralayıcı</tt></i> işlevi de <b><tt>struct dirent64 **</tt></b> türünde iki parametre alır.
+</div></dd></dl><div style="padding:5px"></div><div class="para">
+<i><tt>sıralayıcı</tt></i> bu sefer farklı türde argümanlar aldığından ve <b><tt>alphasort</tt></b> ve <b><tt>versionsort</tt></b> işlevleri bu türde argüman almadıklarından burada kullanılamazlar. Bu bakımdan iki işlev daha tanımlanmıştır.
+    </div><a name="glibc-alphasort64" id="glibc-alphasort64"></a>
+<a class="indexterm" name="idx1253" id="idx1253"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>alphasort64</tt></b></tt></td><td valign="top"><pre class="paramdef">(const void *<i><tt>a</tt></i>,
+ const void *<i><tt>b</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>alphasort64</tt></b> işlevi <b><tt>strcoll</tt></b> işlevi gibi davranır (bkz. <a href="../glibc/glibc-String-Array-Comparison.html" class="xref" title="Dizi/Dizge Karşılaştırması">Dizi/Dizge Karşılaştırması</a>).  Aradaki fark, argümanların dizge göstericisi değil <b><tt>struct dirent64 **</tt></b> türünde olmasıdır.
+    </div><div class="para">
+<b><tt>alphasort64</tt></b> işlevinin dönüş değeri <i><tt>a</tt></i> ve <i><tt>b</tt></i> girdilerinin karşılaştırılmasına bağlı olarak sıfırdan küçük bir değer, sıfır ya da sıfırdan büyük bir değer olur.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-versionsort64" id="glibc-versionsort64"></a>
+<a class="indexterm" name="idx1254" id="idx1254"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>versionsort64</tt></b></tt></td><td valign="top"><pre class="paramdef">(const void *<i><tt>a</tt></i>,
+ const void *<i><tt>b</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>versionsort64</tt></b> işlevi dahili olarak <b><tt>strverscmp</tt></b> işlevini kullanması dışında <b><tt>alphasort64</tt></b> işlevi gibidir.
+</div></dd></dl><div style="padding:5px"></div><div class="para">
+<b><tt>scandir</tt></b> kullanırken 64 bitlik karşılaştıma işlevlerini kullanmamak (ya da tam tersi) önemlidir. Bunun çalıştığı sistemler varsa da diğerleri ümitsizce başarısız olacaktır.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Random-Access-Directory.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Accessing-Directories.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Simple-Directory-Lister-Mark-II.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Dizin Akımında Rasgele Erişim </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Bir Dizinin İçeriğini Listeleyen İkinci Örnek</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:24+03:00" /><title>
+      send() ve recv() --
+      Konuş Benimle Bebeğim!
+    </title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../bgnet/bgnet_syscalls.html" title="Sistem Çağrıları veya Felaketleri" /><link rel="previous" href="../bgnet/bgnet_syscalls-accept.html" title="accept() -- &quot;3490 Numaralı Portu&#10;      Aradığınız İçin Teşekkürler&quot;" /><link rel="next" href="../bgnet/bgnet_syscalls-sendtorecv.html" title="&#10;      sendto() ve recvfrom()&#10;      -- Benimle UDP'ce Konuş&#10;    " /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">
+      send() ve recv() --
+      Konuş Benimle Bebeğim!
+    </th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../bgnet/bgnet_syscalls-accept.html">Önceki</a> </td><th width="60%" align="center">Sistem Çağrıları veya Felaketleri</th><td width="20%" align="right"> <a accesskey="n" href="../bgnet/bgnet_syscalls-sendtorecv.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="bgnet_syscalls-sendrecv" id="bgnet_syscalls-sendrecv"></a>
+      <tt>send()</tt> ve <tt>recv()</tt> --
+      Konuş Benimle Bebeğim!
+    </div><dl><dd><div class="para">
+      Bu iki işlev veri akış soketler veya bağlantılı veri paketi soketleri
+      üzerinden veri göndermenizi ve veri almanızı sağlar. Eğer istediğiniz
+      düzenli ve bağlantısız veri paketi soketleri kullanmak ise o zaman
+      <a class="link" href="../bgnet/bgnet_syscalls-sendtorecv.html" title="&#10;      sendto() ve recvfrom()&#10;      -- Benimle UDP'ce Konuş&#10;    "><tt>sendto()</tt> ve
+      <tt>recvfrom()</tt></a> işlevleri ile ilgili
+      aşağıdaki bölümü okumalısınız.
+    </div><div class="para">
+      <tt>send()</tt> işlevi şu şekilde çağrılır:
+    </div>
+<div class="para"><div align="right"><pre class="programlisting">
+int send(int sockfd, const void *msg, int len, int flags); 
+</pre></div></div>
+    <div class="para">
+      <i><tt>sockfd</tt></i> üzerinden veri göndereceğiniz sokettir
+      (size <tt>socket()</tt> veya <tt>accept()</tt>
+      tarafından sağlanmış olabilir). <i><tt>msg</tt></i> göndermek
+      istediğiniz mesajı gösteren bir göstergedir ve <i><tt>len</tt></i>
+      değişkeni bu verinin byte cinsinden uzunluğudur. <i><tt>flags</tt></i>
+      parametresini <tt>0</tt> olarak bırakabilirsiniz.
+      (Bu parametre ile ilgili ayrıntılı bilgi için bkz.
+      <tt>send()</tt> man sayfası.)
+    </div><div class="para">Örnek bir kod parçası vermek gerekirse:</div>
+<div class="para"><div align="right"><pre class="programlisting">
+char *msg = "Beej buradaydi!";
+int len, bytes_sent;
+.
+.
+len = strlen(msg);
+bytes_sent = send(sockfd, msg, len, 0);
+.
+.
+. 
+</pre></div></div>
+    <div class="para">
+      <tt>send()</tt> değer olarak gönderilen bayt miktarını
+      döndürür -- bu sizin gönderilmesini istediğiniz miktardan az olabilir!
+      Gördüğünüz gibi siz ona bir yığın veri göndermesini söylersiniz ancak
+      o bazen bunun tamamı ile başa çıkamayabilir. Elinden geldiği kadarını
+      gönderir ve geriye kalan veriyi yeniden göndermek sizin
+      sorumluluğunuzdadır. Unutmayın, eğer <tt>send()</tt>
+      işlevinin döndürdüğü değer <i><tt>len</tt></i> değişkenindeki
+      değer kadar değilse göndermek istediğiniz verinin geriye kalanını
+      göndermek sizin işinizdir. İyi haberlere gelince: Eğer paket küçükse
+      (1k civarı) bu işlev büyük ihtimalle tüm veriyi bir seferde
+      gönderebilecektir. Her zamanki gibi hata durumunda <tt>-1</tt>
+      değerini döndürür ve <i><tt>errno</tt></i> küresel değişkenine
+      hata kodunu yazar.
+    </div><div class="para">
+      <tt>recv()</tt> işlevi da pek çok bakımdan yukarıdaki işleve
+      benzer:
+    </div>
+<div class="para"><div align="right"><pre class="programlisting">
+int recv(int sockfd, void *buf, int len, unsigned int flags); 
+</pre></div></div>
+    <div class="para">
+      <i><tt>sockfd</tt></i> üzerinden okuma işlemini
+      gerçekleştireceğiniz sokettir, <i><tt>buf</tt></i> okunan verinin
+      yazılacağı bellek bölgesinin başlangıç adresini gösteren göstergedir,
+      <i><tt>len</tt></i> ise verinin yazılacağı tamponun (buffer)
+      azami boyudur ve <i><tt>flags</tt></i> yine <tt>0</tt>
+      değerini alabilir (Ayrıntılı bilgi için <tt>recv()</tt>
+      man sayfasına bakınız).
+    </div><div class="para">
+      <tt>recv()</tt> okunduktan sonra tampona yazılan bayt miktarını
+      döndürür ya da eğer bir hata oluştu ise <tt>-1</tt> değerini
+      döndürüp <i><tt>errno</tt></i> değişkeninini değerini belirler.
+    </div><div class="para">
+      Bir dakika! <tt>recv()</tt> <tt>0</tt> değerini
+      döndürebilir! Bunun tek bir anlamı vardır: karşı taraf bağlantıyı
+      kesmiş! Döndürülen değerin <tt>0</tt> olması
+      <tt>recv()</tt> işlevinin size "karşı taraf bağlantıyı
+      kesti" mesajını vermesi demektir.
+    </div><div class="para">
+      Bütün bunları anlamak kolaydı değil mi? Artık verilerinizi soketler
+      üzerinden yollayıp alabilirsiniz! Vay be! Artık siz bir Unix Ağ
+      Programlama Uzmanısınız!
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../bgnet/bgnet_syscalls-accept.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../bgnet/bgnet_syscalls.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../bgnet/bgnet_syscalls-sendtorecv.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">accept() -- "3490 Numaralı Portu
+      Aradığınız İçin Teşekkürler" </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> 
+      sendto() ve recvfrom()
+      -- Benimle UDP'ce Konuş
+    </td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

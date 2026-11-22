@@ -1,98 +1,228 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="tr" xml:lang="tr">
-  <head>
-    <title>A.2. Değişkin İşlevler</title>
-    <meta name="generator" content="DocBook XSL Stylesheets V-special (derived from DocBook XSL v1.79.1 for Turkish Linux Documentation Project by Nilgün Belma Bugüner - nilgun (at) tlbp.org.tr)" />
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="/style/nav.css" />
-    <link rel="icon" type="image/png" href="/images/belgeler-logo.png" />
-    <meta name="robots" content="index, follow" />
-  </head>
-  <body>
-    <header>
-      <div class="navbar">
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Consistency-Checking.html')">Önceki</button>
-          <div class="dropdown-content">A.1. Dahilî Tutarlılığın Doğrudan Denetlenmesi</div>
-        </div>
-        <div style="width:34%" class="dropdown">
-          <button class="dropbtn">Yukarı</button>
-          <div class="dropdown-content">
-            <button type="button" class="dropbtn" onclick="window.location.assign('/index.html')">Baş Sayfa</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('/KiTAPLIK/index.html')">Kitaplık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc.html')">Ana Başlık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Language-Features.html')">Üst Başlık</button>
-          </div>
-        </div>
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Why-Variadic.html')">Sonraki</button>
-          <div class="dropdown-content">A.2.1. Değişkin İşlevler Neden Kullanılır</div>
-        </div>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:28:01+03:00" /><title>Değişkin İşlevler</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Language-Features.html" title="Ek A. Kütüphanedeki C Dili Oluşumları" /><link rel="previous" href="../glibc/glibc-Consistency-Checking.html" title="Dahilî Kararlılığın Doğrudan Denetlenmesi" /><link rel="next" href="../glibc/glibc-Null-Pointer-Constant.html" title="Boş Gösterici Sabiti" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Değişkin İşlevler</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Consistency-Checking.html">Önceki</a> </td><th width="60%" align="center">Ek A. Kütüphanedeki C Dili Oluşumları</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Null-Pointer-Constant.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Variadic-Functions" id="glibc-Variadic-Functions"></a>Değişkin İşlevler</div><dl><dd><div class="para">
+<a class="indexterm" name="idx3313" id="idx3313"></a>
+<a class="indexterm" name="idx3314" id="idx3314"></a>
+<a class="indexterm" name="idx3315" id="idx3315"></a>
+<a class="indexterm" name="idx3316" id="idx3316"></a>
+ISO C, değişen sayıda argüman alabilecek bir işlevin bildirilebilmesi için bir  sözdizimi tanımlamıştır. Buna rağmen, dilin kendisi bu tür işlevlerin gerekli olmayan argümanlarına erişim için bir mekanizma sağlamaz; bu nedenle, <a class="ulink" href="file:/usr/include/stdarg.h" target="_top"><tt>stdarg.h</tt></a> başlık  dosyasındaki makrolarla tanımlanmış olan değişken argümanları kullanacaksınız.
+    </div><div class="para">
+Bu tür işlevler, <span class="wordasword"><i>değişken argümanlı işlevler</i></span> [varargs functions] ya da <span class="wordasword"><i>değişkin işlevler</i></span> [variadic functions] adını alır.
+    </div><div class="para">
+Bu bölümde değişkin işlevlerin nasıl bildirildikleri, nasıl yazıldıkları ve nasıl çağrıldıkları anlatılmıştır.
+    </div>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Uyumluluk Bilgisi:</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">Birçok eski C gerçeklemesi, <tt>stdarg.h</tt> kullanılarak değişken sayıda argümanla işlevleri tanımlama mekanizmasına benzeyen ama uyumlu olmayan bir mekanizma sağlar.</div></td></tr></table></div>
+     <div class="head3"><a name="glibc-Why-Variadic" id="glibc-Why-Variadic"></a>Değişkin İşlevler Neden Kullanılır</div><dl><dd><div class="para">
+Sıradan C işlevleri sabit sayıda argüman alır. Bir işlevi tanımlarken her argüman için veri türünü de belirtirsiniz. Her işlev çağrısında istenen sayıda argüman verirken argümanlarını da gerekirse tür dönüşümü yaparak istenen türde sağlarsınız. Bu noktada, örneğin, <tt>foo</tt> işlevi <b><tt>int foo (int, char *);</tt></b> deyimi ile bildirilmişse, onu iki argümanla; bir sayı ve bir dizge göstericisi ile çağırmalısınız.
+      </div><div class="para">
+Fakat bazı işlevler sınırsız sayıda argümanı anlamlı olarak kabul ederek işlemler uygulayabilir.
+      </div><div class="para">
+Bazı durumlarda bir işlev çok sayıda değeri bir blok olarak işleyerek elde edebilir. Örneğin, varsayalım ki, bir işlev belirli sayıda değeri tutmak için <b><tt>malloc</tt></b> ile bir tek boyutlu dizi ayırsın. Dizinin uzunluğuna bağlı sayıda değer üzerinde işlem yapılabileceğinden değişen sayıda argümanlı oluşumlar olmaksızın, her olası dizi uzunluğu için ayrı bir işlev tanımlamak zorunda kalırsınız.
+      </div><div class="para">
+Kütüphane işlevi <b><tt>printf</tt></b>  (Bkz. <a href="../glibc/glibc-Formatted-Output.html" class="xref" title="Biçimli Çıktı">Biçimli Çıktı</a>) değişken argümanlı başka bir işlev sınıfından bir örnek olarak verilebilir. Bu işlev bir biçim şablonu dizgesi altında (değişken sayıda ve türdeki) argümanlarını basar.
+      </div><div class="para">
+Bunlar, argüman sayısı çağrı sırasında seçilen bir <span><i>değişkin</i></span> işlev tanımlamak için iyi sebeplerdir.
+      </div><div class="para">
+<b><tt>open</tt></b> gibi bazı işlevler sabit sayıda argüman almasına rağmen arasıra son birkaçını yoksayar. ISO C'ye kesin bağlılık durumunda bu işlevlerin değişkin olarak tanımlanması gerekir; uygulamada ise, GNU C derleyicisi ve diğer bir çok C derleyicisi böyle bir işlevi sabit sayıda argümanla tanımlamayı ve sadece <i><tt>bildirme</tt></i> işlemini yaparken işlevi değişkin olarak bildirerek (ya da argümanlarının tümünü bildirmeyerek) yapmayı tercih eder.
+    </div></dd></dl> <div class="head3"><a name="glibc-How-Variadic" id="glibc-How-Variadic"></a>Değişkin İşlevler Nasıl Tanımlanır ve Kullanılır</div><dl><dd><div class="para">
+Bir değişkin işlevin tanımlanması ve kullanılması üç adımdan oluşur:
+    </div>
+      <div class="variablelist"><dl><dt><span class="term">Tanım</span></dt><dd class="varlist"><div class="para">
+Bir işlevin değişkin olarak tanımlanması, argüman listesinde bir üçlü nokta (<b><tt>…</tt></b>) kullanarak ve değişken sayıda argümana erişmek için özel makrolar kullanılarak yapılır. Bkz. <a href="../glibc/glibc-Variadic-Functions.html#glibc-Receiving-Arguments" class="xref" title="Argüman değerlerinin Alınması">Argüman değerlerinin Alınması</a>.
+      </div></dd><dt><span class="term">Bildirim</span></dt><dd class="varlist"><div class="para">
+Bir işlevin değişkin olarak bildirilmesi, onu çağıran tüm dosyalarda bir üçlü nokta (<b><tt>…</tt></b>) içeren bir prototip kullanarak yapılır. Bkz. <a href="../glibc/glibc-Variadic-Functions.html#glibc-Variadic-Prototypes" class="xref" title="Değişen Sayıda Argüman için Sözdizimi">Değişen Sayıda Argüman için Sözdizimi</a>.
+      </div></dd><dt><span class="term">Çağrı</span></dt><dd class="varlist"><div class="para">
+İşlev çağrısı sabit agümanlara ek olarak değişken sayıdaki argümanları yazarak yapılır. Bkz.  <a href="../glibc/glibc-Variadic-Functions.html#glibc-Calling-Variadics" class="xref" title="Değişkin İşlevlerin Çağrılması">Değişkin İşlevlerin Çağrılması</a>.
+      </div></dd></dl></div>
+     <div class="head4"><a name="glibc-Variadic-Prototypes" id="glibc-Variadic-Prototypes"></a>Değişen Sayıda Argüman için Sözdizimi</div><dl><dd><div class="para">
+<a class="indexterm" name="idx3317" id="idx3317"></a>
+<a class="indexterm" name="idx3318" id="idx3318"></a>
+Değişken sayıda argüman kabul eden bir işlev şimdi açıklanacağı gibi bir prototiple bildirilmelidir. Önce sabit argümanları yazacaksınız, ardından da ek argümanlar olduğunu belirtmek üzere bir üçlü nokta (<b><tt>…</tt></b>) gelecek. ISO C sözdizimi üçlü noktadan önce en az bir sabit argüman gerektirir. Örnek:
+     </div>
+<div class="para"><div align="right"><pre class="screen">
+int
+func (const char *a, int b, …)
+{
+  …
+}
+</pre></div></div><div class="para">
+Bu örnekte, <b><tt>int</tt></b> türünde bir dönüş değeri olan ve biri <b><tt>const char *</tt></b> türünde diğeri <b><tt>int</tt></b> türünde iki argüman gerektiren <b><tt>func</tt></b> işlevi tanımlanmıştır. Ayrıca işlevin gerekli olan iki argümandan başka belirsiz sayıda anonim  argümanları da vardır.
       </div>
-    </header>
-    <section class="mainpage">
-      <div class="crumbs">
-        <p>  </p>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Uyumluluk Bilgisi:</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">Bazı C derleyicileri için son gerekli argümanın işlev tanımında <b><tt>register</tt></b> olarak bildirilmemesi gereklidir. Bundan başka, bu argümanın türü <span><i>kendinden terfili</i></span> olmalıdır: Şöyleki, öntanımlı terfiler onun türünü değiştirmemelidir. Bu kurallar dizi ve işlev türleri ile <b><tt>float</tt></b>, <b><tt>char</tt></b> (signed ya da değil) ve <b><tt>short int</tt></b> (signed ya da değil) türleri dışarda tutar. Bu aslında bir ISO C gerekliliğidir.</div></td></tr></table></div>
+      </dd></dl> <div class="head4"><a name="glibc-Receiving-Arguments" id="glibc-Receiving-Arguments"></a>Argüman değerlerinin Alınması</div><dl><dd><div class="para">
+<a class="indexterm" name="idx3319" id="idx3319"></a>
+<a class="indexterm" name="idx3320" id="idx3320"></a>
+Gerekli olan argümanların isimleri vardır ve bu isimleri kullanarak onları değerlerine erişirsiniz. Ama isteğe bağlı argümanların isimleri yoktur, çünkü onlar bir üçlü nokta ile ifade edilmiştir. O halde bu argümanlara nasıl erişilecek?
+      </div><div class="para">
+<a class="indexterm" name="idx3321" id="idx3321"></a>
+Onlara erişmenin tek yolu onlara yazıldıkları sırayla erişmektir. Bunun için <tt>stdarg.h</tt> başlık dosyasındaki özel makroları aşağıdaki üç adımlık işlemlerle kullanmalısınız:
       </div>
-      <section class="chapter" id="glibc-Variadic-Functions">
-        <div class="titlepage">
-          <div>
-            <div>
-              <h2 class="title">A.2. Değişkin İşlevler</h2>
-            </div>
+        <ol class="orderedlist" start="ignore" type="1"><li><div class="listitem"><div class="para">
+<b><tt>va_start</tt></b> kullanarak <b><tt>va_list</tt></b> türünde bir argüman gösterici değişkenini ilklendirin. Argüman gösterici, ilklendirildiğinde ilk isteğe bağlı argümanı gösterecektir.
+        </div></div></li><li><div class="listitem"><div class="para">
+İsteğe bağlı argümanlara <b><tt>va_arg</tt></b> çağırarak erişirsiniz. İlk <b><tt>va_arg</tt></b> çağrısı ilk isteğe bağlı argümanı, ikinci çağrı ikincisini, böyle gider.
+        </div><div class="para">
+Bu çağrı işlemini kalan isteğe bağlı argümanları yoksayacağınız yere kadar sürdürebilirsiniz. Bir işlevin argümanlarından daha azına erişmek bir sorun çıkarmaz ama daha fazla sayıda argümana erişmeye çalışırsanız bozuk değerler alırsınız.
+        </div></div></li><li><div class="listitem"><div class="para">
+Argüman gösterici ile işiniz bittiğinde bunu <b><tt>va_end</tt></b> çağrısıyla belirtin.
+        </div><div class="para">
+(Uygulamada, birçok C derleyicisi <b><tt>va_end</tt></b> çağrısında hiçbir şey yapmaz. Bu GNU C derleyicisi için de geçerlidir. Ancak, yazılımınızın bir gün bu çağrıyı gerektiren bir derleyici ile derlenebileceğini gözönüne alarak yine de <b><tt>va_end</tt></b> çağrısını yaparsanız iyi olur.)
+        </div></div></li></ol>
+      <div class="para">
+<b><tt>va_start</tt></b>,<b><tt>va_arg</tt></b> ve  <b><tt>va_end</tt></b> tanımları için <a href="../glibc/glibc-Variadic-Functions.html#glibc-Argument-Macros" class="xref" title="Argümana Erişim Makroları">Argümana Erişim Makroları</a> bölümüne bakınız.
+      </div><div class="para">
+1 den 3 e kadar adımlar isteğe bağlı argümanları kabul eden işlevin içinde uygulanmalıdır. Buna rağmen <b><tt>va_list</tt></b> değişkenini bir argüman olarak başka bir işleve aktararak 2. adımı ya da tamamını burada uygulayabilirsiniz.
+      </div><div class="para">
+Bu üç adımlık işlemi tek bir işlevi defalarca çağırarak da uygulayabilirsiniz. İsteğe bağlı argümanları yoksaymak istediğinizde ise bu adımları sıfır kere uygulayabilirsiniz.
+      </div><div class="para">
+İsterseniz, birden fazla argüman gösterici değişkeniniz olabilir ve bu değişkenlerin her birini istediğiniz zaman <b><tt>va_start</tt></b> çağrılarıyla ayrı ayrı ilklendirebilirsiniz. Her argüman gösterici ile istediğiniz kadar isteğe bağlı argümanı alabilirsiniz. Her argüman gösterici değişkeni daima aynı argüman kümesine ama kendi alanında sahip olacaktır.
+      </div>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Taşınabilirlik Bilgisi:</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">Bazı derleyicilerle, bir argüman gösterici değerini bir alt işleve aktardıktan sonra, alt işlev döndüğünde aynı argüman gösterici değerini kullanımda tutmamalısınız. Tam taşınabilirlik için, onu  <b><tt>va_end</tt></b>'e aktarmalısınız. Bu aslında bir ISO C gerekliliği olmakla birlikte birçok ANSI C derleyicisi ile de sorunsuz çalışır.</div></td></tr></table></div>
+      </dd></dl> <div class="head4"><a name="glibc-How-Many-Arguments" id="glibc-How-Many-Arguments"></a>Aktarılan Argümanların Sayısı</div><dl><dd><div class="para">
+<a class="indexterm" name="idx3322" id="idx3322"></a>
+<a class="indexterm" name="idx3323" id="idx3323"></a>
+Bir işleve aktarılan isteğe bağlı argümanların sayısını ve türünü saptamak için genel bir yol yoktur. Yani işlevi tasarlayan her kim ise, genellikle çağrıcı tarafından kullanılmak üzere argümanların sayısının ve türünün belirtileceği bir yol da tasarlamalıdır. Bu kimse siz olduğunuza göre her değişkin işlev için bir çağrı yöntemi tespit edip, çağrıları yazarken bunları uygulamalısınız.
+      </div><div class="para">
+Çağrı yöntemlerinden biri, isteğe bağlı argümanların sayısını sabit argümanlardan birinde belirtmektir. Bu yöntem sadece tüm isteğe bağlı argümanlar aynı türde ise çalışır.
+      </div><div class="para">
+Bir diğer çağrı yöntemi ise, sabit argümanlardan birinin bir isteğe bağlı argümanın sağlayabileceği her olası amaç için bir bit olmak üzere bir bit maskesi içermesidir. Bu bitleri önceden tanımlanmış bir sırayla sınayarak; eğer bit bir ise sonraki argümanın değerini alırsınız, değilse bir öntanımlı değer kullanırsınız.
+      </div><div class="para">
+Bir sabit argüman hem argüman sayısını hem de türünü belirten bir kalıp olarak kullanılabilir. <b><tt>printf</tt></b> işlevinin biçim dizgesi argümanı buna bir örnektir (Bkz. <a href="../glibc/glibc-Formatted-Output-Functions.html" class="xref" title="Biçimli Çıktı İşlevleri">Biçimli Çıktı İşlevleri</a>).
+      </div><div class="para">
+Diğer bir olasılık da, son isteğe bağlı argüman olarak bir "son belirten" değer aktarmaktır. Örneğin isteğe bağlı argümanları göstericilerden oluşan bir işleve sonuncu argüman olarak bir boş gösterici verilebilir. Örneğin, <b><tt>execl</tt></b> işlevi bu yöntemi kullanır. Bkz. <a href="../glibc/glibc-Executing-a-File.html" class="xref" title="Bir Dosyanın Çalıştırılması">Bir Dosyanın Çalıştırılması</a>.
+      </div></dd></dl> <div class="head4"><a name="glibc-Calling-Variadics" id="glibc-Calling-Variadics"></a>Değişkin İşlevlerin Çağrılması</div><dl><dd><div class="para">
+<a class="indexterm" name="idx3324" id="idx3324"></a>
+<a class="indexterm" name="idx3325" id="idx3325"></a>
+Bir değişkin işlev çağrısına özel hiçbir şey yoktur. Parantez içine önce gerekli sonra da isteğe bağlı argümanları virgüllerle ayırarak yazarsınız. Ama önce işlevi bir prototiple bildirmeniz gerekir, böylece argüman değerlerinin nasıl dönüştürüleceğini bilirsiniz.
+      </div><div class="para">
+Prensip olarak, değişkin olarak <i>tanımlanan işlevler</i> çağrılmadan önce bir <a class="link" href="../glibc/glibc-Variadic-Functions.html#glibc-Variadic-Prototypes" title="Değişen Sayıda Argüman için Sözdizimi">işlev prototipi</a> kullanarak  değişkin olarak <i>bildirilmelidir</i>. Bazı C derleyicileri, işlevin aldığı sabit ve değişken sayıdaki argümanlara bağlı olarak bir işleve aktarılacak aynı argüman değerleri kümesi için farklı çağrı yöntemleri kullandığı için bu böyledir.
+      </div><div class="para">
+Uygulamada, GNU C derleyici argümanların gerekli mi, isteğe bağlı mı olduğuna bakmaksızın bir verilmiş argüman türleri kümesini hep aynı yolla aktarır. Yani argüman türleri kendiden terfili olduğu sürece onların bildirilmesini rahatça ihmal edebilirsiniz. Genellikle, değişkin işlevlerin argüman türlerini ve hatta tüm işlevleri bildirmek iyi bir fikirdir. Ancak çok kullanışlı bir kaç işlev vardır ki değişkin olarak bildirilmez; örneğin, <b><tt>open</tt></b> ve <b><tt>printf</tt></b>.
+      </div><div class="para">
+<a class="indexterm" name="idx3326" id="idx3326"></a>
+<a class="indexterm" name="idx3327" id="idx3327"></a>
+İşlev prototipinde isteğe bağlı argümanların türleri belirtilmediğinden, bir değişkin işlev çağrısında isteğe bağlı argüman değerleri üzerinde <span><i>öntanımlı argüman terfileri</i></span> uygulanır. Yani, nesne türleri <b><tt>char</tt></b> veya <b><tt>short int</tt></b>  (signed ya da değil) ise ya <b><tt>int</tt></b> ya da  <b><tt>unsigned int</tt></b> türüne, nesne türü <b><tt>float</tt></b>  ise <b><tt>double</tt></b> türüne terfi ettirilir. Böylece örneğin, çağrı sırasına <b><tt>char</tt></b> türünde belirtilen bir argüman, <b><tt>int</tt></b> türüne terfi ettirilerek, işlev argümana <b><tt>va_arg (<i><tt>arg_gstr</tt></i>, int)</tt></b> ile erişebilir.
+      </div><div class="para">
+Gerekli argümanların dönüşümleri ise işlev prototipi tarafından genel bir yolla denetlenir: argüman işlev prototipinde bildirilen türde değilse, prototipte bildirilen türe dönüştürülür.
+      </div></dd></dl> <div class="head4"><a name="glibc-Argument-Macros" id="glibc-Argument-Macros"></a>Argümana Erişim Makroları</div><dl><dd><div class="para">
+Burada isteğe bağlı argümanlara erişmek için kullanılan makrolar açıklanmıştır. Bu makrolar
+<tt>stdarg.h</tt> başlık dosyasında tanımlıdır.
+<a class="indexterm" name="idx3328" id="idx3328"></a>
+        </div>
+<a class="indexterm" name="idx3329" id="idx3329"></a>
+<a name="glibc-va_list" id="glibc-va_list"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt><b><tt>va_list</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+<b><tt>va_list</tt></b> türü argüman gösterici değişkeni için kullanılır.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx3330" id="idx3330"></a>
+<a name="glibc-va_start-" id="glibc-va_start-"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>va_start</tt></b></tt></td><td valign="top"><pre class="paramdef">(va_list <i><tt>arglist-gstr</tt></i>, <i><tt>gerekli-son-arg</tt></i>) </pre></td></tr></table></div><div class="sagsutun">makro</div></div></div><dl><dd><div class="para">
+Bu makro, kullanıldığı işlevin ilk isteğe bağlı argümanını gösterecek olan <i><tt>arglist_gstr</tt></i> argüman gösterici değişkenini ilklendirir. <i><tt>gerekli-son-arg</tt></i> işlevdeki gerekli son argüman olmalıdır.
+          </div><div class="para">
+Bu makronun bir alternatifi olarak <tt>varargs.h</tt> başlık dosyasında tanımlanmış olan <b><tt>va_start</tt></b> makrosu için <a href="../glibc/glibc-Variadic-Functions.html#glibc-Old-Varargs" class="xref" title="Eski Moda Değişkin İşlevler">Eski Moda Değişkin İşlevler</a> bölümüne bakınız.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx3331" id="idx3331"></a>
+<a name="glibc-va_arg" id="glibc-va_arg"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt><i>tür </i><b><tt>va_arg</tt></b></tt></td><td valign="top"><pre class="paramdef">(va_list <i><tt>arglist-gstr</tt></i>, <i><tt>tür</tt></i>)</pre></td></tr></table></div><div class="sagsutun">makro</div></div></div><dl><dd><div class="para">
+Bu makro sonraki isteğe bağlı argümanın değeri ile döner ve <i><tt>arglist_gstr</tt></i> değişkeninin değerini sonraki argümanı gösterecek şekilde değiştirir. Böylece her <b><tt>va_arg</tt></b> kullanımında sırayla bir isteğe bağlı argümanın değeri alınır.
+          </div><div class="para">
+<b><tt>va_arg</tt></b> tarafından döndürülen değerin türü çağrı sırasında <i><tt>tür</tt></i> ile belirtilir. <i><tt>tür</tt></i> argümanın türü ile eşleşen kendinden terfili bir tür olmalıdır (<b><tt>char</tt></b>, <b><tt>short int</tt></b> veya <b><tt>float</tt></b> değil).
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx3332" id="idx3332"></a>
+<a name="glibc-va_end" id="glibc-va_end"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>va_end</tt></b></tt></td><td valign="top"><pre class="paramdef">(va_list <i><tt>arglist-gstr</tt></i>)</pre></td></tr></table></div><div class="sagsutun">makro</div></div></div><dl><dd><div class="para">
+Bu makro <i><tt>arglist_gstr</tt></i> kullanımını sonlandırır. Bir <b><tt>va_end</tt></b> çağrısından sonraki <b><tt>va_arg</tt></b> çağrıları bu <i><tt>arg_gstr</tt></i> ile çalışamaz. Aynı <i><tt>arglist_gstr</tt></i> argümanı için bir <b><tt>va_start</tt></b> çağrısı yapmadan önce bir <b><tt>va_end</tt></b> çağrısı yapılmalıdır.
+          </div><div class="para">
+GNU C kütüphanesinde, <b><tt>va_end</tt></b> hiçbir şey yapmaz ve taşınabilirlik sebebi dışında kulanmanız gerekmez.
+          </div></dd></dl><div style="padding:5px"></div>
+        <div class="para">
+Kimi zaman parametre listesini defalarca çözümlemeniz gerekir ya da argümanlardan birinin listedeki konumunu hatırlamak istersiniz. Bu durumda, o anki argüman değerinin bir kopyasını yaparsınız. Ancak <b><tt>va_list</tt></b> şeffaf bir tür değildir ve <b><tt>va_list</tt></b> türünden bir değişkenin değeri başka bir değişkene atanamaz (bazı türleri sadece makrolar oluşturabilir).
+        </div>
+<a class="indexterm" name="idx3333" id="idx3333"></a>
+<a name="glibc__va_copy" id="glibc__va_copy"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>__va_copy</tt></b></tt></td><td valign="top"><pre class="paramdef">(va_list <i><tt>hedef</tt></i>,
+ va_list <i><tt>kaynak</tt></i>)</pre></td></tr></table></div><div class="sagsutun">makro</div></div></div><dl><dd><div class="para">
+Bu makro, <b><tt>va_list</tt></b> türünden nesnelerin bir bütünleyen tür olmasa bile kopyalanmasını mümkün kılar. <i><tt>hedef</tt></i> argüman göstericisi, <i><tt>kaynak</tt></i> göstericisi ile aynı argümanı göstermek üzere ilklendirilir.
+          </div><div class="para">
+Bu makro bir GNU oluşumudur ve ISO C standardının gelecek güncellemesinde ayrıca kullanılabilir olacağı umulmaktadır.
+</div></dd></dl><div style="padding:5px"></div><div class="para">
+<b><tt>__va_copy</tt></b> makrosunu kullanmak isterseniz, bu makronun kullanılabilir olmayabileceği durumlara karşı hazırlıklı olmalısınız. Basit atamanın geçersiz olduğu mimarilerde <b><tt>__va_copy</tt></b> makrosunun bulunmakta olduğunu umarak yazılımınızda bu makroyu daima şöyle yazmalısınız:
           </div>
-        </div>
-        <div class="preliminary">
-          <div class="titlepage">
-            <div>
-              <div>
-                <h2 class="title">Ön Bilgi</h2>
-              </div>
-            </div>
-          </div>
-          <p>
-    <span id="idm148462" class="indexterm"></span>
-    <span id="idm148466" class="indexterm"></span>
-    <span id="idm148470" class="indexterm"></span>
-    <span id="idm148473" class="indexterm"></span>
-    ISO C, değişen sayıda bağımsız değişken alabilecek bir işlevin bildirilebilmesi için bir  sözdizimi tanımlamıştır. (Bu tür işlevlere <em class="wordasword">değişkin işlevler</em> adı verilir.) Buna rağmen, dilin kendisi bu tür işlevlerin gerekli olmayan bağımsız değişkenlerine erişim için bir düzenek sağlamaz; bu nedenle, <code class="filename"><a class="filename" href="https://gcc.gnu.org/git/?p=gcc.git;a=blob_plain;f=gcc/ginclude/stdarg.h;hb=HEAD" target="_top">stdarg.h</a></code> başlık  dosyasındaki makrolarla tanımlanmış olan sayısı değişen bağımsız değişkenler makroları kullanılacaktır.
-   </p>
-          <p>
-    Bu bölümde değişkin işlevlerin nasıl bildirildikleri, nasıl yazıldıkları ve nasıl çağrıldıkları açıklanmıştır.
-   </p>
-          <div class="admon note">
-            <h3 class="admon-title">Uyumluluk Bilgisi:</h3>
-            <div class="admon-contents">
-              <p>
-     Birçok eski C gerçeklemesi, <code class="filename"><a class="filename" href="https://gcc.gnu.org/git/?p=gcc.git;a=blob_plain;f=gcc/ginclude/stdarg.h;hb=HEAD" target="_top">stdarg.h</a></code> kullanılarak değişken sayıda bağımsız değişken ile işlevleri tanımlama düzeneğine benzeyen ama uyumlu olmayan bir düzenek sağlar.
-    </p>
-            </div>
-          </div>
-        </div>
-        <div class="toc">
-          <div class="toc-title">İçindekiler</div>
-          <dl class="toc">
-            <dt>A.2.1. <a href="glibc-Why-Variadic.html">Değişkin İşlevler Neden Kullanılır</a>  -  Değişen sayıda bağımsız değişken alan işlevleri oluşturmak için sebepler.</dt>
-            <dt>A.2.2. <a href="glibc-How-Variadic.html">Değişkin İşlevler Nasıl Tanımlanır ve Kullanılır</a>  -  Değişkin işlevler nasıl tanımlanır ve çağrılır.</dt>
-            <dd>
-              <dl>
-                <dt>A.2.2.1. <a href="glibc-Variadic-Prototypes.html">Değişen Sayıda Bağımsız Değişken için Sözdizimi</a>  -  Bağımsız değişken sayısı değişen işlevlerin ilk örneği nasıl yazılır.</dt>
-                <dt>A.2.2.2. <a href="glibc-Receiving-Arguments.html">Bağımsız Değişken Değerlerinin Alınması</a>  -  İsteğe bağlı bağımsız değişken değerlerine erişimde izlenecek adımlar.</dt>
-                <dt>A.2.2.3. <a href="glibc-How-Many-Arguments.html">Aktarılan Bağımsız Değişkenlerin Sayısı</a>  -  Daha fazla bağımsız değişken var mı diye nasıl bakmalı.</dt>
-                <dt>A.2.2.4. <a href="glibc-Calling-Variadics.html">Değişkin İşlevlerin Çağrılması</a>  -  Bağımsız değişken sayısı değişen işlevlerin çağrıları hakkında bilinmesi gerekenler.</dt>
-                <dt>A.2.2.5. <a href="glibc-Argument-Macros.html">Bağımsız Değişkene Erişim Makroları</a>  -  İsteğe bağlı bağımsız değişkenlere erişmek için kullanılan makroların ayrıntılı belirtimi</dt>
-              </dl>
-            </dd>
-            <dt>A.2.3. <a href="glibc-Variadic-Example.html">Değişkin İşlev Örneği</a>  -  Eksiksiz bir örnek.</dt>
-          </dl>
-        </div>
-      </section>
-      <footer>
-        <div align="center" class="footer">
-          <small>Bir <a href="http://belgeler.org.tr/">Linux Kitaplığı</a> Sayfası</small>
-        </div>
-      </footer>
-    </section>
-  </body>
-</html>
+<div class="para"><div align="right"><pre class="screen">
+{
+  va_list ap, save;
+  …
+#ifdef __va_copy
+  __va_copy (save, ap);
+#else
+  save = ap;
+#endif
+  …
+}
+</pre></div></div></dd></dl></dd></dl> <div class="head3"><a name="glibc-Variadic-Example" id="glibc-Variadic-Example"></a>Bir Değişkin İşlev Örneği</div><dl><dd><div class="para">
+Burada değişken sayıda argüman kabul eden bir işlevle ilgili tam bir örneğe yer verilmiştir. İşlevin ilk argümanı diğer argümanların sayısını içermektedir. İşlev anlamsız olsa da değişken argüman oluşumunun kullanımı hakkında fikir vermek için yeterlidir.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+#include &lt;stdarg.h&gt;
+#include &lt;stdio.h&gt;
+
+int
+topla (int miktar,...)
+{
+  va_list ag;
+  int i, toplam;
+
+  va_start (ag, miktar);         /* Argüman listesi ilklendiriliyor. */
+
+  toplam = 0;
+  for (i = 0; i &lt; miktar; i++)
+    toplam += va_arg (ag, int);    /* Sonraki argümanın değeri alınıyor. */
+
+  va_end (ag);                  /* Temizlik. */
+  return toplam;
+}
+
+int
+main (void)
+{
+  /* Bu çağrı 16 basar. */
+  printf ("%d\n", topla (3, 5, 5, 6));
+
+  /* Bu çağrı 55 basar. */
+  printf ("%d\n", topla (10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+
+  return 0;
+}
+</pre></div></div> <div class="head4"><a name="glibc-Old-Varargs" id="glibc-Old-Varargs"></a>Eski Moda Değişkin İşlevler</div><dl><dd><div class="para">
+<a class="indexterm" name="idx3334" id="idx3334"></a>
+ISO C öncesi çağlarda yazılımcılar değişkin işlevleri yazmak için az çok farklı bir oluşum kullandılar. GNU C derleyicisi hala onu desteklemektedir; şu anda, ISO C için destek hala evrensel olmadığından, ISO C oluşumundan daha taşınabilir durumdadır. Bu eski moda değişkin işlevler oluşumu <tt>varargs.h</tt> başlık dosyasında tanımlanmıştır.
+      </div><div class="para">
+<tt>varargs.h</tt> kullanımı <tt>stdarg.h</tt> kullanımı ile hemen hemen aynıdır. (Bkz. <a href="../glibc/glibc-Variadic-Functions.html#glibc-Calling-Variadics" class="xref" title="Değişkin İşlevlerin Çağrılması">Değişkin İşlevlerin Çağrılması</a>) Değişkin işlevlerin çağrılması açısından bir fark yoktur. Tek fark onların nasıl tanımlandığı ile igilidir. Herşeyden önce, eski moda prototipsiz sözdizimini şöyle kullanmalısınız:
+     </div>
+<div class="para"><div align="right"><pre class="screen">
+tree
+build (va_alist)
+     va_dcl
+{
+</pre></div></div><div class="para">
+İkinci olarak, <b><tt>va_start</tt></b>'ı tek bir argüman ile vermelisiniz, bunun gibi:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+  va_list p;
+  va_start (p);
+</pre></div></div><div class="para">
+Eski moda değişkin işlevleri tanımlamak için kullanılan özel makrolar şunlardır:
+      </div>
+<a class="indexterm" name="idx3335" id="idx3335"></a>
+<a name="glibc-va_alist" id="glibc-va_alist"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt><b><tt>va_alist</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">makro</div></div></div><dl><dd><div class="para">
+Bu makro bir değişkin işlevdeki gerekli argüman isimlerinin listesi için kullanılır.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx3336" id="idx3336"></a>
+<a name="glibc-va_dcl" id="glibc-va_dcl"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt><b><tt>va_dcl</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">makro</div></div></div><dl><dd><div class="para">
+Bu makro bir değişkin işlev için dolaylı argüman ya da argümanları bildirir.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx3337" id="idx3337"></a>
+<a name="glibc-va_start" id="glibc-va_start"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>va_start</tt></b></tt></td><td valign="top"><pre class="paramdef">(va_list <i><tt>arglist-gstr</tt></i>)</pre></td></tr></table></div><div class="sagsutun">makro</div></div></div><dl><dd><div class="para">
+Bu makro <tt>varargs.h</tt> dosyasında tanımlanmış olarak, kullanıldığı işlevin ilk argümanını gösteren <i><tt>arg_gstr</tt></i> argüman gösterici değişkenini ilklendirir.
+        </div></dd></dl><div style="padding:5px"></div>
+      <div class="para">
+Diğer argüman makroları, <b><tt>va_arg</tt></b> ve  <b><tt>va_end</tt></b> için <tt>varargs.h</tt> ile <tt>stdarg.h</tt> kullanımları arasında fark yoktur; ayrıntılar için <a href="../glibc/glibc-Variadic-Functions.html#glibc-Argument-Macros" class="xref" title="Argümana Erişim Makroları">Argümana Erişim Makroları</a> bölümüne bakınız.
+      </div><div class="para">
+<tt>varargs.h</tt> ile <tt>stdarg.h</tt> dosyaları aynı derleme altında birlikte kullanılamazlar, çünkü <b><tt>va_start</tt></b> tanımları isimleri dışında birbiriyle aynı değildir.
+      </div></dd></dl></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Consistency-Checking.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Language-Features.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Null-Pointer-Constant.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Dahilî Kararlılığın Doğrudan Denetlenmesi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Boş Gösterici Sabiti</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

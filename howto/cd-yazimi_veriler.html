@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:13+03:00" /><title>Veri CD'lerinin Yazılması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/cd-yazimi.html" title="Linux'da CD Yazımı" /><link rel="previous" href="../howto/cd-yazimi_baslangic.html" title="Başlangıç" /><link rel="next" href="../howto/cd-yazimi_muzik.html" title="Müzik CD'lerinin Yazılması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Veri CD'lerinin Yazılması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/cd-yazimi_baslangic.html">Önceki</a> </td><th width="60%" align="center">Linux'da CD Yazımı</th><td width="20%" align="right"> <a accesskey="n" href="../howto/cd-yazimi_muzik.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="cd-yazimi_veriler" id="cd-yazimi_veriler"></a>Veri CD'lerinin Yazılması</div><dl><dd><div class="para">
+      CD'ye yazmaya karar verdiğimiz dosyaları, CD dosya sistemine dönüştürmeli
+      ve bu şekilde CD'ye yazmalıyız. Bunun için ilk önce yazmayı düşündüğümüz
+      dosyaları kendi dosya sistemimiz üzerinde bir dizine toplamalı ve daha
+      sonra da <b><tt>mkisofs</tt></b> isimli yazılım yardımı ile bu
+      dizini CD dosya sistemine dönüştürmeliyiz. Bir dizin CD dosya sistemine
+      şu şekilde dönüştürülebilir:
+    </div><div class="para"><pre class="literallayout">
+<b><tt>mkisofs</tt></b> -r -o <i>iso_dosyasi.iso cdye_yazilacak_dosyalar</i>/
+</pre></div><div class="para">
+Bu komut, bulunduğumuz dizinde bulunan <i><tt>cdye_yazilacak_dosyalar/</tt></i>
+isimli dizini, yine bulunduğumuz dizine <i><tt>iso_dosyasi.iso</tt></i>
+ismi ile dönüştürecektir. Aşağıdaki ekran çıktısı, <tt>tez/</tt>
+isimli dizinin <tt>tez.iso</tt> dosyasına dönüştürülmesini
+göstermektedir:
+    </div><div class="para"><div align="right"><pre class="screen">
+<tt>[root@isildur iso]#</tt> <b><tt>mkisofs -r -o tez.iso tez/</tt></b>
+Using APPEN00.HTM;1 for tez/Applied_Cryptography/appendixb.html (appendixa.html)
+Using LECTU000.PS;1 for tez/lecture_notes/lecture17.ps (lecture16.ps)
+Using LECTU001.PS;1 for tez/lecture_notes/lecture16.ps (lecture15.ps)
+Using LECTU002.PS;1 for tez/lecture_notes/lecture15.ps (lecture14.ps)
+Using LECTU003.PS;1 for tez/lecture_notes/lecture14.ps (lecture13.ps)
+Using LECTU004.PS;1 for tez/lecture_notes/lecture13.ps (lecture12.ps)
+Using LECTU005.PS;1 for tez/lecture_notes/lecture12.ps (lecture11.ps)
+Using LECTU006.PS;1 for tez/lecture_notes/lecture11.ps (lecture10.ps)
+Using LECTU007.PS;1 for tez/lecture_notes/lecture10.ps (lecture1.ps)
+Using 2001_00.PDF;1 for tez/pointcheval/2001_asiacryptC.pdf (2001_asiacryptA.pdf)
+13.10% done, estimate finish Wed Feb 26 15:20:25 2003
+26.21% done, estimate finish Wed Feb 26 15:20:21 2003
+39.34% done, estimate finish Wed Feb 26 15:20:23 2003
+52.43% done, estimate finish Wed Feb 26 15:20:23 2003
+65.55% done, estimate finish Wed Feb 26 15:20:27 2003
+78.65% done, estimate finish Wed Feb 26 15:20:26 2003
+91.75% done, estimate finish Wed Feb 26 15:20:26 2003
+Total translation table size: 0
+Total rockridge attributes bytes: 44970
+Total directory bytes: 108544
+Path table size(bytes): 618
+Max brk space used 617e4
+38160 extents written (74 Mb)
+</pre></div></div><div class="para">
+Ayrıca, yazmak istediğimiz dosyalar diskimizde değil bir başka CD üzerinde
+bulunuyor olabilirler ya da bir CD'yi bire-bir kopyalamak istiyor olabiliriz
+(İlgilenmeyenler okumaya <a class="link" href="../howto/cd-yazimi_veriler.html#cd-yazimi_veriler-iso">bir kaç
+satır aşağıdan</a> devam edebilirler).
+Bu durumda izlenebilecek iki yöntem vardır. İlki, CD'den CD'ye doğrudan
+kopyalama, diğeri de kopyalanacak CD'yi iso olarak diskimize kaydettikten
+sonra disk üzerinden CD'ye yazmak. İkisinin sonucu arasında hiçbir fark
+olmayacak, fakat ikinci yöntemi takip ettiğimiz taktirde CD'mizi yakma
+olasılığımız daha az olacaktır. Çünkü, CD'den CD'ye doğrudan kopyalama
+esnasında CD okuyucunun normal okuması esnasında bir kaç sefer deneyip
+okuyabileceği bir kısım, CD yazıcıya olan veri akışını sekteye uğratacak
+ve yazma işlemi başarısızlık ile sonlanacaktır. Yine de kendinize güveniyor
+olabilir ve illa ki CD'den CD'ye doğrudan kopyalama yapmak isteyebilirsiniz.
+    </div><div class="para">
+Örneğin CD yazıcınızın SCSI bus adresi <tt>0,4,0</tt> ve CD
+okuyucu olarak kullanacağınız aygıt <tt>/dev/cdrom</tt> iken
+aşağıdaki komut ile CD'den CD'ye kopyalama yapabilirsiniz. Bu noktada
+yazma hızını (yani komuttaki <tt>speed</tt> parametresini)
+düşük tutmanız risklerin azalması açısından iyi bir yaklaşım olacaktır:
+    </div><div class="para"><div align="right"><pre class="screen">
+<tt>[root@isildur iso]#</tt> <b><tt>cdrecord -v dev=0,4,0 speed=2 -isosize /dev/cdrom</tt></b>
+</pre></div></div><div class="para">
+İlk yönteme göre kopyalama yapmak isteyenlerin, yani CD'den CD'ye
+kopyalama yerine iso dosyasını önce disklerinde oluşturup daha sonra
+CD yazma işlemine geçmek isteyenlerin ihtiyacı olan komut şöyledir
+(kopyalamak istediğiniz CD'nin <tt>/dev/cdrom</tt> aygıtında
+olduğunu varsayarsak):
+    </div><div class="para"><div align="right"><pre class="screen">
+<tt>[root@isildur iso]#</tt> <b><tt>dd if=/dev/cdrom of=iso_dosyasi.iso</tt></b>
+</pre></div></div><a name="cd-yazimi_veriler-iso" id="cd-yazimi_veriler-iso"></a><div class="para">
+Artık iso dosyamız hazırdır ve iso dosyamızın boyutunun CD'mizin
+kapasitesinden küçük olduğunu teyit ettikten sonra CD'ye yazma işlemine
+başlamamız için önümüzde hiçbir engel yoktur. Fakat yine de, daha sonradan
+ortaya çıkabilecek tatsızlıkları engellemek için, iso dosyasının içini
+kontrol etmek isteyebiliriz; şu anda aklımıza gelmeyen ancak gözümüzle
+gördüğümüzde hatırlayabileceğimiz eksiklik ya da hataların var olmadığından
+emin olmak için. Bunun için iso dosyamızı, sanki bir CD-ROM'muş gibi
+dosya sistemimizde bir yere bağlayıp içinde gezebiliriz:
+    </div><div class="para"><div align="right"><pre class="screen">
+<tt>[root@isildur iso]#</tt> <b><tt>mount -t iso9660 -o ro,loop=/dev/loop0 tez.iso /mnt/cdrom</tt></b>
+</pre></div></div><div class="para">
+komutu yeterli olacaktır. Bir problem olmadığından emin olduktan sonra da
+iso dosya sistemini
+    </div><div class="para"><div align="right"><pre class="screen">
+<tt>[root@isildur iso]#</tt> <b><tt>umount /mnt/cdrom</tt></b>
+</pre></div></div><div class="para">
+komutu yardımı ile dosya sisteminizden ayırabiliriz. Boş CD'mizi
+CD-yazarın içerisine koyduktan sonra yazma işlemine başlayabiliriz.
+    </div><div class="para">
+Yazma işlemi aşağıdaki komut yardımı ile gerçekleştirilecektir:
+    </div><div class="para"><pre class="literallayout">
+<b><tt>cdrecord</tt></b> dev=<i>scanbus_id_si</i> -eject speed=<i>yazma_hizi iso_dosyasi.iso</i>
+</pre></div><div class="para">
+Burada belki de üzerinde konuşmamız gereken tek parametre '<tt>dev</tt>'
+parametresidir. Bu parametre, yazma işleminde kullanacağımız cihazın hangi
+cihazımız olduğunu bildirdiğimiz parametredir ve değerinin ne olacağına
+`<b><tt>cdrecord</tt></b> <tt>-scanbus</tt>' çıktısına göre
+karar verdiğimizi de hatırlatalım. Aşağıdaki ekran çıktısı, az önce
+hazırladığımız <tt>tez.iso</tt> isimli dosyayı yazdığımızda
+meydana gelen çıktıdır:
+    </div><div class="para"><div align="right"><pre class="screen">
+<tt>[root@isildur iso]#</tt> <b><tt>cdrecord dev=0,4,0 -eject speed=12 tez.iso</tt></b>
+Cdrecord 1.10 (i686-pc-linux-gnu) Copyright (C) 1995-2001 Jörg Schilling
+scsidev: '0,4,0'
+scsibus: 0 target: 4 lun: 0
+Linux sg driver version: 3.1.22
+Using libscg version 'schily-0.5'
+Device type    : Removable CD-ROM
+Version        : 2
+Response Format: 2
+Capabilities   : SYNC LINKED
+Vendor_info    : 'PLEXTOR '
+Identifikation : 'CD-R   PX-W1210S'
+Revision       : '1.04'
+Device seems to be: Generic mmc CD-RW.
+Using generic SCSI-3/mmc CD-R driver (mmc_cdr).
+Driver flags   : SWABAUDIO
+Starting to write CD/DVD at speed 12 in write mode for single session.
+Last chance to quit, starting real write in 0 seconds. Operation starts.
+Track 01: Total bytes read/written: 83839360/83839360 (58320 sectors).
+</pre></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/cd-yazimi_baslangic.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/cd-yazimi.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/cd-yazimi_muzik.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Başlangıç </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Müzik CD'lerinin Yazılması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

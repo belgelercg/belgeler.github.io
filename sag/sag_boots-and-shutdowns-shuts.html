@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:16+03:00" /><title>Kapanışla ilgili ayrıntılar</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../sag/sag_boots-and-shutdowns.html" title="Açılışlar ve Kapanışlar" /><link rel="previous" href="../sag/sag_boots-and-shutdowns_booting.html" title="Önyükleme sürecine yakından bakalım" /><link rel="next" href="../sag/sag_boots-and-shutdowns_reboot.html" title="Sistemin yeniden başlatılması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Kapanışla ilgili ayrıntılar</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../sag/sag_boots-and-shutdowns_booting.html">Önceki</a> </td><th width="60%" align="center">Açılışlar ve Kapanışlar</th><td width="20%" align="right"> <a accesskey="n" href="../sag/sag_boots-and-shutdowns_reboot.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="sag_boots-and-shutdowns-shuts" id="sag_boots-and-shutdowns-shuts"></a>Kapanışla ilgili ayrıntılar</div><dl><dd><div class="para">
+      Bir Linux sistemini kapatırken, doğru süreci izlemek çok önemlidir.
+      Şayet bunu doğru yapmazsanız, dosya sisteminiz değersiz bir çöp
+      yığınına dönebilir. Bunun sebebi, Linux'un bir kerede doğrudan değil de
+      daha sonra yazan (write-back) bir disk önbellekleme sistemine
+      sahip olmasıdır.  Bu performans artışı sağlamakla birlikte bazı
+      problemleri de yanında getirmektedir.  Şayet bir kapris anında
+      enerjiyi keserseniz, önbellekte bulunan ama henüz diske yazılmamış
+      olan bütün bilgiler yok olup gidecektir.
+    </div><div class="para">
+      Başka bir sebep de, galeyana gelip artalanda çalışan pek çok programın
+      olduğu, çok işlevli bir sistemin açma/kapama düğmesine vurursanız, bu
+      tam bir yıkım olabilir.  Sistemi uygun bir şekilde kapatarak, artalanda
+      çalışan bütün programların verilerini kurtardığından emin olabiliriz.
+    </div><div class="para">
+      Bir Linux sistemini kapatmak için gereken komut
+      <b><tt>shutdown</tt></b>'dır<sup>[<a name="id126" href="#ftn.id126" id="id126">126</a>]</sup>.
+      Genellikle bunu yapmak için iki yoldan birisi kullanılır.
+    </div><div class="para">
+      Tek kullanıcısı olduğunuz bir sistemde alışılmış yöntem: çalıştığınız
+      bütün programlardan çıkmak, bütün sanal konsollardan çıkıp, root
+      kullanıcı olarak tekrar girmek (şayet hali hazırda root olarak
+      bağlıysanız orada beklemek - ama kök dizininin veya root'un
+      ev dizininin (<tt>/root</tt> dizini) dosya sistemlerinin
+      ayrılması sırasında bir sorunla karşılaşmasını önlemek için, o
+      dizinlerden başka dizinlere geçin) ve daha sonra
+      <b><tt>shutdown -h now</tt></b> komutunu verin (<tt>now</tt>
+      parametresi yerine bir artı işaretiyle birlikte dakikaları belirten
+      sayılar da kullanabilirsiniz. Böylece, genellikle tek kullanıcılı
+      bir sistemde olmasanız bile kapanma işlemi istenen süre kadar
+      ertelenmiş olur).
+    </div><div class="para">
+      Alternatif olarak <b><tt>shutdown -h +süre uyarı</tt></b> komutunu
+      kullanabilirsiniz. <tt>süre</tt> sistemin ne kadarlık bir
+      süre sonra kapatılacağını, <tt>uyarı</tt> ise ne sebeple
+      kapatılacağını belirten küçük bir uyarı metnidir.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>shutdown -h +10 'Yeni bir disk ekliyoruz. Sistem 3 saat kapalı kalacak.'</tt></b>
+<tt>#</tt>
+</pre></div></div>
+    <div class="para">
+      Bu herkesi, sistemin 10 dakika sonra kapatılacağını ve verilerini
+      kaybedebilecekleri konusunda uyarır. Bu uyarı X uçbirimleri dahil
+      birilerinin bağlı olduğu bütün uçbirimlere gönderilir. Ve birkaç
+      kez daha uyarı gider. Kapanma anı yaklaştıkça uyarılar sıklaşır.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+Broadcast message from root (ttyp0) Wed Aug  2 01:03:25 1995...
+
+Yeni bir disk ekliyoruz. Sistem 3 saat kapalı kalacak.
+The system is going DOWN for system halt in 10 minutes !!
+</pre></div></div>
+    <div class="para">
+      Erteleme süresi sonunda gerçek kapatma işlemi başlayınca; kök
+      dosya sistemi hariç bütün dosya sistemleri ayrılır, halen bağlı
+      kullanıcı olsa bile bütün kullanıcı süreç ve programları
+      öldürülür, artalan süreçleri kapatılır, bütün dosya sistemleri
+      ayrılır ve her şey tatlıya bağlanmış olur. Bu yapılırken,
+      <b><tt>init</tt></b>  makineyi kapatabileceğinizi söyleyen
+      bir mesaj yayınlar. Bundan sonra yapmanız gereken tek şey
+      parmağınızı enerji düğmesine dokundurmaktır.
+    </div><div class="para">
+      Bazen, nadiren iyi sistemlerde bile, düzgün bir kapanış yapmak
+      mümkün olmaz.  Örneğin; şayet çekirdek paniklemişse, çöker ve
+      hatalı davranmaya başlar, bu durumda yeni bir komut vermek
+      imkansız olabilir.  Düzgün bir şekilde  kapatmanız mümkün
+      olmayınca yapabileceğiniz tek şey, başınıza kötü bir şey
+      gelmemesini ummak ve sistem enerji düğmesine basmaktır.
+      Şayet sorun biraz daha büyükse (örneğin birisi baltası ile
+      klavyenize vurduysa) ve çekirdekle <b><tt>update</tt></b> halen
+      düzgün bir şekilde çalışıyorsa, <b><tt>update</tt></b>'in
+      işlevini yapması ve önbellekte bulunan bilgileri yazılmaya
+      zorlaması için birkaç dakika beklemek daha uygun olacaktır.
+      Ondan sonra enerjiyi kesebilirsiniz.
+    </div><div class="para">
+      Bazı insanlar <b><tt>sync</tt></b> komutunu 3 kere ard arda
+      kullanıp disk G/Ç'larının bitmesini bekleyip sistemi kapatmayı
+      tercih ederler. Şayet çalışan bir program yok ise bu işlem
+      <b><tt>shutdown</tt></b> komutu ile aynı işi yapmış olur.
+      Bununla beraber bu işlem sırasında dosya sistemleri ayrılmadığı
+      için ext2fs  "temiz dosya sistemi" bayrağı ile ilgili hatalar
+      ortaya çıkabilir. Bu nedenle üçlü <b><tt>sync</tt></b> komutu ile
+      sistemi kapatmak <i>tavsiye edilmez</i>.
+    </div><div class="para">
+      (Bilgi: Üçlü sync'in sebebi, komutların ayrı ayrı yazıldığı
+      Unix'in ilk zamanlarında disk G/Ç işlemlerinin bitmesi için
+      yeterli zamanı kazanmaktı.)
+    </div><div class="footnotes"><br /><hr width="100" align="left" /><div class="footnote"><div class="para"><sup>[<a name="ftn.id126" href="#id126" id="ftn.id126">126</a>] </sup>Ç.N.: Son çıkan
+      bazı donanımlar açma-kapama düğmesine dokunmadan işletim sistemi
+      tarafından tamamen kapatılabilmektedir. Bunun için kullanılan
+      komut <b><tt>poweroff</tt></b>'tur</div></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../sag/sag_boots-and-shutdowns_booting.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../sag/sag_boots-and-shutdowns.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../sag/sag_boots-and-shutdowns_reboot.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Önyükleme sürecine yakından bakalım </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Sistemin yeniden başlatılması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

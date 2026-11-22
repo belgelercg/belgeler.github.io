@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:44+03:00" /><title>Evreler ve Sinyal İşleme</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-POSIX-Threads.html" title="POSIX Evreleri" /><link rel="previous" href="../glibc/glibc-Thread-Specific-Data.html" title="Evreye Özgü Veri" /><link rel="next" href="../glibc/glibc-Threads-and-Fork.html" title="Evreler ve Çatallaşmak" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Evreler ve Sinyal İşleme</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Thread-Specific-Data.html">Önceki</a> </td><th width="60%" align="center">POSIX Evreleri</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Threads-and-Fork.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Threads-and-Signal-Handling" id="glibc-Threads-and-Signal-Handling"></a>Evreler ve Sinyal İşleme</div><dl><dd>
+<a class="indexterm" name="idx2949" id="idx2949"></a>
+<a name="glibc-pthread_sigmask" id="glibc-pthread_sigmask"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pthread_sigmask</tt></b></tt></td><td valign="top"><pre class="paramdef">(int             <i><tt>nasıl</tt></i>,
+ const sigset_t *<i><tt>yenimaske</tt></i>,
+ sigset_t       *<i><tt>eskimaske</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_sigmask</tt></b> çağıran süreç için sinyal maskesini <i><tt>nasıl</tt></i> ve <i><tt>yenimaske</tt></i> argümanlarıyla belirtildiği şekilde değiştirir. Eğer <i><tt>eskimaske</tt></i> <b><tt>NULL</tt></b> değilse, önceki sinyal maskesi <i><tt>eskimaske</tt></i> ile gösterilen yerde saklanır.
+   </div><div class="para">
+<i><tt>nasıl</tt></i> ve <i><tt>yenimaske</tt></i> argümanlarının anlamı <b><tt>sigprocmask</tt></b> ile aynıdır. Eğer <i><tt>nasıl</tt></i> <b><tt>SIG_SETMASK</tt></b> ise, sinyal maskesi <i><tt>yenimaske</tt></i> yapılır. Eğer <i><tt>nasıl</tt></i> <b><tt>SIG_BLOCK</tt></b> ise, <i><tt>yenimaske</tt></i> için belirtilen sinyaller geçerli sinyal maskesine eklenir. Eğer <i><tt>nasıl</tt></i> <b><tt>SIG_UNBLOCK</tt></b> ise, <i><tt>yenimaske</tt></i> için belirtilen sinyaller geçerli sinyal maskesinden kaldırılır.
+   </div><div class="para">
+Sinyal maskeleri her evre başına ayarlanır, fakat sinyal hareketleri ve sinyal işleyicileri <b><tt>sigaction</tt></b> ile ayarlanır ve bütün evrelerce paylaşılır.
+   </div><div class="para">
+<b><tt>pthread_sigmask</tt></b> işlevi başarı halinde 0 döndürür, hata halinde de aşağıdaki hata kodlarından birini döndürür:
+   </div>
+   <div class="variablelist"><dl><dt><span class="term"><tt>EINVAL</tt></span></dt><dd class="varlist"><div class="para"><i><tt>nasıl</tt></i> <b><tt>SIG_SETMASK</tt></b>, <b><tt>SIG_BLOCK</tt></b> veya <b><tt>SIG_UNBLOCK</tt></b> değerlerinden biri değildir.
+     </div></dd><dt><span class="term"><tt>EFAULT</tt></span></dt><dd class="varlist"><div class="para"><i><tt>yenimaske</tt></i> veya <i><tt>eskimaske</tt></i> geçersiz bir adresi göstermektedir.
+     </div></dd></dl></div>
+</dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2950" id="idx2950"></a>
+<a name="glibc-pthread_kill" id="glibc-pthread_kill"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pthread_kill</tt></b></tt></td><td valign="top"><pre class="paramdef">(pthread_t <i><tt>evre</tt></i>,
+ int       <i><tt>sinyalnum</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_kill</tt></b>  <i><tt>sinyalnum</tt></i> sinyal numarasını  <i><tt>evre</tt></i> evresine gönderir.  Sinyal <a href="../glibc/glibc-Signal-Handling.html" class="xref" title="XXIV. Oylum - Sinyal İşleme">Sinyal İşleme</a> içinde anlatıldığı gibi teslim edilir ve işlenir.
+   </div><div class="para">
+<b><tt>pthread_kill</tt></b> başarı halinde 0 , hata halinde aşağıdaki hata kodlarından birini döndürür:
+   </div>
+   <div class="variablelist"><dl><dt><span class="term"><tt>EINVAL</tt></span></dt><dd class="varlist"><div class="para"><i><tt>sinyalnum</tt></i> geçerli bir sinyal numarası değildir.
+     </div></dd><dt><span class="term"><tt>ESRCH</tt></span></dt><dd class="varlist"><div class="para"><i><tt>evre</tt></i> evresi mevcut değildir (örn. sonlandırılmış olabilir)
+     </div></dd></dl></div>
+</dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2951" id="idx2951"></a>
+<a name="glibc-sigwait" id="glibc-sigwait"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>sigwait</tt></b></tt></td><td valign="top"><pre class="paramdef">(const sigset_t *<i><tt>küme</tt></i>,
+ int            *<i><tt>sinyal</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>sigwait</tt></b> <i><tt>küme</tt></i> içindeki sinyallerden biri çağıran evreye ulaştırılıncaya kadar çağıran evreyi askıya alır. Ardından, alınan sinyal numarasını <i><tt>sinyal</tt></i> ile gösterilen yerde saklar ve döner. <i><tt>küme</tt></i> içindeki sinyaller durdurulmalıdır ve <b><tt>sigwait</tt></b> girişinde dikkate alınmalıdırlar. Eğer ulaştırılan sinyal yanında sinyal işleyici işlevine sahipse, bu işlev çağrılmaz.
+   </div><div class="para">
+<b><tt>sigwait</tt></b> bir iptal noktasıdır. Her zaman 0 döndürür.
+   </div></dd></dl><div style="padding:5px"></div>
+   <div class="para">
+<b><tt>sigwait</tt></b>'in güvenilir çalışması için, beklenen sinyaller sadece çağıran evrede değil bütün evrelerde durdurulmalıdır, aksi takdirde sinyal ulaştırmanın POSIX mantığı, sinyali alacak olan <b><tt>sigwait</tt></b>'in o evre olduğunu garanti etmez. Bunu başarmanın en iyi yolu, herhangi bir evre oluşturulmadan önce bu sinyalleri durdurmak ve onları yazılım içinde  <b><tt>sigwait</tt></b> çağırmak haricinde serbest bırakmamaktır.
+   </div><div class="para">
+LinuxThreads'deki sinyal işleme POSIX standardındakiyle oldukça farklıdır. Standarda göre, "zamanuyumsuz" (dış) sinyaller bütün sürece (evrelerin toplamına) adreslenirler, ardından süreç bunları belirli bir evreye teslim eder. Sinyali alan evre sinyali o anda durdurmayan evrelerden herhangi biridir.
+   </div><div class="para">
+LinuxThreads'de, her evre aslında kendi süreç kimliği ile bir çekirdek sürecidir, bu nedenle dış sinyaller her zaman belirli bir evreye yönlendirilirler. Eğer, örneğin, başka bir evre o sinyalde <b><tt>sigwait</tt></b> içinde durdurulduysa, yeniden başlatılmaz.
+   </div><div class="para">
+<b><tt>sigwait</tt></b>'in LinuxThreads gerçeklemesi <i><tt>küme</tt></i> içindeki sinyaller için bekleme süresince kukla sinyal işleyicileri kurar. Sinyal işleyicileri bütün evrelerce paylaşıldığı için, diğer evreler bu sinyallere kendi sinyal işleyicilerini eklememeli veya bir seçenek olarak bütün hepsi sinyalleri durdurmalıdırlar (bu daima önerilmektedir).
+   </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Thread-Specific-Data.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-POSIX-Threads.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Threads-and-Fork.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Evreye Özgü Veri </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Evreler ve Çatallaşmak</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

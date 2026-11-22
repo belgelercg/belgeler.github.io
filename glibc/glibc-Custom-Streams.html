@@ -1,73 +1,99 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="tr" xml:lang="tr">
-  <head>
-    <title>12.21.2. Özel Akımlar</title>
-    <meta name="generator" content="DocBook XSL Stylesheets V-special (derived from DocBook XSL v1.79.1 for Turkish Linux Documentation Project by Nilgün Belma Bugüner - nilgun (at) tlbp.org.tr)" />
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="/style/nav.css" />
-    <link rel="icon" type="image/png" href="/images/belgeler-logo.png" />
-    <meta name="robots" content="index, follow" />
-  </head>
-  <body>
-    <header>
-      <div class="navbar">
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-String-Streams.html')">Önceki</button>
-          <div class="dropdown-content">12.21.1. Dizge Akımları</div>
-        </div>
-        <div style="width:34%" class="dropdown">
-          <button class="dropbtn">Yukarı</button>
-          <div class="dropdown-content">
-            <button type="button" class="dropbtn" onclick="window.location.assign('/index.html')">Baş Sayfa</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('/KiTAPLIK/index.html')">Kitaplık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc.html')">Ana Başlık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Other-Kinds-of-Streams.html')">Üst Başlık</button>
-          </div>
-        </div>
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Streams-and-Cookies.html')">Sonraki</button>
-          <div class="dropdown-content">12.21.2.1. Özel Akımlar ve Çerezler</div>
-        </div>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:26:43+03:00" /><title>Kendi Özel Akımlarınızı Oluşturun</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Other-Kinds-of-Streams.html" title="Diğer Akım Çeşitleri" /><link rel="previous" href="../glibc/glibc-Obstack-Streams.html" title="Yığınak Akımları" /><link rel="next" href="../glibc/glibc-Formatted-Messages.html" title="Biçimli İletiler" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Kendi Özel Akımlarınızı Oluşturun</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Obstack-Streams.html">Önceki</a> </td><th width="60%" align="center">Diğer Akım Çeşitleri</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Formatted-Messages.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Custom-Streams" id="glibc-Custom-Streams"></a>Kendi Özel Akımlarınızı Oluşturun</div><dl><dd><div class="para">
+<a class="indexterm" name="idx1015" id="idx1015"></a>
+<a class="indexterm" name="idx1016" id="idx1016"></a>
+Bu bölümde girdiyi bir keyfi veri kaynağından alan ve sizin tarafınızdan tasarlanan bir veri alıcısına çıktılayan bir akımı nasıl oluşturabileceğiniz açıklanmaktadır. Buna <span class="wordasword"><i>özel akımlar</i></span> diyoruz. Burada açıklanan işlev ve veri türlerinin hepsi GNU oluşumudur.
+    </div> <div class="head3"><a name="glibc-Streams-and-Cookies" id="glibc-Streams-and-Cookies"></a>Özel Akımlar ve Çerezler</div><dl><dd><div class="para">
+<a class="indexterm" name="idx1017" id="idx1017"></a>
+Her özel akımın içeriği <span class="wordasword"><i>çerez</i></span> adı verilen özel bir nesnedir. Bu nesne sizin tarafınızdan sağlanır ve okunan veya yazılan verinin nereden alınacağı ve nereye yazılacağının kayıtlarından oluşur. Kütüphanedeki akım işlevleri doğrudan bu akımların içeriği ile çalışamaz ve hatta veri türünü bile bilmez; bunların adresleri <b><tt>void *</tt></b> türünde kaydedilir.
+     </div><div class="para">
+Bir özel akımı gerçekleştirmek için, verinin belirtilen yerden <i>nasıl</i> alınacağı veya nerede saklanacağını belirtmelisiniz. Bunu, akıma yazan, onu okuyan, dosya konumunu değiştiren ve kapatan <span><i>kanca işlevleri</i></span> tanımlayarak yaparsınız. Bu dirt işlev akımın çerezine aktarılacak, böylece onlar verinin nereden alınıp nerede saklanacağını söyleyebilecektir. Kütüphane işlevleri çerezin içinde neler olduğunu bilmez, ama sizin işlevleriniz bilmelidir.
+     </div><div class="para">
+Bir özel akımı oluştururken bir çerez göstericisi ve ayrıca <b><tt>cookie_io_functions_t</tt></b> yapısının kayıtlarında saklanan dört kanca işlevi belirtmelisiniz.
+    </div><div class="para">
+Burada sözü edilen oluşumlar <tt>stdio.h</tt> başlık dosyasında bildirilmiştir.
+<a class="indexterm" name="idx1018" id="idx1018"></a>
+    </div><a name="glibc-cookie_io_functions_t" id="glibc-cookie_io_functions_t"></a>
+<a class="indexterm" name="idx1019" id="idx1019"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt><b><tt>cookie_io_functions_t</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+Bu veri yapısı, akım ile onun çerezi arasındaki iletişim protokolünü tanımlayan işlevleri saklar. Aşağıdaki üyelere sahiptir:
       </div>
-    </header>
-    <section class="mainpage">
-      <div class="crumbs">
-        <p>  </p>
-      </div>
-      <section class="sect1" id="glibc-Custom-Streams">
-        <div class="titlepage">
-          <div>
-            <div>
-              <h2 class="title" style="clear: both">12.21.2. Özel Akımlar</h2>
-            </div>
-          </div>
-        </div>
-        <div class="preliminary">
-          <div class="titlepage">
-            <div>
-              <div>
-                <h3 class="title">Ön Bilgi</h3>
-              </div>
-            </div>
-          </div>
-          <p>
-     Bu bölümde, isteğe bağlı bir veri kaynağından girdi alan veya isteğe bağlı bir veri havuzuna çıktı yazan bir akımın nasıl oluşturulabileceği açıklanmaktadır. Bunlara <em class="wordasword">özel akımlar</em> denilmektedir. Burada açıklanan işlevler ve türlerin tümü GNU oluşumudur.
-    </p>
-        </div>
-        <div class="toc">
-          <div class="toc-title">İçindekiler</div>
-          <dl class="toc">
-            <dt>12.21.2.1. <a href="glibc-Streams-and-Cookies.html">Özel Akımlar ve Çerezler</a>  -  "Çerez", okunan veya yazılan verilerin alınacağını veya saklanacağını yeri kaydeder.</dt>
-            <dt>12.21.2.2. <a href="glibc-Hook-Functions.html">Özel Akım Kanca İşlevleri</a>  -  Özel akımın ihtiyaç duyduğu dört kanca işlevin tanımlanması.</dt>
-          </dl>
-        </div>
-      </section>
-      <footer>
-        <div align="center" class="footer">
-          <small>Bir <a href="http://belgeler.org.tr/">Linux Kitaplığı</a> Sayfası</small>
-        </div>
-      </footer>
-    </section>
-  </body>
-</html>
+        <dl><dt><span class="glossterm">
+          <tt>cookie_read_function_t *<b><tt>read</tt></b></tt>
+          </span></dt><dd class="halfpara"><div class="para">
+Bu, çerezden veriyi okuyan işlevdir. Değeri bir işlev değil de bir boş gösterici ise bu akımdan yapılan okuma işlemleri daima <b><tt>EOF</tt></b> döndürür.
+          </div></dd><dt><span class="glossterm">
+          <tt>cookie_write_function_t *<b><tt>write</tt></b></tt>
+          </span></dt><dd class="halfpara"><div class="para">
+Bu, çereze veriyi yazan işlevdir. Değeri bir işlev değil de bir boş gösterici ise bu akıma yazılan veriler iptal edilir.
+          </div></dd><dt><span class="glossterm">
+          <tt>cookie_seek_function_t *<b><tt>seek</tt></b></tt>
+          </span></dt><dd class="halfpara"><div class="para">
+Bu, çerez üzerindeki dosya konumlamasına eşdeğer işlemleri uygulayan işlevdir. Değeri bir işlev değil de bir boş gösterici ise bu akım üzerinde yapılan <b><tt>fseek</tt></b> veya <b><tt>fseeko</tt></b> çağrıları sadece tampon içinde konumlama yapar; tamponun dışına çıkan tüm konumlama istekleri bir <b><tt>ESPIPE</tt></b> hatası ile sonuçlanacaktır.
+          </div></dd><dt><span class="glossterm">
+          <tt>cookie_close_function_t *<b><tt>close</tt></b></tt>
+          </span></dt><dd class="halfpara"><div class="para">
+Bu, akım kapatılırken çerez üzerinde temizlik yapan işlevdir. Değeri bir işlev değil de bir boş gösterici ise bu akım kapatılırken çerezi kapatacak hiçbir özel işlem yapılmaz.
+          </div></dd></dl>
+</dd></dl><div style="padding:5px"></div><a name="glibc-fopencookie" id="glibc-fopencookie"></a>
+<a class="indexterm" name="idx1020" id="idx1020"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>FILE *<b><tt>fopencookie</tt></b></tt></td><td valign="top"><pre class="paramdef">(void                 *<i><tt>çerez</tt></i>,
+ const char           *<i><tt>açıştürü</tt></i>,
+ cookie_io_functions_t <i><tt>gç-işlevleri</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev, <i><tt>gç-işlevleri</tt></i> argümanında belirtilen işlevleri kullanarak <i><tt>çerez</tt></i> ile haberleşen bir akım oluşturur. <i><tt>açıştürü</tt></i> argümanı <b><tt>fopen</tt></b> işlevindeki gibi kullanılır; bkz. <a href="../glibc/glibc-Opening-Streams.html" class="xref" title="Akımların Açılması">Akımların Açılması</a>.  (Fakat "açılışta kırp" seçeneği gözardı edilir.) Oluşturulan akımın tamamı tamponlanır.
+     </div><div class="para">
+<b><tt>fopencookie</tt></b> işlevi ya yeni oluşturulan akım ile ya da bir hata durumunda bir boş gösterici ile döner.
+        </div></dd></dl><div style="padding:5px"></div>
+      </dd></dl> <div class="head3"><a name="glibc-Hook-Functions" id="glibc-Hook-Functions"></a>Özel Akım Kanca İşlevleri</div><dl><dd><div class="para">
+<a class="indexterm" name="idx1021" id="idx1021"></a>
+Bu bölümde bir özel akımın gerektirdiği dört kanca işlevin tanımlanması ayrıntılı olarak incelenmiştir.
+     </div><div class="para">
+Çerezden veri okuyan işlevi şöyle tanımlamalısınız:
+     </div>
+<div class="para"><pre class="literallayout">
+ssize_t <i><tt>okuyucu</tt></i> (void *<i><tt>çerez</tt></i>, char *<i><tt>tampon</tt></i>, size_t <i><tt>boyut</tt></i>)
+</pre></div><div class="para">
+Bu işlev <b><tt>read</tt></b> işlevine çok benzer; bkz. <a href="../glibc/glibc-I-O-Primitives.html" class="xref" title="Girdi ve Çıktı İlkelleri">Girdi ve Çıktı İlkelleri</a>.  İşleviniz <i><tt>tampon</tt></i> tamponuna <i><tt>boyut</tt></i> bayt aktarmalı ve okunan bayt sayısı ile ya da dosyasonunu belirtmek üzere sıfır ile dönmelidir. Hata durumunu belirtmek için  <b><tt>-1</tt></b> de döndürebilirsiniz.
+     </div><div class="para">
+Çereze veri yazan işlevi şöyle tanımlamalısınız:
+     </div>
+<div class="para"><pre class="literallayout">
+ssize_t <i><tt>yazıcı</tt></i> (void *<i><tt>çerez</tt></i>, const char *<i><tt>tampon</tt></i>, size_t <i><tt>boyut</tt></i>)
+</pre></div><div class="para">
+Bu işlev <b><tt>write</tt></b> işlevine çok benzer; bkz. <a href="../glibc/glibc-I-O-Primitives.html" class="xref" title="Girdi ve Çıktı İlkelleri">Girdi ve Çıktı İlkelleri</a>. İşleviniz <i><tt>tampon</tt></i> tamponundan <i><tt>boyut</tt></i> bayt aktarmalı ve yazılan bayt sayısı ile dönmelidir. Hata durumunu belirtmek için  <b><tt>-1</tt></b> de döndürebilirsiniz.
+     </div><div class="para">
+Çerez üzerinde konumlama yapan işlevi şöyle tanımlamalısınız:
+     </div>
+<div class="para"><pre class="literallayout">
+int <i><tt>konumlayıcı</tt></i> (void *<i><tt>çerez</tt></i>, off64_t *<i><tt>konum</tt></i>, int <i><tt>nereden</tt></i>)
+</pre></div><div class="para">
+Bu işlev için <i><tt>konum</tt></i> ve <i><tt>nereden</tt></i> argümanları <b><tt>fgetpos</tt></b> işlevindeki gibi yorumlanır; bkz. <a href="../glibc/glibc-Portable-Positioning.html" class="xref" title="Taşınabilir Dosya Konumlama İşlevleri">Taşınabilir Dosya Konumlama İşlevleri</a>.
+     </div><div class="para">
+Konumlama işleminden sonra, işleviniz sonuçlanan dosya konumunu dosyanın başlangıcına göre <i><tt>konum</tt></i> argümanında saklamalıdır. İşleviniz başarı durumunda <b><tt>0</tt></b> ve hata durumunda <b><tt>-1</tt></b> ile dönmelidir.
+     </div><div class="para">
+Akımı kapatırken çerez üzerinde uygulanacak temizlik işlemlerini yapacak işlevi şöyle tanımlamalısınız:
+     </div>
+<div class="para"><pre class="literallayout">
+int <i><tt>temizleyici</tt></i> (void *<i><tt>çerez</tt></i>)
+</pre></div><div class="para">
+İşleviniz başarı durumunda <b><tt>0</tt></b> ve hata durumunda <b><tt>-1</tt></b> ile dönmelidir.
+      </div><a name="glibc-cookie_read_function" id="glibc-cookie_read_function"></a>
+<a class="indexterm" name="idx1022" id="idx1022"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt><b><tt>cookie_read_function</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+Bu, bir özel akımın gerektirdiği okuyucu işlevin veri türüdür. İşlevi yukarıdaki gibi tanımlarsanız, bu, o işlevin veri türü olacaktır.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-cookie_write_function" id="glibc-cookie_write_function"></a>
+<a class="indexterm" name="idx1023" id="idx1023"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt><b><tt>cookie_write_function</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+Bu, bir özel akımın gerektirdiği yazıcı işlevin veri türüdür. İşlevi yukarıdaki gibi tanımlarsanız, bu, o işlevin veri türü olacaktır.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-cookie_seek_function" id="glibc-cookie_seek_function"></a>
+<a class="indexterm" name="idx1024" id="idx1024"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt><b><tt>cookie_seek_function</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+Bu, bir özel akımın gerektirdiği konumlayıcı işlevin veri türüdür.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-cookie_close_function" id="glibc-cookie_close_function"></a>
+<a class="indexterm" name="idx1025" id="idx1025"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt><b><tt>cookie_close_function</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+Bu, bir özel akımın gerektirdiği kapatma işlevin veri türüdür.
+        </div></dd></dl><div style="padding:5px"></div>
+      </dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Obstack-Streams.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Other-Kinds-of-Streams.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Formatted-Messages.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Yığınak Akımları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Biçimli İletiler</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

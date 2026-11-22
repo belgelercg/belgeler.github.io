@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:28:57+03:00" /><title>Bash Başlatma Dosyaları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../bashref/bashref_bash.features.html" title="VI. Oylum - Bash'in Özellikleri" /><link rel="previous" href="../bashref/bashref_invoking.bash.html" title="Bash'in Çağrılması" /><link rel="next" href="../bashref/bashref_interactive.shells.html" title="Etkileşimli Kabuklar" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Bash Başlatma Dosyaları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../bashref/bashref_invoking.bash.html">Önceki</a> </td><th width="60%" align="center">VI. Oylum - Bash'in Özellikleri</th><td width="20%" align="right"> <a accesskey="n" href="../bashref/bashref_interactive.shells.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="bashref_startup.files" id="bashref_startup.files"></a>Bash Başlatma Dosyaları</div></div></div><dl><dd><a class="indexterm" name="idx314" id="idx314"></a><div class="para">
+Bu bölümde Bash'in kendi başlatma dosyalarını nasıl çalıştırdığı açıklanmıştır. Herhangi bir dosya varsa ama okunamıyorsa Bash bir hata raporlar. Yaklaşık karakterleri dosya isimlerinde <a href="../bashref/bashref_shell.expansions-tilde.html" class="xref" title="Yaklaşık (~) Yorumlaması">Yaklaşık (~) Yorumlaması</a> bölümünde açıklandığı gibi yorumlanır.
+  </div><div class="para">
+Etkileşimli kabuklar <a href="../bashref/bashref_interactive.shells.html" class="xref" title="Etkileşimli Kabuklar">Etkileşimli Kabuklar</a> bölümünde açıklanmıştır.
+  </div><div class="variablelist"><dl><dt><span class="term">
+Bir etkileşimli giriş kabuğu olarak veya <tt>--login</tt>
+seçeneği ile çağrıldığında
+</span></dt><dd class="varlist"><div class="para">
+Bash bir etkileşimli giriş kabuğu olarak veya <tt>--login</tt> seçeneği ile bir etkileşimsiz kabuk olarak çağrıldığında, <tt>/etc/profile</tt> dosyası varsa dosyayı okur ve komutlarını çalıştırır. Bu dosya okunduktan sonra sırayla <tt>~/.bash_profile</tt>, <tt>~/.bash_login</tt>, ve <tt>~/.profile</tt> dosyalarının varlığına bakar, var ve okunabilir olanlarını okur ve komutlarını çalıştırır. <tt>--noprofile</tt> seçeneği ile başlatarak Bash'in bu davranışı engellenebilir.
+        </div><div class="para">
+Bir giriş kabuğu çıkarken, <tt>~/.bash_logout</tt> dosyasına bakar, varsa ve okunabilirse dosyayı okur ve komutlarını çalıştırır.
+</div></dd><dt><span class="term">
+Etkileşimli ancak giriş kabuğu olmayan bir kabuk olarak çağrıldığında
+</span></dt><dd class="varlist"><div class="para">
+Giriş kabuğu olmayan bir etkileşimli kabuk başlatıldığında Bash, varsa <tt>~/.bashrc</tt> dosyasını okur ve komutlarını çalıştırır. Bu işlem <tt>--norc</tt> seçeneği ile engellenebilir. <tt>--rcfile </tt><i><tt>dosyaismi</tt></i> seçeneği ile <tt>~/.bashrc</tt> dosyası yerine <i><tt>dosyaismi</tt></i> dosyasının okunması ve komutlarının çalıştırılması sağlanabilir.
+        </div><div class="para">
+Öyleyse, her girişe özel ilklendirme sonrası (ya da öncesi) için
+        </div>
+<div class="para"><div align="right"><pre class="screen">if [ -f ~/.bashrc ]; then . ~/.bashrc; fi
+</pre></div></div>
+        <div class="para">
+satırı <tt>~/.bash_profile</tt> dosyanızda bulunmalıdır.
+</div></dd><dt><span class="term">Etkileşimsiz olarak çağrıldığında</span></dt><dd class="varlist"><div class="para">
+Bash, örneğin bir betiği çalıştırmak için etkileşimsiz olarak başlatıldığında, ortamdaki <tt>BASH_ENV</tt> değişkenine bakar, varsa değerini okunup çalıştırılacak bir dosya ismi olarak yorumlar. Bash burada,
+        </div>
+<div class="para"><div align="right"><pre class="screen">if [ -n "$BASH_ENV" ]; then . "$BASH_ENV"; fi
+</pre></div></div>
+        <div class="para">
+satırı çalıştırılmış gibi davranır, ancak <tt>PATH</tt> değişkeninin değeri dosyayı aramak için kullanılmaz.
+        </div><div class="para">
+Yukarıda da bahsedildiği gibi, <tt>--login</tt> seçeneği ile başlatılan bir etkileşimsiz kabuk, komutları giriş kabuğunun başlatma dosyalarından okuyup çalıştırmaya uğraşır.
+</div></dd><dt><span class="term"><tt>sh</tt> ismiyle çağrıldığında</span></dt><dd class="varlist"><div class="para">
+Bash, <b><tt>sh</tt></b> ismiyle çağrılırsa, <b><tt>sh</tt></b>'ın tarihsel sürümlerinin başlatma davranışlarını POSIX standardına da uydurmaya çalışarak mümkün olduğunca taklit etmeyi dener.
+        </div><div class="para">
+Bir etkileşimli giriş kabuğu olarak veya <tt>--login</tt> seçeneği ile bir etkileşimsiz kabuk olarak çağrıldığında, komutları önce <tt>/etc/profile</tt> dosyasından okumayı ve çalıştırmayı dener ve sırasıyla <tt>~/.bash_profile</tt>, <tt>~/.bash_login</tt>, ve <tt>~/.profile</tt> dosyalarının varlığına bakar, var ve okunabilir olanlarını okur ve komutlarını çalıştırır. <tt>--noprofile</tt> seçeneği ile başlatarak bu davranış engellenebilir. Bir etkileşimli kabuk olarak <b><tt>sh</tt></b> ismiyle çağrıldığında Bash, ortamdaki <tt>ENV</tt> değişkenine bakar, varsa değerini okunup çalıştırılacak bir dosya ismi olarak yorumlar.
+        </div><div class="para">
+<b><tt>sh</tt></b> olarak çağrılan bir kabuk başka bir başlatma dosyasını okuyup komutlarını çalıştırmayı denemez, zaten <tt>--rcfile</tt> seçeneğinin de bir etkisi yoktur.
+        </div><div class="para">
+<b><tt>sh</tt></b> olarak çağrıldığında, Bash başlangıç dosyalarını okuduktan sonra POSIX kipine girer.
+</div></dd><dt><span class="term">POSIX kipinde çağrıldığında</span></dt><dd class="varlist"><div class="para">
+Bash <tt>--posix</tt> komut satırı seçeneği ile POSIX kipinde başlatıldığında, başlangıç dosyaları için POSIX standardını izler. Bu kipte etkileşimli kabuklar <tt>ENV</tt> değişkenini yorumlayarak bir dosya ismi elde eder ve komutları bu dosyadan okuyup çalıştırır. Bundan başka başlatma dosyasına bakılmaz.
+</div></dd><dt><span class="term">Uzaktan erişilebilir kabuk süreci olarak çağrıldığında</span></dt><dd class="varlist"><div class="para">
+Bash <b><tt>rshd</tt></b> gibi bir uzak kabuk süreci tarafından mı çalıştırılmak istendiğini saptamaya çalışır. Bash, <b><tt>rshd</tt></b> tarafından çalıştırılmak istendiğini saptadığında, komutları <tt>~/.bashrc</tt> dosyası var ve okunabilirse oradan okuyup çalıştırır. <b><tt>sh</tt></b> olarak çağrıldığında bunu yapmaz. <tt>--norc</tt> seçeneği bu davranışı engellemekte kullanılabilir ve <tt>--rcfile</tt> seçeneği ile başka bir dosyadan komutların okunup çalıştırılması sağlanabilir, ancak <b><tt>rshd</tt></b> genellikle kabuğu bu seçeneklerle çağırmaz.
+</div></dd><dt><span class="term">Farklı Etkin ve Gerçek UID/GID ile çağrıldığında</span></dt><dd class="varlist"><div class="para">
+Bash başlatıldığında etkin kullanıcı (grup) kimliği ile gerçek kullanıcı (grup) kimliği aynı değilse, hiçbir başlatma dosyası okunmaz, kabuk işlevleri ortamdan miras alınmaz, ortamda görünse bile <tt>SHELLOPTS</tt> değişkeni yoksayılır ve etkin kullanıcı kimliğine gerçek kullanıcı kimliği atanır. Çağrı sırasında <tt>-p</tt> seçeneği verilmişse etkin kullanıcı kimliğinin gerçek kullanıcı kimliğine ayarlanması dışında başlatma davranışı aynıdır.
+</div></dd></dl></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../bashref/bashref_invoking.bash.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../bashref/bashref_bash.features.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../bashref/bashref_interactive.shells.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Bash'in Çağrılması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Etkileşimli Kabuklar</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

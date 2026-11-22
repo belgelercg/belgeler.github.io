@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:32+03:00" /><title>Pyzor</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/antispam.html" title="Posta Sunucuları için Spam Önleme Araçları" /><link rel="previous" href="../howto/antispam-razor.html" title="Razor" /><link rel="next" href="../howto/antispam-dcc.html" title="DCC (Distributed Checksum Clearinghouse)" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Pyzor</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/antispam-razor.html">Önceki</a> </td><th width="60%" align="center">Posta Sunucuları için Spam Önleme Araçları</th><td width="20%" align="right"> <a accesskey="n" href="../howto/antispam-dcc.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="antispam-pyzor" id="antispam-pyzor"></a>Pyzor</div><dl><dd><div class="para">
+Hemen hemen Razor gibi çalışır. Python dilinde yazılmıştır ve GPL lisansına sahiptir. Veritabanının Razor kadar güçlü olduğu söylenemez. SpamAssassin hem Razorla hem de Pyzor'la aynı anda çalışabilir. Pyzor'un SpamAssassin'le birlikte çalışmasını sağlamak için <tt>/etc/mail/spamassassin/local.cf</tt> dosyasına aşağıdaki satırı eklemeliyiz:
+  </div>
+<div class="para"><pre class="literallayout">use_pyzor 1</pre></div>
+  <div class="para">
+Pyzoru kurmak için yine
+  </div>
+<div class="para"><div align="right"><pre class="screen">apt-get install pyzor</pre></div></div>
+  <div class="para">
+komutunu verebiliriz. Pyzor, Python dilinde yazıldığından dolayı bu dille ilgili bazı modüllere ihtiyaç duyar. apt-get bu bağımlılıkları dikkate alarak gerekli olan tüm paketleri kurar. Sisteminizde apt-get mevcut değilse , <a class="ulink" href="http://sourceforge.net/project/showfiles.php?group_id=50000" target="_top">http://sourceforge.net/project/showfiles.php?group_id=50000</a> adresinden tar.bz2 biçiminde temin edebilirsiniz.
+  </div>
+<div class="para"><div align="right"><pre class="screen">tar -jxvf pyzor-0.4x-tar.bz2</pre></div></div>
+  <div class="para">
+komutunu kullanarak paketi açalım ve paketin açıldığı dizine geçelim.
+  </div>
+<div class="para"><div align="right"><pre class="screen">python setup.py build
+python setup.py install
+</pre></div></div>
+  <div class="para">
+komutlarını vererek Pyzor'u kuralım. Aşağıdaki komutu kullanarak dizinler için gerekli paylaşım izinlerini ayarlayalım.
+  </div>
+<div class="para"><div align="right"><pre class="screen">chmod -R a+rX /usr/share/doc/pyzor0.4x
+chmod -R a+rX /usr/lib/python2.3/site-packages/pyzor
+chmod -R a+rX /usr/bin/pyzor
+chmod -R a+rX /usr/bin/pyzord
+</pre></div></div>
+  <div class="para">
+dosya/dizin izinleri ayarlamalarını yaptıktan sonra bir de Pyzor'un çalışabilmesi için gerekli olan <b><tt>python-gdbm</tt></b> modülünün yüklü olup olmadığına bakalım.
+  </div>
+<div class="para"><div align="right"><pre class="screen">python -c 'import gdbm' &amp;&amp; echo 'gdbm bulundu'</pre></div></div>
+  <div class="para">
+sonuçta "gdbm bulundu" diye bir çıktı alırsanız <b><tt>python-gdbm</tt></b> modülü yüklü demektir. Eğer yüklü değilse <a class="ulink" href="http://rpm.pbone.net/" target="_top">http://rpm.pbone.net/</a> adresinde bir arama yapıp bulabilirsiniz.
+  </div><div class="para">
+Komutların kullanımıda Razor'a benzemektedir. <b><tt>Report</tt></b> spam iletiler, <b><tt>Whitelist</tt></b> ise spam olmayan iletiler için kullanılmaktadır.Kurulumun şu ana kadar olan haliyle Pyzor sunucusundan spam denetimi yapılabilir. Daha fazla ayrıntı için kurulum yaptığımız dizindeki <tt>Docs</tt> dizinindeki <tt>usage.html</tt> dosyasına bakın. Şimdi <tt>local.cf</tt> içerisine <tt>use_pyzor 1</tt> yazdıysak, <b><tt>spamassassin</tt></b>'i yeniden başlatalım ve tekrar aşağıdaki komutu kullanalım.
+  </div>
+<div class="para"><div align="right"><pre class="screen">spamassassin --lint -D</pre></div></div>
+  <div class="para">
+komutun çıktısında <tt>pyzor got response :66.250.40.33:24441</tt> görüyorsanız Pyzor sorunsuz çalışıyor demektir. Pyzor 24441 no.lu portu kullanmaktadır.
+  </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/antispam-razor.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/antispam.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/antispam-dcc.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Razor </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> DCC (Distributed Checksum Clearinghouse)</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

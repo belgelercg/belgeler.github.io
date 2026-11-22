@@ -1,82 +1,352 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="tr" xml:lang="tr">
-  <head>
-    <title>A.5. Veri Türü Ölçüleri</title>
-    <meta name="generator" content="DocBook XSL Stylesheets V-special (derived from DocBook XSL v1.79.1 for Turkish Linux Documentation Project by Nilgün Belma Bugüner - nilgun (at) tlbp.org.tr)" />
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="/style/nav.css" />
-    <link rel="icon" type="image/png" href="/images/belgeler-logo.png" />
-    <meta name="robots" content="index, follow" />
-  </head>
-  <body>
-    <header>
-      <div class="navbar">
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Important-Data-Types.html')">Önceki</button>
-          <div class="dropdown-content">A.4. Önemli Veri Türleri</div>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:28:02+03:00" /><title>Veri Türü Ölçüleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Language-Features.html" title="Ek A. Kütüphanedeki C Dili Oluşumları" /><link rel="previous" href="../glibc/glibc-Important-Data-Types.html" title="Önemli Veri Türleri" /><link rel="next" href="../glibc/glibc-Library-Summary.html" title="Ek B. Kütüphane Oluşumlarının Özeti" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Veri Türü Ölçüleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Important-Data-Types.html">Önceki</a> </td><th width="60%" align="center">Ek A. Kütüphanedeki C Dili Oluşumları</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Library-Summary.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Data-Type-Measurements" id="glibc-Data-Type-Measurements"></a>Veri Türü Ölçüleri</div><dl><dd><div class="para">
+Çoğu zaman, yazılımınızda her nesne için uygun bir C veri türü seçersiniz ve onun nasıl gösterildiği veya kaç bit kullandığıyla ilgilenmezsiniz. Böyle bir bilgiye ihtiyaç duyarsanız C dilinin kendisi bu bilgiyi sağlamaz. <tt>limits.h</tt> ve <tt>float.h</tt> başlık dosyaları size bu bilgiyi tüm ayrıntıları ile veren makrolar içerir.
+  </div> <div class="head3"><a name="glibc-Width-of-Type" id="glibc-Width-of-Type"></a>Bir Tamsayı Veri Türünün Genişliğinin Hesaplanması</div><dl><dd><div class="para">
+<a class="indexterm" name="idx3343" id="idx3343"></a>
+<a class="indexterm" name="idx3344" id="idx3344"></a>
+Çok bilinen sebeplerle bir yazılım bir tamsayı türünde kaç bit bulunduğunu bilmeye ihtiyaç duyabilir. Örneğin, <b><tt>long int</tt></b> türünde bir diziyi bir bit vektörü olarak kullanıyorsanız, bitlere <i><tt>n</tt></i> indisi ile aşağıdaki gibi erişebilirsiniz:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+vector[<i><tt>n</tt></i> / LONGBITS] &amp; (1 &lt;&lt; (<i><tt>n</tt></i> % LONGBITS))
+</pre></div></div><div class="para">
+Burada <b><tt>LONGBITS</tt></b>, bir <b><tt>long int</tt></b> içindeki bitlerin sayısı olarak tanımlanmış olmalıdır.
+    </div><div class="para">
+<a class="indexterm" name="idx3345" id="idx3345"></a>
+C dilinde bir tamsayı veri türündeki bitlerin sayısını verecek bir işleç yoktur. Fakat onu, <tt>limits.h</tt> başlık dosyasında tanımlanmış olan <b><tt>CHAR_BIT</tt></b> makrosuyla hesaplayabilirsiniz.
+    </div>
+      <div class="variablelist"><dl><dt><span class="term"><b><tt>CHAR_BIT</tt></b></span></dt><dd class="varlist"><div class="para">
+Bir <b><tt>char</tt></b> içindeki bitlerin sayısıdır. Birçok sistemde değeri sekizdir ve bu değer <b><tt>int</tt></b> türündendir.
+        </div><div class="para">
+<i><tt>tür</tt></i> ile belirtilecek herhangi bir veri türünün bitlerinin sayısını şöyle hesaplayabilirsiniz:
         </div>
-        <div style="width:34%" class="dropdown">
-          <button class="dropbtn">Yukarı</button>
-          <div class="dropdown-content">
-            <button type="button" class="dropbtn" onclick="window.location.assign('/index.html')">Baş Sayfa</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('/KiTAPLIK/index.html')">Kitaplık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc.html')">Ana Başlık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Language-Features.html')">Üst Başlık</button>
-          </div>
-        </div>
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Width-of-Type.html')">Sonraki</button>
-          <div class="dropdown-content">A.5.1. Tamsayı Veri Türünün Genişliğinin Hesaplanması</div>
-        </div>
+<div class="para"><div align="right"><pre class="screen">sizeof (<i><tt>tür</tt></i>) * CHAR_BIT</pre></div></div>
+        </dd></dl></div>
+    </dd></dl> <div class="head3"><a name="glibc-Range-of-Type" id="glibc-Range-of-Type"></a>Bir Tamsayı Türün Aralığı</div><dl><dd><div class="para">
+<a class="indexterm" name="idx3346" id="idx3346"></a>
+<a class="indexterm" name="idx3347" id="idx3347"></a>
+Varsayalım ki, sıfırdan bir milyona kadar bir aralıktaki tamsayı değerleri saklamak istiyorsunuz. Kullanabileceğiniz en küçük tür hangisidir? Bunun için genel bir kural yoktur; C derleyicisine ve hedef makineye bağlıdır. Hangi tür ile çalışacağınızı bulmak için <tt>limits.h</tt> başlık dosyasında tanımlanmış olan <b><tt>MIN</tt></b> ve <b><tt>MAX</tt></b> makrolarını kullanabilirsiniz.
+    </div><div class="para">
+Her işaretli tamsayı türü için tutabileceği en küçük ve en büyük değerleri veren bir çift makro vardır. Her işaretsiz tamsayı türü içinde böyle makrolar vardır; en büyük değer için, en küçük değer yani sıfır için.
+    </div><div class="para">
+Bu makroların değerlerinin hepsi tamsayı sabit ifadeleridir. <b><tt>char</tt></b> ve <b><tt>short int</tt></b> için <b><tt>MAX</tt></b> ve <b><tt>MIN</tt></b> makroları <b><tt>int</tt></b> türünden değerlere sahiptir. Diğer türlerin <b><tt>MAX</tt></b> ve <b><tt>MIN</tt></b> makrolarının değerleri de makro tarafından açıklanmış aynı türde değerlerdir. Örneğin, <b><tt>ULONG_MAX</tt></b> makrosunun değeri <b><tt>unsigned long int</tt></b> türündendir.
+    </div>
+      <div class="variablelist"><dl><dt><span class="term"><a name="glibc-SCHAR_MIN" id="glibc-SCHAR_MIN"></a>
+<b><tt>SCHAR_MIN</tt></b>
+<a class="indexterm" name="idx3348" id="idx3348"></a>
+      </span></dt><dd class="varlist"><div class="para">
+Bir <b><tt>signed char</tt></b> tarafından tutulabilen en küçük değerdir.
+      </div></dd><dt><span class="term"><a name="glibc-SCHAR_MAX" id="glibc-SCHAR_MAX"></a>
+<b><tt>SCHAR_MAX</tt></b>
+<a class="indexterm" name="idx3349" id="idx3349"></a>
+      </span></dt><dt><span class="term"><a name="glibc-UCHAR_MAX" id="glibc-UCHAR_MAX"></a>
+<b><tt>UCHAR_MAX</tt></b>
+<a class="indexterm" name="idx3350" id="idx3350"></a>
+      </span></dt><dd class="varlist"><div class="para">
+Sırasıyla <b><tt>signed char</tt></b> ve <b><tt>unsigned char</tt></b> tarafından tutulabilen en büyük değerlerdir.
+      </div></dd><dt><span class="term"><a name="glibc-CHAR_MIN" id="glibc-CHAR_MIN"></a>
+<b><tt>CHAR_MIN</tt></b>
+<a class="indexterm" name="idx3351" id="idx3351"></a>
+      </span></dt><dd class="varlist"><div class="para">
+Bir <b><tt>char</tt></b> tarafından tutulabilen en küçük değerdir. <b><tt>char</tt></b> işaretli ise <b><tt>SCHAR_MIN</tt></b>'e eşittir, yoksa sıfırdır.
+      </div></dd><dt><span class="term"><a name="glibc-CHAR_MAX" id="glibc-CHAR_MAX"></a>
+<b><tt>CHAR_MAX</tt></b>
+<a class="indexterm" name="idx3352" id="idx3352"></a>
+      </span></dt><dd class="varlist"><div class="para">
+Bir <b><tt>char</tt></b> tarafından tutulabilen en büyük değerdir. <b><tt>char</tt></b> işaretli ise <b><tt>SCHAR_MAX</tt></b>'a eşittir, yoksa <b><tt>UCHAR_MAX</tt></b>'a eşittir.
+      </div></dd><dt><span class="term"><a name="glibc-SHRT_MIN" id="glibc-SHRT_MIN"></a>
+<b><tt>SHRT_MIN</tt></b>
+<a class="indexterm" name="idx3353" id="idx3353"></a>
+      </span></dt><dd class="varlist"><div class="para">
+Bir <b><tt>signed short int</tt></b> tarafından tutulabilen en küçük değerdir. GNU C kütüphanesinin çalıştığı çoğu makinede <b><tt>short</tt></b> tamsayılar 16 bit genişliktedir.
+      </div></dd><dt><span class="term"><a name="glibc-SHRT_MAX" id="glibc-SHRT_MAX"></a>
+<b><tt>SHRT_MAX</tt></b>
+<a class="indexterm" name="idx3354" id="idx3354"></a>
+      </span></dt><dt><span class="term"><a name="glibc-USHRT_MAX" id="glibc-USHRT_MAX"></a>
+<b><tt>USHRT_MAX</tt></b>
+<a class="indexterm" name="idx3355" id="idx3355"></a>
+      </span></dt><dd class="varlist"><div class="para">
+Sırasıyla <b><tt>signed short int</tt></b> ve  <b><tt>unsigned short int</tt></b> tarafından tutulabilen en büyük değerlerdir.
+      </div></dd><dt><span class="term"><a name="glibc-INT_MIN" id="glibc-INT_MIN"></a>
+<b><tt>INT_MIN</tt></b>
+<a class="indexterm" name="idx3356" id="idx3356"></a>
+      </span></dt><dd class="varlist"><div class="para">
+Bir <b><tt>signed int</tt></b> tarafından tutulabilen en küçük  değerdir. GNU C kütüphanesinin çalıştığı çoğu makinede <b><tt>int</tt></b> tamsayılar 32 bit genişliktedir.
+      </div></dd><dt><span class="term"><a name="glibc-INT_MAX" id="glibc-INT_MAX"></a>
+<b><tt>INT_MAX</tt></b>
+<a class="indexterm" name="idx3357" id="idx3357"></a>
+      </span></dt><dt><span class="term"><a name="glibc-UINT_MAX" id="glibc-UINT_MAX"></a>
+<b><tt>UINT_MAX</tt></b>
+<a class="indexterm" name="idx3358" id="idx3358"></a>
+      </span></dt><dd class="varlist"><div class="para">
+Sırasıyla <b><tt>signed int</tt></b> ve <b><tt>unsigned int</tt></b> tarafından tutulabilen en büyük değerlerdir.
+      </div></dd><dt><span class="term"><a name="glibc-LONG_MIN" id="glibc-LONG_MIN"></a>
+<b><tt>LONG_MIN</tt></b>
+<a class="indexterm" name="idx3359" id="idx3359"></a>
+      </span></dt><dd class="varlist"><div class="para">
+Bir <b><tt>signed long int</tt></b> tarafından tutulabilen en küçük değerdir. GNU C kütüphanesinin çalıştığı çoğu makinede <b><tt>long</tt></b> tamsayılar <b><tt>int</tt></b> ile aynı olarak 32 bit genişliktedir.
+      </div></dd><dt><span class="term"><a name="glibc-LONG_MAX" id="glibc-LONG_MAX"></a>
+<b><tt>LONG_MAX</tt></b>
+<a class="indexterm" name="idx3360" id="idx3360"></a>
+      </span></dt><dt><span class="term"><a name="glibc-ULONG_MAX" id="glibc-ULONG_MAX"></a>
+<b><tt>ULONG_MAX</tt></b>
+<a class="indexterm" name="idx3361" id="idx3361"></a>
+      </span></dt><dd class="varlist"><div class="para">
+Sırasıyla <b><tt>signed long int</tt></b> ve <b><tt>unsigned long int</tt></b> tarafından tutulabilen en büyük değerlerdir.
+      </div></dd><dt><span class="term"><a name="glibc-LONG_LONG_MIN" id="glibc-LONG_LONG_MIN"></a>
+<b><tt>LONG_LONG_MIN</tt></b>
+<a class="indexterm" name="idx3362" id="idx3362"></a>
+      </span></dt><dd class="varlist"><div class="para">
+ Bir <b><tt>signed long long int</tt></b> tarafından tutulabilen en küçük değerdir. GNU C kütüphanesinin çalıştığı çoğu makinede <b><tt>long long</tt></b> tamsayılar 64 bit genişliktedir.
+      </div></dd><dt><span class="term"><a name="glibc-LONG_LONG_MAX" id="glibc-LONG_LONG_MAX"></a>
+<b><tt>LONG_LONG_MAX</tt></b>
+<a class="indexterm" name="idx3363" id="idx3363"></a>
+      </span></dt><dt><span class="term"><a name="glibc-ULONG_LONG_MAX" id="glibc-ULONG_LONG_MAX"></a>
+<b><tt>ULONG_LONG_MAX</tt></b>
+<a class="indexterm" name="idx3364" id="idx3364"></a>
+      </span></dt><dd class="varlist"><div class="para">
+Sırasıyla <b><tt>signed long long int</tt></b> ve <b><tt>unsigned long long int</tt></b> tarafından tutulabilen en büyük değerlerdir.
+      </div></dd><dt><span class="term"><a name="glibc-WCHAR_MAX-" id="glibc-WCHAR_MAX-"></a>
+<b><tt>WCHAR_MAX</tt></b>
+<a class="indexterm" name="idx3365" id="idx3365"></a>
+      </span></dt><dd class="varlist"><div class="para">
+Bir <b><tt>wchar_t</tt></b> tarafından tutulabilen en büyük değerdir. Bkz.  <a href="../glibc/glibc-Extended-Char-Intro.html" class="xref" title="Genişletilmiş Karakterlere Giriş">Genişletilmiş Karakterlere Giriş</a>.
+      </div></dd></dl></div>
+    <div class="para">
+<tt>limits.h</tt> başlık dosyası ayrıca işletim sistemi ve dosya sistemi sınırlarını belirleyen bazı sabitler de bulunmaktadır. Bu sabitler <a href="../glibc/glibc-System-Configuration.html" class="xref" title="XXXI. Oylum - Sistem Yapılandırma Parametreleri">Sistem Yapılandırma Parametreleri</a> bölümünde açıklanmıştır.
+    </div></dd></dl> <div class="head3"><a name="glibc-Floating-Type-Macros" id="glibc-Floating-Type-Macros"></a>Gerçek Sayı Türü Makroları</div><dl><dd><div class="para">
+<a class="indexterm" name="idx3366" id="idx3366"></a>
+<a class="indexterm" name="idx3367" id="idx3367"></a>
+<a class="indexterm" name="idx3368" id="idx3368"></a>
+Gerçek sayılara özel gösterim makineden makineye değişir. Çünkü gerçek sayılar dahili olarak yaklaşık niceliklerle gösterilir. Gerçek sayı verilerle çalışan algoritmalar çoğunlukla makinenin doğru gerçek sayı gösterim ayrıntılarına dikkat etmeyi gerektirir.
+    </div><div class="para">
+C kütüphanesindeki bazı işlevlerin kendileri bu bilgiye gereksinim duyar; örneğin, gerçek sayıları okumak ve basmak (Bkz. <a href="../glibc/glibc-I-O-on-Streams.html" class="xref" title="XII. Oylum - Akımlar Üzerinde Giriş/Çıkış">Akımlar Üzerinde Giriş/Çıkış</a>) için ve trigonometrik ve gerçel işlevlerin (Bkz. <a href="../glibc/glibc-Mathematics.html" class="xref" title="XIX. Oylum - Matematik">Matematik</a>)  hesaplanmasında kullanılan algoritmalar yuvarlama hatalarından ve hassasiyet kayıplarından kaçınmak için bunu kullanır. Sayısal analiz teknikleri gerçekleştiren bazı kullanıcı yazılımları da çoğunlukla hata sınırlarının küçültmesi ya da hesaplanması sırasında bu bilgiye ihtiyaç duyar.
+    </div><div class="para">
+<tt>float.h</tt> başlık dosyası makinenizde kullanılan biçimi açıklar.
+    </div> <div class="head4"><a name="glibc-Floating-Point-Concepts" id="glibc-Floating-Point-Concepts"></a>Gerçek Sayı Gösterimi ile İlgili Kavramlar</div><dl><dd><div class="para">
+
+
+
+
+
+
+Bu bölümde gerçek sayı gösterimleri ile ilgili terminolojiye değinilmiştir.
+      </div><div class="para">
+Büyük ihtimalle gerçek sayılar için üstel gösterim veya bilimsel terimler olarak bu kavramların çoğuna zaten aşinasınızdır. Örneğin <b><tt>123456.0</tt></b> sayısı üstel olarak <b><tt>1.23456e+05</tt></b> biçiminde, <b><tt>1.23456</tt></b> sayısı ile  <b><tt>10</tt></b> üssü <b><tt>5</tt></b>'in çarpımı olarak gösterilir.
+      </div><div class="para">
+Daha biçimsel olarak, gerçek sayıların bit gösterimi aşağıdaki terimlerle karakterize edilebilir:
       </div>
-    </header>
-    <section class="mainpage">
-      <div class="crumbs">
-        <p>  </p>
+        <ul type="disc" class="itemizedlist"><li><div class="para">
+<a class="indexterm" name="idx3369" id="idx3369"></a>
+<span class="wordasword"><i>İşaret biti</i></span> ya <b><tt>-1</tt></b> ya da <b><tt>1</tt></b>'dir.
+        </div></li><li><div class="para">
+<a class="indexterm" name="idx3370" id="idx3370"></a>
+Üs alma için <span class="wordasword"><i>taban</i></span>,  <b><tt>1</tt></b>'den büyük bir tamsayıdır. Belirli bir gösterim için bu bir sabittir.
+        </div></li><li><div class="para">
+<a class="indexterm" name="idx3371" id="idx3371"></a>
+<span class="wordasword"><i>Üstel kısım</i></span> tabanın kendisiyle kaç defa çarpılacağını gösterir.  Bir belirli gösterim için üs değerinin alt ve üst sınırları birer sabittir.
+        </div><div class="para">
+Kimi zaman gerçek sayının bit gösteriminde üssü ifade eden kısım bir sabit eklenmesiyle daima işaretsiz bir nicelik yapılır. Bu sadece bit alanlarını ayırıp gerçek sayıyı kendiniz oluşturmak isterseniz önemli olur, ancak GNU kütüphanesinde böyle bir işlem için destek yoktur.
+        </div></li><li><div class="para">
+<a class="indexterm" name="idx3372" id="idx3372"></a>
+<span class="wordasword"><i>Ondalık kısım</i></span> her gerçek sayının bir parçası olan bir işaretsiz tamsayıdır.
+        </div></li><li><div class="para">
+<a class="indexterm" name="idx3373" id="idx3373"></a>
+Ondalık kısmın <span class="wordasword"><i>hassasiyet</i></span>i. Eğer bit gösteriminde taban <i><tt>b</tt></i> ise hassasiyet, ondalık kısmın taban-<i><tt>b</tt></i> sayıda basamağıdır. Bu belirli bir gösterim için bir sabittir.
+        </div><div class="para">
+<a class="indexterm" name="idx3374" id="idx3374"></a>
+Birçok gerçek sayı gösterimi ondalık kısım içinde bir örtük <span class="wordasword"><i>gizli bit</i></span> içerir. Bu ondalık kısım içinde olduğu varsayılan bir bittir ancak bellekte saklanmaz, çünkü bir normalleştirilmiş sayı içinde daima 1 dir. Hassasiyet ile ilgili kısım kendi içinde çok sayıda gizli bit içerebilir.
+        </div><div class="para">
+Tekrar belirtelim, GNU kütüphanesi gerçek sayıların düşük seviye (ikilik tabandaki bit gösterimi) gösterimleri ile ilgili oluşumlara destek sağlamamaktadır.
+        </div></li></ul>
+      <div class="para">
+
+
+Bir gerçek sayının bit gösterimindeki ondalık kısım dolaylı olarak paydası üstel taban hassasiyetteki bir kesri ifade eder. Bu ondalık kısım ile gösterilebilecek en büyük sayı bu paydadan bir eksiği olduğundan kesrin değeri daima birden küçüktür. Bu bit gösteriminin matematiksel değeri bu kesir ile işaret ve üstel tabanın çarpımıdır.
       </div>
-      <section class="chapter" id="glibc-Data-Type-Measurements">
-        <div class="titlepage">
-          <div>
-            <div>
-              <h2 class="title">A.5. Veri Türü Ölçüleri</h2>
-            </div>
-          </div>
+<a class="indexterm" name="idx3375" id="idx3375"></a>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">Ç.N. - Özgün metinde burada anlatılan biraz karışık olmuş. Kafa karıştırmamak için çevirmedim. Basitçe ifade etmek gerekirse 32 bitlik gerçek sayı gösterimiyle ifade  edilebilecek en küçük değer <tt>2<sup><tt>-149</tt></sup></tt>  olsa da bu sayı <b><tt>float</tt></b> türü için  <tt>2<sup><tt>-126</tt></sup></tt> olarak normalleştirilmiştir. En azından GNU C kütüphanesinde bu böyle.
+ </div></td></tr></table></div>
+      </dd></dl> <div class="head4"><a name="glibc-Floating-Point-Parameters" id="glibc-Floating-Point-Parameters"></a>Gerçek Sayılar ile İlgili Makrolar</div><dl><dd><div class="para">
+<a class="indexterm" name="idx3376" id="idx3376"></a>
+Bu makroların tanımlarını <tt>float.h</tt> başlık dosyasında bulabilirsiniz.
+      </div><div class="para">
+
+<b><tt>FLT_</tt></b> ile başlayan makro isimleri <b><tt>float</tt></b> türü ile, <b><tt>DBL_</tt></b> ile başlayanlar <b><tt>double</tt></b> türü ile ve <b><tt>LDBL_</tt></b> ile başlayanlar da <b><tt>long double</tt></b> türü ile ilgilidir. (GCC hedef makinede bir veri türü olarak <b><tt>long double</tt></b> türünü desteklemezse, <b><tt>LDBL_</tt></b> ile başlayan sabitler <b><tt>double</tt></b> türüne karşılık olan sabitlere eşitlenir.)
+      </div><div class="para">
+Bu makrolardan sadece <b><tt>FLT_RADIX</tt></b> bir sabit ifadesi olarak garantilidir. Burada listelenmiş diğer sabitler <b><tt>#if</tt></b> önişlemci komutu ya da durağan dizilerin boyutları gibi yerlerde sabit ifadesi olarak güvenilir olamaz.
+      </div><div class="para">
+ISO C standardı bu parametrelerin en küçük ve en büyük değerlerini belirtse de, GNU C gerçeklemesi hedef makinede desteklenen gerçek sayı gösterimlerini açıklayan değerleri kullanır. Yani GNU C prensip olarak ISO C gereksinimlerini hedef makinenin yapabildiği kadarıyla karşılar. Uygulamada tüm makinelerde bu destekler zaten vardır.
+      </div>
+        <div class="variablelist"><dl><dt><span class="term">
+<b><tt>FLT_ROUNDS</tt></b>
+        </span></dt><dd class="varlist"><div class="para">
+Bu değer gerçek sayı toplamasında yuvarlama kipini belirler. Standart yuvarlama kiplerinin değerleri:
         </div>
-        <div class="preliminary">
-          <div class="titlepage">
-            <div>
-              <div>
-                <h2 class="title">Ön Bilgi</h2>
-              </div>
-            </div>
-          </div>
-          <p>
-    Çoğu zaman, yazılımlarda her nesne için uygun bir C veri türü seçilir ve nasıl gösterildiği veya kaç bit kullandığıyla ilgilenilmez. Böyle bir bilgiye ihtiyaç duyulursa C dilinin kendisi bu bilgiyi sağlamaz. <code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/limits.h;hb=HEAD" target="_top">limits.h</a></code> ve <code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/float.h;hb=HEAD" target="_top">float.h</a></code> başlık dosyaları bu bilgiyi tüm ayrıntıları ile veren makrolar içerir.
-   </p>
+<div class="variablelist"><dl><dt><span class="term"><b><tt>-1</tt></b></span></dt><dd class="varlist"><div class="para">Bu kip belirlenebilir değildir.</div></dd><dt><span class="term"><b><tt>0</tt></b></span></dt><dd class="varlist"><div class="para">Sıfıra yuvarlar.</div></dd><dt><span class="term"><b><tt>1</tt></b></span></dt><dd class="varlist"><div class="para">En yakın sayıya yuvarlar.</div></dd><dt><span class="term"><b><tt>2</tt></b></span></dt><dd class="varlist"><div class="para">Pozitif sonsuza yuvarlar.</div></dd><dt><span class="term"><b><tt>3</tt></b></span></dt><dd class="varlist"><div class="para">Negatif sonsuza yuvarlar.</div></dd></dl></div>
+        <div class="para">
+Diğer değerler, eğer varsa, makine bağımlı standart dışı yuvarlama kiplerini belirtir.
+        </div><div class="para">
+Gerçek sayılar için IEEE standardı gereğince çoğu makinede <b><tt>1</tt></b> değeri kullanılır.
+        </div><div class="para">
+
+
+Aşağıdaki tabloda <b><tt>FLT_ROUNDS</tt></b> sabitinin olası değerleri ile yuvarlamanın nasıl yapıldığı gösterilmiştir. Yuvarlama IEEE tek hassasiyetli gerçek sayılar standardına uygun olarak yapılmıştır.
         </div>
-        <div class="toc">
-          <div class="toc-title">İçindekiler</div>
-          <dl class="toc">
-            <dt>A.5.1. <a href="glibc-Width-of-Type.html">Tamsayı Veri Türünün Genişliğinin Hesaplanması</a>  -  Bir tamsayı türü kaç bitle tutulur?</dt>
-            <dt>A.5.2. <a href="glibc-Range-of-Type.html">Bir Tamsayı Türün Aralığı</a>  -  Bir tamsayı türün tutabileceği en küçük ve en büyük değer nedir?</dt>
-            <dt>A.5.3. <a href="glibc-Floating-Type-Macros.html">Gerçek Sayı Türü Makroları</a>  -  Gerçek sayı türlerini ölçümlemede kullanılan makrolar.</dt>
-            <dd>
-              <dl>
-                <dt>A.5.3.1. <a href="glibc-Floating-Point-Concepts.html">Gerçek Sayı Gösterimi ile İlgili Kavramlar</a>  -  Terminoloji.</dt>
-                <dt>A.5.3.2. <a href="glibc-Floating-Point-Parameters.html">Gerçek Sayılar ile İlgili Makrolar</a>  -  Bu sayılara özgü makroların açıklamaları.</dt>
-                <dt>A.5.3.3. <a href="glibc-IEEE-Floating-Point.html">IEEE Gerçek Sayı Gösterimleri</a>  -  Ortak gösterim için ölçüler.</dt>
-              </dl>
-            </dd>
-            <dt>A.5.4. <a href="glibc-Structure-Measurement.html">Yapı Alanı Konum Ölçüleri</a>  -  Yapı türleri üzerinden ölçü alınması.</dt>
-          </dl>
+<div class="para"><div align="right"><pre class="screen">
+                0      1             2             3
+ 1.00000003    1.0    1.0           1.00000012    1.0
+ 1.00000007    1.0    1.00000012    1.00000012    1.0
+-1.00000003   -1.0   -1.0          -1.0          -1.00000012
+-1.00000007   -1.0   -1.00000012   -1.0          -1.00000012
+</pre></div></div>
+        </dd><dt><span class="term">
+<b><tt>FLT_RADIX</tt></b>
+        </span></dt><dd class="varlist"><div class="para">
+Bit gösteriminde üstel kısmın tabanına karşılık gelen değerdir. Bu bölümde açıklanan diğer makroların aksine bir sabit ifadesi olarak garantilidir. IBM 360 ve türevleri dışında bilinen tüm makineler için değeri 2 dir.
+        </div></dd><dt><span class="term">
+<b><tt>FLT_MANT_DIG</tt></b>
+        </span></dt><dd class="varlist"><div class="para">
+
+<b><tt>float</tt></b> veri türü için gerçek sayının ondalık kısmındaki taban-<b><tt>FLT_RADIX</tt></b> basamağın basamak sayısıdır. Aşağıdaki ifade ondalık kısım basamaklarının sınırlı olmasından dolayı <b><tt>1.0</tt></b>'a gider (matematiksel olarak olmasada):
         </div>
-      </section>
-      <footer>
-        <div align="center" class="footer">
-          <small>Bir <a href="http://belgeler.org.tr/">Linux Kitaplığı</a> Sayfası</small>
-        </div>
-      </footer>
-    </section>
-  </body>
-</html>
+<div class="para"><div align="right"><pre class="screen">
+float radix = FLT_RADIX;
+
+1.0f + 1.0f / radix / radix / … / radix
+</pre></div></div><div class="para">
+Burada <b><tt>radix</tt></b>, <b><tt>FLT_MANT_DIG</tt></b> kere uygulanır.
+        </div></dd><dt><span class="term">
+<b><tt>DBL_MANT_DIG</tt></b>
+        </span></dt><dt><span class="term">
+<b><tt>LDBL_MANT_DIG</tt></b>
+        </span></dt><dd class="varlist"><div class="para">
+Sırasıyla <b><tt>double</tt></b>  ve <b><tt>long double</tt></b> veri türleri için gerçek sayının ondalık kısmındaki taban-<b><tt>FLT_RADIX</tt></b> basamağın basamak sayısıdır.
+        </div></dd><dt><span class="term">
+<b><tt>FLT_DIG</tt></b>
+        </span></dt><dd class="varlist"><div class="para">
+<b><tt>float</tt></b> türü için hassasiyeti belirleyen ondalık basamakların sayısıdır. Teknik olarak <i><tt>h</tt></i> ve <i><tt>i</tt></i> sırasıyla ikilik gösterimdeki hassasiyet ve taban ise ve ondalık basamakların sayısı <i><tt>o</tt></i> onluk gösterimdeki hassasiyet ise, örneğin, 10 tabanındaki <i><tt>o</tt></i> basamaklı bir gerçek sayı <i><tt>b</tt></i> tabanındaki <i><tt>h</tt></i> basamağa yuvarlanır ve <i><tt>o</tt></i> ondalık basamak sayısı değiştirilmeksizin tekrar geri alınır.
+        </div><div class="para">
+Bu makronun değerinin ISO C gereksinimlerini karşılamak üzere en azından <b><tt>6</tt></b> olacağı varsayılır.
+        </div></dd><dt><span class="term">
+<b><tt>DBL_DIG</tt></b>
+        </span></dt><dt><span class="term">
+<b><tt>LDBL_DIG</tt></b>
+        </span></dt><dd class="varlist"><div class="para">
+<b><tt>FLT_DIG</tt></b>'e benzerler ancak sırasıyla <b><tt>double</tt></b> ve <b><tt>long double</tt></b> veri türleri içindir. Bu makroların değerlerinin en azından <b><tt>10</tt></b>  olacağı varsayılır.
+        </div></dd><dt><span class="term">
+<b><tt>FLT_MIN_EXP</tt></b>
+        </span></dt><dd class="varlist"><div class="para">
+ <b><tt>float</tt></b> türü için ikilik gösterimdeki mümkün en küçük üs değeridir. Daha ayrıntılı ifade etmek gerekirse, <b><tt>float</tt></b> türündeki normalleştirilmiş bir gerçek sayı olarak <b><tt>FLT_RADIX</tt></b> değerinin bu değerden bir eksiğinin artan kuvvetlerinden elde edilebilecek en küçük değerini sağlayacak olan en küçük negatif tamsayıdır. (Pratikte <b><tt>float</tt></b> türü için en küçük değer <tt>2<sup><tt>-125-1</tt></sup></tt> dir ve burada  <b><tt>FLT_MIN_EXP</tt></b> <tt>-125</tt> tir.)
+        </div></dd><dt><span class="term">
+<b><tt>DBL_MIN_EXP</tt></b>
+        </span></dt><dt><span class="term">
+<b><tt>LDBL_MIN_EXP</tt></b>
+        </span></dt><dd class="varlist"><div class="para">
+<b><tt>FLT_MIN_EXP</tt></b>'e benzerler ancak sırasıyla <b><tt>double</tt></b> ve <b><tt>long double</tt></b> veri türleri içindir.
+        </div></dd><dt><span class="term">
+<b><tt>FLT_MIN_10_EXP</tt></b>
+        </span></dt><dd class="varlist"><div class="para">
+<b><tt>float</tt></b> türü için onluk tabanda üssün en küçük negatif değeri olan bir tamsayıdır. Normalleştirilmiş gerçek sayıların mümkün en küçük değeri için <b><tt>10</tt></b>'un bu değerden 1 eksiği artan kuvvetindeki değerine karşılıktır. Bu değerin <b><tt>-37</tt></b> veya daha az olduğu varsayılır.
+        </div></dd><dt><span class="term">
+<b><tt>DBL_MIN_10_EXP</tt></b>
+        </span></dt><dt><span class="term">
+<b><tt>LDBL_MIN_10_EXP</tt></b>
+        </span></dt><dd class="varlist"><div class="para">
+<b><tt>FLT_MIN_10_EXP</tt></b>'e benzerler ancak sırasıyla <b><tt>double</tt></b> ve <b><tt>long double</tt></b> veri türleri içindir.
+        </div></dd><dt><span class="term">
+<b><tt>FLT_MAX_EXP</tt></b>
+        </span></dt><dd class="varlist"><div class="para">
+<b><tt>float</tt></b> türü için ikilik gösterimdeki mümkün en büyük üs değeridir. Daha ayrıntılı ifade etmek gerekirse, <b><tt>float</tt></b> türündeki normalleştirilmiş bir gerçek sayı olarak <b><tt>FLT_RADIX</tt></b> değerinin bu değerden bir eksiğinin artan kuvvetlerinden elde edilebilecek en büyük değerini sağlayacak olan en büyük pozitif tamsayıdır.
+        </div></dd><dt><span class="term">
+<b><tt>DBL_MAX_EXP</tt></b>
+        </span></dt><dt><span class="term">
+<b><tt>LDBL_MAX_EXP</tt></b>
+        </span></dt><dd class="varlist"><div class="para">
+<b><tt>FLT_MAX_EXP</tt></b>'e benzerler ancak sırasıyla <b><tt>double</tt></b> ve <b><tt>long double</tt></b> veri türleri içindir.
+        </div></dd><dt><span class="term">
+<b><tt>FLT_MAX_10_EXP</tt></b>
+        </span></dt><dd class="varlist"><div class="para">
+<b><tt>float</tt></b> türü için onluk tabanda üssün en büyük değeri olan bir pozitif tamsayıdır. Normalleştirilmiş gerçek sayıların mümkün en küçük değeri için <b><tt>10</tt></b>'un bu değerden 1 eksiği artan kuvvetindeki değerine karşılıktır. Bu değerin en azından <b><tt>37</tt></b> olduğu varsayılır.
+        </div></dd><dt><span class="term">
+<b><tt>DBL_MAX_10_EXP</tt></b>
+        </span></dt><dt><span class="term">
+<b><tt>LDBL_MAX_10_EXP</tt></b>
+        </span></dt><dd class="varlist"><div class="para">
+<b><tt>FLT_MAX_10_EXP</tt></b>'e benzerler ancak sırasıyla <b><tt>double</tt></b> ve <b><tt>long double</tt></b> veri türleri içindir.
+        </div></dd><dt><span class="term">
+<b><tt>FLT_MAX</tt></b>
+        </span></dt><dd class="varlist"><div class="para">
+Bu makronun değeri <b><tt>float</tt></b> türünde ifade edilebilecek en büyük gerçek sayının değeridir. Bu değerin en azından <b><tt>1E+37</tt></b> olacağı varsayılır ve bu değer <b><tt>float</tt></b> türündendir.
+        </div><div class="para">
+İfade edilebilir en küçük sayı ise <b><tt>- FLT_MAX</tt></b>'tır.
+        </div></dd><dt><span class="term">
+<b><tt>DBL_MAX</tt></b>
+        </span></dt><dt><span class="term">
+<b><tt>LDBL_MAX</tt></b>
+        </span></dt><dd class="varlist"><div class="para">
+<b><tt>FLT_MAX</tt></b>'e benzerler ancak sırasıyla <b><tt>double</tt></b> ve <b><tt>long double</tt></b> veri türleri içindir. Makro değerinin veri türü kendi türü ile aynıdır.
+        </div></dd><dt><span class="term">
+<b><tt>FLT_MIN</tt></b>
+        </span></dt><dd class="varlist"><div class="para">
+Bu makronun değeri <b><tt>float</tt></b> türünde ifade edilebilecek en küçük gerçek sayının değeridir. Bu değerin <b><tt>1E-37</tt></b>'den daha büyük olmayacağı varsayılır ve bu değer <b><tt>float</tt></b> türündendir.
+        </div></dd><dt><span class="term">
+<b><tt>DBL_MIN</tt></b>
+        </span></dt><dt><span class="term">
+<b><tt>LDBL_MIN</tt></b>
+        </span></dt><dd class="varlist"><div class="para">
+<b><tt>FLT_MIN</tt></b>'e benzerler ancak sırasıyla <b><tt>double</tt></b> ve <b><tt>long double</tt></b> veri türleri içindir. Makro değerinin veri türü kendi türü ile aynıdır.
+        </div></dd><dt><span class="term">
+<b><tt>FLT_EPSILON</tt></b>
+        </span></dt><dd class="varlist"><div class="para">
+<b><tt>1.0 + FLT_EPSILON != 1.0</tt></b> gibi bir ifadeyi doğrulayan <b><tt>float</tt></b> türündeki en küçük pozitif gerçek sayıdır. <b><tt>1E-5</tt></b>'den büyük olmayacağı varsayılır.
+        </div></dd><dt><span class="term">
+<b><tt>DBL_EPSILON</tt></b>
+        </span></dt><dt><span class="term">
+<b><tt>LDBL_EPSILON</tt></b>
+        </span></dt><dd class="varlist"><div class="para">
+<b><tt>FLT_MIN</tt></b>'e benzerler ancak sırasıyla <b><tt>double</tt></b> ve <b><tt>long double</tt></b> veri türleri içindir. Makro değerinin veri türü kendi türü ile aynıdır. Bu değerlerin <b><tt>1E-9</tt></b>'dan daha büyük olmayacağı varsayılır.
+        </div></dd></dl></div>
+      </dd></dl> <div class="head4"><a name="glibc-IEEE-Floating-Point" id="glibc-IEEE-Floating-Point"></a>IEEE Gerçek Sayı Gösterimleri</div><dl><dd><div class="para">
+<a class="indexterm" name="idx3377" id="idx3377"></a>
+<a class="indexterm" name="idx3378" id="idx3378"></a>
+Burada, en genel gerçek sayı gösterimi olan  [IEEE Standard for Binary Floating Point Arithmetic (ANSI/IEEE Std 754-1985)] tarafından belirtilmiş gerçek sayı metrikleri için bir örnek gösterilmektedir. 1980 lerden sonra tasarlanan tüm bilgisayarlar bu biçimi kullanır.
+      </div><div class="para">
+IEEE tek hassasiyetli gerçek sayı biçimi ikilik tabanı kullanır. Bir işaret biti, 23 artı bir gizli bit olmak üzere (yani toplam hassasiyet 24 taban-2 basamak) 24 bitlik ondalık kısım ile  -125 ile 128 aralığındaki üs değerleri için 8 bitlik üstel kısımdan oluşan bir gösterim sunar.
+      </div><div class="para">
+Bu gösterimin <b><tt>float</tt></b> veri türünü gerçeklemekte kullanılan ilgili değerleri aşağıda gösterilmiştir.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+FLT_RADIX                             2
+FLT_MANT_DIG                         24
+FLT_DIG                               6
+FLT_MIN_EXP                        -125
+FLT_MIN_10_EXP                      -37
+FLT_MAX_EXP                         128
+FLT_MAX_10_EXP                      +38
+FLT_MIN                 1.17549435E-38F
+FLT_MAX                 3.40282347E+38F
+FLT_EPSILON             1.19209290E-07F
+</pre></div></div><div class="para">
+Bunlar da <b><tt>double</tt></b> veri türü içindir:
+     </div>
+<div class="para"><div align="right"><pre class="screen">
+DBL_MANT_DIG                         53
+DBL_DIG                              15
+DBL_MIN_EXP                       -1021
+DBL_MIN_10_EXP                     -307
+DBL_MAX_EXP                        1024
+DBL_MAX_10_EXP                      308
+DBL_MAX         1.7976931348623157E+308
+DBL_MIN         2.2250738585072014E-308
+DBL_EPSILON     2.2204460492503131E-016
+</pre></div></div></dd></dl></dd></dl> <div class="head3"><a name="glibc-Structure-Measurement" id="glibc-Structure-Measurement"></a>Yapı Alanı Konum Ölçüleri</div><dl><dd><div class="para">
+Bir yapı içindeki bir yapı üyesinin konumunu <b><tt>offsetof</tt></b> kullanarak bulabilirsiniz.
+    </div>
+<a class="indexterm" name="idx3379" id="idx3379"></a>
+<a name="glibc-offsetof" id="glibc-offsetof"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>size_t <b><tt>offsetof</tt></b></tt></td><td valign="top"><pre class="paramdef">(<i><tt>tür</tt></i>, <i><tt>üye</tt></i>)</pre></td></tr></table></div><div class="sagsutun">makro</div></div></div><dl><dd><div class="para">
+İşlev, <i><tt>tür</tt></i> türündeki yapının <i><tt>üye</tt></i> isimli üyesinin konumunu bir tamsayı sabit olarak döndürür. Örneğin <b><tt>offsetof (struct s, elem)</tt></b> ifadesi, <b><tt>struct s</tt></b> içindeki <b><tt>elem</tt></b> üyesinin bayt cinsinden başlangıç konumunu verir.
+      </div><div class="para">
+Bu makro, <i><tt>üye</tt></i> bir bit alanı ise çalışmayacaktır. Bu durumda C derleyicisinden bir hata alırsınız.
+      </div></dd></dl><div style="padding:5px"></div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Important-Data-Types.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Language-Features.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Library-Summary.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Önemli Veri Türleri </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Ek B. Kütüphane Oluşumlarının Özeti</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

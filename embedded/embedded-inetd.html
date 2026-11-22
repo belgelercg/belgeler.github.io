@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:30+03:00" /><title>Inetd Kurulumu</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../embedded/embedded-ag_ayarlari.html" title="Ağ Ayarları" /><link rel="previous" href="../embedded/embedded-ag_ayarlari.html" title="Ağ Ayarları" /><link rel="next" href="../embedded/embedded-ftp.html" title="FTP Sunucu Kurulumu" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Inetd Kurulumu</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../embedded/embedded-ag_ayarlari.html">Önceki</a> </td><th width="60%" align="center">Ağ Ayarları</th><td width="20%" align="right"> <a accesskey="n" href="../embedded/embedded-ftp.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="embedded-inetd" id="embedded-inetd"></a>Inetd Kurulumu</div><dl><dd><div class="para">
+Sisteme TCP/IP tabanlı bir ağ üzerinden dosya göndermek veya sisteme bağlanmak için FTP ve telnet servislerini kurabiliriz. Bu amaçla basit bir FTP sunucu ygulaması <b><tt>in.ftpd</tt></b> ve telnet sunucu uygulaması <b><tt>in.telnetd</tt></b> Linux yüklü sistemden SBC üzerine aktarılmalıdır. FTP ve telnet servisleri, ilgili portları sürekli dinlemeyecektir. Bunun yerine her iki port (ve olursa ileride diğer servislerin de ihtiyaç duyduğu portlar) <b><tt>inetd</tt></b> <i>(Internet Daemon)</i> programı tarafından dinlenecek, porta veri geldiğinde ilgili program arka planda çalıştırılacak, gelen istek programa yönlendirilecektir. <b><tt>inetd</tt></b>, <b><tt>busybox</tt></b> içerisinden çıkmadığından programın çalıştırılabilmesi için Linux yüklü sistemden <tt>/usr/sbin/inetd</tt> dosyasının da SBC üzerine aktarılması gereklidir. Ayrıca <b><tt>inetd</tt></b> kendi içinde <tt>tcp</tt> uygulama yönlendiricisi olarak <b><tt>/usr/sbin/tcpd</tt></b> uygulamasınıı kullandığından gene bu dosyanın da aktarılması gerekmektedir.
+  </div><div class="para">
+Burada dikkat edilmesi gereken bir nokta, artık SBC üzerine attığımız uygulamaların çok fazla kütüphaneye bağımlı olmaya başlamalarıdır. Temel işlerden daha özel işlere doğru çıktığımızda uygulamaların kullandığı kütüphanelerin sayısı da artmaktadır. <b><tt>tcpd</tt></b> bunun en basit örneğini oluşturuyor. Linux yüklü bilgisayarımızda aşağıdaki gibi <b><tt>tcpd</tt></b> uygulamasının ihtiyaç duyduğu kütüphanelerin neler olduğunu öğrenebiliriz:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>laptop:~/docbook/embedded$ </tt><b><tt>ldd /usr/sbin/tcpd</tt></b>
+      libwrap.so.0 =&gt; /lib/libwrap.so.0 (0x4001b000)
+      libc.so.6 =&gt; /lib/libc.so.6 (0x40024000)
+      libnsl.so.1 =&gt; /lib/libnsl.so.1 (0x40134000)
+      /lib/ld-linux.so.2 =&gt; /lib/ld-linux.so.2 (0x40000000)
+</pre></div></div>
+  <div class="para">
+Son üç kütüphane SBC sistemimizde zaten mevcut iken <tt>libwrap.so.0</tt> henüz mevcut değildir. Dolayısıyla <b><tt>tcpd</tt></b> uygulamasının çalışabilmesi için bu dosyanın da dosya sistemi üzerine atılması gereklidir. Aksi takdirde uygulama çalışmayacak ve aşağıdaki gibi bir hata mesajı verecektir:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+/usr/sbin/tcpd: error while loading shared libraries: libwrap.so.0: cannot open
+shared object file: No such file or directory
+</pre></div></div>
+  <div class="para">
+Bu aşamadan sonra SBC üzerine atacağımız çalıştırılabilir her uygulama için buradaki işlem adımlarını tekrarlayarak gerekli kütüphanelerle birlikte atmalıyız.
+  </div><div class="para">
+Inetd programı, hangi portları dinleyeceğini ve gerektiğinde çalıştırması gereken uygulamaların neler olduğunu <tt>/etc/inetd.conf</tt> ayar dosyasından okur. <b><tt>man inetd</tt></b> ve <b><tt>man inetd.conf</tt></b> komutlarıyla program ve ayar dosyasının biçimi hakkında sisteminizden yardım alabilirsiniz. Ftp ve telnet servisleri için gerekli <tt>inetd.conf</tt> dosyası aşağıdaki gibi olmalıdır:
+  </div><dl class="example"><dt class="example"><a class="example" name="idxmp6" id="idxmp6"></a><b>Örnek 6.1. /etc/inetd.conf</b></dt><dd class="example"><div class="para"><div align="right"><pre class="screen">
+# /etc/inetd.conf dosyamız
+ftp  stream tcp nowait root /usr/sbin/tcpd /usr/sbin/in.ftpd
+telnet stream tcp nowait root /usr/sbin/tcpd  /usr/sbin/in.telnetd
+</pre></div></div></dd></dl><div class="para">
+Bu dosyanın satırlarındaki ilk sözcük servisin ismini göstermektedir. Buradan alınan isim bilgisi (<tt>ftp</tt>, <tt>telnet</tt>) <tt>/etc/services</tt> dosyası içerisinde aranacaktır.  Bu durumda <tt>/etc/services</tt> dosyası Linux yüklü bir sistemden aynen kopyalanmalı veya sadece aşağıdaki kayıtları içerecek şekilde oluşturulmalıdır:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+telnet          23/tcp
+ftp-data        20/tcp
+ftp             21/tcp
+</pre></div></div>
+  <div class="para">
+<b><tt>inetd</tt></b>, <b><tt>telnet</tt></b> vb. gibi servislerin ilk ayarlanması süreci boyunca <b><tt>syslogd</tt></b> programının arka planda çalışıyor olması çıkabilecek problemlerin çözümünde oldukça faydalı bilgiler sağlayacaktır. <b><tt>syslogd</tt></b> açık olduğu müddetçe, <tt>syslog</tt> mekanizmasını kullanan programlar hata durumlarını günlüğe yazabileceğinden <tt>/var/log</tt> dizini altındaki dosyaların incelenmesiyle sorunun nereden kaynaklandığını bulmak çok daha kısa zaman alacaktır. <b><tt>syslogd</tt></b> programını çalıştırmak için komut satırında <b><tt>syslogd</tt></b> yazmanız yeterlidir. Her açılışta çalışması istenirse bu defa <tt>/etc/init.d/rcS</tt> dosyası içerisinde herhangi bir satıra
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+syslogd &amp;
+</pre></div></div>
+  <div class="para">
+kaydı eklenmelidir. Kullanımına artık gerek kalmadığı görüldüğünde <tt>rcS</tt> içerisinden bu satır kaldırılmalıdır (gömülü bir sistemde bu anlamda günlük tutulması, sistem belirli bir kararlılığa ulaştıktan sonra mutlaka önlenmelidir).
+  </div><div class="para">
+Bu ayarlamalar yapıldıktan sonra <tt>rcS</tt> içerisinde <tt>inetd</tt> şeklinde <b><tt>inetd</tt></b> servisinin açılışta çalışabilmesi için  gerekli satırın bulunduğundan emin olunmalıdır. Sistemi yeniden başlatmadan <b><tt>inetd</tt></b> programını test edebilmek için komut satırından <b><tt>inetd</tt></b> yazılması yeterlidir. Eğer bir hata oluşursa <tt>/var/log/messages</tt> dosyası incelenmelidir.
+  </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../embedded/embedded-ag_ayarlari.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../embedded/embedded-ag_ayarlari.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../embedded/embedded-ftp.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Ağ Ayarları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> FTP Sunucu Kurulumu</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

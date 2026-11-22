@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:15+03:00" /><title>Diğer ext2 dosya sistemi araçları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../sag/sag_fs.html" title="Dosya Sistemleri" /><link rel="previous" href="../sag/sag_fs-tools-all.html" title="Diğer dosya sistemi araçları" /><link rel="next" href="../sag/sag_fs-wo-fs.html" title="Dosya sistemleri olmayan diskler" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Diğer ext2 dosya sistemi araçları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../sag/sag_fs-tools-all.html">Önceki</a> </td><th width="60%" align="center">Dosya Sistemleri</th><td width="20%" align="right"> <a accesskey="n" href="../sag/sag_fs-wo-fs.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="sag_fs-tools-ext2" id="sag_fs-tools-ext2"></a>Diğer ext2 dosya sistemi araçları</div><dl><dd><div class="para">
+      Dosya sistemi yaratıcısı <b><tt>mke2fs</tt></b> ve denetleyicisi
+      <b><tt>e2fsck</tt></b>'ye ek olarak ext2 dosya sistemi, dosya
+      sisteminden bağımsız olarak ulaşılabilen ve yahut doğrudan
+      kullanılabilen, bazı yararlı  ek araçlara da sahiptir.
+    </div><div class="para">
+      <b><tt>tune2fs</tt></b> dosya sistemi parametrelerini ayarlar.
+      Bazı ilginç parametreler şunlardır:
+    </div>
+      <ul type="disc" class="itemizedlist"><li><div class="para">
+          Maksimum bağlama sayısı. Dosya sistemleri belirli bir bağlama
+          sayısına ulaşılınca, sistem temiz işaretine rağmen,
+          <b><tt>e2fsck</tt></b> dosya sistemini kontrol etmeye kalkışır.
+          Geliştirme veya sınama amacıyla kullanılan bir sistemde bu sayıyı
+          düşürmek iyi bir fikir olabilir.
+        </div></li><li><div class="para">
+          Denetimler arasındaki maksimum zaman. Sistem temiz işaretine ve
+          denetim için gerekli bağlama sayısına ulaşılmamış olsa bile; en
+          son denetimden beri geçen süre belli bir değere ulaşınca
+          <b><tt>e2fsck</tt></b> sistemi denetlemek isteyebilir.
+          Bu seçenek istenirse kapatılabilir.
+        </div></li><li><div class="para">
+          root kullanıcı için ayrılmış blok sayısı. Ext2, dosya sistemi
+          dolmuş olsa bile, root kullanıcının her hangi bir şeyi silmeden
+          işlerine devam edebilmesi için bazı bloklar ayrılmıştır. Bunun
+          için ayrılan blokların oranı öntanımlı %5'dir. Bu da pek çok disk
+          için fazla sayılmayacak bir orandır.
+        </div></li></ul>
+    <div class="para">
+      Daha fazla bilgi edinmek için <b><tt>tune2fs</tt></b> kılavuz
+      sayfasına bakınız.
+    </div><div class="para">
+      <b><tt>dumpe2fs</tt></b> ext2 dosya sistemi hakkında, genellikle
+      süper bloktan alınan, bilgileri gösterir. Bu bilgilerden bazıları
+      teknik ayrıntılardır ve dosya sisteminin nasıl çalıştığının
+      bilinmesini gerektirir, fakat pek çoğu kolayca anlaşılabilir
+      açıklamalardır.  Aşağıda böyle bir çıktı vardır:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>dumpe2fs -h /dev/hdb2</tt></b>
+dumpe2fs 1.25 (20-Sep-2001)
+Filesystem volume name:   /b2
+Last mounted on:          &lt;not available&gt;
+Filesystem UUID:          ad9437d2-0e25-490b-8c9d-9a0da50c95df
+Filesystem magic number:  0xEF53
+Filesystem revision #:    1 (dynamic)
+Filesystem features:      has_journal filetype needs_recovery sparse_super
+Filesystem state:         clean
+Errors behavior:          Continue
+Filesystem OS type:       Linux
+Inode count:              366592
+Block count:              2931862
+Reserved block count:     146593
+Free blocks:              780635
+Free inodes:              306325
+First block:              1
+Block size:               1024
+Fragment size:            1024
+Blocks per group:         8192
+Fragments per group:      8192
+Inodes per group:         1024
+Inode blocks per group:   128
+Last mount time:          Mon Jan 13 16:47:05 2003
+Last write time:          Mon Jan 13 16:47:05 2003
+Mount count:              821
+Maximum mount count:      -1
+Last checked:             Thu Oct 25 16:02:44 2001
+Check interval:           0 (&lt;none&gt;)
+Reserved blocks uid:      0 (user root)
+Reserved blocks gid:      0 (group root)
+First inode:              11
+Inode size:               128
+Journal UUID:             &lt;none&gt;
+Journal inode:            8
+Journal device:           0x0000
+First orphan inode:       0
+
+
+Grup 0: (1 ile 8192 arasındaki bloklar)
+    İlk süperbloğun yeri:  1
+  Grup tanımının yeri:     2-13
+  Blok biteşleminin yeri:  14 (+13)
+  Düğüm biteşleminin yeri: 15 (+14)
+  Düğüm tablosunun yeri:   16-143 (+15)
+  Serbest blok sayısı:     0
+  Serbest düğüm sayısı:    792
+  Dizin sayısı:            19
+  Serbest bloklar:
+  Serbest düğümler:        233-1024
+Grup 1: (8193 ile 16384 arasındaki bloklar)
+  Yedek süperbloğun yeri:  8193
+  Grup tanımının yeri:     8194-8205
+  Blok biteşleminin yeri:  8206 (+13)
+  Düğüm biteşleminin yeri: 8207 (+14)
+  Düğüm tablosunun yeri:   8208-8335 (+15)
+  Serbest blok sayısı:     0
+  Serbest düğüm sayısı:    855
+  Dizin sayısı:            31
+  Serbest bloklar:
+  Serbest düğümler:        1194-2048
+
+<i>[çıktının Grup 1 ile Grup 357 arasında grup bilgileri silindi]</i>
+
+Grup 357: (2924545 ile 2931861 arasındaki bloklar)
+  Blok biteşleminin yeri:  2924545 (+0)
+  Düğüm biteşleminin yeri: 2924546 (+1)
+  Düğüm tablosunun yeri:   2924560-2924687 (+15)
+  Serbest blok sayısı:     5452
+  Serbest düğüm sayısı:    812
+  Dizin sayısı:            25
+  Serbest bloklar:         2924699, 2925104-2925488, 2925495-2925498, 2925525, \
+                           2926801-2931861
+  Serbest düğümler:        365580, 365607, 365783-366592
+<tt>#</tt>
+</pre></div></div>
+    <div class="para">
+      <b><tt>debugfs</tt></b> dosya sistemleri için kullanılan bir
+      hata ayıklama programıdır. Disk üzerinde bulunan dosya sistemi veri
+      yapısına doğrudan erişim sağlar ve <b><tt>fsck</tt></b> komutunun
+      onaramadığı hataları düzeltmeye yarar.  Ayrıca silinmiş dosyaları
+      geri almak için kullanıldığı da bilinmektedir. Bununla birlikte
+      <b><tt>debugfs</tt></b> ne yaptığınızı bilmeniz gereken bir
+      programdır, aksi halde bütün bilgilerinizi yok edebilirsiniz.
+    </div><div class="para">
+      <b><tt>dump</tt></b> ve <b><tt>restore</tt></b> ext2 dosya
+      sisteminin yedekleme işlemlerinde kullanılırlar. Geleneksel Unix
+      işletim sistemlerinin, ext2 dosya sistemi için geliştirilmiş özel
+      sürümleridir. <a href="../sag/sag_backups.html" class="xref" title="Yedek Alma">Yedek Alma</a> bölümünde yedekleme
+      hakkında daha ayrıntılı bilgi bulabilirsiniz.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../sag/sag_fs-tools-all.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../sag/sag_fs.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../sag/sag_fs-wo-fs.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Diğer dosya sistemi araçları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Dosya sistemleri olmayan diskler</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

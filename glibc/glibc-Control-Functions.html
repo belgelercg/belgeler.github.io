@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:17+03:00" /><title>Kayan Nokta Denetim İşlevleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Arithmetic.html" title="XX. Oylum - Aritmetik İşlevleri" /><link rel="previous" href="../glibc/glibc-Rounding.html" title="Yuvarlama Kipleri" /><link rel="next" href="../glibc/glibc-Arithmetic-Functions.html" title="Aritmetik İşlevleri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Kayan Nokta Denetim İşlevleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Rounding.html">Önceki</a> </td><th width="60%" align="center">XX. Oylum - Aritmetik İşlevleri</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Arithmetic-Functions.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="glibc-Control-Functions" id="glibc-Control-Functions"></a>Kayan Nokta Denetim İşlevleri</div></div></div><dl><dd><div class="para">
+IEEE 754 kayan nokta gerçeklemeleri denetim sözcüğündeki bitleri ayarlayarak oluşacak her olağandışılık için kapanlar olup olmayacağına yazılımcının karar vermesini mümkün kılar. C'de kapanlar yazılımın <b><tt>SIGFPE</tt></b> sinyali almasıyla sonuçlanır; bkz. <a href="../glibc/glibc-Signal-Handling.html" class="xref" title="XXIV. Oylum - Sinyal İşleme">Sinyal İşleme</a>.
+   </div>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">IEEE 754 sinyal eylemcilerin olağandışı durumların ayrıntılarının verildiği ve sonuç değerin ayarlandığı yerler olduğunu söyler. C sinyalleri bu bilginin ileri ya da geri aktarılması için herhangi bir mekanizma sağlamaz. C'de olağandışılıkların yakalanması bundan dolayı çok elverişli değildir.</div></td></tr></table></div>
+   <div class="para">
+Bazı hesaplamaları yaparken kayan nokta biriminin durumunun kaydedilmesi kimi zaman gerekli olur. Kütüphane, kapanları üreten olağandışılıkları ve yuvarlama kiplerini kaydetmeyi ve gerektiğinde eski durumuna getirmeyi sağlayan işlevler sağlar. Bu bilgiler <span><i>kayan nokta ortamı</i></span> olarak bilinir.
+   </div><div class="para">
+Kayan nokta ortamını kaydeden ve eski durumuna getiren işlevlerin hepsi bilgiyi saklamak için  <b><tt>fenv_t</tt></b> türünde bir değişken kullanırlar. Bu veri türü <tt>fenv.h</tt> dosyasında tanımlanmıştır. Türün genişliği ve içeriği gerçeklemeye bağlıdır. Bu türdeki bir değişkenin değerini doğrudan değiştirmeye çalışmamalısınız.
+   </div><div class="para">
+Kayan nokta biriminin durumunu kaydetmek için bu işlevlerden birini kullanın:
+   </div>
+<a class="indexterm" name="idx2146" id="idx2146"></a>
+<a name="glibc-fegetenv" id="glibc-fegetenv"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>fegetenv</tt></b></tt></td><td valign="top"><pre class="paramdef">(fenv_t *<i><tt>ortam</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Kayan nokta ortamını <i><tt>ortam</tt></i> ile gösterilen değişkende saklar.
+   </div><div class="para">
+İşlem başarılıysa işlev sıfırla aksi takdirde sıfırdan farklı bir değerle döner.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2147" id="idx2147"></a>
+<a name="glibc-feholdexcept" id="glibc-feholdexcept"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>feholdexcept</tt></b></tt></td><td valign="top"><pre class="paramdef">(fenv_t *<i><tt>ortam</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+O anki kayan nokta ortamını <i><tt>ortam</tt></i> ile gösterilen nesnede saklar ve tüm olağandışılık bayraklarını temizledikten sonra kayan nokta birimini hiçbir olağandışılığı yakalamamaya ayarlar. Hiçbir olağandışılığın yakalanmamasını kayan nokta birimlerinin hepsi desteklemez; eğer <b><tt>feholdexcept</tt></b> bu kipi ayarlayamıyorsa, sıfırdan farklı bir değer döner. Başarırsa sıfırla döner.
+</div></dd></dl><div style="padding:5px"></div><div class="para">
+Kayan nokta ortamını eski durumuna getiren işlevlerin alabildiği argüman çeşitleri:
+   </div><ul type="disc" class="itemizedlist"><li>
+Önceki bir <b><tt>fegetenv</tt></b> vaya <b><tt>feholdexcept</tt></b> çağrısı ile ilklendirilen <b><tt>fenv_t</tt></b> türündeki nesnelere göstericiler.
+     </li><li><a class="indexterm" name="idx2148" id="idx2148"></a>
+Yazılım başlangıcında kullanılabilir olarak, kayan noktalı ortamı ifade eden bir özel makro: <b><tt>FE_DFL_ENV</tt></b>.
+     </li><li><div class="para">
+<b><tt>fenv_t *</tt></b> türünde isimleri <b><tt>FE_</tt></b> ile başlayan gerçekleme tanımlı makrolar.
+     </div><div class="para">
+<a class="indexterm" name="idx2149" id="idx2149"></a>
+Mümkünse, GNU C kütüphanesi, bir kapanın oluşmasına sebep olan her olağandışılığın ortaya çıkışında ortamı ifade eden <b><tt>FE_NOMASK_ENV</tt></b> makrosunu tanımlar. Bu makronun varlığını <b><tt>#ifdef</tt></b> kullanarak sınayabilirsiniz. Bu makro sadece <b><tt>_GNU_SOURCE</tt></b> tanımlıysa tanımlıdır.
+     </div><div class="para">
+Bazı platformlar diğer önceden tanımlanmış ortamları tanımlayabilir.
+     </div></li></ul><div class="para">
+Kayan noktalı ortamı etkin kılmak için şu işlevleri kullanabilirsiniz:
+   </div>
+<a class="indexterm" name="idx2150" id="idx2150"></a>
+<a name="glibc-fesetenv" id="glibc-fesetenv"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>fesetenv</tt></b></tt></td><td valign="top"><pre class="paramdef">(const fenv_t *<i><tt>ortam</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<i><tt>ortam</tt></i> ile açıklanan kayan noktalı ortamı etkin kılar.
+   </div><div class="para">
+İşlev başarılı olduğunda sıfırla, aksi takdirde sıfırdan farklı bir değerle döner.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2151" id="idx2151"></a>
+<a name="glibc-feupdateenv" id="glibc-feupdateenv"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>feupdateenv</tt></b></tt></td><td valign="top"><pre class="paramdef">(const fenv_t *<i><tt>ortam</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>fesetenv</tt></b> gibi bu işlev de <i><tt>ortam</tt></i> ile açıklanan kayan noktalı ortamı etkin kılar. Ancak, bu işlevin çağrısından önce durum sözcüğü bayraklı herhangi bir olağandışılık varsa çağrıdan sonra da bayraklı olarak kalır. Başka bir deyişle, bu işlevin çağrısından sonra önceki durum sözcüğü ile <i><tt>ortam</tt></i> içinde kayıtlı olan bit seviyesinde VEYAlanır.
+   </div><div class="para">
+İşlev başarılı olduğunda sıfırla, aksi takdirde sıfırdan farklı bir değerle döner.
+</div></dd></dl><div style="padding:5px"></div><div class="para">
+Olağandışılıklar ortaya çıktığında bir kapanın oluşmasına sebep oluyorsa, bu olağandışılıkları tek tek aşağıdaki iki işlevle denetim altında tutabilirsiniz.
+   </div>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Taşınabilirlik Bilgisi</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">Bu işlevlerin hepsi GNU oluşumudur.</div></td></tr></table></div>
+   
+<a class="indexterm" name="idx2152" id="idx2152"></a>
+<a name="glibc-feenableexcept" id="glibc-feenableexcept"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>feenableexcept</tt></b></tt></td><td valign="top"><pre class="paramdef">(int <i><tt>olağandışılıklar</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<i><tt>olağandışılıklar</tt></i> parametresi ile belirtilen olağandışılıkların her biri için kapanları etkinleştirir. Olağandışılıklar tek tek <a href="../glibc/glibc-Status-bit-operations.html" class="xref" title="Kayan Nokta Birimi Durum Sözcüğünün İncelenmesi">Kayan Nokta Birimi Durum Sözcüğünün İncelenmesi</a> bölümünde açıklanmıştır.  Sadece belirtilen olağandışılıklar etkinleştirilir, diğer olağandışılıkların durumu değiştirilmez.
+   </div><div class="para">
+İşlev başarılı olduğunda evvelce etkinleştirilmiş olağandışılıklarla döner, aksi takdirde <b><tt>-1</tt></b> ile döner.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2153" id="idx2153"></a>
+<a name="glibc-fedisableexcept" id="glibc-fedisableexcept"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>fedisableexcept</tt></b></tt></td><td valign="top"><pre class="paramdef">(int <i><tt>olağandışılıklar</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<i><tt>olağandışılıklar</tt></i> parametresi ile belirtilen olağandışılıkların her biri için kapanları iptal eder. Olağandışılıklar tek tek <a href="../glibc/glibc-Status-bit-operations.html" class="xref" title="Kayan Nokta Birimi Durum Sözcüğünün İncelenmesi">Kayan Nokta Birimi Durum Sözcüğünün İncelenmesi</a> bölümünde açıklanmıştır.  Sadece belirtilen olağandışılıklar iptal edilir, diğer olağandışılıkların durumu değiştirilmez.
+   </div><div class="para">
+İşlev başarılı olduğunda evvelce etkinleştirilmiş olağandışılıklarla döner, aksi takdirde <b><tt>-1</tt></b> ile döner.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2154" id="idx2154"></a>
+<a name="glibc-fegetexcept" id="glibc-fegetexcept"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>fegetexcept</tt></b></tt></td><td valign="top"><pre class="paramdef">(int <i><tt>olağandışılıklar</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev o an etkin olan olağandışılıklar ile döner. <b><tt>-1</tt></b> dönmüşse bir hata oluşmuş demektir.
+  </div></dd></dl><div style="padding:5px"></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Rounding.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Arithmetic.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Arithmetic-Functions.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Yuvarlama Kipleri </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Aritmetik İşlevleri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

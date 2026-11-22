@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:49+03:00" /><title>NSS Modüllerinin İsimlendirme Şeması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-NSS-Module-Internals.html" title="NSS Modül Yapısı" /><link rel="previous" href="../glibc/glibc-NSS-Module-Internals.html" title="NSS Modül Yapısı" /><link rel="next" href="../glibc/glibc-NSS-Modules-Interface.html" title="NSS Modüllerinde İşlev Arayüzü" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">NSS Modüllerinin İsimlendirme Şeması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-NSS-Module-Internals.html">Önceki</a> </td><th width="60%" align="center">NSS Modül Yapısı</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-NSS-Modules-Interface.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-NSS-Module-Names" id="glibc-NSS-Module-Names"></a>NSS Modüllerinin İsimlendirme Şeması</div><dl><dd><div class="para">
+Her işlevin ismi çeşitli parçaların bir araya getirilmesiyle oluşur:
+    </div>
+<div class="para"><pre class="literallayout">
+      _nss_<i><tt>hizmet</tt></i>_<i><tt>işlev</tt></i>
+</pre></div><div class="para">
+<i><tt>hizmet</tt></i> şüphesiz bu işlevi içeren modülün isminden gelecektir.<sup>[<a name="id105" href="#ftn.id105" id="id105">105</a>]</sup>   <i><tt>işlev</tt></i> parçası C kütüphanesindeki arayüz işlevinden türetilir. Eğer kullanılan hizmet <b><tt>files</tt></b> ve bu hizmetin modülünde kullanılan işlev <b><tt>gethostbyname</tt></b> ise:
+    </div>
+<div class="para"><pre class="literallayout">
+       libnss_files.so.2
+</pre></div><div class="para">modülündeki</div>
+<div class="para"><pre class="literallayout">
+      _nss_files_gethostbyname_r
+</pre></div><div class="para">işlevinden bahsediyor, oluruz.
+    </div><div class="para">
+<a class="indexterm" name="idx3039" id="idx3039"></a>
+Gördüğünüz gibi, yukarıda açıkladıklarımız gerçeğin tümü değildir. Aslında NSS modülleri arama işlevlerinin sadece evresel sürümlerini içerir. Yani yazılımcı aslında <b><tt>gethostbyname_r</tt></b> işlevini kullanacağından bunu işlevin isminde <b><tt>gethostbyname_r</tt></b> olarak ('gethostbayname_r'eentrant) belirtmelidir. Tüm kullanıcı arayüzü işlevleri için C kütüphanesi bu çağrıları evresel işlev çağrılarına eşler. Evresel işlevler için arayüz hemen hemen aynı olduğundan bu sıradan bir işlemdir. Evresel eşdeğeri olmayan işlevler için ise kütüphane, kullanılan dahili tamponları kullanıcı tanımlı tamponlarla değiştirerek tutar.
+    </div><div class="para">
+Yani evresel işlevlerin benzer karşılıkları olabilir. Tüm veritabanları için işlevler içermesi için ya da tüm veritabanlarının erişebileceği şekilde tasarlanmış bir hizmet modülü yoktur. Bir işlevin yokluğu halinde işlevin <b><tt>unavail</tt></b> döndüreceği varsayılmıştır (Bkz. <a href="../glibc/glibc-Actions-in-the-NSS-configuration.html" class="xref" title="NSS Yapılandırmasındaki Eylemler">NSS Yapılandırmasındaki Eylemler</a>).
+    </div><div class="para">
+<b><tt>libnss_files.so.2</tt></b> dosya ismi bir Solaris 2 sistemde <b><tt>nss_files.so.2</tt></b> olarak görünür.  Bu farktan daha önce sözedilmişti. Sun'ın NSS modülleri sadece dolaylı olarak yüklenen modüller olarak kullanılabilir.
+    </div><div class="para">
+GNU C Kitaplığındaki NSS modülleri, normal kitaplık olarak kullanılmak
+üzere hazırlanmıştır. Fakat, bu, şu anda geçerli
+<i>değildir</i>. Fakat modüllerdeki isim uzayının
+organizasyonu, bunu, Solaris'in aksine imkansız kılmamaktadır.
+Modüllerin kitaplık olması bundan kaynaklanmaktadır. <sup>[<a name="id106" href="#ftn.id106" id="id106">106</a>]</sup>
+    </div><div class="footnotes"><br /><hr width="100" align="left" /><div class="footnote"><div class="para"><sup>[<a name="ftn.id105" href="#id105" id="ftn.id105">105</a>] </sup>Şimdi soracaksınız, niçin bu bilgi işlevlerin de ismine sokuluyor, modülün isminde zaten var. Yanıtı, biz bunun paylaşımlı nesenelerle birlikte ilintilenmesinin mümkün olmasını istiyoruz.</div></div><div class="footnote"><div class="para"><sup>[<a name="ftn.id106" href="#id106" id="ftn.id106">106</a>] </sup>
+İkinci bir açıklama da şu: Makefile'ları, <b><tt>lib</tt></b> ile
+başlamayan paylaşımlı nesnelerin oluşturulması için değiştirmeye
+üşendik, ama bunu kimseye söylemeyin. </div></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-NSS-Module-Internals.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-NSS-Module-Internals.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-NSS-Modules-Interface.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">NSS Modül Yapısı </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> NSS Modüllerinde İşlev Arayüzü</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:14+03:00" /><title>Dosya sistemlerinin bağlanması ve ayrılması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../sag/sag_fs.html" title="Dosya Sistemleri" /><link rel="previous" href="../sag/sag_fs-create.html" title="Bir dosya sisteminin oluşturulması" /><link rel="next" href="../sag/sag_fs-fsck.html" title="&#10;      fsck ile dosya sistemi bütünlüğünün sınanması&#10;    " /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Dosya sistemlerinin bağlanması ve ayrılması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../sag/sag_fs-create.html">Önceki</a> </td><th width="60%" align="center">Dosya Sistemleri</th><td width="20%" align="right"> <a accesskey="n" href="../sag/sag_fs-fsck.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="sag_fs_mount-and-umount" id="sag_fs_mount-and-umount"></a>Dosya sistemlerinin bağlanması ve ayrılması</div><dl><dd><div class="para">
+      Bir dosya sistemi kullanılmadan önce mutlaka bağlanmalıdır.
+      Daha sonra işletim sistemi her şeyin doğru bir şekilde
+      çalıştığından emin olmak için çeşitli muhasebe işlemleri
+      yapar. Unix altında bütün dosya sistemleri tek bir dizin
+      ağacı altında gözüktüğü için, işletim sistemi yeni bağlanan
+      dosya sistemlerini eskiden bağlanmış olan dosya sistemlerinin
+      alt dizinleriymiş gibi gösterir ve bu şekilde işlem yapar.
+    </div><div class="para">
+      Aşağıda <a href="../sag/sag_fs_mount-and-umount.html#sag_fs-mount-root" class="xref" title="Şekil 7.1. Üç ayrı dosya sistemi">Şekil 7.1</a>'de kendi kök dizinleri altında bulunan birbirinden bağımsız
+      üç dosya sistemi gösterilmektedir.  Son iki dosya sistemi sırayla,
+      birincinin <tt>/home</tt> ve <tt>/usr</tt>
+      dizinleri altına bağlanırsa <a href="../sag/sag_fs_mount-and-umount.html#sag_fs-mount-all" class="xref" title="Şekil 7.2. &#10;          /home ve /usr&#10;          bağlı.&#10;        ">Şekil 7.2</a>'deki
+      gibi tek bir dizin ağacı elde ederiz.
+    </div>
+      <div class="figure"><div class="formaltitle"><b><a name="sag_fs-mount-root" id="sag_fs-mount-root"></a>Şekil 7.1. Üç ayrı dosya sistemi</b></div><div class="mediaobject"><img src="images/hd-mount-separate.gif" class="imagedata" align="middle" alt="" /></div></div>
+    
+      <div class="figure"><div class="formaltitle"><b><a name="sag_fs-mount-all" id="sag_fs-mount-all"></a>Şekil 7.2. 
+          <tt>/home</tt> ve <tt>/usr</tt>
+          bağlı.
+        </b></div><div class="mediaobject"><img src="images/hd-mount-mounted.gif" class="imagedata" align="middle" alt="" /></div></div>
+    <div class="para">
+      Aşağıdaki örnekte gösterildiği şekilde bu bağlama işlemleri
+      yapılabilir.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>mount /dev/hda2 /home</tt></b>
+<tt>#</tt> <b><tt>mount /dev/hda3 /usr</tt></b>
+<tt>#</tt>
+</pre></div></div>
+    <div class="para">
+      <b><tt>mount</tt></b> komutu iki argüman alır. Birincisi diske
+      uygun bir aygıt dosyası veya dosya sistemini içeren bir disk bölümüdür.
+      İkincisi ise  bağlandığı dizindir. Bu işlemler yapıldıktan sonra
+      bu iki aygıtın içerikleri sanki disk üzerindeki <tt>/home</tt>
+      ve <tt>/usr</tt> dizinlerinin içerikleriymiş gibi
+      kullanılabilirler.  Şayet bağlama işlemi başka bir dizin altına
+      yapılmış olsaydı, aygıtların içeriklerini görebilmek için o
+      dizinlerin altına bakmamız gerekecekti. Ayrıca  aygıt dosyası ve
+      bağlanılan dizin arasındaki farkı mutlaka göz önünde bulundurmalıyız.
+      Unutmayın ki aygıt dosyası, (<tt>/dev/hda2</tt>)
+      diskin ham içeriğini verir. Bağlandığı dizin ise (<tt>/home</tt>)
+      disk üzerindeki dosyalara ulaşım imkanı verir. Disk bölümünün
+      bağlandığı dizine <span><i>bağlama noktası</i></span> adı
+      verilir.
+    </div><div class="para">
+      Linux pek çok dosya sistemini destekler. <b><tt>mount</tt></b>
+      dosya sisteminin türünü tahmin etmeye çalışır. İsterseniz
+      <tt>-t fstype</tt> seçeneğini dosya sisteminin türünü
+      belirtmek için kullanabiliriz. Bazı zamanlar bu gerekli olmaktadır,
+      <b><tt>mount</tt></b> komutu dosya sistemini tanımlayamayabilir.
+      Örneğin bir MS DOS disketini bağlamak için  şu komut kullanılır:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>mount  -t msdos  /dev/fd0  /floppy</tt></b>
+<tt>#</tt>
+</pre></div></div>
+    <div class="para">
+      Bağlantı dizini mutlaka sistemde var olmalı ve içi boş olmalıdır.
+      İçerisinde her hangi bir dosya bulunursa bağlama işlemi sonucunda
+      ulaşılamaz hale gelir (hali hazırda açılmış dosyalar ve başka bir
+      dizinden sabit bağ verilmiş olan dosyalar hala ulaşılabilir
+      durumdadırlar). Örneğin; bazı kişiler <tt>/tmp</tt>
+      ve <tt>/var/tmp</tt> dizinlerini eş anlamlı olarak
+      kullanırlar ve <tt>/tmp</tt> dizinini
+      <tt>/var/tmp</tt> dizinine sembolik bağ olarak atarlar.
+      Sistem açılırken, <tt>/tmp</tt> dosya sistemi bağlanmadan
+      önce kök dosya sisteminde bulunan <tt>/var/tmp</tt>
+      dizini onun yerine  kullanılır. <tt>/var</tt> dizini
+      bağlandığı zaman, bu kök dosya sistemi altındaki
+      <tt>/var/tmp</tt> dizinini ulaşılmaz kılar. Şayet
+      <tt>/var/tmp</tt> dizini kök dosya sistemde yok ise,
+      <tt>/var</tt> dizinini bağlamadan geçici dosyaları
+      kullanmak imkansız olacaktır.
+    </div><div class="para">
+      Dosya sistemine her hangi bir şey yazmaya niyetiniz yok ise
+      bağlama işlemi sırasında bu bağlantının salt okunur olmasını
+      sağlayacak <tt>-r</tt> seçeneğini kullanabilirsiniz.
+      Bu çekirdeğin her hangi bir yazım girişiminde bulunmasını ve
+      dosya düğümleri içindeki erişim zamanlarının güncellenmesini
+      engeller. Üzerine yazılamayan ortamları (örn; CDROM) bağlarken
+      bu seçenek gereklidir.
+    </div><div class="para">
+      Uyanık okuyucular küçük bir mantıksal problemi fark etmişlerdir.
+      Birinci dosya sistemi (burada kök dosya sistemi oluyor) nasıl
+      bağlanmıştır? Kök dosya sistemi açılış esnasında sihirli bir
+      şekilde bağlanmıştır ve kullanıcı bunun her açılışta tekrar
+      olacağına güvenmelidir. Şayet kök dosya sistemi bağlanmazsa
+      açılış yapılamaz. Sihirli bir biçimde kök dosya sistemini
+      bağlayan dosya sisteminin adı çekirdek içinde derlenmiştir veya
+      LILO ya da <b><tt>rdev</tt></b> kullanılarak ayarlanmıştır.
+    </div><div class="para">
+      Kök dosya sistemi ilk olarak salt okunabilir şekilde bağlanır.
+      Daha sonra başlayan betikler onun geçerliliğini kanıtlamak için
+      <b><tt>fsck</tt></b> programını çalıştırırlar. Şayet bir
+      problem çıkmaz ise oku-yaz olarak tekrar bağlanır. Böylece yazma
+      işlemlerine olanak sağlanır. <b><tt>fsck</tt></b>, oku-yaz bağlı
+      bir dosya sistemi üzerinde yapılmamalıdır. Çünkü dosya sisteminde
+      meydana gelen her değişiklik <b><tt>fsck</tt></b> programını
+      etkileyecek ve çalışması esnasında sorunlar ortaya çıkmasına
+      sebep olacaktır.  Kök dosya sistemi, denetlenirken salt okunur
+      şekilde bağlanmış olduğu için <b><tt>fsck</tt></b> herhangi
+      bir problemi sıkıntıya girmeden giderebilir. Dosya sisteminin
+      bellekte tuttuğu bütün bilgiler yeniden bağlama işlemi esnasında
+      silinecektir.
+    </div><div class="para">
+      Pek çok sistemde açılış esnasında otomatik olarak bağlanması gereken
+      dosya sistemleri mevcuttur.  Bunlar <tt>/etc/fstab</tt>
+      dosyası içinde belirtilmişlerdir. Ayrıntılı bilgi <b><tt>fstab</tt></b>
+      kılavuz sayfasında mevcuttur. Açılış esnasında bağlanılacak dosya
+      sistemlerinin özellikleri çok çeşitli faktörlere dayanır ve bu
+      sistem yöneticisinin şahsi ihtiyaç ve görüşlerine göre değişiklik
+      gösterebilir.  Daha ayrıntılı bilgi <a href="../sag/sag_boots-and-shutdowns.html" class="xref" title="Açılışlar ve Kapanışlar">Açılışlar ve Kapanışlar</a>
+      bölümünde mevcuttur.
+    </div><div class="para">
+      Bir dosya sisteminin daha fazla bağlı durumda kalması gerekmiyorsa
+      <b><tt>umount</tt></b> komutu ile dosya sistemi sistemden
+      ayrılmalıdır.<sup>[<a name="id121" href="#ftn.id121" id="id121">121</a>]</sup> <b><tt>umount</tt></b>
+      argüman olarak aygıt dosyası ismini veya bağlama noktası dizininin
+      adını kullanır. Bu işlem aşağıdaki  şekillerden birisi ile
+      gerçekleştirilir:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>umount /dev/hda2</tt></b>
+<tt>#</tt> <b><tt>umount /usr</tt></b>
+<tt>#</tt>
+</pre></div></div>
+    <div class="para">
+      Komutun değişik kullanımlar için  kılavuz sayfalarına bakabilirsiniz.
+      Bağlı bir disketin ayrılması zorunludur. Sakın  disketi doğrudan
+      dışarı çıkarmayın. Disk önbellekleme olayı yüzünden, gerekli bilgiler
+      siz disketi <b><tt>umount</tt></b> komutu ile sistemden ayırana
+      kadar diskete yazılmaz. Erken çıkarma sonucu verilerde hasar veya
+      karışıklık meydana gelebilir.  Disketten sadece okuyorsanız bu bir
+      problem yaratmaz, fakat yazım işlemleri de yaptıysanız sonuç bir
+      yıkım olabilir.
+    </div><div class="para">
+      Sadece root kullanıcı dosya istemlerini bağlayabilir ve ayırabilir.
+      Şayet her kullanıcı istediği bir dizine bir disket bağlarsa, sonuçta
+      <tt>/bin/sh</tt> dizini gibi görünen bir truva atı
+      yaratmak çok kolay hale gelirdi.  Bununla beraber kullanıcılara
+      disket bağlama izni vermek kaçınılmazdır.  Bunun çeşitli yolları
+      vardır:
+    </div>
+      <ul type="disc" class="itemizedlist"><li><div class="para">
+          Kullanıcılara root parolasını vermek. En kolay fakat en az
+          güvenli seçenektir.  Ağa bağlı olmayan kişisel sistemler
+          için en uygun çözümdür.
+        </div></li><li><div class="para">
+          Kullanıcıların dosya sistemi bağlama işlemlerini yapabilmesine
+          izin vermek için <b><tt>sudo</tt></b> gibi bir program
+          kullanabilirsiniz. Bu hala az güvenli bir seçenektir,
+          sadece süper kullanıcı yetkileri herkese doğrudan verilmemiş
+          olur.<sup>[<a name="id122" href="#ftn.id122" id="id122">122</a>]</sup>
+        </div></li><li><div class="para">
+          Kullanıcıları <b><tt>mtools</tt></b> kullanmaya sevk edin.
+          Böylece MS-DOS dosya sistemlerini bağlamaya gerek kalmadan
+          kullanabilirler.
+        </div></li><li><div class="para">
+          <tt>/etc/fstab</tt> dosyası içinde bağlanması olası
+          dizin ve aygıt dosyası adlarını uygun seçeneklerle tanımlayın.
+        </div></li></ul>
+    <div class="para">
+      <tt>/etc/fstab</tt> dosyası içine şu şekilde bir satır
+      eklemek son bir alternatif olabilir:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+/dev/fd0            /floppy      msdos   user,noauto      0 0
+</pre></div></div>
+    <div class="para">
+      Birinci sütundan itibaren, bağlanacak aygıt dosyası, bağlantı dizini,
+      dosya  sistemi, seçenekler, yedekleme yapma sıklığını (<b><tt>dump</tt></b>
+      tarafından kullanılır) ve açılış esnasında hangi dosya sistemlerinin
+      <b><tt>fsck</tt></b> tarafından denetleneceğini belirten numaralar
+      (sıfır = birşey yapma) belirtilmiştir.
+    </div><div class="para">
+      <tt>noauto</tt> seçeneği açılış esnasında dosya sisteminin
+      otomatik olarak bağlanmayacağını belirtir. <tt>user</tt>
+      seçeneği ise bütün kullanıcılara bu dosya sistemini bağlama izni
+      verirken güvenlik sebeplerinden dolayı, bağlanmış dizinden aygıt
+      dosyalarının yorumlanmasına ve normal programların dahi
+      çalıştırılmasına izin vermez. Artık her hangi bir kullanıcı msdos
+      dosya sistemine sahip bir disketi bağlamak için aşağıdaki komutu
+      kullanabilir:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>$</tt> <b><tt>mount /floppy</tt></b>
+<tt>$</tt>
+</pre></div></div>
+    <div class="para">
+      Bu disket <b><tt>umount</tt></b> komutu ile daha sonra
+      sistemden ayrılmalıdır.
+    </div><div class="para">
+      Şayet çeşitli disketlere ulaşım verilmesini istiyorsanız, farklı
+      bağlama noktaları tanımlamalısınız.  Msdos ve ext2 dosya
+      sistemlerine sahip disketlere ulaşabilmek için <tt>/etc/fstab</tt>
+      dosyasına şu satırlar eklenmelidir:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+/dev/fd0    /dosfloppy    msdos   user,noauto  0  0
+/dev/fd0    /ext2floppy   ext2    user,noauto  0  0
+</pre></div></div>
+    <div class="para">
+      MS-DOS dosya sistemleri için, genellikle <tt>uid</tt>,
+      <tt>gid</tt> ve <tt>umask</tt> dosya sistemi
+      seçeneklerini kullanarak erişime sınırlamalar getirmek
+      isteyebilirsiniz.  Şayet dikkatli davranmazsanız, bağlı bir
+      MS_DOS dosya sistemi için herkese en azından okuma izni vermiş
+      olursunuz. Bu da pek iyi bir fikir olmayabilir.
+    </div><div class="footnotes"><br /><hr width="100" align="left" /><div class="footnote"><div class="para"><sup>[<a name="ftn.id121" href="#id121" id="ftn.id121">121</a>] </sup>Tabii ki <b><tt>umount</tt></b>
+      komutunun aslı unmount'tur. Fakat 1970'li yıllarsa "n" esrarengiz
+      bir şekilde ortadan kayboldu. Şayet "n" yi görürseniz lütfen Bell
+      Laboratuarlarına haber verin.</div></div><div class="footnote"><div class="para"><sup>[<a name="ftn.id122" href="#id122" id="ftn.id122">122</a>] </sup>Yine de bu durum kullanıcının bir kaç
+          saniye düşünmesi ile aşılabilen bir güvenliktir. Ancak,
+          <b><tt>sudo</tt></b> komutu, kullanıcıların belirli komutları
+          çalıştırabilmesi için sınırlandırılabilir. Bu konu hakkında
+          ayrıntılı bilgiyi <tt>sudo</tt>(8),
+          <tt>sudoers</tt>(5) ve <tt>visudo</tt>(8)
+          kılavuz sayfalarında bulabilirsiniz.</div></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../sag/sag_fs-create.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../sag/sag_fs.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../sag/sag_fs-fsck.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Bir dosya sisteminin oluşturulması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> 
+      fsck ile dosya sistemi bütünlüğünün sınanması
+    </td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

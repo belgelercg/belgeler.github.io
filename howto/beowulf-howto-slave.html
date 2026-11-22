@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:37+03:00" /><title>İkincil Düğümlerin Yapılandırılması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/beowulf-howto.html" title="Beowulf NASIL" /><link rel="previous" href="../howto/beowulf-howto-master.html" title="Ana Düğümün  Yapılandırılması" /><link rel="next" href="../howto/beowulf-howto-verify.html" title="Doğrulama" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">İkincil Düğümlerin Yapılandırılması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/beowulf-howto-master.html">Önceki</a> </td><th width="60%" align="center">Beowulf NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/beowulf-howto-verify.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="beowulf-howto-slave" id="beowulf-howto-slave"></a>İkincil Düğümlerin Yapılandırılması</div><dl><dd><div class="para">
+Ağ kablonuzu çıkarın. İlk ikincil düğüme Linux kurun. Ve bu adımları herbir ikincil düğüm için tekrarlayın.
+    </div> <div class="head3"><a name="id1" id="id1"></a>Temel Linux Kurulumu</div><dl><dd><div class="para">
+Örnek düğüm isimleri ve IP adresleri ile devam edelim, bunlar kurulum sırasında seçtiklerim:
+      </div>
+<div class="para"><pre class="literallayout">
+    İş istasyonu
+    Otomatik bölümlendirme
+    Sistemdeki bütün bölümlendirmeleri silme
+    ön yükleyici olarak LILO kullanma
+    ön yükleyiciyi MBR'a yazma
+    sunucu ismini wolf01 olarak belirlenmesi
+    IP adresleri 192.168.0.101
+    wolf kullanıcısınır eklenmesi
+    bütün düğümlerde aynı parolayı kullan
+    Güvenlik duvarı kullanma
+</pre></div>
+      <div class="para">
+Sadece ağ servisleri paketi kuruldu, başka paket seçilmedi.
+      </div><div class="para">
+Bunlar en temel ihtiyacınız olan şeyler. Düğümleri,  neden gerekmeyen ve hiç kullanmayacağınız yazılımlarla doldurasınız? Ben kümeyi ayağa kaldırıp çalıştırmak için gereken en temel yapılandırmayı bulmak üzerine yoğunlaşmıştım.
+      </div><div class="para">
+Başka bir önemli nokta: Otomatik kurulum ve yapılandırma devam ederken, düğüme  giriş yapamayacaksınız. Düğume erişimi sadece yapılandırma ve kurulum anında kısıtlamıştım.
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Donanım</div><dl><dd><div class="para">
+Sistem açıldığında eğer klavye bağlı değilse uyaracaktır. Ben BIOS'u güncelleyemedim;  çünkü çok eski, kullanım kılavuzu olmayan makinelere sahibim. Dolayısıyla "sahte" bir klayve kullandım.
+      </div><div class="para">
+Bilgisayar sektöründe çalışıyorum ve gelen giden yüzlerce klavye görüyorum.  Bazen sonları çöplük oluyor. Ben de eski, işe yaramayan bir klavyeyi aldım, köşesindeki Num Lock ve Caps Lock ışıklarının bulunduğu yerdeki ince devre kartını kabloyla birlikte yerinden çıkarttım, sonra fişi makineye taktım, bilgisayar gerçek bir klavye olduğunu zannetti.
+      </div><div class="para">
+Tekrar ediyorum, eğer yapabiliyorsanız biosu güncellemeniz daha sağlıklı olabilir,  bu BIOS'u güncelleyemiyorsanız kullanabileceğiniz bir yöntem.
+      </div></dd></dl> <div class="head3"><a name="id3" id="id3"></a>Kurulumun Son Komutları</div><dl><dd><div class="para">
+Yeni kurulan düğümü yeniden başlatın, sisteme yönetici olarak giriş yapın.
+      </div><ul type="disc" class="itemizedlist"><li>
+Önceki bölümde anlatıldığı gibi doğru servisleri kurmak için aynı <b><tt>chkconfig</tt></b> komutlarını uygulayın,
+        </li><li><tt>hosts</tt> dosyasını düzenleyin, localhost'tan "wolfnn"'yi silin,  wolfnn ve wolf00'ı ekleyin,
+        </li><li>
+LAM kurun,
+        </li><li><tt>/mnt/wolf</tt> dizinini oluşturun ve güvenlik ayarlarını yapın,
+        </li><li>
+SSH yapılandırmasını yapın.
+        </li></ul>
+      <div class="para">
+Bu noktaya kadar, ana düğümün aynısı gibiydi; ama bundan sonra farklı olarak <tt>exports</tt> dosyasında değişiklik yapmıyorum.
+      </div><div class="para">
+Ve, <tt>.bash_profile</tt> dosyasına şu satırı ekle<b><tt>mi</tt></b>yorum:
+      </div>
+<div class="para"><div align="right"><pre class="screen">sh -c 'ssh-add &amp;&amp; bash'</pre></div></div>
+      </dd></dl> <div class="head3"><a name="id4" id="id4"></a>İkincil Düğümler Üzerinde SSH</div><dl><dd><div class="para">
+Hatırlarsak, ana düğüm üzerinde <tt>authorized_keys</tt> dosyasını oluşturmuştuk. Ana düğüm üzerinde oluşturulan dosyayı, ikincil düğümlerin <tt>~/.ssh</tt> dizinine kopyalayın. Böylece, ana düğüm bütün ikincil düğümlere giriş yapabilecek.
+      </div><div class="para">
+LAM kullanıcı kılavuzunda belirtildiği gibi, ana düğüm herhangi bir düğüme giriş yaptığında etkileşim gerekmemektedir. Dolayısıyla, genel anahtarı ana düğümden herhangi bir ikincil düğüme <tt>authorized_keys</tt> dosyasında olduğu gibi kopyalamak, her bir ikincil düğüme, wolf00 üzerindeki wolf kullanıcısının parola gerekmeden giriş yapmasına izin verir ve bu giriş güvenlidir.
+      </div><div class="para">
+İlk defa giriş yaptığınızda doğrulama isteyecek. Dolayısıyla bir defa, yukarıdaki yapılandırmayı yaptıktan sonra, ana düğüme geri dönün. (yapılandırması yeni yapılan ikincil düğümün ismi "wolfnn") ssh wolfnn yazın ve basitçe "yes" diye cevaplandırın; bu son olacak, bir daha sormayacak.
+      </div><div class="para">
+Oturumu kapatarak o düğüme ssh ile bağlanarak, böyle olduğunu görün. Hiçbir şey sormadan hemen oturum açabileceksiniz.
+      </div></dd></dl> <div class="head3"><a name="id5" id="id5"></a>İkincil Düğümlerde NFS Ayarları</div><dl><dd><div class="para">
+root olarak, şu komutları çalıştırın:
+      </div>
+<div class="para"><div align="right"><pre class="screen">cat &gt;&gt; /etc/fstab
+wolf00:/mnt/wolf /mnt/wolf nfs rw,hard,intr 0 0
+&lt;control d&gt;
+</pre></div></div>
+      <div class="para">
+Burada yaptığımız, ana düğümde <tt>/etc/exports</tt> dosyasında tanımlayarak, dışardan bağlamaya izin verilen dizinin otomatik bağlanmasını sağlamak. NFS ile ilgili daha fazla bilgi belgenin ilerleyen kısımlarında mevcuttur.
+      </div></dd></dl> <div class="head3"><a name="id6" id="id6"></a>İkincil Düğümlerde Lilo'nun Düzenlemesi</div><dl><dd><div class="para">
+<tt>/etc/lilo.conf</tt> dosyasını düzenleyin.
+      </div><div class="para">
+Bu dosyanın 2. satırı şöyledir:
+      </div>
+<div class="para"><div align="right"><pre class="screen">timeout=nn</pre></div></div>
+      <div class="para">
+Bu satırı şu şekilde değiştirin:
+      </div>
+<div class="para"><div align="right"><pre class="screen">timeout=1200</pre></div></div>
+      <div class="para">
+Sonra değişiklikleri uygulayacağız. <b><tt>/sbin/lilo</tt></b> yazarsak, linux'un öntanımlı olarak açılacak sistem olduğunu belirten "added linux *" iletisini döndürecektir.
+      </div>
+<div class="para"><div align="right"><pre class="screen">/sbin/lilo
+Added linux *
+</pre></div></div>
+      <div class="para">
+Lilo düzenlemesini neden yapmalıyım? Eğer siz Beowulf'u web üzerinde araştırıyorsanız ve şu ana kadar anlattığım herşeyi anladıysanız, şaşırabilirsiniz. "<tt>lilo.conf</tt> hakkında hiç bir şey okuduğumu hatırlamıyorum." diyebilirsiniz.
+      </div><div class="para">
+Bütün Beowulf düğümlerimiz tek enerji hattını paylaşırlar. Enerji hattını açtığımda küme üzerindeki bütün düğümler derhal başlar. Aynen başlangıçtaki işlemler süreci gibi dosya sistemini bağlar. Düğümler ana düğümdeki paylaşımli dizine bağlanır, ama ana düğümün NFS hizmeti vermeye hazır olmasına kadar beklemek zorundalardır. Dolayısıyla  herbir düğüm için lilo bekleme zamanını 2 dakikaya ayarladım. Bu sırada ana düğüm hazır olur ve paylaşımlı dizin erişilebilir olur. Son olarak ikincil düğümler başlar, çünkü lilo  onları 2 dakika bekletmişti.
+      </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/beowulf-howto-master.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/beowulf-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/beowulf-howto-verify.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Ana Düğümün  Yapılandırılması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Doğrulama</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

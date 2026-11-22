@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:14+03:00" /><title>Bir kök dosya sisteminin oluşturulması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/bootdisk-howto.html" title="Linux Açılış Disketi NASIL" /><link rel="previous" href="../howto/bootdisk-howto_bootproc.html" title="Açılış disketleri ve önyükleme süreci" /><link rel="next" href="../howto/bootdisk-howto_choosingkernel.html" title="Çekirdek Seçimi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Bir kök dosya sisteminin oluşturulması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/bootdisk-howto_bootproc.html">Önceki</a> </td><th width="60%" align="center">Linux Açılış Disketi NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/bootdisk-howto_choosingkernel.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="bootdisk-howto_buildroot" id="bootdisk-howto_buildroot"></a>Bir kök dosya sisteminin oluşturulması</div><dl><dd><div class="para">
+Bir kök dosya sisteminin oluşturulması, sistemin çalışması için gerekecek dosyaları seçmeyi zorunlu kılar. Bu bölümde, sıkıştırılmış bir kök dosya sisteminin nasıl yapılacağını göreceğiz. <span class="wordasword"><i>Sıkıştırılmış dosya sistemi</i></span>ni, doğrudan kök dosya sistemi olarak bağlanan bir disket üzerinde oluşturmanın daha az kullanılan bir diğer yöntemi <a href="../howto/bootdisk-howto_misctopics.html#bootdisk-howto_NonRamdiskRoot" class="xref" title="Ramdisksiz kök dosya sistemleri">Ramdisksiz kök dosya sistemleri</a> bölümünde anlatılmaktadır.
+    </div> <div class="head3"><a name="id1" id="id1"></a>Genel bakış</div><dl><dd><div class="para">
+Bir kök dosya sistemi, tam bir Linux sistemi desteklemek için gerekli olan herşeyi içermelidir. Bunu yapabilmek için, bu disket bir Linux sistemde gerekli olan asgari araçları içermelidir:
+      </div><ul type="disc" class="itemizedlist"><li>
+temel dosya sistemi yapısını;
+      </li><li>
+en azından şu dizinleri: <tt>/dev</tt>,
+<tt>/proc</tt>,
+<tt>/bin</tt>,
+<tt>/etc</tt>,
+<tt>/lib</tt>,
+<tt>/usr</tt>,
+<tt>/tmp</tt>;
+      </li><li>
+temel araçları: <b><tt>sh, ls, cp, mv</tt></b>, vs.;
+      </li><li>
+ayar dosyalarının en temel olanlarını: <tt>rc, inittab, fstab</tt>, vs.;
+      </li><li>
+aygıtları: <tt>/dev/hd*, /dev/tty*, /dev/fd0</tt>, vs.;
+      </li><li>
+araçlar tarafından kullanılan temel işlevleri sağlayan çalışma anı kütüphanelerini.
+      </li></ul><div class="para">
+Elbette ki, herhangi bir sistem, üzerinde bir şeyler çalıştırabildiğimiz sürece işe yarardır. Bir kök disket aşağıdakileri veya bunlara benzer şeyleri yapabildiğiniz sürece bir anlam ifade eder:
+      </div><ul type="disc" class="itemizedlist"><li><div class="para">
+Başka bir sürücüdeki dosya sistemini kontrol edebilmeli. Örneğin, sabit diskinizdeki kök dosya sistemini denetleyebilmeli, sistemi başka bir sürücüden açtıktan sonra, sizin orjinal kök bölümünüzü, bağlı değil iken, <b><tt>fsck</tt></b> ile denetlemenizi sağlamalı.
+      </div></li><li><div class="para">
+Arşivlenmiş ve/veya sıkıştırılmış orjinal kök dosya sisteminizin hepsini veya bir bölümünü <b><tt>cpio, gzip, tar</tt></b> veya <b><tt>ftape</tt></b> gibi araçlar kullanarak tekrar yükleyebilmeli.
+      </div></li></ul><div class="para">
+<span class="wordasword"><i>Sıkıştırılmış dosya sistemi</i></span> yapmayı burada açıklayacağız. Bu isimle anılmasını sebebi, sıkıştırılmış olması ve önyükleme işlemi sonrası ramdisk içine açılmasıdır. Sıkıştırılmış dosya sistemi kullanarak 6MB'ye yakın veriyi tek bir 1440k'lık bir diskete sığdırmak mümkündür. Dosya sistemi tek bir disketin boyutunda daha büyük olduğu için, dosya sistemini disket üzerinde hazırlamak mümkün değildir. Bu nedenle, dosya sistemini başka bir yerde hazırlamalı, orada  sıkıştırıp daha sonra diskete kopyalamalıyız.
+      </div></dd></dl> <div class="head3"><a name="bootdisk-howto_creatingrootfs" id="bootdisk-howto_creatingrootfs"></a>Dosya sisteminin oluşturulması</div><dl><dd><div class="para">
+Bu tür bir kök dosya sistemi oluşturmak için, sıkıştırma öncesi bütün araç ve dosyaları içine alabilecek kadar büyük bir yere ihtiyacımız var. 4MB kadar kapasiteye sahip bir aygıta ihtiyacımız var. Bunun için çeşitli seçenekler mevcuttur:
+      </div><ul type="disc" class="itemizedlist"><li><div class="para">
+Bir <span class="wordasword"><i>ramdisk</i></span> (<tt>AYGIT = /dev/ram0</tt>) kullanın. Bu durumda, fiziksel bellek,  bir disk sürücü gibi kullanılır. Ramdiskimiz yeterince büyük olmalıdır. Şayet LILO kullanıyorsanız, RAM içinde yaratılacak ramdiskin boyutunu sınırlayan bir satır (<tt>RAMDISK=nnn</tt> gibi) olup olmadığını <tt>/etc/lilo.conf</tt> ayar dosyası içinden kontrol edin. Öntanımlı değer 4096K'dır ve bu yeterli olacaktır.  8MB'den daha küçük RAM'i olan bir makine üzerinde böyle bir ramdisk yapmaya kalkışmayın. <tt>/dev/ram0, /dev/ram</tt> veya <tt>/dev/ramdisk</tt>  gibi bir aygıta sahip olduğunuzdan emin olun. Şayet bu tür bir aygıt sisteminizde yok ise <b><tt>mknod</tt></b> kullanarak <tt>/dev/ram0</tt> aygıtını oluşturun (ana=1, alt=0). Aygıt dosyaları yapmak için  gerekli bilgiyi <b><tt>man mknod</tt></b>  veya <a href="../sag/sag.html" class="xref" title="Linux Sistem Yöneticisinin Kılavuzu">Linux Sistem Yöneticisinin Kılavuzu</a> içinde bulabilirsiniz.
+      </div></li><li><div class="para">
+Şayet yeterli boyutta kullanılmayan bir disk bölümüne sahipseniz, bu da kabul.
+      </div></li><li><div class="para">
+Bir <span class="wordasword"><i>geridönüş aygıtı</i></span> kullanın. Bu aygıt ile, bir disk dosyasına bir aygıtmış gibi davranabilirsiniz. Bir geridönüş aygıtı kullanarak, sabit diskiniz üzerinde,  dosya sistemini yapmamıza yetecek kadar büyük bir dosya oluşturabilirsiniz (3MB civarı).
+      </div><div class="para">
+Geridönüş aygıtlar hakkında bilgi almak için: <b><tt>man losetup</tt></b>. Şayet sisteminizde <b><tt>losetup</tt></b> yok ise, <b><tt>mount</tt></b> ve <b><tt>umount</tt></b> sürümleri ile uyumlu olarak <a class="ulink" href="ftp://ftp.win.tue.nl/pub/linux-local/utils/util-linux/" target="_top">ftp://ftp.win.tue.nl/pub/linux-local/utils/util-linux/</a> adresinden util-linux paketi içinde alabilirsiniz.
+      </div><div class="para">
+Şayet sisteminizde bir dönüş aygıtı yok ise (<tt>/dev/loop0</tt>, <tt>/dev/loop1</tt>, vs.),  ``<b><tt>mknod /dev/loop0 b 7 0</tt></b>'' komutunu kullanarak bir tane oluşturmalısınız. Özel <b><tt>mount</tt></b> ve <b><tt>umount</tt></b> çalıştırılabilirlerini de yükledikten sonra, diskiniz üzerinde yeterli kapasiteye sahip geçici bir dosya oluşturun (örneğin <tt>/tmp/fsfile</tt>). <i><tt>nnn</tt></i> blokluk bir dosya oluşturmak için şu komutu kullanabilirsiniz:
+      </div>
+<div class="para"><div align="right"><pre class="screen">dd if=/dev/zero of=/tmp/fsfile bs=1k count=<i><tt>nnn</tt></i>
+</pre></div></div>
+      <div class="para">
+Aşağıdaki <i><tt>aygıt</tt></i> kelimesinin yerine dosya ismini koyun. Bağlama işlemi yapacağınız zaman, <b><tt>mount</tt></b> komutu ile birlikte <b><tt>-o loop</tt></b> seçeneğini kullanmanız gerekmektedir. Böylece <b><tt>mount</tt></b> uygulamasına bağlanacak şeyin bir dönüş aygıt olduğu bildirilmiş olur.
+<a class="indexterm" name="idx15" id="idx15"></a>
+      </div></li></ul><div class="para">
+Bu seçeneklerden birisini seçtikten sonra <i><tt>aygıt</tt></i>'ı hazırlayın:
+      </div>
+<div class="para"><div align="right"><pre class="screen">dd if=/dev/zero of=<i><tt>aygıt</tt></i> bs=1k count=4096
+</pre></div></div>
+      <div class="para">
+Bu komut aygıtı sıfırlarla doldurur.
+      </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/important.png" /></td><th class="admon">Önemli</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Bir aygıtın sıfırlarla doldurulması, dosya sistemi daha sonra sıkıştırılacağı için kritik bir öneme haizdir. Azami sıkıştırmayı sağlamak için kullanılmayan bütün bölümler sıfır ile doldurulmalıdır. Dosya sistemindeki bir dosyayı silerken veya taşırken bunu aklınızda bulundurun. Dosya sistemi blokları doğru bir şekilde tekrar yerleştirir <i>ama onları tekrar sıfırla doldurmaz</i>. Şayet sıklıkla silme ve kopyalama yapıyorsanız, sıkıştırılmış dosya sisteminiz ihtiyaç duyduğumuzdan daha büyük olabilir.
+      </div></td></tr></table></div><div class="para">
+<a class="indexterm" name="idx16" id="idx16"></a>
+Daha sonra dosya sistemini oluşturun. Linux çekirdeği, ramdiske özdevinimli olarak yüklenen,  iki çeşit dosya sistemi kabul eder. Bunlar minix ve ext2'dir. ext2'yi tercih etmenizi öneririz. Şayet ext2 kullanırsanız, öntanımlı değerden daha fazla dosya düğümü oluşturmak için kullanılan <b><tt>-N</tt></b> seçeneğinin oldukça işe yarar olduğunu görürsünüz.  <b><tt>-N 2000</tt></b> değerini kullanmanızı öneririm. Böylece dosya düğümü sıkıntısı yaşamazsınız. Ayrıca olarak, gereksiz <tt>/dev</tt> dosyalarını silerek de dosya düğümü tasarrufu sağlanabilir.  <b><tt>mke2fs</tt></b>, öntanımlı olarak 1.44MB'lik bir diskette 360 adet dosya düğümü oluşturur.  Benim yaptığım kök diskette 120 tane dosya düğümü yeterli olmuştu. Eğer <tt>/dev</tt> içindeki bütün aygıtları eklemeye niyetiniz varsa, rahatlıkla 360 düğüm sınırını geçebilirsiniz. Sıkıştırılmış bir dosya sistemi kullanmak, daha büyük bir dosya sistemine ve daha çok düğüme izin verir fakat hala ya düğüm sayısını artırmanız ya da kullandığınız dosya sayısını sınırlamanız gerekmektedir.
+      </div><div class="para">
+Bu nedenle kullanacağımız komut şuna benzer olacaktır:
+      </div>
+<div class="para"><div align="right"><pre class="screen">mke2fs -m 0 -N 2000 <i><tt>aygıt</tt></i>
+</pre></div></div>
+      <div class="para">
+(Şayet bir geridönüş aygıtı kullanıyorsanız, <i><tt>aygıt</tt></i> yazan yerde kullandığınız dosyanın adı olmalıdır.)
+      </div><div class="para">
+<b><tt>mke2fs</tt></b> kullanılabilir alanı kendiliğinden tespit eder ve gerekli ayarlamaları yapar.  ``<b><tt>-m 0</tt></b>''  parametresi  root kullanıcı için alan ayrılmasını önlemiş olur ve böylece diskette daha fazla alan bulunması sağlanmış olur.
+      </div><div class="para">
+Daha sonra aygıtı bağlayın:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+mount -t ext2 <i><tt>aygıt</tt></i> /mnt
+</pre></div></div>
+      <div class="para">
+(Şayet <tt>/mnt</tt> bağlantı noktası sisteminizde yoksa, bunu oluşturmak zorundasınız.) Bölümün geri kalanında hedef dizin isimleri <tt>/mnt</tt>'ye göre ayarlanacaktır.
+      </div></dd></dl> <div class="head3"><a name="bootdisk-howto_fsfill" id="bootdisk-howto_fsfill"></a>Dosya sisteminin doldurulması</div><dl><dd><div class="para">
+Kök dosya sisteminiz için gerekli olan mümkün en az sayıda dizin şunlardan oluşabilir<sup>[<a name="id11" href="#ftn.id11" id="id11">11</a>]</sup>:
+    </div><ul type="disc" class="itemizedlist"><li><tt>/dev</tt> -- aygıt dosyaları, G/Ç'lar için gereklidir.
+    </li><li><tt>/proc</tt> -- proc dosya sistemi tarafından ihtiyaç duyulan dizin
+    </li><li><tt>/etc</tt> -- sistem yapılandırma dosyaları
+    </li><li><tt>/sbin</tt> -- Kritical sistem çalıştırılabilirler
+    </li><li><tt>/bin</tt> -- sistemin parçası olarak kabul edilen çalıştırılabilirler
+    </li><li><tt>/lib</tt> -- çalışma zamanı desteği sağlayan paylaşımlı kütüphaneler
+    </li><li><tt>/mnt</tt> -- diğer disklerdeki bakım/onarım işleri için bağlantı noktası
+    </li><li><tt>/usr</tt> -- ilave araçlar ve uygulamalar
+    </li></ul><div class="para">
+Bu dizinlerden üç tanesi boş olacaktır, bu nedenle sadece <b><tt>mkdir</tt></b> kullanarak bunları oluşturmak yeterli olacaktır. <tt>/proc</tt> dizini, proc dosya sisteminin yerleştiği bir dizindir. <tt>/mnt</tt> ve <tt>/usr</tt> dizinleri, sistem çalıştıktan sonra kullanılacak bağlantı noktalarıdır.
+    </div><div class="para">
+Geri kalan dizinler aşağıda ki bölümlerde açıklanmıştır.
+    </div> <div class="head4"><a name="id13" id="id13"></a><tt>/dev</tt></div><dl><dd><a class="indexterm" name="idx17" id="idx17"></a><div class="para">
+Bir Linux sistemi için gerekli olan bütün aygıtların dosyalarının bulunduğu bir dizindir. Dizinin kendisi normal bir dizindir ve <b><tt>mkdir</tt></b> komutu ile normal bir şekilde oluşturulabilir. Aygıt özel dosyaları ise, <b><tt>mknod</tt></b> komutu kullanılarak özel bir yöntemle oluşturulmalıdır.
+    </div><div class="para">
+Aynı zamanda bu işi yapmanın kısa bir yolu da vardır: sabit diskinizdeki aygıt dosyalarını disketin <tt>/dev</tt> dizinine kopyalayabilirsiniz.  Bu işlem esnasında yapmanız gereken tek şey <b><tt>-R</tt></b> seçeneğini kullanmaktır. Böylece, dizin içindeki dosyaların içerikleri kopyalanmadan sadece dizin kopyalanır. Örneğin:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+cp -dpR /dev/fd[01]* /mnt/dev
+cp -dpR /dev/tty[0-6] /mnt/dev
+</pre></div></div>
+    <div class="para">
+Disketin <tt>/mnt</tt> dizinine bağlı olduğunu varsayarsak, <tt>dp</tt> sçenekleri sembolik bağların yine bağ olarak kopyalandığından, dosya özniteliklerinin korunduğundan ve iyelik bilgilerini saklandığından emin olmamızı sağlar.
+    </div><div class="para">
+Şayet bu işi zor yoldan halletmek isterseniz, istediğiniz aygıtın ana ve alt numaralarını görebilmek için <b><tt>ls -l</tt></b>  komutunu kullanın. Daha sonra disket içerisinde <b><tt>mknod</tt></b>  komutunu kullanarak istediğiniz aygıtı oluşturun.
+     </div><div class="para">
+Aygıt dosyalarını oluştururken, ihtiyaç duyduğunuz özel aygıtların, diskette bulunduğundan emin olun. Örneğin; <tt>ftape</tt> dosyasını, teyp aygıtları kullanır ve şayet disketi kullanarak teyp sürücünüze erişmek istiyorsanız, teyp aygıtı dosyasını oluşturmalısınız.
+     </div><div class="para">
+Her bir özel aygıt için bir dosya düğümüne ihtiyacınız olduğunu ve disketlerde düğümlerin nadir bulunan değerli varlıklar olduğunu aklınızdan çıkarmayın. Öyle bol keseden dosya düğümü dağıtmayın. Ekleyeceğiniz aygıt dosyaları için seçici davranın. Şayet, sisteminizde SCSI diskler yok ise, <tt>/dev/sd*</tt> dosyalarını oluşturmayın. Seri portlardan iletişim sağlamayacaksanız, <tt>/dev/ttyS*</tt> aygıtlarına ihtiyacınız yok demektir.
+    </div><div class="para">
+Şayet, kök dosya sisteminizi oluştururken: aygıt içinde yer kalmadığı şeklinde bir hata iletisi görürseniz ama <b><tt>df</tt></b> komutunun çıktısı aygıtta yer olduğunu gösterirse, elinizdeki dosya düğümlerini bitirmişsiniz demektir. <b><tt>df -i</tt></b>  komutu ile düğüm kullanım durumunu görebilirsiniz.
+    </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/important.png" /></td><th class="admon">Önemli</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Şu dosyaların bu dizin içinde bulunduğunda emin olun:
+<tt>console</tt>, <tt>kmem</tt>, <tt>mem</tt>, <tt>null</tt>,
+<tt>ram0</tt> ve <tt>tty1</tt>.
+    </div></td></tr></table></div></dd></dl> <div class="head4"><a name="id23" id="id23"></a><tt>/etc</tt></div><dl><dd><div class="para">
+<a class="indexterm" name="idx18" id="idx18"></a>
+<tt>/etc</tt> dizini sistem yapılandırma dosyalarını barındırır. İçeriği, hangi süreçlerin çalıştıracağınıza bağlı olarak değişir. Pek çok sistemde, bunlar, üç gruba ayrılır:
+    </div><ol class="orderedlist" start="ignore" type="1"><li><div class="listitem">
+Herzaman gerekli olanlar: <tt>rc</tt>,
+<tt>fstab</tt>, <tt>passwd</tt>, vs.
+    </div></li><li><div class="listitem">
+Gerekli olabilecek ama asla emin olamayacaklarınız.
+May be required, but no one is too sure.
+    </div></li><li><div class="listitem">
+ıvır zıvır.
+    </div></li></ol><div class="para">
+Gerekli olmayan dosyalar aşağıdaki komut ile tespit edilebilir:
+    </div>
+<div class="para"><div align="right"><pre class="screen">ls -ltru</pre></div></div>
+    <div class="para">
+Bu komut ile en son ulaşılan tarihten itibaren ters sıralama ile, bir dosya listesi görüntülenir. Böylece hiç erişim sağlanmamış dosyalar varsa, bunları gönül rahatlığı içinde yok sayabilirsiniz.
+    </div><div class="para">
+Benim kök disketimde, 15 taneden az ayar dosyam var. Böylece üç değişik türte dosya ile ilgilenmem gerekmekte ve yapmam gereken işler azalmakta:
+    </div><ol class="orderedlist" start="ignore" type="1"><li><div class="listitem"><div class="para">
+önyükleme ve kök sistemi için mutlaka yapılandılmaları gerekenler:
+    </div><ol class="orderedlist" start="ignore" type="a"><li><div class="listitem"><tt>rc.d/*</tt> --  sistem başlatma ve çalışma seviyesi değiştirme betikleri
+    </div></li><li><div class="listitem"><tt>fstab</tt> -- bağlanacak dosya sistemlerinin listesi
+    </div></li><li><div class="listitem"><tt>inittab</tt> -- <b><tt>init</tt></b> süreci için parametreler, açılış sırasında çalıştırılan ilk süreçtir.
+    </div></li><li><div class="listitem"><tt>gettydefs</tt> -- <b><tt>login</tt></b> süreci için parametreler, kullanıcının sistme girişinde çalıştırılır.
+    </div></li></ol></div></li><li><div class="listitem"><div class="para">
+önyükleme ve kök sistemi için düzenlemem gerekenler:
+    </div><ol class="orderedlist" start="ignore" type="a"><li><div class="listitem"><tt>passwd</tt> -- kullanıcıların, ev dizinlerinin, vs. bilgilerin bulunduğu önemli bir liste.
+    </div></li><li><div class="listitem"><tt>group</tt> --  kullanıcı grupları.
+<a class="indexterm" name="idx19" id="idx19"></a></div></li><li><div class="listitem"><tt>shadow</tt> -- kullanıcıların parolaları. Bunu dahil etmek zorunda değilsiniz.
+<a class="indexterm" name="idx20" id="idx20"></a></div></li><li><div class="listitem"><tt>termcap</tt> -- uçbirim yetenekleri veritabanı.
+    </div></li></ol><div class="para">
+Şayet güvenlik önemli ise <tt>passwd</tt> ve <tt>shadow</tt> dosyaları iyice budanmalı, kullanıcı parolalarının kopyalanması önlenmeli ve gereksiz girdiler çıkarılmalıdır. Böylece disketten açılış yaparken istenmeyen kullanıcı girişleri reddedilir.
+    </div><div class="para">
+<a class="indexterm" name="idx21" id="idx21"></a>
+<a class="indexterm" name="idx22" id="idx22"></a>
+<tt>passwd</tt> dosyasında en azından <tt>root</tt> kullanıcının bulunduğundan emin olun. Şayet diğer kullanıcıların da bağlantı yapmasını isterseniz, ev dizinlerinin ve kabukların sistemde var olduğundan emin olun.
+    </div><div class="para">
+<tt>termcap</tt>, uçbirim veritabanıdır ve yüzlerce kB'dır. Sizin önyükleme ve kök disketinizdeki sürümün, sadece işinize yarayacak olan uçbirimleri içerdiğinde emin olun: genellikle sadece <tt>linux</tt> veya <tt>linux-console</tt> girdisi yeterlidir.
+    </div></div></li><li><div class="listitem"><div class="para">
+Ve geriye kalanlar. O an çalışıyorlardı, bu yüzden onlara dokunmadım.
+    </div></div></li></ol><div class="para">
+Bunların haricinde, gerçekte ayarlamam gereken sadece iki dosya var ve onlarda hayret verici bir şekilde küçükler:
+    </div><ul type="disc" class="itemizedlist"><li><div class="para">
+<tt>rc</tt> şunları içermeli:
+    </div>
+<div class="para"><div align="right"><pre class="programlisting">
+#!/bin/sh
+/bin/mount -av
+/bin/hostname Kangaroo
+</pre></div></div>
+    <div class="para">
+Çalıştırma izni olduğunda emin olun, tepesinde "#!" işareti bulunduğundan emin olun ve dosya isimlerinin doğru olduğundan da emin olun. Aslında  <b><tt>hostname</tt></b>'i çalıştırmanız gerekmemekte —yaparsanız hoş olur, yapmazsanız hiçbir şey olmaz.
+    </div></li><li><div class="para">
+<tt>fstab</tt> en azından şunları içermeli:
+    </div>
+<div class="para"><div align="right"><pre class="programlisting">
+/dev/ram0       /               ext2    defaults
+/dev/fd0        /               ext2    defaults
+/proc           /proc           proc    defaults
+</pre></div></div>
+    <div class="para">
+<a class="indexterm" name="idx23" id="idx23"></a>
+Çalışan sisteminizdeki <tt>fstab</tt> girdilerini buraya kopyalayabilirsiniz, fakat sabit diskinizdeki bölümleri özdevinimli olarak bağlamaya kalkışmayın. <tt>noauto</tt> anahtar kelimesini bunların yanında kullanmayı unutmayın.  Açılış disketini kullanmak zorunda kaldığınız durumlarda, sabit diskinizin kafası biraz karışmış olabilir.
+    </div></li></ul><div class="para">
+<tt>inittab</tt> içindeki <tt>sysinit</tt> satırı, <tt>rc</tt> veya hangi temel betik kullanılacak ise, ona göre düzenlenmelidir. Ayrıca seri portlar üzerindeki kullanıcıların bağlanamayacaklarından emin olmak isterseniz, sonlarında <tt>ttys</tt> veya <tt>ttyS</tt> aygıtları içeren bütün <tt>getty</tt> satırlarının başına yorum işareti "#" getirin. <tt>tty</tt> portlarına dokunmayın ki, konsoldan bağlanabilesiniz.
+    </div><div class="para">
+<a class="indexterm" name="idx24" id="idx24"></a>
+<a class="indexterm" name="idx25" id="idx25"></a>
+<a class="indexterm" name="idx26" id="idx26"></a>
+En küçük yapıda <tt>inittab</tt> dosyası şuna benzer:
+    </div>
+<div class="para"><div align="right"><pre class="programlisting">
+id:2:initdefault:
+si::sysinit:/etc/rc
+1:2345:respawn:/sbin/getty 9600 tty1
+2:23:respawn:/sbin/getty 9600 tty2
+</pre></div></div>
+    <div class="para">
+Bu <tt>inittab</tt> dosyası, sistemin değişik seviyelerde çalışabileceğini/başlatılabileceğini, çoklu kullanıcı kipine geçebileceğini, vs.. tanımlar. <tt>inittab</tt> içindeki isimleri dikkatlice kontrol edin. Şayet <tt>init</tt>, bu isimleri bulamazsa, sistem açılışı gerçekleşmez ve hatta bir hata iletisi bile alamayabilirsiniz.
+    </div><div class="para">
+<a class="indexterm" name="idx27" id="idx27"></a>
+Unutmayın ki bazı uygulamalar olmazsa olmazdır ve başka uygulamalar bunları yerlerini bilerek çağırdığından yerleri değiştirilemez. Örneğin; benim sisteminde, <tt>/etc/shutdown</tt>  <tt>/etc/reboot</tt>'u çalıştırdığından şayet <tt>reboot</tt>'u <tt>/bin/reboot</tt>'a taşırsam, bir <b><tt>shutdown</tt></b> komutu, <b><tt>reboot</tt></b>'u bulamayacağı için çalışmayacaktır.
+    </div><div class="para">
+İşin geri kalan kısmı, <tt>/etc</tt> dizinindeki tüm metin dosyalarını ve gerekli olacağından emin olmasanız bile <tt>/etc</tt> dizinindeki bütün çalıştırılabilir dosyaları  kopyalamaktan ibarettir. Yardımcı olması açısından <a href="../howto/bootdisk-howto_Listings.html" class="xref" title="C. Kök dosya sistemi listesi örneği">Kök dosya sistemi listesi örneği</a> içindeki örnek listeye göz atabilirsiniz.  Muhtemelen buradaki dosyalar yeterli olacaktır ama sistemler arası farklılıklar olduğu için, buradaki dosyaların, sizin sisteminizdekiler ile aynı olduğunda emin olamazsınız.  Emin olmanın tek yolu <tt>inittab</tt> ile başlamak ve daha nelerin gerektiğini bulmaktır.
+    </div><div class="para">
+Pek çok sistem, değişik çalışma seviyelerine geçiş sağlayan kabuk betiklerini saklamak için  <tt>/etc/rc.d/</tt> dizinini kullanırlar. Asgari gereksinim tek bir <tt>rc</tt> betiğidir ama <tt>inittab</tt> ve <tt>/etc/rc.d</tt> dizinindekileri doğrudan diskete kopyalamak ve daha sonra bir disket ortamında işi olamayacak kabuk betiklerini temizlemek daha basit olabilir.
+    </div></dd></dl> <div class="head4"><a name="id33" id="id33"></a><tt>/bin</tt> ve <tt>/sbin</tt></div><dl><dd><div class="para">
+<a class="indexterm" name="idx28" id="idx28"></a>
+<a class="indexterm" name="idx29" id="idx29"></a>
+<tt>/bin</tt> dizini, temel işlemleri (<b><tt>ls</tt></b>, <b><tt>mv</tt></b>, <b><tt>cat</tt></b> ve <b><tt>dd</tt></b> gibi) yapmak için gerekli olan  ilave araçları saklamak için elverişli bir dizindir. <tt>/bin</tt> ve <tt>/sbin</tt> dizininde bulunması gereken dosyaların örnek bir listesi için <a href="../howto/bootdisk-howto_Listings.html" class="xref" title="C. Kök dosya sistemi listesi örneği">Kök dosya sistemi listesi örneği</a> bölümüne bakınız. Yedekleri geri yüklemek için gereken araçların (<b><tt>cpio</tt></b>, <b><tt>tar</tt></b> ve <b><tt>gzip</tt></b> gibi) hiçbiri bu listede yoktur.  Çünkü ben bu araçları başka bir uygulama disketine yerleştirdim. Amacım önyüleme ve kök disketlerinde yer tasarrufu sağlamaktı.  Önyükleme ve kök disketinden açılış yapıldıktan sonra, bunların içindekiler ramdiske yüklenir ve disket sürücü başka disketler için boşalmış olur. Ben bu uygulama disketini genellikle <tt>/usr</tt> altına bağlarım.
+    </div><div class="para">
+Uygulama disketi yapımı <a href="../howto/bootdisk-howto_misctopics.html#bootdisk-howto_UtilityDisk" class="xref" title="Uygulamalar disketinin oluşturulması">Uygulamalar disketinin oluşturulması</a> içinde anlatılmaktadır. Yedekleme yapmak için, yedekleme araçlarının aynı sürümdeki birer kopyasını kullanmak iyi bir fikir olacaktır. Bu sayede sizin yedeklerinizi okuyamayan araçların yeni sürümlerini yüklemek ile vakit kaybetmezsiniz. Sisteminizdeki yedekleri hangi araçlar ile yaratmış iseniz, aynı araçların aynı sürümlerini kullanarak bir uygulama disketi oluşturun.
+<a class="indexterm" name="idx30" id="idx30"></a>
+<a class="indexterm" name="idx31" id="idx31"></a>
+<a class="indexterm" name="idx32" id="idx32"></a>
+<a class="indexterm" name="idx33" id="idx33"></a>
+<a class="indexterm" name="idx34" id="idx34"></a>
+    </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/important.png" /></td><th class="admon">Önemli</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Şu uygulamaları yüklediğinizden emin olun: <b><tt>init</tt></b>, <b><tt>getty</tt></b> veya eşdeğeri, <b><tt>login</tt></b>, <b><tt>mount</tt></b>, rc betiklerini çalıştırabilecek bir kabuk ve <b><tt>sh</tt></b>'dan bu kabuğa bir bağ.
+    </div></td></tr></table></div></dd></dl> <div class="head4"><a name="id43" id="id43"></a><tt>/lib</tt></div><dl><dd><div class="para">
+<a class="indexterm" name="idx35" id="idx35"></a>
+<a class="indexterm" name="idx36" id="idx36"></a>
+Bu dizine gerekli olacak paylaşımlı kütüphaneleri ve yükleyicileri koyabilirsiniz. Şayet paylaşımlı kütüphaneler <tt>/lib</tt> dizini altında bulunamazsa, sistem açılmayacaktır. Şayet şanslı iseniz, bunun sebebini söyleyen bir hata iletisi ile karşılaşabilirsiniz.
+    </div><div class="para">
+<a class="indexterm" name="idx37" id="idx37"></a>
+Hemen hemen bütün uygulamalar <tt>libc</tt> kütüphanesine ihtiyaç duyarlar; <tt>libc.so.</tt><i><tt>N</tt></i>: buradaki <i><tt>N</tt></i> geçerli sürüm numarası anlamına gelir.  <tt>/lib</tt> dizininizi kontrol edin. Tam sürüm adını taşıyan bir dosya ismine verilmiş olan sembolik bir bağ olarak bir <tt>libc.so.</tt><i><tt>N</tt></i> dosyası vardır:
+    </div>
+<div class="para"><div align="right"><pre class="screen"><tt># </tt><b><tt>ls -l /lib/libc*</tt></b>
+-rwxr-xr-x   1 root     root      4016683 Apr 16 18:48 libc-2.1.1.so*
+lrwxrwxrwx   1 root     root           13 Apr 10 12:25 libc.so.6 -&gt; libc-2.1.1.so*
+</pre></div></div>
+    <div class="para">
+Bu durumda <tt>libc-2.1.1.so</tt>'yu kullanmamız gerekecektir.  Yüklemeniz gereken diğer kütüphaneleri bulmak için, yüklemeyi planladığınız çalıştırılabilirlerin bağımlılıklarını <b><tt>ldd</tt></b> ile kontrol ediniz.  Örnek:
+    </div>
+<div class="para"><div align="right"><pre class="screen"><tt># </tt><b><tt>ldd /sbin/mke2fs</tt></b>
+libext2fs.so.2 =&gt; /lib/libext2fs.so.2 (0x40014000)
+libcom_err.so.2 =&gt; /lib/libcom_err.so.2 (0x40026000)
+libuuid.so.1 =&gt; /lib/libuuid.so.1 (0x40028000)
+libc.so.6 =&gt; /lib/libc.so.6 (0x4002c000)
+/lib/ld-linux.so.2 =&gt; /lib/ld-linux.so.2 (0x40000000)
+</pre></div></div>
+    <div class="para">
+Sağ tarafta bulunan bütün dosyalar gereklidir. Dosya bir sembolik bağ olabilir.
+    </div><div class="para">
+Bazı kütüphanelerin oldukça büyük olduğunu ve kök dosya sisteminize sığmayabileceğini aklınızda bulundurun. Örneğin;  yukarıda listelenen <tt>libc.so</tt> yaklaşık olarak 4MB'dır. Kütüphaneleri kök dosya sisteminize kopyalarken, muhtemelen onları soymanız gerekecek. Ayrıntılar için <a href="../howto/bootdisk-howto_slimfast.html" class="xref" title="Kök dosya sistemi boyutunun küçültülmesi">Kök dosya sistemi boyutunun küçültülmesi</a>  bölümüne bakınız.
+    </div><div class="para">
+<a class="indexterm" name="idx38" id="idx38"></a>
+<tt>/lib</tt> içine, kütüphaneleri yükleyecek bir yükleyici de yerleştirmelisiniz. Yükleyici ya  <tt>ld.so</tt> (A.OUT kütüphaneleri içindir ve güncelliğini yitirmiştir) ya da <tt>ld-linux.so</tt> (ELF kütüphaneleri için) olmalıdır.  <b><tt>ldd</tt></b>'nin yeni sürümleri hangi yükleyiciye ihtiyacınız olduğunu söyleyecektir -yukarıdaki örnekte görülebileceği üzere- fakat eski sürümler bunu yapmazlar. Şayet hangisine ihtiyaç duyduğunuzdan emin değilseniz, kütüphane için <b><tt>file</tt></b> komutunu çalıştırın:
+    </div>
+<div class="para"><div align="right"><pre class="screen"><tt># </tt><b><tt>file /lib/libc.so.4.7.2</tt></b> /lib/libc.so.5.4.33 /lib/libc-2.1.1.so
+/lib/libc.so.4.7.2: Linux/i386 demand-paged executable (QMAGIC), stripped
+/lib/libc.so.5.4.33: ELF 32-bit LSB shared object, Intel 80386, version 1, stripped
+/lib/libc-2.1.1.so: ELF 32-bit LSB shared object, Intel 80386, version 1, not stripped
+</pre></div></div>
+    <div class="para">
+<tt>QMAGIC</tt>, <tt>4.7.2</tt>'nin A.OUT kütüphanesi olduğunu ve ELF de, <tt>ELF</tt> ile <tt>2.1.1</tt>'in  ELF kütüphanesi olduğunu göstermektedir.
+<a class="indexterm" name="idx39" id="idx39"></a>
+    </div><div class="para">
+Gereken yükleyici(ler)yi, kök dosya sisteminize kopyalayın. Kütüphaneler ve yükleyicileri, içerildikleri çalıştırılabilirlere karşı dikkatlice kontrol edilmelidir. Şayet çekirdek gereken bir kütüphaneyi yükleyemezse, herhangi bir hata verilmeksizin çekirdek askıda kalabilir. Alın başınıza bela.
+    </div></dd></dl></dd></dl> <div class="head3"><a name="bootdisk-howto_PAMandNSS" id="bootdisk-howto_PAMandNSS"></a>PAM ve NSS'in sağlanması</div><dl><dd><div class="para">
+Sisteminiz, <b><tt>ldd</tt></b> ile görülemeyen çzdev,ml, yükelenen kütüphanelere ihtiyaç duyabilir. Şayet bunları sağlayamazsanız, sisteme bağlanma veya açılış disketini kullanma ile sorunlar yaşayabilirsiniz.
+      </div> <div class="head4"><a name="id14" id="id14"></a>PAM (Eklemlenebilen Kimlik Kanıtlama Modülleri)</div> <div class="head5" id="subtitle">(Pluggable Authentication Modules)</div><dl><dd><div class="para">
+Şayet sisteminizde PAM kullanılıyor ise, açılışı disketinizde bunun için bazı hazırlıklar yapmalısınız. Kısaca tanımlamak gerekirse, PAM: kullanıcıları doğrulama ve onların servislere erişimini denetleyen gelişmiş bir modüler yöntemdir denebilir. Sisteminizde PAM kullanılıp kullanılmadığını anlamanın en kolay yolu, <b><tt>login</tt></b> çalıştırılabiliri üzerinde <b><tt>ldd</tt></b> komutunu kullanmaktır. Şayet çıktıda <tt>libpam.so</tt> var ise, PAM'e ihtiyacınız var demektir.
+      </div><div class="para">
+Şans eseri, açılış disketleri için güvenlik bir sorun değildir: makinenize fiziksel erişimi olan bir kişi zaten istediği herşeyi yapabilir. Bu nedenle, kök dosya sisteminizde aşağıdakine benzer bir <tt>/etc/pam.conf</tt> dosyası oluşturup, PAM konusunu kapatabilirsiniz:
+      </div>
+<div class="para"><div align="right"><pre class="programlisting">
+OTHER   auth       optional     /lib/security/pam_permit.so
+OTHER   account    optional     /lib/security/pam_permit.so
+OTHER   password   optional     /lib/security/pam_permit.so
+OTHER   session    optional     /lib/security/pam_permit.so
+</pre></div></div>
+      <div class="para">
+Ayrıca <tt>/lib/security/pam_permit.so</tt> dosyasını kendi kök dosya sisteminize kopyalayın.  Bu kütüphane sadece 8k'dır ve pek baş ağrıtmaz.
+      </div><div class="para">
+Bu ayarlar, herhangi bir kimsenin sisteminizdeki servis ve dosyalara erişimize izin verir. Özel sebeplerden dolayı, güvenlik, açılış disketiniz için önemli ise, sabit diskinizdeki PAM ayar dosyalarının çoğunu veya hepsini kök dosya sisteminzie kopyalamak zorundasınız. PAM belgelerini dikkatlice okuyun ve <tt>/lib/security</tt> içindeki gerekli bütün kütüphaneleri kök dosya sisteminize kopyalayın.
+      </div><div class="para">
+Ayrıca <tt>/lib/libpam.so</tt> dosyasını da önyükleme disketinize kopyalamak zorundasınız. Siz bunu zaten biliyorsunuz, <b><tt>ldd</tt></b> komutunu <tt>/bin/login</tt> üzerinde çalıştırdınız değil mi? Böylece bağımlılıkların neler olduğunu öğrenmiş oldunuz.
+      </div></dd></dl> <div class="head4"><a name="id24" id="id24"></a>NSS (İsim Servisi Değiştirici)</div> <div class="head5" id="subtitle">(Name Service Switch)</div><dl><dd><div class="para">
+Şayet glibc (nam-ı diğer libc6) kullanıyorsanız, isim servisleri için bazı düzenlemeler yapmalısınız yoksa sisteme bağlanamayabilirsiniz.   <tt>/etc/nsswitch.conf</tt> dosyası, çeşitli servisleri yürüten veritabanlarını kontrol eder. Şayet ağ üzerinden servislere erişimi düşünmüyorsanız (örneğin, DNS veya NIS aramaları), aşağıdakine benzer basit bir  <tt>nsswitch.conf</tt> dosyası hazırlamanız yeterli olacaktır:
+      </div>
+<div class="para"><div align="right"><pre class="programlisting">passwd:     files
+shadow:     files
+group:      files
+hosts:      files
+services:   files
+networks:   files
+protocols:  files
+rpc:        files
+ethers:     files
+netmasks:   files
+bootparams: files
+automount:  files
+aliases:    files
+netgroup:   files
+publickey:  files
+</pre></div></div>
+      <div class="para">
+Burada bütün servislerin sadece yerel dosyaları yürütülebileceği belirtilmiştir. Ayrıca <tt>/lib/libnss_files.so.</tt><i><tt>X</tt></i> dosyasını eklemeniz gerekmekte (burada <i><tt>X</tt></i> değeri glibc 2.0 için 1 ve  glibc 2.1 için 2'dir) eklemeniz gerekmekte. Bu kütüphane, dosya aramalarını gerçekleştirmek için özdevimli yüklenecektir.
+      </div><div class="para">
+Şayet açılış disketiniz üzerinden ağa çıkmayı planlıyor iseniz,  daha ayrıntılı bir <tt>nsswitch.conf</tt> dosyası oluşturmanız gerekmekte. Tanımladığınız her bir <i><tt>servis</tt></i> için bir  <tt>/lib/libnss_</tt><i><tt>service</tt></i><tt>.so.1</tt>  dosyası eklemeniz gerekmektedir.
+      </div></dd></dl></dd></dl> <div class="head3"><a name="id5" id="id5"></a>Modüller</div><dl><dd><div class="para">
+<a class="indexterm" name="idx40" id="idx40"></a>
+Şayet modüler yapıda bir çekirdeğe sahipseniz, açılış disketi ile açılış yapıldıktan sonra hangi modüllerin yüklenmesini istediğinizi tespit etmelisiniz. Şayet yedekleriniz teyp üzerinde ise <b><tt>ftape</tt></b> ve <b><tt>zftape</tt></b> modüllerinin yüklenmesini isteyebilirsiniz veya SCSI aygıtlarınız varsa SCSI modüllerinin yüklenmesini isteyebilirsiniz. Acil durumlarda ağa erişim istiyorsanız, PPP veya SLIP modüllerini yüklemeniz kuvvetle muhtemeldir.
+      </div><div class="para">
+Bu modüller <tt>/lib/modules</tt> içinde yer alabilir. Ayrıca <b><tt>insmod</tt></b>, <b><tt>rmmod</tt></b> ve <b><tt>lsmod</tt></b>'u da eklemelisiniz. Özdevinimli yüklenmesini istediğiniz modüllere bağlı olarak <b><tt>modprobe</tt></b>,
+<b><tt>depmod</tt></b> ve <b><tt>swapout</tt></b>'u da ekleyebilirsiniz. Şayet <b><tt>kerneld</tt></b> kullanıyor iseniz, onu da  <tt>/etc/conf.modules</tt>'e ekleyin.
+     </div><div class="para">
+Bunların yanında, modülleri kullanmanın temel faydası, kritik öneme haiz olmayan modülleri bir uygulama disketi içinde tutabilmenizdir. Bu sayede kök diskette daha çok alan size kalır.  Şayet pek çok değişik aygıt ile uğraşmanız  gerekecek ise;  bu yaklaşım, gömülü sürücülere sahip daha büyük bir çekirdek yapmayı tercih edilebilir kılar.
+     </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/important.png" /></td><th class="admon">Önemli</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Sıkıştırılımış bir ext2 dosya sisteminden açılış yapabilmek için ramdisk ve ext2 desteğini çekirdeğe gömülü olarak vermeniz gerekir. BUNLARI MODÜL OLARAK KULLANAMAZSINIZ.
+     </div></td></tr></table></div></dd></dl> <div class="head3"><a name="id6" id="id6"></a>Son olarak bazı ayrıntılar</div><dl><dd><div class="para">
+Bazı sistem uygulamaları, mesela <b><tt>login</tt></b>, <tt>/var/run/utmp</tt> dosyası ve<tt>/var/log</tt> dizini yok ise şikayet edip dururlar. Bu nedenle şu komutları verin:
+     </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>mkdir -p /mnt/var/{log,run}</tt></b>
+<tt># </tt><b><tt>touch /mnt/var/run/utmp</tt></b>
+</pre></div></div>
+     <div class="para">
+En sonunda, gerekli bütün kütüphaneleri ayarladıktan sonra, kök dosya sistemindeki <tt>/etc/ld.so.cache</tt> dosyasını yeniden yapılandırmak için  <b><tt>ldconfig</tt></b> komutunu kullanın. Bunun şu şekilde yapabilirsiniz:
+     </div>
+<div class="para"><div align="right"><pre class="screen"><tt># </tt><b><tt>ldconfig -r /mnt</tt></b></pre></div></div>
+<a class="indexterm" name="idx41" id="idx41"></a>
+<a class="indexterm" name="idx42" id="idx42"></a>
+      </dd></dl> <div class="head3"><a name="bootdisk-howto_wrappingitup" id="bootdisk-howto_wrappingitup"></a>Paketleme</div><dl><dd><div class="para">
+Kök dosya sistemi inşaatını bitirdimize göre, onu sistemden ayıralım ve bir dosyaya kopyalayıp sıkıştıralım:
+     </div>
+<div class="para"><div align="right"><pre class="screen"><tt># </tt><b><tt>umount /mnt</tt></b>
+<tt># </tt><b><tt>dd if=<i><tt>aygıt</tt></i> bs=1k | gzip -v9 &gt; rootfs.gz</tt></b>
+</pre></div></div>
+     <div class="para">
+Bu işlemin sonunda <tt>rootfs.gz</tt> isimli bir dosyaya sahip olacaksınız.Bu sizin sıkıştırılmış dosya sisteminizdir. Bu dosyanın boyutunun diskete sığacağından emin olun. Şayet boyutu disket boyutundan büyük ise, geri dönmeli ve bazı dosyaları kaldırmalısınız. Kök dosya sistemini küçültmek hakkında bazı öneriler <a href="../howto/bootdisk-howto_slimfast.html" class="xref" title="Kök dosya sistemi boyutunun küçültülmesi">Kök dosya sistemi boyutunun küçültülmesi</a> bölümünde bulunabilir.
+      </div></dd></dl><div class="footnotes"><br /><hr width="100" align="left" /><div class="footnote"><div class="para"><sup>[<a name="ftn.id11" href="#id11" id="ftn.id11">11</a>] </sup>Burada anlatılan dizin yapısı, sadece kök disket kullanımı içindir. Gerçek Linux Sistemleri hangi dosyanın nerede bulunacağının belirlendiği daha karmaşık ve daha disiplinli bir yapıya sahiptir:  <a class="ulink" href="http://www.pathname.com/fhs/2.0/fhs-toc.html" target="_top">Dosyasistemi Hiyerarşi Standardı</a>.</div></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/bootdisk-howto_bootproc.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/bootdisk-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/bootdisk-howto_choosingkernel.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Açılış disketleri ve önyükleme süreci </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Çekirdek Seçimi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

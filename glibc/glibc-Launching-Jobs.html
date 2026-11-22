@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:46+03:00" /><title>İşlerin Başlatılması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Implementing-a-Shell.html" title="Bir İş Denetim kabuğunun Gerçeklenmesi" /><link rel="previous" href="../glibc/glibc-Initializing-the-Shell.html" title="Kabuğun İlklendirilmesi" /><link rel="next" href="../glibc/glibc-Foreground-and-Background.html" title="Önalan ve Artalan" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">İşlerin Başlatılması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Initializing-the-Shell.html">Önceki</a> </td><th width="60%" align="center">Bir İş Denetim kabuğunun Gerçeklenmesi</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Foreground-and-Background.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Launching-Jobs" id="glibc-Launching-Jobs"></a>İşlerin Başlatılması</div><dl><dd><div class="para">
+<a class="indexterm" name="idx2981" id="idx2981"></a>
+Kabuk kendi denetim uçbiriminde iş denetimi uygulamak için sorumluluğu aldıktan sonra, kullanıcı tarafından yazılan komutlara yanıt olarak işleri başlatabilir.
+    </div><div class="para">
+Bir süreç grubunda süreçleri oluşturmak için <a href="../glibc/glibc-Process-Creation-Concepts.html" class="xref" title="Süreç Oluşturma Kavramları">Süreç Oluşturma Kavramları</a> bölümünde açıklandığı gibi  <b><tt>fork</tt></b> ve <b><tt>exec</tt></b> işlevleri kullanılabilir. Çok sayıda alt süreç karışık olduğundan, ister istemez, bazı şeyler biraz karmaşıklaşır, bu bakımdan bunları doğru sırada yapmak önem kazanır. Aksi takdirde istenmeyen yarış koşulları ortaya çıkabilir.
+    </div><div class="para">
+Süreçlerle ilgili ata-çocuk birliktelik ağacının yapılanmasında yerine göre iki seçimden birini kullanabilirsiniz. Ya, süreç grubundaki tüm süreçleri kabuk sürecinin çocukları yaparsınız ya da, süreç grubundaki bir süreci gruptaki diğer süreçlerin atası yaparsınız. Tıpkı, bu oylumun tamamındaki örnekleri basit bir kabuk yazılımının parçaları olarak vermemiz gibi, çünkü bu, bazı şeylerin muhasebesini yapmayı koloylaştırıyor.
+    </div><div class="para">
+<a class="indexterm" name="idx2982" id="idx2982"></a>
+<a class="indexterm" name="idx2983" id="idx2983"></a>
+Her süreç çatallandığında, <b><tt>setpgid</tt></b> çağrısı ile kendini yeni süreç grubuna koymalıdır; bkz. <a href="../glibc/glibc-Process-Group-Functions.html" class="xref" title="Süreç Grubu İşlevleri">Süreç Grubu İşlevleri</a>. Süreç grubundaki ilk süreç <span class="wordasword"><i>süreç grubunun lideri</i></span> haline gelir ve onun süreç kimliği de <span class="wordasword"><i>süreç grup kimliği</i></span> haline gelir.
+    </div><div class="para">
+<a class="indexterm" name="idx2984" id="idx2984"></a>
+Kabuk buna ek olarak kendi alt süreçlerinini yeni süreç grubuna koymak için her süreç için ayrı ayrı <b><tt>setpgid</tt></b> çağrıları yapmalıdır. Olası bir zamanlama sorunu nedeniyle bunun böyle olması gerekir: her alt süreç kendi alt sürecini çalıştırmaya başlamadan önce süreç grubuna konulmak ve dolayısıyla kabuk çalışamaya devam etmeden önce grubundaki alt süreçlerini bağlamak zorundadır. Eğer hem kabuk hem de alt süreci <b><tt>setpgid</tt></b> çağrısı yaparsa, hangi sürecin bunu önce yaptığına bakılmaksızın işler olması gerektiği gibi yürür.
+    </div><div class="para">
+Eğer iş bir önalan işi olarak başlatılmışsa, yeni süreç grubunun ayrıca <b><tt>tcsetpgrp</tt></b> kullanılarak denetim uçbiriminde önalana konulması gerekir. Tekrar, yarış koşullarından kaçınmak için bu işlem, hem kabuk tarafından hem de kabuğun alt süreçlerinin her biri tarafından yapılmalıdır.
+    </div><div class="para">
+Bundan sonra, her alt süreç kendi sinyal eylemlerini sıfırlamalıdır.
+    </div><div class="para">
+İlklendirme sırasında, kabuk süreci kendini iş denetim sinyallarini yoksaymaya ayarlamalıdır; bkz. <a href="../glibc/glibc-Initializing-the-Shell.html" class="xref" title="Kabuğun İlklendirilmesi">Kabuğun İlklendirilmesi</a>.  Sonuç olarak, bir miras olarak her alt süreç oluşturulduğunda bu sinyalleri yoksayacaktır. Bu kesinlikle istenmeyen bir durumdur, bu bakımdan kabuğun her alt süreci çatallandığında bu sinyaller <b><tt>SIG_DFL</tt></b>'a yani öntanımlı haline getirmelidir.
+    </div><div class="para">
+Kabuklar bu uzlaşımlara uyduğundan, uygulamalar kendini çalıştıran süreçten bu sinyalleri doğru eylemlerle aldıklarını kabul edebilirler. Fakat her uygulamanın durdurma sinyallerinin işlenmesini bozmama sorumluluğu vardır. SUSP karakterinin normal yorumunu iptal eden uygulamalar, kullanıcıya işi durdurmak için başka mekanizmalar sunmalıdır. Kullanıcı bu mekanizmayı çalıştırdığında yazılım sadece kendi sürecinde değil, kendi süreç grubuna da bir <b><tt>SIGTSTP</tt></b> sinyali göndermelidir. Bkz. <a href="../glibc/glibc-Signaling-Another-Process.html" class="xref" title="Başka Bir Sürece Sinyal Gönderme">Başka Bir Sürece Sinyal Gönderme</a>.
+    </div><div class="para">
+Son olarak, her süreç normal yolla <b><tt>exec</tt></b> çağrısı yapmalıdır. Bu ayrıca standart girdi ve çıktı kanallarının yönlendirilmesinde önemlidir. Bunun nasıl yapılacağı <a href="../glibc/glibc-Duplicating-Descriptors.html" class="xref" title="Tanıtıcıların Çoğullanması">Tanıtıcıların Çoğullanması</a> bölümünde açıklanmıştır.
+    </div><div class="para">
+Örnek kabuk yazılımından, bir uygulamayı çalıştırmakla yükümlü bir işlev aşağıda gösterilmiştir. Kabuk tarafından çatatallandıktan hemen sonra her alt süreç tarafından bu işlev çalıştırılır ve işlev asla dönmez.
+    </div>
+<div class="para"><div align="right"><pre class="screen">void
+launch_process (process *p, pid_t pgid,
+                int infile, int outfile, int errfile,
+                int foreground)
+{
+  pid_t pid;
+
+  if (shell_is_interactive)
+    {
+      /* Süreci süreç grubuna koy ve uygunsa uçbirimi
+         süreç grubuna ver. Olası yarış koşullarının oluşmasını
+         engellemek için hem kabuk hem de her alt süreç
+         tarafından bu yapılmalıdır.  */
+      pid = getpid ();
+      if (pgid == 0) pgid = pid;
+      setpgid (pid, pgid);
+      if (foreground)
+        tcsetpgrp (shell_terminal, pgid);
+
+      /* İş denetim sinyallerini öntanımlı eylemlerine ayarlayalım..  */
+      signal (SIGINT, SIG_DFL);
+      signal (SIGQUIT, SIG_DFL);
+      signal (SIGTSTP, SIG_DFL);
+      signal (SIGTTIN, SIG_DFL);
+      signal (SIGTTOU, SIG_DFL);
+      signal (SIGCHLD, SIG_DFL);
+    }
+
+  /* Standart girdi/çıktı kanallarını yeni sürece ayarlayalım.  */
+  if (infile != STDIN_FILENO)
+    {
+      dup2 (infile, STDIN_FILENO);
+      close (infile);
+    }
+  if (outfile != STDOUT_FILENO)
+    {
+      dup2 (outfile, STDOUT_FILENO);
+      close (outfile);
+    }
+  if (errfile != STDERR_FILENO)
+    {
+      dup2 (errfile, STDERR_FILENO);
+      close (errfile);
+    }
+
+  /* Yeni süreci çalıştıralım ve çıkalım.  */
+  execvp (p-&gt;argv[0], p-&gt;argv);
+  perror ("execvp");
+  exit (1);
+}
+</pre></div></div><div class="para">
+Kabuk etkileşimli olarak çalışmıyorsa, bu işlev süreç grubu ve sinyallerle ilgili olarak hiçbir şey yapmaz. İş denetimi yapmayan bir kabuğun kendi alt süreçlerini kendi süreç grubunda tuttuğunu hatırlayın.
+    </div><div class="para">
+Aşağıda, bir işi tam anlamıyla çalıştıran bir işleve yer verilmiştir. Alt süreç oluşturulduktan sonra, bu işlev yeni oluşturulan işi önalana ya da artalana koyacak bazı işlevleri çağırır; bunlar <a href="../glibc/glibc-Foreground-and-Background.html" class="xref" title="Önalan ve Artalan">Önalan ve Artalan</a> bölümünde açıklanmıştır.
+    </div>
+<div class="para"><div align="right"><pre class="screen">void
+launch_job (job *j, int foreground)
+{
+  process *p;
+  pid_t pid;
+  int mypipe[2], infile, outfile;
+
+  infile = j-&gt;stdin;
+  for (p = j-&gt;first_process; p; p = p-&gt;next)
+    {
+      /* Set up pipes, if necessary.  */
+      if (p-&gt;next)
+        {
+          if (pipe (mypipe) &lt; 0)
+            {
+              perror ("pipe");
+              exit (1);
+            }
+          outfile = mypipe[1];
+        }
+      else
+        outfile = j-&gt;stdout;
+
+      /* Alt süreci çatallayalım.  */
+      pid = fork ();
+      if (pid == 0)
+        /* This is the child process.  */
+        launch_process (p, j-&gt;pgid, infile,
+                        outfile, j-&gt;stderr, foreground);
+      else if (pid &lt; 0)
+        {
+          /* Çatallama başarısız.  */
+          perror ("fork");
+          exit (1);
+        }
+      else
+        {
+          /* Bu, ata süreç.  */
+          p-&gt;pid = pid;
+          if (shell_is_interactive)
+            {
+              if (!j-&gt;pgid)
+                j-&gt;pgid = pid;
+              setpgid (pid, j-&gt;pgid);
+            }
+        }
+
+      /* Boruları temizleyelim.  */
+      if (infile != j-&gt;stdin)
+        close (infile);
+      if (outfile != j-&gt;stdout)
+        close (outfile);
+      infile = mypipe[0];
+    }
+
+  format_job_info (j, "işe başladı");
+
+  if (!shell_is_interactive)
+    wait_for_job (j);
+  else if (foreground)
+    put_job_in_foreground (j, 0);
+  else
+    put_job_in_background (j, 0);
+}
+</pre></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Initializing-the-Shell.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Implementing-a-Shell.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Foreground-and-Background.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Kabuğun İlklendirilmesi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Önalan ve Artalan</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

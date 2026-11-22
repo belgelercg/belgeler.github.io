@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:49+03:00" /><title>NSS Modüllerinde İşlev Arayüzü</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-NSS-Module-Internals.html" title="NSS Modül Yapısı" /><link rel="previous" href="../glibc/glibc-NSS-Module-Names.html" title="NSS Modüllerinin İsimlendirme Şeması" /><link rel="next" href="../glibc/glibc-Extending-NSS.html" title="NSS'nin Genişletilmesi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">NSS Modüllerinde İşlev Arayüzü</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-NSS-Module-Names.html">Önceki</a> </td><th width="60%" align="center">NSS Modül Yapısı</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Extending-NSS.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-NSS-Modules-Interface" id="glibc-NSS-Modules-Interface"></a>NSS Modüllerinde İşlev Arayüzü</div><dl><dd><div class="para">
+Artık, modüllerdeki işlevler hakkında bilgimiz var. Şimdi türleri açıklayalım. Bir önceki bölümde işlevlerin evresel sürümlerinden bahsetmiştik. Bu, işlevin evresel olmayan sürümüne göre ek argümanlar gerektiği anlamına gelir. <b><tt>gethostbyname</tt></b> işlevinin evresel olmayan ve evresel sürümlerinin prototiplerine bakalım:
+    </div>
+<div class="para"><div align="right"><pre class="screen">struct hostent *gethostbyname (const char *isim)
+
+int gethostbyname_r (const char     *isim,
+                    struct hostent  *sonuc_tamponu,
+                    char            *tampon,
+                    size_t           tampon_uzunlugu,
+                    struct hostent **sonuc,
+                    int             *hata_durumu)
+</pre></div></div><div class="para">
+İşlevin NSS modülündeki prototipi ise şöyle olur:
+    </div><div class="para"><div align="right"><pre class="screen">
+enum nss_status _nss_files_gethostbyname_r (const char     *isim,
+                                            struct hostent  *sonuc_tamponu,
+                                            char            *tampon,
+                                            size_t           tampon_uzunlugu,
+                                            int             *hata_num,
+                                            int             *hata_durumu)
+</pre></div></div><div class="para">
+Yani, arayüz işlevi aslında <i><tt>sonuc</tt></i> argümanı olmayan ve dönüş değeri değişmiş evresel işlevdir. İşlevin evresel olmayan sürümü sonuca bir gösterici ile dönerken evresel sürümü bir <b><tt>enum nss_status</tt></b> değeri ile döner:
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>NSS_STATUS_TRYAGAIN</tt></span></dt><dd class="varlist"><div class="para">
+sayısal değeri: <b><tt>-2</tt></b>
+    </div></dd><dt><span class="term"><tt>NSS_STATUS_UNAVAIL</tt></span></dt><dd class="varlist"><div class="para">
+sayısal değeri: <b><tt>-1</tt></b>
+    </div></dd><dt><span class="term"><tt>NSS_STATUS_NOTFOUND</tt></span></dt><dd class="varlist"><div class="para">
+sayısal değeri: <b><tt>0</tt></b>
+    </div></dd><dt><span class="term"><tt>NSS_STATUS_SUCCESS</tt></span></dt><dd class="varlist"><div class="para">
+sayısal değeri: <b><tt>1</tt></b>
+    </div></dd></dl></div><div class="para">
+Şimdi, <b><tt>/etc/nsswitch.conf</tt></b> dosyasında kullanılar eylem öğelerinin yerini görelim.
+    </div><div class="para">
+Kaynak kodunu incelerseniz, beşinci bir değerin varlığını görürsünüz: <b><tt>NSS_STATUS_RETURN</tt></b>.  Bu sadece dahili olarak kullanılan bir değerdir, bir kaç işlev tarafından yukarıdaki değerin kullanılamadığı yerlerde kullanılır. Eğer gerekliyse, daha fazla ayrıntıya kaynak kodunu inceleyerek ulaşabilirsiniz.
+    </div><div class="para">
+
+Arayüz işlevinin bir hata döndürmesi durumunda, doğru hata numarasının <i><tt>*hata_num</tt></i> içinde saklanması önemlidir. Bazı dönüş durum değerleri sadece bir hata kodu ile ilgiliyken diğerleri daha fazlası ile ilgilidir.
+    </div>
+<div class="informaltable"><table cellpadding="3" cellspacing="1" style="background:#999999;" border="0"><colgroup><col /><col /><col /></colgroup><tbody><tr style="background:#ffffee;"><td><b><tt>NSS_STATUS_TRYAGAIN</tt></b></td><td><b><tt>EAGAIN</tt></b></td><td> Kullanılan işlevlerden biri ya geçici olarak özkaynaksız çalıştı ya da hizmet şu an kullanışsız. </td></tr><tr style="background:#ffffee;"><td> </td><td><b><tt>ERANGE</tt></b></td><td> Belirtilen tampon yeterince geniş değil. İşlev tekrar daha geniş bir tamponla çağrılmalı. </td></tr><tr style="background:#ffffee;"><td><b><tt>NSS_STATUS_UNAVAIL</tt></b></td><td><b><tt>ENOENT</tt></b></td><td> Gerekli girdi dosyalarından biri bulunamadı. </td></tr><tr style="background:#ffffee;"><td><b><tt>NSS_STATUS_NOTFOUND</tt></b></td><td><b><tt>ENOENT</tt></b></td><td>İstenen girdi elverişli değil.</td></tr></tbody></table></div><div class="para">
+Bunlar önerilen değerlerdir. Başka hata kodları olabileceği gibi açıklanan hata kodları farklı anlamlara da gelebilir. <i>Biri dışında:</i> <b><tt>NSS_STATUS_TRYAGAIN</tt></b> döndüğünde, hata kodu, belirtilen tamponun yetersiz olduğun anlatan <b><tt>ERANGE</tt></b> <i>olmalıdır</i>. Bunun dışında kritik önemde bir şey yoktur.
+    </div><div class="para">
+Yukarıdaki işlev hemen hemen diğer tüm modül işlevlerinde olmayan bazı özelliklere sahiptir. <i><tt>hata_durumu</tt></i> diye bir argümanı var. Bu argümanın gösterdiği değişkene, işlev bir şekilde başarısız olduğunda hata durumu konulacaktır. Evresel işlevler <i><tt>h_errno</tt></i> genel değişkenini kullanamazlar; <b><tt>gethostbyname_r</tt></b> ile yapılan <b><tt>gethostbyname</tt></b> çağrılarında son argüman <i><tt>&amp;hata_durumu</tt></i> olarak belirtilir.
+    </div><div class="para">
+<b><tt>get<i><tt>XXX</tt></i>by<i><tt>YYY</tt></i></tt></b> işlevleri
+NSS modüllerinde en önemli işlevlerdir. Ancak başka yöntemlerle erişilen veritabanları da vardır (<b><tt>setpwent</tt></b>, <b><tt>getpwent</tt></b> ve <b><tt>endpwent</tt></b> işlevleri ile erişilen parola veritabanını buna örnek verebiliriz). Bunlar daha sonra ayrıntılı olarak açıklanacaktır. Modül işlevinin imzasını saptayacak genel bir yöntem:
+    </div><ul type="disc" class="itemizedlist"><li>
+dönüş değeri <b><tt>int</tt></b>'dir;
+      </li><li>
+ismi <a href="../glibc/glibc-NSS-Module-Names.html" class="xref" title="NSS Modüllerinin İsimlendirme Şeması">NSS Modüllerinin İsimlendirme Şeması</a> bölümünde açıklandığı gibidir;
+      </li><li>
+işlevin ilk argümanları evresel olmayan eşdeğerinin argümanları ile aynıdır;
+      </li><li><div class="para">
+sonraki argümanları şunlardır:
+      </div><dl><dt><span class="glossterm">
+      <tt>STRUCT_TYPE *</tt><b><tt><i><tt>sonuc_tamponu</tt></i></tt></b>
+      </span></dt><dd class="halfpara"><div class="para">
+sonucun saklandığı tampona gösterici.  <b><tt>STRUCT_TYPE</tt></b>, normalde veritabanının karşılığı olan bir yapıdır.
+      </div></dd><dt><span class="glossterm">
+      <tt>char *</tt><b><tt><i><tt>tampon</tt></i></tt></b>
+      </span></dt><dd class="halfpara"><div class="para">
+sonuçla ilgili ek verilerin saklanabileceği tampona gösterici.
+      </div></dd><dt><span class="glossterm">
+      <tt>size_t </tt><b><tt><i><tt>tampon_uzunlugu</tt></i></tt></b>
+      </span></dt><dd class="halfpara"><div class="para">
+<i><tt>tampon</tt></i> ile gösterilen tamponun uzunluğu.
+      </div></dd></dl></li><li>
+konak ismi ve ağ ismi arama işlevlerinde <i><tt>hata_durumu</tt></i> hep son argüman olarak görünür.
+      </li></ul><div class="para">
+<b><tt>set…ent</tt></b> ve <b><tt>end…ent</tt></b> işlevleri dışında tüm işlevler için, bu liste geçerlidir.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-NSS-Module-Names.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-NSS-Module-Internals.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Extending-NSS.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">NSS Modüllerinin İsimlendirme Şeması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> NSS'nin Genişletilmesi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

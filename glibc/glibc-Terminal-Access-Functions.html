@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:47+03:00" /><title>Denetim Uçbirimine Erişim İşlevleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Functions-for-Job-Control.html" title="İş Denetimi İşlevleri" /><link rel="previous" href="../glibc/glibc-Process-Group-Functions.html" title="Süreç Grubu İşlevleri" /><link rel="next" href="../glibc/glibc-Name-Service-Switch.html" title="XXVIII. Oylum - Sistem Veritabanları ve İsim Hizmetleri Seçimi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Denetim Uçbirimine Erişim İşlevleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Process-Group-Functions.html">Önceki</a> </td><th width="60%" align="center">İş Denetimi İşlevleri</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Name-Service-Switch.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Terminal-Access-Functions" id="glibc-Terminal-Access-Functions"></a>Denetim Uçbirimine Erişim İşlevleri</div><dl><dd><div class="para">
+Bunlar bir uçbirimin önalan süreç grubunu belirlemek ya da okumak için kullanılan işlevlerdir. Bu işlevleri yazılımınızda kullanacaksanız <tt>sys/types.h</tt> ve <tt>unistd.h</tt> başlık dosyalarını yazılımınıza dahil etmelisiniz.
+<a class="indexterm" name="idx3012" id="idx3012"></a>
+<a class="indexterm" name="idx3013" id="idx3013"></a>
+    </div><div class="para">
+Bu işlevler uçbirim aygıtını belirten bir dosya tanıtıcı almasına rağmen önalan işi, açık bir dosya tanıtıcı ile değil, uçbirim dosyasının kendisi ile ilgilidir.
+    </div>
+<a class="indexterm" name="idx3014" id="idx3014"></a>
+<a name="glibc-tcgetpgrp" id="glibc-tcgetpgrp"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>pid_t <b><tt>tcgetpgrp</tt></b></tt></td><td valign="top"><pre class="paramdef">(int <i><tt>dosyatanıtıcı</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev, <i><tt>dosyatanıtıcı</tt></i> ile açılmış uçbirim ile ilişkili önalan süreç grubunun süreç grup kimliğini döndürür.
+    </div><div class="para">
+Bir önalan süreç grubu yoksa, dönüş değeri, mevcut bir süreç grubunun süreç grup kimliği ile eşleşmeyen ve değeri <b><tt>1</tt></b>'den büyük bir sayıdır. Eğer, evvelce önalan işi olan ve tüm süreçleri sonlanmış bir iş varsa ve henüz önalana taşınmış bir iş yoksa bu durum ortaya çıkar.
+    </div><div class="para">
+Bir hata durumunda işlev <b><tt>-1</tt></b> değeri ile döner. Aşağıdaki  <b><tt>errno</tt></b> hata durumları bu işlev için tanımlanmıştır:
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>EBADF</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>dosyatanıtıcı</tt></i> argümanı geçerli bir dosya tanıtıcı değil
+       </div></dd><dt><span class="term"><tt>ENOSYS</tt></span></dt><dd class="varlist"><div class="para">
+Sistem iş denetimini desteklemiyor
+       </div></dd><dt><span class="term"><tt>ENOTTY</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>dosyatanıtıcı</tt></i> argümanı ile ilişkili uçbirim dosyası işlevin çağrıldığı sürecin denetim uçbirimi değil
+       </div></dd></dl></div>
+</dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx3015" id="idx3015"></a>
+<a name="glibc-tcsetpgrp" id="glibc-tcsetpgrp"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>tcsetpgrp</tt></b></tt></td><td valign="top"><pre class="paramdef">(int   <i><tt>dosyatanıtıcı</tt></i>,
+ pid_t <i><tt>pgid</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev bir uçbirimin önalan süreç grup kimliğini belirlemede kullanılır. <i><tt>dosyatanıtıcı</tt></i> argümanı uçbirimi belirten bir dosya tanıtıcıdır; <i><tt>pgid</tt></i> ise süreç grubunu belirtir.  İşlevi çağıran süreç ile <i><tt>pgid</tt></i> aynı oturumun üyesi olmalı ve aynı denetim uçbirimini kullanıyor olmalıdır.
+    </div><div class="para">
+Uçbirime erişim amaçlarına uygun olarak, bu işlev çıktı olarak kabul edilir. İşlev, denetim uçbiriminin bir artalan sürecinden çağrılmışsa, normalde süreç grubundaki tüm süreçlere bir <b><tt>SIGTTOU</tt></b> sinyali gönderilir. İşlevi çağıran sürecin <b><tt>SIGTTOU</tt></b> sinyalini engellemesi ya da yoksayması durumunda, işlem yine uygulanır ama sinyal gönderilmez.
+    </div><div class="para">
+İşlev başarılı olursa dönüş değeri <b><tt>0</tt></b>'dır. Dönüş değeri <b><tt>-1</tt></b> ise bu bir hata oluştuğunu gösterir. Aşağıdaki  <b><tt>errno</tt></b> hata durumları bu işlev için tanımlanmıştır:
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>EBADF</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>dosyatanıtıcı</tt></i> argümanı geçerli bir dosya tanıtıcı değil
+       </div></dd><dt><span class="term"><tt>EINVAL</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>pgid</tt></i> argümanı geçersiz
+       </div></dd><dt><span class="term"><tt>ENOSYS</tt></span></dt><dd class="varlist"><div class="para">
+Sistem iş denetimini desteklemiyor
+       </div></dd><dt><span class="term"><tt>ENOTTY</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>dosyatanıtıcı</tt></i> argümanı ile ilişkili uçbirim dosyası işlevin çağrıldığı sürecin denetim uçbirimi değil
+       </div></dd><dt><span class="term"><tt>EPERM</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>pgid</tt></i> işlevi çağıran süreçle aynı oturumda değil
+       </div></dd></dl></div>
+     <div class="para">
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx3016" id="idx3016"></a>
+<a name="glibc-tcgetsid" id="glibc-tcgetsid"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>pid_t <b><tt>tcgetsid</tt></b></tt></td><td valign="top"><pre class="paramdef">(int <i><tt>dosyatanıtıcı</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev, denetim uçbirimi <i><tt>dosyatanıtıcı</tt></i> ile belirtilen oturumun süreç grup kimliği ile döner. İşlev başarısız olursa dönüş değeri<b><tt>(pid_t) -1</tt></b> olur ve <i><tt>errno</tt></i> değişkenine şu değerlerden biri atanır:
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>EBADF</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>dosyatanıtıcı</tt></i> argümanı geçerli bir dosya tanıtıcı değil
+       </div></dd><dt><span class="term"><tt>ENOTTY</tt></span></dt><dd class="varlist"><div class="para">
+İşlevi çağıran sürecin bir denetim uçbirimi yok ya da dosya bir denetim uçbirimine ait değil
+       </div></dd></dl></div>
+     </dd></dl><div style="padding:5px"></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Process-Group-Functions.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Functions-for-Job-Control.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Name-Service-Switch.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Süreç Grubu İşlevleri </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> XXVIII. Oylum - Sistem Veritabanları ve İsim Hizmetleri Seçimi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

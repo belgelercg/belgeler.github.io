@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:02+03:00" /><title>Datagram Soket Örneği</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Datagrams.html" title="Datagram Soket İşlemleri" /><link rel="previous" href="../glibc/glibc-Receiving-Datagrams.html" title="Datagramların Alınması" /><link rel="next" href="../glibc/glibc-Example-Receiver.html" title="Datagramların Okunmasıyla İlgili Örnek" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Datagram Soket Örneği</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Receiving-Datagrams.html">Önceki</a> </td><th width="60%" align="center">Datagram Soket İşlemleri</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Example-Receiver.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Datagram-Example" id="glibc-Datagram-Example"></a>Datagram Soket Örneği</div><dl><dd><div class="para">
+Burada yerel isim alanındaki datagram akımı üzerinden veri gönderen bir grup örnek bulunmaktadır. Hem istemci hem de sunucu yazılımları <a href="../glibc/glibc-Local-Socket-Example.html" class="xref" title="Soketlerde Yerel İsim Alanı Örneği">Soketlerde Yerel İsim Alanı Örneği</a> içinde gösterilen<b><tt>make_named_socket</tt></b> işlevini kendi soketlerini oluşturmak ve isimlendirmek için kullanmaktadır.
+    </div><div class="para">
+Öncelikle sunucu yazılımını görüyoruz. Gelecek veriler için bir döngü içerisinde beklemekte ve gelen veri gerisin geriye göndericiye iletilmektedir. Tabii ki bu işe yarar bir yazılım değil, fakat ana fikri vermektedir.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+#include &lt;stdio.h&gt;
+#include &lt;errno.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;sys/un.h&gt;
+
+#define SERVER  "/tmp/serversocket"
+#define MAXMSG  512
+
+int
+main (void)
+{
+  int sock;
+  char message[MAXMSG];
+  struct sockaddr_un name;
+  size_t size;
+  int nbytes;
+
+  /* Öncelikle dosya ismini kaldıralım,
+     eğer isim yoksa bir sorun yok */
+  unlink (SERVER);
+
+  /* Soketi oluşturup sonsuz döngüye girelim. */
+  sock = make_named_socket (SERVER);
+  while (1)
+    {
+      /* Bir datagram bekliyoruz */
+      size = sizeof (name);
+      nbytes = recvfrom (sock, message, MAXMSG, 0,
+                          (struct sockaddr *) &amp; name, &amp;size);
+      if (nbytes &lt; 0)
+        {
+          perror ("recfrom (server)");
+          exit (EXIT_FAILURE);
+        }
+
+      /* Bir tanı iletisi verelim */
+      fprintf (stderr, "Sunucu: alınan ileti: %s\n", message);
+
+      /* İletiyi göndericiye geri gönderelim. */
+      nbytes = sendto (sock, message, nbytes, 0,
+                        (struct sockaddr *) &amp; name, size);
+      if (nbytes &lt; 0)
+        {
+          perror ("sendto (server)");
+          exit (EXIT_FAILURE);
+        }
+    }
+}
+</pre></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Receiving-Datagrams.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Datagrams.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Example-Receiver.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Datagramların Alınması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Datagramların Okunmasıyla İlgili Örnek</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,72 +1,322 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="tr" xml:lang="tr">
-  <head>
-    <title>21.5.5. Tarih ve Saatin Dökümlü Zamana Dönüştürülmesi</title>
-    <meta name="generator" content="DocBook XSL Stylesheets V-special (derived from DocBook XSL v1.79.1 for Turkish Linux Documentation Project by Nilgün Belma Bugüner - nilgun (at) tlbp.org.tr)" />
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="/style/nav.css" />
-    <link rel="icon" type="image/png" href="/images/belgeler-logo.png" />
-    <meta name="robots" content="index, follow" />
-  </head>
-  <body>
-    <header>
-      <div class="navbar">
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Formatting-Calendar-Time.html')">Önceki</button>
-          <div class="dropdown-content">21.5.4. Zamanın Biçimlenmesi</div>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:24+03:00" /><title>Tarih ve Saatin Yerel Zamana Dönüştürülmesi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Calendar-Time.html" title="Mutlak Zaman" /><link rel="previous" href="../glibc/glibc-Formatting-Calendar-Time.html" title="Zaman Değerlerinin Biçimlenmesi" /><link rel="next" href="../glibc/glibc-TZ-Variable.html" title="Zaman Diliminin TZ ile Belirtilmesi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Tarih ve Saatin Yerel Zamana Dönüştürülmesi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Formatting-Calendar-Time.html">Önceki</a> </td><th width="60%" align="center">Mutlak Zaman</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-TZ-Variable.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Parsing-Date-and-Time" id="glibc-Parsing-Date-and-Time"></a>Tarih ve Saatin Yerel Zamana Dönüştürülmesi</div><dl><dd><div class="para">
+ISO C standardı <b><tt>strftime</tt></b> işlevinin çıktısının, girdisi olan ikilik biçime dönüştürülmesi için herhangi bir işlev belirtmemiştir. Bu, ilk yıllarda farklı arayüzlerin az ya da çok başarılı çeşitli gerçeklemeler geliştirmeleri ile sonuçlanmıştır. Bunların ardından Unix standardı iki ek işlev tanımladı: <b><tt>strptime</tt></b> ve <b><tt>getdate</tt></b>. Her ikisi de tuhaf arayüzlere sahip olmasına karşın geniş kullanım alanı bulmuştur.
+    </div> <div class="head3"><a name="glibc-Low-Level-Time-String-Parsing" id="glibc-Low-Level-Time-String-Parsing"></a>Düşük Seviyede Çözümleme</div><dl><dd><div class="para">
+İlk işlev oldukça düşük seviyededir. Buna rağmen, iyi bilindiğinden yazılım geliştirirken sıklıkla kullnılır. Arayüzü ve gerçeklenmesi ağırlıkla, <b><tt>strptime</tt></b> çağrısı kurallarıyla tanımlanmış ve gerçeklenmiş olan <b><tt>getdate</tt></b> işlevinden etkilenmiştir.
+     </div>
+<a class="indexterm" name="idx2416" id="idx2416"></a>
+<a name="glibc-strptime" id="glibc-strptime"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>char *<b><tt>strptime</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *<i><tt>dizge</tt></i>,
+ const char *<i><tt>biçim</tt></i>,
+ struct tm  *<i><tt>zaman</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>strptime</tt></b> işlevi <i><tt>dizge</tt></i> dizgesini <i><tt>biçim</tt></i> dizgesine göre çözümleyerek sonucu <i><tt>zaman</tt></i> yapısına yazar.
+     </div><div class="para">
+Girdi dizgesi <b><tt>strftime</tt></b> işleviyle ya da başka bir yöntemle üretilmiş olabilir. Girdi dizgesinin içeriğinin insanlar açısından anlamlı olması gerekmez, <i><tt>biçim</tt></i> dizgesi ile eşleşebilen herhangi bir dizge olabilir (örn, <b><tt>"02:1999:9"</tt></b>).
+     </div><div class="para">
+Kullanıcı ne yaptığını bilmelidir, yoksa girdi saçma sapan çözümlenebilir. Örneğin <b><tt>"1999112"</tt></b> dizgesi <b><tt>"%Y%m%d"</tt></b> biçimi kullanılarak 1999-1-12, 1999-11-2 ve hatta 19991-1-2 olarak çözümlenebilir. Kararlı sonuçlar almak için girdi dizgesine uygun ayraçların eklenmesi gerekir.
+     </div><div class="para">
+Biçim dizgesi, <b><tt>strftime</tt></b> işlevinin biçim dizgesinde kullanılan elemanlarla oluşturulur. Tek farkla; <b><tt>_</tt></b>, <b><tt>-</tt></b>, <b><tt>0</tt></b> ve <b><tt>^</tt></b> seçeneklerine izin verilmez. Girdide harf büyüklükleri gibi farklara bakılmadığından <b><tt>strftime</tt></b> işlevinin bazı belirli biçimleri bile <b><tt>strptime</tt></b>'da aynı işi yapar. İki işlev arasanıda bakışımın sağlanması için tüm biçimler desteklenmiştir.
+     </div><div class="para">
+<b><tt>E</tt></b> ve <b><tt>O</tt></b> değiştiricilerine <b><tt>strftime</tt></b> işlevinin kullanılmasına izin verdiği her yerde izin verilmiştir.
+     </div><div class="para">
+Biçimler şunlardır:
+     </div><div class="variablelist"><dl><dt><span class="term"><tt>%a</tt></span></dt><dt><span class="term"><tt>%A</tt></span></dt><dd class="varlist"><div class="para">
+Yerele özgü kısaltılmış ya da tam gün ismi.
+        </div></dd><dt><span class="term"><tt>%b</tt></span></dt><dt><span class="term"><tt>%B</tt></span></dt><dt><span class="term"><tt>%h</tt></span></dt><dd class="varlist"><div class="para">
+Yerele özgü kısaltılmış ya da tam ay ismi.
+        </div></dd><dt><span class="term"><tt>%c</tt></span></dt><dd class="varlist"><div class="para">
+Yerele özgü tarih ve saat gösterimi.
+        </div></dd><dt><span class="term"><tt>%Ec</tt></span></dt><dd class="varlist"><div class="para">
+Yerele özgü diğer tarih ve saat biçimi olması dışında <b><tt>%c</tt></b> ile aynıdır.
+        </div></dd><dt><span class="term"><tt>%C</tt></span></dt><dd class="varlist"><div class="para">
+Yılın yüzyıllık parçası.
+        </div><div class="para">
+Bu biçim, biçim dizgesi ayrıca bir <b><tt>%y</tt></b> biçimi içeriyorsa anlamlı olarak çözümlenir.
+        </div></dd><dt><span class="term"><tt>%EC</tt></span></dt><dd class="varlist"><div class="para">
+Yerele özgü dönem gösterimi.
+        </div><div class="para">
+<b><tt>%C</tt></b>'den farklı olarak, bazı kültürlerde yıllar, Gregoryen yıllarına göreli bir yılı başlangıç yılı alarak gösterilebilmektedir.
+        </div></dd><dt><span class="term"><tt>%d</tt></span></dt><dt><span class="term"><tt>%e</tt></span></dt><dd class="varlist"><div class="para">
+1 ile 31 arasında bir değer olarak ayın gün numarası (tek rakamlı sayıların önüne 0 konulsa da olur konulmasa da).
+        </div></dd><dt><span class="term"><tt>%Od</tt></span></dt><dt><span class="term"><tt>%Oe</tt></span></dt><dd class="varlist"><div class="para">
+Yerele özgü diğer sayısal sembollerin kullanılması dışında <b><tt>%d</tt></b> ile aynıdır.
+        </div><div class="para">
+Tek rakamlı sayıların önüne 0 konulsa da olur konulmasa da.
+        </div></dd><dt><span class="term"><tt>%D</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>%m/%d/%y</tt></b> biçimine eşdeğerdir.
+        </div></dd><dt><span class="term"><tt>%F</tt></span></dt><dd class="varlist"><div class="para">
+ISO 8601 tarih biçimi olan <b><tt>%Y-%m-%d</tt></b> ile eşdeğerdir.
+        </div><div class="para">
+<b><tt>strftime</tt></b>'da ISO C99 oluşumu olan bir GNU oluşumudur.
+        </div></dd><dt><span class="term"><tt>%g</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>00</tt></b> ile <b><tt>99</tt></b> arasında yılın yüzyıllık parçası olmaksızın ISO hafta numarasına bağlı yıl numarasıdır.
         </div>
-        <div style="width:34%" class="dropdown">
-          <button class="dropbtn">Yukarı</button>
-          <div class="dropdown-content">
-            <button type="button" class="dropbtn" onclick="window.location.assign('/index.html')">Baş Sayfa</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('/KiTAPLIK/index.html')">Kitaplık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc.html')">Ana Başlık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Calendar-Time.html')">Üst Başlık</button>
-          </div>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">Şimdilik tam olarak gerçeklenmemiştir. Biçim olarak tanınır ama <i><tt>tm</tt></i> yapısında ilgili alana birşey yazılmaz.</div></td></tr></table></div>
+        <div class="para">
+<b><tt>strftime</tt></b>'da da GNU oluşumu olan bir GNU oluşumudur.
+        </div></dd><dt><span class="term"><tt>%G</tt></span></dt><dd class="varlist"><div class="para">
+ISO hafta numarasına göre yıl.
         </div>
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Low-Level-Time-String-Parsing.html')">Sonraki</button>
-          <div class="dropdown-content">21.5.5.1. Düşük Seviyede Çözümleme</div>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">Şimdilik tam olarak gerçeklenmemiştir. Biçim olarak tanınır ama <i><tt>tm</tt></i> yapısında ilgili alana birşey yazılmaz.</div></td></tr></table></div>
+        <div class="para">
+<b><tt>strftime</tt></b>'da da GNU oluşumu olan bir GNU oluşumudur.
+        </div></dd><dt><span class="term"><tt>%H</tt></span></dt><dt><span class="term"><tt>%k</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>00</tt></b> ile <b><tt>23</tt></b> arasında bir sayısal değer olarak 24 saatlik saat gösterimi.
+        </div><div class="para">
+<b><tt>%k</tt></b>, <b><tt>strftime</tt></b>'da da GNU oluşumu olan bir GNU oluşumudur.
+        </div></dd><dt><span class="term"><tt>%OH</tt></span></dt><dd class="varlist"><div class="para">
+Yerele özgü diğer sayısal sembollerin kullanılması dışında <b><tt>%H</tt></b> ile aynıdır.
+        </div></dd><dt><span class="term"><tt>%I</tt></span></dt><dt><span class="term"><tt>%l</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>01</tt></b> ile <b><tt>12</tt></b> arasında bir sayısal değer olarak 12 saatlik saat gösterimi.
+        </div><div class="para">
+<b><tt>%l</tt></b>, <b><tt>strftime</tt></b>'da da GNU oluşumu olan bir GNU oluşumudur.
+        </div></dd><dt><span class="term"><tt>%OI</tt></span></dt><dd class="varlist"><div class="para">
+Yerele özgü diğer sayısal sembollerin kullanılması dışında <b><tt>%I</tt></b> ile aynıdır.
+        </div></dd><dt><span class="term"><tt>%j</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>1</tt></b> ile <b><tt>366</tt></b> arasında yılın gün numarası.
+        </div><div class="para">
+Başa 0 konulsa da olur konulmasa da.
+        </div></dd><dt><span class="term"><tt>%m</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>1</tt></b>'den <b><tt>12</tt></b>'ye kadar ay numarası.
+        </div><div class="para">
+Başa 0 konulsa da olur konulmasa da.
+        </div></dd><dt><span class="term"><tt>%Om</tt></span></dt><dd class="varlist"><div class="para">
+Yerele özgü diğer sayısal sembollerin kullanılması dışında <b><tt>%m</tt></b> ile aynıdır.
+        </div></dd><dt><span class="term"><tt>%M</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>0</tt></b>'dan <b><tt>59</tt></b>'a kadar dakika.
+        </div><div class="para">
+Başa 0 konulsa da olur konulmasa da.
+        </div></dd><dt><span class="term"><tt>%OM</tt></span></dt><dd class="varlist"><div class="para">
+Yerele özgü diğer sayısal sembollerin kullanılması dışında <b><tt>%M</tt></b> ile aynıdır.
+        </div></dd><dt><span class="term"><tt>%n</tt></span></dt><dt><span class="term"><tt>%t</tt></span></dt><dd class="varlist"><div class="para">
+Boşluklarla eşleşirler.
+        </div></dd><dt><span class="term"><tt>%p</tt></span></dt><dt><span class="term"><tt>%P</tt></span></dt><dd class="varlist"><div class="para">
+Yerele özgü <b><tt>AM</tt></b> veya <b><tt>PM</tt></b> dizgesi.
+        </div><div class="para">
+Bu biçim, <b><tt>%I</tt></b> veya <b><tt>%l</tt></b> ayrıca kullanılmamışsa kullanışsızdır. Bu değerlerin atanmamış olduğu yerellerde başka sorunlara da yol açar ve bu nedenle dönüşüm başarısız olur.
+        </div><div class="para">
+<b><tt>%P</tt></b> <b><tt>strftime</tt></b>'da da GNU oluşumu olan bir GNU oluşumudur..
+        </div></dd><dt><span class="term"><tt>%r</tt></span></dt><dd class="varlist"><div class="para">
+The complete time using the AM/PM format of the current locale.
+        </div><div class="para">
+A complication is that the locale might not define this format at all and therefore the conversion fails.
+        </div></dd><dt><span class="term"><tt>%R</tt></span></dt><dd class="varlist"><div class="para">
+The hour and minute in decimal numbers using the format <b><tt>%H:%M</tt></b>.
+        </div><div class="para">
+<b><tt>%R</tt></b>, <b><tt>strftime</tt></b>'da da GNU oluşumu olan bir GNU oluşumudur.
+        </div></dd><dt><span class="term"><tt>%s</tt></span></dt><dd class="varlist"><div class="para">
+Mutlak zaman başlangıcından (epoch) yani 1970-01-01 00:00:00 UTC'den beri geçen saniye sayısı. Artık saniye desteği yoksa artık saniyeler hesaba katılmaz.
+        </div><div class="para">
+<b><tt>%s</tt></b>, <b><tt>strftime</tt></b>'da da GNU oluşumu olan bir GNU oluşumudur..
+        </div></dd><dt><span class="term"><tt>%S</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>0</tt></b>'dan <b><tt>60</tt></b>'a kadar saniye.
+        </div><div class="para">
+Başa 0 konulsa da olur konulmasa da.
         </div>
-      </div>
-    </header>
-    <section class="mainpage">
-      <div class="crumbs">
-        <p>  </p>
-      </div>
-      <section class="sect1" id="glibc-Parsing-Date-and-Time">
-        <div class="titlepage">
-          <div>
-            <div>
-              <h2 class="title" style="clear: both">21.5.5. Tarih ve Saatin Dökümlü Zamana Dönüştürülmesi</h2>
-            </div>
-          </div>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">Unix belirtimi iki artık saniyenin gösterilmesinin de mümkün olması varsayımıyla bu değerin üst sınırının <b><tt>61</tt></b> olduğunu söyler. Bu değeri <b><tt>61</tt></b> olarak hiç görmeyeceksiniz, çünkü 1 artık saniyeden fazlasına sahip bir dakika yoktur ama efsane sürüyor.</div></td></tr></table></div>
+        </dd><dt><span class="term"><tt>%OS</tt></span></dt><dd class="varlist"><div class="para">
+Yerele özgü diğer sayısal sembollerin kullanılması dışında <b><tt>%S</tt></b> ile aynıdır.
+        </div></dd><dt><span class="term"><tt>%T</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>%H:%M:%S</tt></b> biçimine eşdeğer olarak yorumlanır.
+        </div></dd><dt><span class="term"><tt>%u</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>1</tt></b>'den <b><tt>7</tt></b>'ye kadar gün isminin numarası. Pazartesi, haftanın birinci günüdür.
+        </div><div class="para">
+Başa 0 konulsa da olur konulmasa da.
         </div>
-        <div class="preliminary">
-          <div class="titlepage">
-            <div>
-              <div>
-                <h3 class="title">Ön Bilgi</h3>
-              </div>
-            </div>
-          </div>
-          <p>
-     ISO C standardı <a href="glibc-Formatting-Calendar-Time.html#glibc-fn-strftime"><strong class="function"><code>strftime</code></strong></a> işlevinin çıktısının, işlevin girdisi olan ikil biçime dönüştürülmesi için herhangi bir işlev belirtmemiştir. Bu, ilk yıllarda farklı arayüzlerin az ya da çok başarılı çeşitli gerçeklemeler geliştirmeleri ile sonuçlanmıştır. Bunların ardından Unix standardı iki ek işlev tanımladı: <strong class="function"><code>strptime</code></strong> ve <strong class="function"><code>getdate</code></strong>. Her ikisi de tuhaf arayüzlere sahip olmasına karşın geniş kullanım alanı bulmuştur.
-    </p>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">Şimdilik tam olarak gerçeklenmemiştir. Biçim olarak tanınır ama <i><tt>tm</tt></i> yapısında ilgili alana birşey yazılmaz.</div></td></tr></table></div>
+        </dd><dt><span class="term"><tt>%U</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>0</tt></b>'dan <b><tt>53</tt></b>'e kadar hafta numarası.
+        </div><div class="para">
+Başa 0 konulsa da olur konulmasa da.
+        </div></dd><dt><span class="term"><tt>%OU</tt></span></dt><dd class="varlist"><div class="para">
+Yerele özgü diğer sayısal sembollerin kullanılması dışında <b><tt>%U</tt></b> ile aynıdır.
+        </div></dd><dt><span class="term"><tt>%V</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>1</tt></b>'den <b><tt>53</tt></b>'e kadar ISO 8601:1988 hafta numarası.
+        </div><div class="para">
+Başa 0 konulsa da olur konulmasa da.
         </div>
-        <div class="toc">
-          <div class="toc-title">İçindekiler</div>
-          <dl class="toc">
-            <dt>21.5.5.1. <a href="glibc-Low-Level-Time-String-Parsing.html">Düşük Seviyede Çözümleme</a>  -  Dizgenin belirtilen biçimle yorumlanması</dt>
-          </dl>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">Şimdilik tam olarak gerçeklenmemiştir. Biçim olarak tanınır ama <i><tt>tm</tt></i> yapısında ilgili alana birşey yazılmaz.</div></td></tr></table></div>
+        </dd><dt><span class="term"><tt>%w</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>0</tt></b>'dan <b><tt>6</tt></b>'ya kadar gün isminin numarası. Pazar, haftanın ilk günüdür.
+        </div><div class="para">
+Başa 0 konulsa da olur konulmasa da.
         </div>
-      </section>
-      <footer>
-        <div align="center" class="footer">
-          <small>Bir <a href="http://belgeler.org.tr/">Linux Kitaplığı</a> Sayfası</small>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">Şimdilik tam olarak gerçeklenmemiştir. Biçim olarak tanınır ama <i><tt>tm</tt></i> yapısında ilgili alana birşey yazılmaz.</div></td></tr></table></div>
+        </dd><dt><span class="term"><tt>%Ow</tt></span></dt><dd class="varlist"><div class="para">
+Yerele özgü diğer sayısal sembollerin kullanılması dışında <b><tt>%w</tt></b> ile aynıdır.
+        </div></dd><dt><span class="term"><tt>%W</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>0</tt></b>'dan <b><tt>53</tt></b>'e kadar hafta numarası.
+        </div><div class="para">
+Başa 0 konulsa da olur konulmasa da.
         </div>
-      </footer>
-    </section>
-  </body>
-</html>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">Şimdilik tam olarak gerçeklenmemiştir. Biçim olarak tanınır ama <i><tt>tm</tt></i> yapısında ilgili alana birşey yazılmaz.</div></td></tr></table></div>
+        </dd><dt><span class="term"><tt>%x</tt></span></dt><dd class="varlist"><div class="para">
+Yerele özgü kısa tarih gösterimi.
+        </div></dd><dt><span class="term"><tt>%Ex</tt></span></dt><dd class="varlist"><div class="para">
+Yerele özgü diğer veri gösterimlerinin kullanılması dışında <b><tt>%x</tt></b> gibidir.
+        </div></dd><dt><span class="term"><tt>%X</tt></span></dt><dd class="varlist"><div class="para">
+Yerele özgü saat gösterimi.
+        </div></dd><dt><span class="term"><tt>%EX</tt></span></dt><dd class="varlist"><div class="para">
+Yerele özgü diğer saat gösterimlerinin kullanılması dışında <b><tt>%x</tt></b> gibidir.
+        </div></dd><dt><span class="term"><tt>%y</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>0</tt></b> ile <b><tt>99</tt></b> arasında yılın yüzyıllık parçası olmaksızın yıl numarası.
+        </div><div class="para">
+Başa 0 konulsa da olur konulmasa da.
+        </div><div class="para">
+<b><tt>%C</tt></b> olmaksızın bu biçim nasıl kullanılacak diye bir soru sorabilirsiniz. <b><tt>strptime</tt></b> işlevi 69'dan 99'a kadar değerleri 1969'dan 1999'a kadar, 0'dan 68'e kadar değerleri de 2000'den 2068'e kadar yıllara karşılık olarak ele alacaktır. Fakat bazı veri girdilerinde bu ampirik yaklaşım başarısız olabilir.
+        </div><div class="para">
+Bu nedenle <b><tt>%y</tt></b> biçiminden uzak durup yerine <b><tt>%Y</tt></b> kullanmak en iyisidir.
+        </div></dd><dt><span class="term"><tt>%Ey</tt></span></dt><dd class="varlist"><div class="para">
+Yerelin diğer gösteriminde <b><tt>%EC</tt></b>'den itibaren geçen yıl sayısı.
+        </div></dd><dt><span class="term"><tt>%Oy</tt></span></dt><dd class="varlist"><div class="para">
+Yerelin diğer gösteriminde <b><tt>%C</tt></b> başlangıcından itibaren geçen yıl sayısı.
+        </div></dd><dt><span class="term"><tt>%Y</tt></span></dt><dd class="varlist"><div class="para">
+Gregoryen takvimine göre tam yıl.
+        </div></dd><dt><span class="term"><tt>%EY</tt></span></dt><dd class="varlist"><div class="para">
+Diğer tam yıl gösterimi.
+        </div></dd><dt><span class="term"><tt>%z</tt></span></dt><dd class="varlist"><div class="para">
+RFC 822/ISO 8601:1988 tarzı zaman dilimi.
+        </div></dd><dt><span class="term"><tt>%Z</tt></span></dt><dd class="varlist"><div class="para">
+Zaman dilimi kısaltması.
+        </div>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">Şimdilik tam olarak gerçeklenmemiştir. Biçim olarak tanınır ama <i><tt>tm</tt></i> yapısında ilgili alana birşey yazılmaz.</div></td></tr></table></div>
+        </dd><dt><span class="term"><tt>%%</tt></span></dt><dd class="varlist"><div class="para">
+Tek bir <b><tt>%</tt></b> karakteri.
+        </div></dd></dl></div>
+      <div class="para">
+Biçim dizgesindeki diğer karakterler girdi dizgesindekilerle eşleşmelidir. Ancak girdi dizgesindeki boşluklar biçim dizgesinde bulunmayabileceği gibi daha fazla sayıda da bulunabilir.
+     </div>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Taşınabilirlik Bilgisi</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">XPG standardı, iki dönüşüm belirtimi arasında en azından bir boşluk (<b><tt>isspace</tt></b> ile belirtilenler) ya da bir alfanumerik olmayan karakter konulmasını tavsiye eder. GNU C kütüphanesi böyle bir sınırlama yapmaz ama diğer kütüphaneler <b><tt>"%d%m%Y%H%M%S"</tt></b> gibi bir biçim dizgesini yanlış çözümleyebilir.</div></td></tr></table></div>
+     <div class="para">
+<b><tt>strptime</tt></b> işlevi dizgeleri sağdan sola doğru işleme tabi tutar. Her olası girdi elemanı (boşluklar, kendisi olan karakterler, biçimler) için sırayla bakılır. Eğer girdiyle biçim eşleştirilemezse işlev işlemi durdurur. Girdi ve biçim dizgelerinin kalanı işleme tabi turulmaz.
+     </div><div class="para">
+İşlev, işlenmeyen ilk karaktere bir gösterici ile döner. Eğer girdi dizgesi, biçim dizgesinde gerekli karakterlerden fazla karakter içeriyorsa, dönüş değeri son işlenen girdi karakterinden hemen sonraki karakteri gösterir. Eğer girdi dizgesi tamamen tüketilmişse dönüş değeri dizgenin sonundaki boş karakteri gösterir. Bir hata oluşmuşsa, yani işlev biçim dizgesini tam eşleştirememişse, işlev <b><tt>NULL</tt></b> ile döner.
+</div></dd></dl><div style="padding:5px"></div><div class="para">
+İşlevin XPG standardındaki belirtimi, bilginin bir kaç önemli parçasını dışarda bıraktığından oldukça muğlaktır. En önemlisi, doğrudan doğruya farklı biçimlerle ilklendirilmemiş <i><tt>tm</tt></i> elemanlarının ne olacağı belirlenmemiştir. Farklı Unix sistemlerindeki gerçeklemeler bu bakımdan değişiklikler gösterir.
+     </div><div class="para">
+GNU libc gerçeklemesi doğrudan ilklendirilmemiş alanlara dokunmaz. <b><tt>tm_wday</tt></b> ve <b><tt>tm_yday</tt></b> alanları bunun dışındadır. Yıl, ay veya tarih elemanları değişmişse bu alanların değerleri yeniden hesaplanır. Bunun iki faydası vardır:
+     </div><ul type="disc" class="itemizedlist"><li><div class="para">
+<b><tt>strptime</tt></b> işlevini yeni bir girdi dizgesi ile çağırmadan önce, işleve aktaracağınız <i><tt>tm</tt></i> yapısını hazılamalısınız. Bu normalde yapının tüm elemanlarının sıfır olacağı anlamına gelir. Bunun yerine tüm alanlara <b><tt>INT_MAX</tt></b> değerini de atayabilirsiniz. Böylece işlev çağrısının hangi elemanlara değer atadığını saptayabilirsiniz. Bunu sıfırlarla yapamazdınız, çünkü atanan bazı değerler zaten sıfır olacaktır.
+       </div><div class="para">
+<i><tt>tm</tt></i> yapısının ilgilendiğiniz alanlarına işlev çağrısı sırasında bir değer atanıp atanmadığını saptamak isterseniz yapıyı dikkatli ilklendirmelisiniz.
+       </div></li><li><div class="para">
+<b><tt>struct tm</tt></b> değerini peşpeşe yapacağınız <b><tt>strptime</tt></b> çağrıları ile oluşturabilirsiniz. Bir dizgede tarih başka bir dizgede de saat gösterimi bulunan iki dizgeyi ayrı ayrı çözümleten bir uyulama için bu yararlıdır. Bir dizgeyi çözümledikten sonra yapıyı temizlemden yapacağınız ikinci çözümleme ile tam yerel zamanı elde edebilirsiniz.
+       </div></li></ul><div class="para">
+Aşağıdaki örnekte ya US tarzında ya da ISO 8601 biçiminde olabilen bir tarih bilgisi içeren bir dizgeyi çözümleyen bir işlev gösterilmiştir:
+     </div><div class="para"><div align="right"><pre class="screen">
+const char *
+parse_date (const char *input, struct tm *tm)
+{
+  const char *cp;
+
+  /* Önce yapıyı temizleyelim.  */
+  memset (tm, '\0', sizeof (*tm));
+
+  /* İlk olarak ISO biçimine bakalım.  */
+  cp = strptime (input, "%F", tm);
+  if (cp == NULL)
+    {
+      /* Eşleşme yok, o halde US biçimini deneyelim.  */
+      cp = strptime (input, "%D", tm);
+    }
+
+  return cp;
+}
+</pre></div></div></dd></dl> <div class="head3"><a name="glibc-General-Time-String-Parsing" id="glibc-General-Time-String-Parsing"></a>Genel Zaman Gösterimi Çözümlemesi</div><dl><dd><div class="para">
+Unix standardı tarih dizgelerini çözümlemek için başka bir işlev tanımlar. Arayüz tuhaftır ama uygulamanıza uygun düşecek olursa işlev en iyisidir. Bir durağan ayrılmış değişkene gösterici ile döndüğünden ve bir genel değişkenle genel bir durum (bir ortam değişkeni) kullandığından çok evreli uygulama ve kütüphanelerde sorun çıkarır.
+     </div>
+<a class="indexterm" name="idx2417" id="idx2417"></a>
+<a name="glibc-getdate_err" id="glibc-getdate_err"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt><b><tt>getdate_err</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">değişken</div></div></div><dl><dd><div class="para">
+Son başarısız <b><tt>getdate</tt></b> çağrısının hata kodunu içeren <b><tt>int</tt></b> türünde bir değişkendir. Tanımlı değerleri şunlardır:
+     </div><div class="variablelist"><dl><dt><span class="term">1</span></dt><dd class="varlist"><div class="para">
+<b><tt>DATEMSK</tt></b> ortam değişkeni tanımsız ya da boş.
+        </div></dd><dt><span class="term">2</span></dt><dd class="varlist"><div class="para">
+<b><tt>DATEMSK</tt></b> ortam değişkeni ile belirtilen şablon dosyası açılamadı.
+        </div></dd><dt><span class="term">3</span></dt><dd class="varlist"><div class="para">
+Şablon dosyası ile ilgili bilgiler alınamadı.
+        </div></dd><dt><span class="term">4</span></dt><dd class="varlist"><div class="para">
+Şablon dosyası normal bir dosya değil.
+        </div></dd><dt><span class="term">5</span></dt><dd class="varlist"><div class="para">
+Şablon dosyası okunurken bir G/Ç hatası oluştu.
+        </div></dd><dt><span class="term">6</span></dt><dd class="varlist"><div class="para">
+İşlevin çalışması için bellek yetersiz.
+        </div></dd><dt><span class="term">7</span></dt><dd class="varlist"><div class="para">
+Şablon dosyası eşleşen bir şablon içermiyor.
+        </div></dd><dt><span class="term">8</span></dt><dd class="varlist"><div class="para">
+Girdi olarak verilen tarih geçersiz. Bu tarihler Şubat'ın 31'ini içeren ya da <b><tt>time_t</tt></b> türünde bir değişkenle ifade edilemeyen tarihler olabilir.
+        </div></dd></dl></div>
+</dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2418" id="idx2418"></a>
+<a name="glibc-getdate" id="glibc-getdate"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct tm *<b><tt>getdate</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *<i><tt>dizge</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>getdate</tt></b> arayüzü bir dizgeyi çözümleyip bir değer döndürecek bir işlev için olası en basit arayüzdür. <i><tt>dizge</tt></i> bir girdi dizgesidir ve sonuç bir dutağan olarak ayrılmış değişkende döndürülür.
+     </div><div class="para">
+Dizgenin nasıl işleme sokulduğu ile ilgili ayrıntılar kullanıcıdan gizlenmiştir. Aslında, yazılımın da denetiminin dışında olabilir. Karşılaştırma yapılacak biçim dizgeleri <b><tt>DATEMSK</tt></b> ortam değişkeni ile belirtilen bir dosyadadır. Bu dosya <b><tt>strptime</tt></b> işlevine aktarılabilecek biçim dizgelerinden oluşmuş satırlar içerir.
+     </div><div class="para">
+<b><tt>getdate</tt></b> işlevi bu biçim dizgelerini sırayla okuyarak girdi dizgesi ile eşleştirmeye çalışır. Girdi dizgesi ile tamamen eşleşen ilk satır kullanılır.
+     </div><div class="para">
+Biçim dizgesi ile ilklendirilmemiş elemanlar tekrar bir <b><tt>getdate</tt></b> çağrısı yapılana kadar öylece kalır.
+     </div><div class="para">
+<b><tt>getdate</tt></b> tarafından tanınan biçimler <b><tt>strptime</tt></b> iişlevininkilerle aynıdır. Bunlar için önceki bölümdeki açıklamalara bakabilirsiniz. <b><tt>strptime</tt></b> davranışına ek olarak bir kaç ek davranış vardır:
+     </div><ul type="disc" class="itemizedlist"><li><div class="para">
+Eğer <b><tt>%Z</tt></b> biçimi yerel zamanda verilmişse, çalışma anı ortamının o anki zaman diliminin zamanına değil, zaman diliminin eşleştiği o anki zamana tabanlanır.
+       </div>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">Bu şimdilik gerçeklenmemiştir.  Sorun, zaman dilimi isimlerinin eşsiz olmamasıdır. ABD ile diğer ülkeler için aynı olarak kabul edilen bir sabit zaman dilimi (örn, <b><tt>EST</tt></b> ABD Doğu Sahili Zamanı anlamında) verildiğinde ABD dışındaki ülkeler açısından işlev başarısız olacaktır. Şimdiye kadar buna iyi bir çözüm bulamadık.</div></td></tr></table></div>
+       </li><li>
+Eğer sadece haftanın günü belirtilmişse, seçilen gün o anki tarihe bağlı olacatır. Eğer o anki haftanın günü <b><tt>tm_wday</tt></b> değerine eşit ya da ondan büyükse o anki haftanın günü, aksi takdirde sonraki haftanın günü seçilir.
+       </li><li>
+Benzer bir ampirik yöntem de sadece ayın verildiği yılın belirtilmediği durumla ilgilidir. Eğer ay, o anki aya eşit ya da büyükse, o anki yıl, aksi takdirde bir sonraki yıl kullanılır. Açıkça belirtilmemişse ayın ilk günü verilmiş varsayılır.
+       </li><li>
+Biçimde açıça belirtilmemişse o anki saat, dakika ve saniye değeri kullanılır.
+       </li><li>
+Bir tarih belirtilmemişse ve zaman, o anki zamandan daha küçükse ertesi günün tarihi aksi takdirde o günkü tarih alınır.
+       </li></ul><div class="para">
+Şablon dosyasındaki biçimin sadece biçim elemanlarını içermediği unutulmamalıdır. Aşağıda olası biçim dizgelerinin bir listei verilmiştir (Unix standardından alınmıştır):
+     </div>
+<div class="para"><div align="right"><pre class="screen">%m
+%A %B %d, %Y %H:%M:%S
+%A
+%B
+%m/%d/%y %I %p
+%d,%m,%Y %H:%M
+at %A the %dst of %B in %Y
+run job at %I %p,%B %dnd
+%A den %d. %B %Y %H.%M Uhr
+</pre></div></div><div class="para">
+Gördüğünüz gibi, şablon listesi <b><tt>run job at %I %p,%B %dnd</tt></b> gibi çok özel dizgeler içerebilir. Bu listedeki şablonları kullanarak ve o anki zamanın Mon Sep 22 12:19:47 EDT 1986 olduğunu kabul ederek verilen girdiler için şu sonuçları aldık:
+     </div>
+<div class="informaltable"><table cellpadding="3" cellspacing="1" style="background:#999999;" border="0"><colgroup><col /><col /><col /></colgroup><tbody><tr style="background:#ffffbb;"><td> Girdi </td><td> Eşleşen </td><td> Sonuç
+</td></tr><tr style="background:#ffffee;"><td>Mon </td><td>%a </td><td>Mon Sep 22 12:19:47 EDT 1986
+</td></tr><tr style="background:#ffffee;"><td>Sun </td><td>%a </td><td>Sun Sep 28 12:19:47 EDT 1986
+</td></tr><tr style="background:#ffffee;"><td>Fri </td><td>%a </td><td>Fri Sep 26 12:19:47 EDT 1986
+</td></tr><tr style="background:#ffffee;"><td>September </td><td>%B </td><td>Mon Sep 1 12:19:47 EDT 1986
+</td></tr><tr style="background:#ffffee;"><td>January </td><td>%B </td><td>Thu Jan 1 12:19:47 EST 1987
+</td></tr><tr style="background:#ffffee;"><td>December </td><td>%B </td><td>Mon Dec 1 12:19:47 EST 1986
+</td></tr><tr style="background:#ffffee;"><td>Sep Mon </td><td>%b %a </td><td>Mon Sep 1 12:19:47 EDT 1986
+</td></tr><tr style="background:#ffffee;"><td>Jan Fri </td><td>%b %a </td><td>Fri Jan 2 12:19:47 EST 1987
+</td></tr><tr style="background:#ffffee;"><td>Dec Mon </td><td>%b %a </td><td>Mon Dec 1 12:19:47 EST 1986
+</td></tr><tr style="background:#ffffee;"><td>Jan Wed 1989 </td><td>%b %a %Y </td><td>Wed Jan 4 12:19:47 EST 1989
+</td></tr><tr style="background:#ffffee;"><td>Fri 9 </td><td>%a %H </td><td>Fri Sep 26 09:00:00 EDT 1986
+</td></tr><tr style="background:#ffffee;"><td>Feb 10:30 </td><td>%b %H:%S </td><td>Sun Feb 1 10:00:30 EST 1987
+</td></tr><tr style="background:#ffffee;"><td>10:30 </td><td>%H:%M </td><td>Tue Sep 23 10:30:00 EDT 1986
+</td></tr><tr style="background:#ffffee;"><td>13:30 </td><td>%H:%M </td><td>Mon Sep 22 13:30:00 EDT 1986
+     </td></tr></tbody></table></div>
+   <div class="para">
+İşlevin dönüş değeri <b><tt>struct tm</tt></b> türündeki bir durağan ayrılmış değişkene göstericidir, bir hata oluşmuşsa boş gösterici döner. Sonuç sadece sonraki <b><tt>getdate</tt></b> çağrısına kadar geçerlidir. Bu, işlevi çok evreli uygulamalar açısından kullanışsız yapar.
+     </div><div class="para">
+<b><tt>errno</tt></b> değişkeni <i>değiştirilmez</i>.  Hta değerleri <b><tt>getdate_err</tt></b> genel değişkeninde saklanır. Olası hata değerleri ve açıklamaları için <a class="link" href="../glibc/glibc-Parsing-Date-and-Time.html#glibc-getdate_err">yukarıya bakınız</a>.
+     </div>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/warning.png" /></td><th class="admon">Uyarı</th></tr><tr><td align="left" valign="top" class="admon"><div class="para"><b><tt>getdate</tt></b> işlevi <i>hiçbir zaman</i> SUID'li yazılımlarda kullanılmamalıdır.  Sebep belli: işlev <b><tt>DATEMSK</tt></b> ortam değişkeninde belirtilen bir dosyayı kullanıyor; dosyada bazı bozuk girdiler (ikilik veri gibi) varsa yazılım çökecektir.</div></td></tr></table></div>
+     <div class="para">
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2419" id="idx2419"></a>
+<a name="glibc-getdate_r" id="glibc-getdate_r"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>getdate_r</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *<i><tt>dizge</tt></i>,
+ struct tm  *<i><tt>zaman</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>getdate_r</tt></b> işlevi <b><tt>getdate</tt></b> işlevinin evresel sürümüdür.  <b><tt>getdate_err</tt></b> genel değişkenini kullanmaz, hata kodunu işlevin kendisi döndürür. Hata oluşmamışsa işlev sıfır döndürür. İşlevin döndürdüğü hata kodları <b><tt>getdate_err</tt></b> değişkeninin açıklamasındaki <a class="link" href="../glibc/glibc-Parsing-Date-and-Time.html#glibc-getdate_err">hata kodları</a> ile aynıdır.
+     </div><div class="para">
+Bundan başka, <b><tt>getdate_r</tt></b> işlevi yerel zamanı bir durağan değişkende değil, <b><tt>struct tm</tt></b> türünde bir değişken olan ikinci argümanda saklar.
+     </div><div class="para">
+Bu işlev Unix standardında tanımlanmamıştır. Buna rağmen birçok Unix sisteminde kullanılmaktadır.
+     </div><div class="para">
+<b><tt>getdate</tt></b> işlevi için belirtilen SUID'li yazılımlarla ilgili uyarı bu işlev için de geçerlidir.
+  </div></dd></dl><div style="padding:5px"></div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Formatting-Calendar-Time.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Calendar-Time.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-TZ-Variable.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Zaman Değerlerinin Biçimlenmesi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Zaman Diliminin TZ ile Belirtilmesi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

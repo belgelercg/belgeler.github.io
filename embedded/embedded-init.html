@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:30+03:00" /><title>Açılış Ayarları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../embedded/embedded-ayarlamalar.html" title="Temel Ayarlamalar" /><link rel="previous" href="../embedded/embedded-tinylogin.html" title="Tinylogin Kullanımı" /><link rel="next" href="../embedded/embedded-kullanicilar_ve_gruplar.html" title="Sistem Kullanıcıları ve Gruplar" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Açılış Ayarları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../embedded/embedded-tinylogin.html">Önceki</a> </td><th width="60%" align="center">Temel Ayarlamalar</th><td width="20%" align="right"> <a accesskey="n" href="../embedded/embedded-kullanicilar_ve_gruplar.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="embedded-init" id="embedded-init"></a>Açılış Ayarları</div><dl><dd><div class="para">
+Sistemi SBC üzerindeki sistemden başlatabilmek için yapmamız gereken bir takım ayarlamalar mevcut. Bunlar, SBC'ye özgün bir çekirdek oluşturma, açılışta <b><tt>init</tt></b> tarafından çalıştırılacak ilk programı hazırlama, sisteme girişleri düzenleme ve çekirdeği yükleyebilmek için bir önyükleyici ayarlamak olacaktır.
+  </div> <div class="head3"><a name="id1" id="id1"></a>Çekirdeğin Oluşturulması</div><dl><dd><div class="para">
+Sistemimizi disketlerin yardımı olmadan açabilmek için öncelikle sistemi düzgün bir şekilde başlatabilecek, istediğimiz özelliklere sahip bir çekirdeğin olması gereklidir. SBC sistemi üzerinde çalışacak olan Linux çekirdeğini derlemek için bir Linux makine kullanacağız. Derleme işlemini yapacağınız zamandaki kararlı son sürüm Linux çekirdeğini <a class="ulink" href="http://www.kernel.org" target="_top">http://www.kernel.org</a> adresinden indirip, SBC üzerindeki donanımlar ve SBC üzerinde kullanmak istediğiniz yapılar için gerekli olan çekirdek desteklerine sahip olacak  şekilde bir derleme yapmalısınız. Linux çekirdeğinin derlenmesi hakkında örneğin <a class="link" href="../howto/kernel-nasil.html" title="Çekirdeğe Yama Uygulanması ve Çekirdeğin Derlenmesi NASIL">Çekirdeğe Yama Uygulanması ve Çekirdeğin Derlenmesi NASIL</a> belgesinden yararlanabilirsiniz.
+  </div><div class="para">
+Bu aşamada SBC üzerinde çalışacak olan Linux çekirdeğini derlediğinizi ve bir disket yardımı ile SBC üzerindeki <tt>/hedef/boot</tt> dizini altına <tt>linux</tt> adıyla kopyaladığınızı varsayıyoruz.
+  </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Çekirdeğin derlenmesi sırasında en sık yapılan hata, SBC sisteminizde kullandığınızdan farklı bir işlemci ailesinin seçilmesi ve bu yüzden sistemin yüklenememesidir. SBC üzerindeki işlemciler aynı hızlardaki ağabeylerinin birebir aynısı değillerdir. 133 MHz hızındaki bir işlemci için 486 kipinde çekirdek derlemeniz gerekebilir, 586 ve üstü çalışmayabilir. Böyle bir durumla karşılaşırsanız çekirdeği yeniden derleyip, SBC'yi daha önce kullandığımız iki disket ile açıp kök bölümünü gene <tt>/hedef</tt> dizini altına bağladıktan sonra, yeni çekirdeği disket ile <tt>/hedef/boot </tt> dizini altına taşımalı ve ardından burada anlatılan <b><tt>lilo</tt></b> ayarlamalarının ilgili kısımlarını yeniden yapmalısınız.
+  </div></td></tr></table></div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/warning.png" /></td><th class="admon">Uyarı</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Buradaki <tt>/hedef</tt> dizini, SBC'yi açarken kullandığımız iki disketin bellekte oluşturduğu geçici Linux sistemi altında yer almaktadır. DiskOnModule üzerinde <tt>/hedef</tt> adında bir dizin yoktur.
+  </div></td></tr></table></div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Init Ayarları</div><dl><dd><div class="para">
+Linux çekirdeği bir önyükleyici programı tarafından açılış esnasında belleğe yüklenip çalışmaya başlar. Çekirdek donanımları tarar, sisteme yerleşir ve tüm yapması gereken işlemleri bitirdiğinde artık sistemi bize devretmek ister. İşte bu noktada çekirdeğin yaptığı iş <b><tt>/sbin/init</tt></b> programını çalıştırmaktır.
+  </div><div class="para">
+Çekirdek tarafından ilk olarak çalıştırılan <b><tt>init</tt></b> programının bu nedenle süreç numarası (PID) daima 1'dir. Geri kalan tüm süreçler için <b><tt>init</tt></b> ana süreç (parent) konumundadır.
+  </div><div class="para">
+Peki <b><tt>init</tt></b> neler yapar ve biz nerede devreye gireceğiz? <b><tt>init</tt></b> programı, çalıştığında öncelikle <tt>/etc/inittab</tt> ayar dosyasını okur. Buradan aldığı verilerle sisteminhangi çalışma seviyesinde (runlevel) açılacağına karar verir ve ilgili programı çalıştırır. Ayrıca sanal konsollardan sisteme girişleri sağlayabilmek için <b><tt>getty</tt></b> programını bu konsollarla ilişkilendirir.
+  </div><div class="para">
+<b><tt>init</tt></b> ile ilgili dikkat etmemiz gereken nokta, <b><tt>busyBox</tt></b> içerisinden çıkan yeniden yazılmış <b><tt>init</tt></b> sürümünün çalışma seviyelerini (runlevels) desteklemediğidir. Bu nedenle normal Linux bilgisayarınızdaki <tt>/etc/inittab</tt> dosyasını örnek olarak kullanamazsınız. Bunun yerine <b><tt>busyBox</tt></b> içersindeki <b><tt>init</tt></b>'in kullandığı dosya biçimini kullanmalısınız.
+  </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Çoğu durumda gerekli olmamakla birlikte herhangi bir nedenden ötürü çalışma seviyelerine ihtiyaç duyan bir sistem geliştiriyorsanız <b><tt>busyBox</tt></b> ile gelen <b><tt>init</tt></b>'i değil, <b><tt>sysvinit</tt></b>'i kullanmalısınız.
+  </div></td></tr></table></div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">Eğer bir <tt>inittab</tt> dosyası ayarlamaz iseniz <b><tt>busyBox</tt></b> aşağıdaki gibi bir <tt>inittab</tt> içeriğini girmiş olduğunuzu varsayarak, bu içeriğe göre çalışır:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+::sysinit:/etc/init.d/rcS
+::askfirst:/bin/sh
+::ctrlaltdel:/sbin/reboot
+::shutdown:/sbin/swapoff -a
+::shutdown:/bin/umount -a -r
+::restart:/sbin/init
+</pre></div></div>
+  <div class="para">
+Ayrıca <tt>/dev/console</tt> aygıtının erişilebilir olduğunu görürse aşağıdaki satırları da ekleyecektir:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+tty2::askfirst:/bin/sh
+tty3::askfirst:/bin/sh
+tty4::askfirst:/bin/sh
+</pre></div></div>
+  </td></tr></table></div><div class="para">
+Şimdi örnek bir <tt>inittab</tt> dosyası hazırlayalım. İlk iki konsoldan doğrudan sisteme giriş yapılabilsin, üçüncü konsoldan ise <tt>/etc/passwd</tt> dosyasından kimlik doğrulama yapılarak sisteme girilebilsin. Bunun için aşağıdaki gibi bir <tt>inittab</tt> dosyasını <b><tt>vi /hedef/etc/inittab</tt></b> komutu ile oluşturalım:
+  </div><dl class="example"><dt class="example"><a class="example" name="idxmp1" id="idxmp1"></a><b>Örnek 4.1. <tt>/etc/inittab</tt> içeriği</b></dt><dd class="example"><div class="para"><div align="right"><pre class="screen">
+::sysinit:/etc/init.d/rcS
+::askfirst:/bin/sh
+::ctrlaltdel:/sbin/reboot
+::shutdown:/bin/umount -a -r
+::restart:/sbin/init
+
+#tty1::askfirst:/bin/sh
+tty2::askfirst:/bin/sh
+tty3::respawn:/sbin/getty 38400 tty3
+</pre></div></div></dd></dl><div class="para">
+Dosyayı bu şekilde oluşturup kaydettikten sonra şimdi dosyadaki satırları açıklayalım. İlk satırda <b><tt>init</tt></b> programının sistemin açılışı işlemini devredeceği program belirtilmektedir. İşte burası bizim sistem açılışında doğrudan müdahale etmemiz gereken yerdir. Örneğimizde bu değer <tt>/etc/init.d/rcS</tt>'dir. <b><tt>init</tt></b> kendi işini bitirince bu programı çalıştıracaktır. Bu programı birazdan  hazırlayacağız.
+  </div><div class="para">
+İkinci satırda <tt>askfirst</tt> özel belirteci <tt>/bin/sh</tt> ile ilişkilendirilmiştir. <tt>askfirst</tt> ile ilişkilendirilmiş bir sanal konsola geçildiğinde &lt;ENTER&gt; tuşuna basmak suretiyle kabuğa düşülür (<b><tt>/bin/sh</tt></b>). Birinci konsol <tt>tty1</tt> için <tt>askfirst</tt> elemanı öntanımlı olarak ayarlandığı için dosyanın 7. satırındaki ayar, önüne <tt>#</tt> getirilerek iptal edilmiştir. Etkinleştirseniz de bir problem olmaz, sadece birinci konsolda 2 defa giriş mesajını alırsınız:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+Please press Enter to activate this console.
+Please press Enter to activate this console.
+</pre></div></div>
+  <div class="para">
+3, 4 ve 5. satırda yapılan işlemler isimlerinden de anlaşılacağı üzere sistemdeki belirli olaylar karşısında çalıştırılacak olan uygulamaların seçilmesini sağlamaktadır. 8. satırda 2. sanal konsol da <tt>askfirst</tt> ile ilişkilendirilmekte, 9. satırda ise 3. sanal konsol <b><tt>getty</tt></b> programıyla ilişkilendirilmekte ve <i>respawn</i> yapılarak süreç öldüğü zaman <b><tt>getty</tt></b>'nin yeniden çalıştırılması gerektiği belirtilmektedir.
+  </div><div class="para">
+Şimdi <tt>/etc/init.d/rcS</tt> dosyamızı oluşturalım. Basit bir kabuk programı ile açılışta yapılmasını istediğimiz işlemleri burada gerçekleştireceğiz. Öncelikle sistemde <tt>init.d</tt> dizinini oluşturalım.
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>mkdir /hedef/etc/init.d</tt></b>
+</pre></div></div>
+  <div class="para">
+Ardından <b><tt>vi /hedef/etc/init.d/rcS</tt></b> komutu ile dosyamızı yazmaya başlayalım. Bu dosyada neler yapmamız gerekiyor? <tt>rcS</tt> içerisinde teorik olarak sistemin açılırken yapmasını istediğimiz her türlü işlemi kendi keyfimize göre yaptırabiliriz (Linux'te bir işi yapmanın her zaman birden fazla yolu olduğuna göre keyif burada doğru bir tanımlama :). Ancak bu keyfi işlem adımlarının yanında bir de bazı özel durumlar haricinde yapmamız gereken bir işlem var: kök dosya sistemini oku-yaz kipinde yazılabilir olarak sisteme bağlamak. Linux çekirdeği sistemi açarken ve <b><tt>init</tt></b> programını çalıştırdığında kök dosya sistemi salt-okunur olarak sisteme bağlı durumdadır (Elbette bunu da değiştirmenin yolları var ille de ben bildiğimi yaparım diyorsanız). Bu yüzden <tt>rcS</tt> içerisinde kök dosya sistemi oku-yaz kipine geçirilmelidir. Ayrıca <tt>/proc</tt> sanal dosya sistemi de burada sisteme bağlanmalıdır. Bu işlemleri yapan dosya içeriği aşağıdaki gibi olup şu aşamada sistemin açılabilmesi için bize yeterlidir. İleride açılışta yapılacak yeni işlemler eklendiğinde (ağ ayarlarının yapılması gibi) bu dosyanın içeriğinde değişiklikler yapacağız.
+  </div><dl class="example"><dt class="example"><a class="example" name="idxmp2" id="idxmp2"></a><b>Örnek 4.2. <tt>/etc/init.d/rcS</tt></b></dt><dd class="example"><div class="para"><div align="right"><pre class="screen">
+#!/bin/sh
+
+## Sistemi read-write moduna geçirelim
+mount -n -o remount,rw /
+
+## Proc'u bağlayalım
+mount /proc
+</pre></div></div></dd></dl><div class="para">
+Bu dosya mutlaka çalıştırılabilir olmalıdır, <b><tt>chmod 755 /hedef/etc/init.d/rcS</tt></b> komutuyla dosyaya çalıştırma hakları verilmelidir.
+  </div><div class="para">
+<tt>rcS</tt> içerisinde <b><tt>mount</tt></b> komutunu kullanma şeklimize bakacak olursanız dosya sistemi türü, aygıt ismi gibi ayrıntıların verilmediğini görmektesiniz. Bu da doğru ayarlanmış bir <tt>/etc/fstab</tt> dosyası sayesinde olabilmektedir. Şimdi bu dosyayı da gene <b><tt>vi /hedef/etc/fstab</tt></b> komutu ile aşağıdaki gibi oluşturalım:
+  </div><dl class="example"><dt class="example"><a class="example" name="idxmp3" id="idxmp3"></a><b>Örnek 4.3. <tt>/etc/fstab</tt></b></dt><dd class="example"><div class="para"><div align="right"><pre class="screen">
+# Device                Point   Type    Options         Dump    Pass
+/dev/hda1               /       minix   defaults,rw     1       0
+proc                    /proc   proc    defaults        0       0
+</pre></div></div></dd></dl><div class="para">
+Artık <tt>rcS</tt> dosyamız çalışmaya hazır. Şimdi tek yapmamız gereken önyükleyici programımızı ayarlamak ve sistemi yeniden başlatmak olacak.
+  </div></dd></dl> <div class="head3"><a name="embedded-lilo_ayar" id="embedded-lilo_ayar"></a>LILO Ayarları</div><dl><dd><div class="para">
+Sistemimiz neredeyse kendi başına açılabilecek hale geldi. Şimdi çekirdeği yüklememizi sağlayacak bir önyükleyici kurmamız ve ayarlamamız gerekiyor. Ben burada önyükleyici olarak LILO kullandım, siz alternatif olarak aynı işlemleri GRUB ile de yapabilirsiniz.
+  </div><div class="para">
+Öncelikle <b><tt>lilo</tt></b> uygulaması bir disket ile normal Linux bilgisayarınızdan SBC üzerine taşınmalıdır. Bazı sistemlerde <b><tt>/sbin/lilo</tt></b> dosyası bir yönlendirici olup uygulamanın kendisi <b><tt>/sbin/lilo.real</tt></b> olarak kurulu olabilir. Benzeri bir durum sizin için de geçerli ise uygulamanın aslını (ismi farklı olsa da) diskete <tt>lilo</tt> adıyla kopyalayın. Disketi SBC'ye takıp bağlayın ve <tt>lilo</tt>'yu buradaki <tt>/hedef/sbin</tt> dizini altına kopyalayın.
+  </div><div class="para">
+LILO uygulamasının çalışabilmesi için gereken bir kaç dosya daha var. Bu dosyaları da her zaman olduğu gibi Linux yüklü bilgisayarımızdan disket yardımı ile SBC üzerine taşımalıyız. Aşağıdaki dosyaları Linux sisteminizden bir diskete kopyalayın:
+  </div><ul type="disc" class="itemizedlist"><li><tt>/boot/boot-menu.b</tt></li><li><tt>/boot/boot.b</tt></li><li><tt>/boot/chain.b</tt></li><li><tt>/boot/map</tt></li></ul><div class="para">
+Ardından bu disketi SBC üzerine takarak dosyaları <tt>/hedef/boot</tt> dizini altına kopyalayın.
+  </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Hazırlamış olduğumuz Linux çekirdeğinin de bu aşamaya gelinene kadar <tt>/hedef/boot</tt> dizini altına <tt>kernel</tt> adıyla atılmış olduğunu varsayıyoruz.
+  </div></td></tr></table></div><div class="para">
+Gerekli dosyaları bu şekilde SBC üzerine attıktan sonra şimdi bu ana kadar <tt>/hedef</tt> dizini altında oluşturduğumuz SBC sistemine <i>chroot</i> edelim (Bu işi <b><tt>busybox</tt></b> kurulumu bittikten sonra herhangi bir adımda yapabilirdik :).
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>chroot /hedef</tt></b>
+
+
+BusyBox v0.60.5 (2003.05.29-21:02+0000) Built-in shell (ash)
+Enter 'help' for a list of built-in commands.
+
+<tt>/ # </tt>
+</pre></div></div>
+  <div class="para">
+Artık kök dizinimiz <tt>/</tt>, <tt>/hedef</tt> dizininin altına kaydırılmış durumdadır. Şimdi burada <b><tt>vi /etc/lilo.conf</tt></b> komutuyla aşağıdaki gibi bir ayar dosyası oluşturalım.
+  </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/caution.png" /></td><th class="admon">Dikkat</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+<b><tt>chroot</tt></b>&gt; işleminden sonra zaten <tt>/hedef</tt> dizin yapısı içerisinde olduğumuzdan artık <tt>/hedef/etc/lilo.conf</tt> demek yerine doğrudan <tt> /etc/lilo.conf</tt> demeliyiz, çünkü bu noktada <tt>/hedef</tt> dizini bizim için erişilemez durumdadır (zaten biz oyuz, matrix :p) Eski sisteme dönmek için <b><tt>exit</tt></b> komutu kullanılmalıdır. Ayrıca burada kullandığımız <b><tt>vi</tt></b> programı öncekilerden farklı olarak gerçekte bizim derlediğimiz <b><tt>busybox</tt></b> içerisinden çıkan ve ilk açılışta kullandığımız sisteme göre <tt>/hedef/bin/vi</tt> yani <tt>/hedef/bin/busybox</tt> olan uygulamadır.
+  </div></td></tr></table></div><dl class="example"><dt class="example"><a class="example" name="idxmp4" id="idxmp4"></a><b>Örnek 4.4. <tt>/etc/lilo.conf</tt></b></dt><dd class="example"><div class="para"><div align="right"><pre class="screen">
+lba32
+boot=/dev/hda
+install=/boot/boot-menu.b
+map=/boot/map
+prompt
+timeout=150
+vga=normal
+default=Linux
+
+image=/boot/kernel
+      root=/dev/hda1
+      label=Linux
+      read-only
+</pre></div></div></dd></dl><div class="para">
+Lilo formatıyla ilgili bilgi almak için Linux yüklü bilgisayarınızda <b><tt>man 5 lilo.conf</tt></b> komutunu verebilirsiniz. Şimdi artık son adım olarak <b><tt>lilo</tt></b> uygulamasını çalıştırıp diskimizin Ana Önyükleme Kaydının (MBR -Master Boot Record) açılışa uygun hale getirilmesini sağlayalım:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>/ # </tt><b><tt>/sbin/lilo -v</tt></b>
+LILO version 22.2, Copyright (C) 1992-1998 Werner Almesberger
+Development beyond version 21 Copyright (C) 1999-2001 John Coffman
+Released 05-Feb-2002 and compiled at 20:57:26 on Apr 13 2002
+MAX_IMAGES=27
+
+Reading boot sector from /dev/hda
+Merging with /boot/boot-menu.b
+Boot image: /boot/kernel
+Added Linux *
+
+Backup copy of boot sector in /boot/boot.0300
+Writing boot sector.
+<tt>/ # </tt>
+</pre></div></div>
+  <div class="para">
+Artık sistemin tek başına çalışabilmesi için her şey hazır. Şimdi sistemi yeniden başlatalım.
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>/ # </tt><b><tt>exit</tt></b>
+<tt># </tt><b><tt>reboot</tt></b>
+</pre></div></div>
+  <div class="para">
+Disket sürücüde disket olmadığından emin olunuz :) Sisteminiz açılmazsa karşılaştığınız sorunları <span class="email">&lt;murat (at) debian.org&gt;</span> eposta adresine gönderirseniz bu belgenin sonuna "Problemler ve Çözümler" bölümü ekleyebiliriz.
+  </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../embedded/embedded-tinylogin.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../embedded/embedded-ayarlamalar.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../embedded/embedded-kullanicilar_ve_gruplar.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Tinylogin Kullanımı </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Sistem Kullanıcıları ve Gruplar</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

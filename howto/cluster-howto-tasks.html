@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:36+03:00" /><title>İşleri Küme Üzerinde Gerçekleştirme</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/cluster-howto.html" title="Linux Kümeleme NASIL" /><link rel="previous" href="../howto/cluster-howto-setup.html" title="Kurulum, Yapılandırma ve Bakım" /><link rel="next" href="../howto/cluster-howto-ack.html" title="Teşekkür" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">İşleri Küme Üzerinde Gerçekleştirme</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/cluster-howto-setup.html">Önceki</a> </td><th width="60%" align="center">Linux Kümeleme NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/cluster-howto-ack.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="cluster-howto-tasks" id="cluster-howto-tasks"></a>İşleri Küme Üzerinde Gerçekleştirme</div><dl><dd><div class="para">
+Küme üzerindeki kullanım geliştikçe bu bölüm de geliştiriliyor; ama bu zamana dek farklı makinelerdeki görevler arasında iletişimi sağlamak için ileti aktarımı yapan kendi rutin kümelerimizi yazmaya meyilliydik.
+</div><div class="para">
+Birçok uygulama, özellikle DNA dizilimi hesaplama alanlarında katı olarak paralelleştirilebilir ki bu, kusursuz dağıtımın, görevlerin makineler arasında eşit olarak dağıtılmasıyla başarılabileceği anlamına gelir (örneğin, bütün bir DNA dizilimini (gen) analiz ederken tek tek her gen/protein'i inceleyerek uygulanan bir teknikte, her bir işlemci bir kerede diğer tüm işlemcilerden bağımsız olarak bir gen/protein üzerinde çalışabilir).
+</div><div class="para">
+Buraya kadar profesyonel bir sıralama sistemi kullanma ihtiyacı hissetmedik; ama bunun, çalıştırmak istediğiniz uygulamaların türüne son derece bağlı olduğu çok açıktır.
+</div> <div class="head3"><a name="id1" id="id1"></a>Kabaca Kıyaslamalar</div><dl><dd><div class="para">
+Çalıştırdığımız tek en önemli program (bizim  <i>ab initio</i> protein katlayan simülasyon programımız) için P 3.1 GHz işlemcili makinenin işlem gücüne göreli olarak elde edilen ortalama değerler:
+</div>
+<div class="para"><pre class="literallayout">    Xeon    1.7 GHz işlemci yaklaşık %22 daha yavaş
+    Athlon  1.2 GHz işlemci yaklaşık %36 daha hızlı
+    Athlon  1.5 GHz işlemci yaklaşık %50 daha hızlı
+    Athlon  1.7 GHz işlemci yaklaşık %63 daha hızlı
+    Xeon    2.4 GHz işlemci yaklaşık %45 daha hızlı
+    Xeon    2.7 GHz işlemci yaklaşık %80 daha hızlı
+    Opteron 1.4 GHz işlemci yaklaşık %70 daha hızlı
+    Opteron 1.6 GHz işlemci yaklaşık %88 daha hızlı
+</pre></div>
+<div class="para">
+Evet, yanlış görmediniz, Athlon 1.5 GHz Xeon 1.7 GHz'den daha hızlı. Çünkü Athlon saat periyodu başına (IPC ~ instructions per clock) 9 talimat (IPC) çalıştırırken Xeon sadece 6 IPC çalıştırır (siz hesaplayın artık!). Çalışır dosyalar makinelerde tek tek derlendiği (dolayısıyla örneğin matematik kütüphanelerinin kalitesinin bir etkisi olacaktır) ve desteklenen donanımlar farklı olduğu için bu son derece özensiz bir kıyaslamadır.
+</div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Bir Sonraki Yeniden Başlatmaya Dek Geçen Zaman</div><dl><dd><div class="para">
+Bu makineler, çok ağır yükler altında sürekli olarak çalıştırılarak hata kontrolünden (genellikle yeni birkaç makinede bazı donanım problemleri olabilir) geçtiklerinden dolayı hem donanım hem yazılım bakımından inanılmaz şekilde sağlamdır. Yaygın bir örnek aşağıda verilmiştir. Yeniden başlatmalar genel olarak bir sigorta attığında olmuştur.
+</div>
+<div class="para"><div align="right"><pre class="screen">  2:29pm  up 495 days,  1:04,  2 users,  load average: 4.85, 7.15, 7.72
+</pre></div></div>
+</dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/cluster-howto-setup.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/cluster-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/cluster-howto-ack.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Kurulum, Yapılandırma ve Bakım </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Teşekkür</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

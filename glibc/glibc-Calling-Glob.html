@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:26:30+03:00" /><title>glob çağrısı</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Globbing.html" title="Genelleme" /><link rel="previous" href="../glibc/glibc-Globbing.html" title="Genelleme" /><link rel="next" href="../glibc/glibc-Flags-for-Globbing.html" title="Genelleme Seçenekleri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">glob çağrısı</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Globbing.html">Önceki</a> </td><th width="60%" align="center">Genelleme</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Flags-for-Globbing.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Calling-Glob" id="glibc-Calling-Glob"></a><tt>glob</tt> çağrısı</div><dl><dd><div class="para">
+Genelleme işleminin sonucu bir dosya isimleri göstericileri dizisidir. Bu diziyi döndürmek için  <b><tt>glob</tt></b> işlevi aslında bir yapı olan özel bir veri türü, <b><tt>glob_t</tt></b> kullanır.  <b><tt>glob</tt></b> işlevine yapının adresini aktarırsanız, işlev, sonucu yapının alanlarına yazar.
+    </div><a name="glibc-glob_t" id="glibc-glob_t"></a>
+<a class="indexterm" name="idx742" id="idx742"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt><b><tt>glob_t</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+Bu veri türü bir dizge göstericileri dizisine bir gösterici tutar. Daha açıkçası, bu dizinin adresini ve boyutunu kaydeder. GNU gerçeklenimi standartdışı olarak biraz daha fazla alan içerir.
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>gl_pathc</tt></span></dt><dd class="varlist"><div class="para">
+Gösterici dizisindeki eleman sayısı; <b><tt>GLOB_DOOFFS</tt></b> seçeneği kullanılmışsa baştaki boş girdiler hariç (aşağıdaki <tt>gl_offs</tt>'a bakınız).
+       </div></dd><dt><span class="term"><tt>gl_pathv</tt></span></dt><dd class="varlist"><div class="para">
+Gösterici dizisinin adresi; bu alan <b><tt>char ** </tt></b> türündedir.
+       </div></dd><dt><span class="term"><tt>gl_offs</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>gl_pathv</tt></b> alanındaki adresten itibaren ilk gerçek elemanın konumu. Diğer alanların tersine bu alan <b><tt>glob</tt></b> işlevi için daima bir girdidir (diğer alanları işlev doldurur).
+       </div><div class="para">
+Eğer konuma sıfırdan farklı bir değer belirtirseniz, gösterici dizisinin başlangıcından itibaren bazı elemanlar boş kalacaktır. (<b><tt>glob</tt></b> işlevi oraları boş göstericilerle doldurur.)
+       </div><div class="para">
+<b><tt>gl_offs</tt></b> alanı sadece <b><tt>GLOB_DOOFFS</tt></b> seçeneği etkinse anlamlıdır.  Aksi takdirde bu alanın ne içerdiğine bakılmaksızın konumun sıfır olduğu varsayılır, yani ilk eleman gösterici dizisinin başına konur.
+       </div></dd><dt><span class="term"><tt>gl_closedir</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>closedir</tt></b> işlevinin başka bir gerçekleniminin adresi. <b><tt>GLOB_ALTDIRFUNC</tt></b> seçeneği etkinse kullanılır. Bu alan <b><tt>void (*) (void *)</tt></b> türündedir.
+       </div><div class="para">Bu alan bir GNU oluşumudur.
+       </div></dd><dt><span class="term"><tt>gl_readdir</tt></span></dt><dd class="varlist"><div class="para">
+Bir dizinin içeriğini okumakta kullanılan <b><tt>readdir</tt></b> işlevinin başka bir gerçekleniminin adresi. <b><tt>GLOB_ALTDIRFUNC</tt></b> seçeneği etkinse kullanılır. Bu alan <b><tt>struct dirent *(*) (void *)</tt></b> türündedir.
+       </div><div class="para">Bu alan bir GNU oluşumudur.
+       </div></dd><dt><span class="term"><tt>gl_opendir</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>opendir</tt></b>  işlevinin başka bir gerçekleniminin adresi. <b><tt>GLOB_ALTDIRFUNC</tt></b> seçeneği etkinse kullanılır. Bu alan <b><tt>void *(*) (const char *)</tt></b> türündedir.
+       </div><div class="para">Bu alan bir GNU oluşumudur.
+       </div></dd><dt><span class="term"><tt>gl_stat</tt></span></dt><dd class="varlist"><div class="para">
+Dosya sistemindeki bir nesne hakkında bilgi döndüren <b><tt>stat</tt></b> işlevinin başka bir gerçekleniminin adresi.  <b><tt>GLOB_ALTDIRFUNC</tt></b> seçeneği etkinse kullanılır. Bu alan <b><tt>int (*) (const char *, struct stat *)</tt></b> türündedir.
+       </div><div class="para">Bu alan bir GNU oluşumudur.
+       </div></dd><dt><span class="term"><tt>gl_lstat</tt></span></dt><dd class="varlist"><div class="para">
+Dosya sistemindeki bir nesne hakkında bilgi döndüren, ancak sembolik bağları izlemeyen <b><tt>lstat</tt></b> işlevinin başka bir gerçekleniminin adresi. <b><tt>GLOB_ALTDIRFUNC</tt></b> seçeneği etkinse kullanılır. Bu alan <b><tt>int (*) (const char *, struct stat *)</tt></b> türündedir.
+       </div><div class="para">Bu alan bir GNU oluşumudur.
+       </div></dd></dl></div>
+</dd></dl><div style="padding:5px"></div><div class="para">
+<b><tt>glob64</tt></b> işlevinde kullanmak üzere <tt>glob.h</tt> başlık dosyası bu türe çok benzer bir başka tanım içerir.  <b><tt>glob64_t</tt></b> türü <b><tt>glob_t</tt></b> türünden sadece  <b><tt>gl_readdir</tt></b>, <b><tt>gl_stat</tt></b> ve <b><tt>gl_lstat</tt></b> elemanlarının farklı türde olması ile farklıdır.
+    </div><a name="glibc-glob64_t" id="glibc-glob64_t"></a>
+<a class="indexterm" name="idx743" id="idx743"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt><b><tt>glob64_t</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+Bu veri türü bir dizge göstercileri dizisine bir gösterici tutar. Daha açıkçası, dizinin adresini ve boyutunu kaydeder. GNU gerçeklenimi standartdışı olarak biraz daha fazla alan içerir.
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>gl_pathc</tt></span></dt><dd class="varlist"><div class="para">
+Gösterici dizisindeki eleman sayısı; <b><tt>GLOB_DOOFFS</tt></b> seçeneği kullanılmışsa baştaki boş girdiler hariç (aşağıdaki <b><tt>gl_offs</tt></b>'a bakınız).
+       </div></dd><dt><span class="term"><tt>gl_pathv</tt></span></dt><dd class="varlist"><div class="para">
+Gösterici dizisinin adresi; bu alan <b><tt>char ** </tt></b> türündedir.
+       </div></dd><dt><span class="term"><tt>gl_offs</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>gl_pathv</tt></b> alanındaki adresten itibaren ilk gerçek elemanın konumu. Diğer alanların tersine bu alan <b><tt>glob</tt></b> işlevi için daima bir girdidir (diğer alanları işlev doldurur).
+       </div><div class="para">
+Eğer konuma sıfırdan farklı bir değer belirtirseniz, gösterici dizisinin başlangıcından itibaren bazı elemanlar boş kalacaktır. (<b><tt>glob</tt></b> işlevi oraları boş göstericilerle doldurur.)
+       </div><div class="para">
+<b><tt>gl_offs</tt></b> alanı sadece <b><tt>GLOB_DOOFFS</tt></b> seçeneği etkinse anlamlıdır.  Aksi takdirde bu alanın ne içerdiğine bakılmaksızın konumun sıfır olduğu varsayılır, yani ilk eleman gösterici dizisinin başına konur.
+       </div></dd><dt><span class="term"><tt>gl_closedir</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>closedir</tt></b> işlevinin başka bir gerçekleniminin adresi. <b><tt>GLOB_ALTDIRFUNC</tt></b> seçeneği etkinse kullanılır. Bu alan <b><tt>void (*) (void *)</tt></b> türündedir.
+       </div><div class="para">Bu alan bir GNU oluşumudur.
+       </div></dd><dt><span class="term"><tt>gl_readdir</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>readdir64</tt></b> işlevinin başka bir gerçekleniminin adresi. <b><tt>GLOB_ALTDIRFUNC</tt></b> seçeneği etkinse kullanılır. Bu alan <b><tt>struct dirent64 *(*) (void *)</tt></b> türündedir.
+       </div><div class="para">Bu alan bir GNU oluşumudur.
+       </div></dd><dt><span class="term"><tt>gl_opendir</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>opendir</tt></b>  işlevinin başka bir gerçekleniminin adresi. <b><tt>GLOB_ALTDIRFUNC</tt></b> seçeneği etkinse kullanılır. Bu alan <b><tt>void *(*) (const char *)</tt></b> türündedir.
+       </div><div class="para">Bu alan bir GNU oluşumudur.
+       </div></dd><dt><span class="term"><tt>gl_stat</tt></span></dt><dd class="varlist"><div class="para">
+Dosya sistemindeki bir nesne hakkında bilgi döndüren <b><tt>stat64</tt></b> işlevinin başka bir gerçekleniminin adresi.  <b><tt>GLOB_ALTDIRFUNC</tt></b> seçeneği etkinse kullanılır. Bu alan <b><tt>int (*) (const char *, struct stat64 *)</tt></b> türündedir.
+       </div><div class="para">Bu alan bir GNU oluşumudur.
+       </div></dd><dt><span class="term"><tt>gl_lstat</tt></span></dt><dd class="varlist"><div class="para">
+Dosya sistemindeki bir nesne hakkında bilgi döndüren, ancak sembolik bağları izlemeyen <b><tt>lstat64</tt></b> işlevinin başka bir gerçekleniminin adresi. <b><tt>GLOB_ALTDIRFUNC</tt></b> seçeneği etkinse kullanılır. Bu alan <b><tt>int (*) (const char *, struct stat64 *)</tt></b> türündedir.
+       </div><div class="para">Bu alan bir GNU oluşumudur.
+       </div></dd></dl></div>
+</dd></dl><div style="padding:5px"></div><a name="glibc-glob" id="glibc-glob"></a>
+<a class="indexterm" name="idx744" id="idx744"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>glob</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *<i><tt>kalıp</tt></i>,
+ int         <i><tt>seçenekler</tt></i>,
+ int       (*<i><tt>hata-işlevi</tt></i>) (const char *<i><tt>dosyaismi</tt></i>, int <i><tt>hatakodu</tt></i>),
+ glob_t     *<i><tt>dizi-gst</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>glob</tt></b> işlevi <i><tt>kalıp</tt></i> kalıbını kullanarak geçerli dizin içinde genelleme yapar. Sonuçları yeni ayırdığı gösterici dizisine yerleştirir ve bu dizinin adresi ile boyutunu  <i><tt>*dizi-gst</tt></i> içine koyar.  <i><tt>seçenekler</tt></i> argümanı seçenek bitlerinin bir birleşimidir; bu seçenekler hakkında ayrıntılı bilgiyi <a href="../glibc/glibc-Flags-for-Globbing.html" class="xref" title="Genelleme Seçenekleri">Genelleme Seçenekleri</a> bölümünde bulabilirsiniz.
+    </div><div class="para">
+Genellemenin sonucu dosya isimleri dizisidir. <b><tt>glob</tt></b> işlevi her sonuç dizgesi için bir dizge ve bu dizgelerin adreslerini saklamak için <b><tt>char ** </tt></b> türünde bir gösterici dizisi ayırır. Dizinin son elemanı bir boş göstericidir. Bu gösterici dizisine <span><i>dizge göstericileri dizisi</i></span> denir.
+    </div><div class="para">
+Bu diziyi döndürmek için <b><tt>glob</tt></b> adresini ve uzunluğunu (sonlandırıcı boş gösterici dışında dizge gösterici sayısı)  <i><tt>*dizi-gst</tt></i> içinde saklar.
+    </div><div class="para">
+Normalde, <b><tt>glob</tt></b> işlevi dosya isimlerini döndürmeden önce alfabetik sıraya sokar. Bunu <b><tt>GLOB_NOSORT</tt></b> seçeneğini kullanarak yaptırmayabilir ve sonucu daha çabuk alabilirsiniz. Genellikle, sıralamayı  <b><tt>glob</tt></b>'a yaptırmak daha iyidir. Eğer dosyaları alfabetik sırayla görüntülerseniz, kullanıcı işlemin hızının sizin yazılımınızdan kaynaklandığını sanacaktır.
+    </div><div class="para">
+<b><tt>glob</tt></b> başarılı olursa 0 ile döner.  Aksi takdirde şu hata kodlarından biri ile döner:
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>GLOB_ABORTED</tt></span></dt><dd class="varlist"><div class="para">
+Bir dizini açarken bir hata oluştu ya <b><tt>GLOB_ERR</tt></b> seçeneğini kullanmışsınız ya da <i><tt>hata-işlevi</tt></i>'nin sıfırdan farklı bir değer döndürmesini sağlamışsınız. <b><tt>GLOB_ERR</tt></b> seçeneği ve <i><tt>hata-işlevi</tt></i> ile ilgili açıklamalar için <a href="../glibc/glibc-Flags-for-Globbing.html" class="xref" title="Genelleme Seçenekleri">Genelleme Seçenekleri</a> bölümüne bakınız.
+       </div></dd><dt><span class="term"><tt>GLOB_NOMATCH</tt></span></dt><dd class="varlist"><div class="para">
+Kalıp mevcut dosyaların hiçbiriyle eşleşmedi. <b><tt>GLOB_NOCHECK</tt></b> seçeneğini belirtirseniz bu hatayı asla almazsınız, çünkü bu seçenek <b><tt>glob</tt></b>'a en azından bir dosya eşleşmiş <i>gibi</i> davranmasını söyler.
+       </div></dd><dt><span class="term"><tt>GLOB_NOSPACE</tt></span></dt><dd class="varlist"><div class="para">
+Sonuçlar için ayrılacak bellek yok.
+       </div></dd></dl></div>
+</dd></dl><div style="padding:5px"></div><div class="para">
+Bir hata sırasında, <b><tt>glob</tt></b> o ana kadar bulduğu tüm sonuçlara ilişkin bilgiyi <i><tt>*dizi-gst</tt></i> ile döndürür.
+    </div>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/important.png" /></td><th class="admon">Önemli</th></tr><tr><td align="left" valign="top" class="admon"><div class="para"><b><tt>glob</tt></b> işlevi LFS arayüzleri olmaksızın elde edilemeyen dizin ya da dosyalar saptarsa başarısız olmaz. <b><tt>glob</tt></b>  bu işlevlerin dahili olarak kullanılacağı kabulüyle gerçeklenmiştir. Bu en azından Unix standardında yapılmış bir kabullerden biridir. GNU oluşumu kullanıcıya kendi dizin elde etme yöntemini sağlayarak ve <b><tt>stat</tt></b> işlevleriyle bunu biraz daha karmaşıklaştırır. Eğer bunlar kullanıcı tanımlı işlevler olsalardı büyük bir dosyaya ya da dizine rastlandığında <b><tt>glob</tt></b> başarısız <i>olabilecekti</i>.</div></td></tr></table></div>
+    <a name="glibc-glob64" id="glibc-glob64"></a>
+<a class="indexterm" name="idx745" id="idx745"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>glob64</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *<i><tt>kalıp</tt></i>,
+ int         <i><tt>seçenekler</tt></i>,
+ int       (*<i><tt>hata-işlevi</tt></i>) (const char *<i><tt>dosyaismi</tt></i>, int <i><tt>hatakodu</tt></i>),
+ glob64_t   *<i><tt>dizi-gst</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>glob64</tt></b> işlevi büyük dosya arayüzünün parçası olarak eklenmiştir, ancak kullanılan arayüz orjinal LFS arayüzü değildir. Bunun sebebi basittir: Gereksizdir.  <b><tt>glob64</tt></b> işlevi için gerekli olan herşey GNU oluşumunun kullanıcıya kendi dizin elde etme yöntemini sağlaması ve <b><tt>stat</tt></b> işlevleriyle eklenmiştir. <b><tt>struct dirent</tt></b> ve <b><tt>struct stat</tt></b> veri türleri <b><tt>_FILE_OFFSET_BITS</tt></b> seçimine bağlı olduğundan <b><tt>readdir</tt></b> ve <b><tt>stat</tt></b> işlevleri bu seçime bağlı olarak çalışır.
+    </div><div class="para">
+Bu farkların dışında <b><tt>glob64</tt></b> tamamen <b><tt>glob</tt></b> gibi çalışır.
+    </div><div class="para">Bu işlev bir GNU oluşumudur.
+       </div></dd></dl><div style="padding:5px"></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Globbing.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Globbing.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Flags-for-Globbing.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Genelleme </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Genelleme Seçenekleri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

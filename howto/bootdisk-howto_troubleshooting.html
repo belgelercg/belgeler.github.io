@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:15+03:00" /><title>Sorun çözmek ya da Yenilginin Acısı</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/bootdisk-howto.html" title="Linux Açılış Disketi NASIL" /><link rel="previous" href="../howto/bootdisk-howto_makingdisket.html" title="Herşeyi biraraya getirelim" /><link rel="next" href="../howto/bootdisk-howto_slimfast.html" title="Kök dosya sistemi boyutunun küçültülmesi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Sorun çözmek ya da Yenilginin Acısı</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/bootdisk-howto_makingdisket.html">Önceki</a> </td><th width="60%" align="center">Linux Açılış Disketi NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/bootdisk-howto_slimfast.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="bootdisk-howto_troubleshooting" id="bootdisk-howto_troubleshooting"></a>Sorun çözmek ya da Yenilginin Acısı</div><dl><dd><a class="indexterm" name="idx53" id="idx53"></a><div class="para">
+Açılış disketleri yapmak için giriştiğiniz ilk bir kaç sefer başarısızlıkla sonuçlanabilir. Bir kök disket yapmak için genel yaklaşım; sisteminizdeki hazır parçaları bir araya toplamak, bunları disket tabanlı bir hale sokmak ve konsoldan açılış yapmaktır. Bir kere, sizinle iletişime geçtimi, savaşın yarısını kazanmışsınız demektir. Sistem çalıştığı sürece, bağımsız sorunları çözmek mümkün olabilir. Şayet herhangi bir uyarı vermeden, sistem askıda kalırsa, bu problemi halletmek biraz zor olabilir. Sistemin sizinle iletişimi kestiği noktada meydana gelen problemleri bulmak için önerilen süreç şudur:
+    </div><ul type="disc" class="itemizedlist"><li><div class="para">
+Şuna benzer bir ileti alabilirsiniz:
+    </div>
+<div class="para"><div align="right"><pre class="screen">Kernel panic: VFS: Unable to mount root fs on XX:YY
+</pre></div></div>
+    <div class="para">
+Bu genel bir sorundur ve birkaç sebebi vardır. İlk olarak,   <i><tt>XX:YY</tt></i> aygıtının kodlarını <tt>/usr/src/linux/Documentation/devices.txt</tt> dosyasındaki aygıt kodları listesi ile karşılaştırın. Şayet yanlış ise, muhtemelen <b><tt>rdev -R</tt></b> yapmamışsınız demektir veya yanlış biteşlem üzerinde işlem yapmışsınız demektir. Eğer aygıt kodu doğru ise, çekirdek içinde gömülü aygıt sürücülerini kontrol edin; bir disket sürücü, ramdisk ve ext2 dosya sistemi desteğine sahip olduğundan emin olun.
+    </div></li><li><div class="para">
+Şayet şuna benzer pek çok hata alırsanız:
+    </div>
+<div class="para"><div align="right"><pre class="screen">end_request: I/O error, dev 01:00 (ramdisk), sector NNN
+</pre></div></div>
+    <div class="para">
+Bu ramdisk sürücüsünden gelen bir G/Ç hatasıdır. Genellikle çekirdeğin aygıt dışına yazmaya kalkıştığı durumlarda olur. Ramdisk, kök dosya sistemini taşımak için çok küçük gelmiştir. Açılış disketi çekirdek ilklendirme iletilerinde şuna benzer bir satır olup olmadığını kontrol edin:
+    </div>
+<div class="para"><div align="right"><pre class="screen">Ramdisk driver initialized : 16 ramdisks of 4096K size
+</pre></div></div>
+    <div class="para">
+Bu boyutu <i>sıkıştırılmamış</i> kök dosya sistemi boyutu ile karşılaştırın. Şayet ramdisk yeterince büyük değilse, daha büyüğünü yapın.
+    </div></li><li><div class="para">
+Kök diskette, olması gereken dizinlerin olup olmadığını kontrol edin. Yanlış bir yere kopyalamış olabilirsiniz. <tt>/bin</tt> yerine elinizde <tt>/bootdisk/bin</tt> diye bir dizin olabilir (Tıpkı benim yaptığım gibi <tt>:-)</tt> -yazarın değil, çevirmenin yaptığı gibi).
+    </div></li><li><div class="para">
+Sabit diskinizdeki <tt>/lib</tt> dizini içinde görünen  bağ ile aynı adlı bir <tt>/lib/libc.so</tt> olduğundan emin olun.
+    </div></li><li><div class="para">
+Sabit diskinizdeki <tt>/dev</tt> dizini altında bulunan sembolik bağların, kök dosya sisteminizde de olduğundan emin olun. Bu bağlar, sizin kök dosya sisteminize yerleştirdiğiniz aygıtlara atanmış sembolik bağlar olmak zorundadır. Özellikle <tt>/dev/console</tt> bağları pek çok durumda gerekliliktir.
+<a class="indexterm" name="idx54" id="idx54"></a>
+    </div></li><li><div class="para">
+<tt>/dev/tty1, /dev/null, /dev/zero, /dev/mem, /dev/ram</tt> ve <tt>/dev/kmem</tt> dosyalarını diskete koyduğunuzdan emin olun.
+    </div></li><li><div class="para">
+Çekirdek ayarlarınız kontrol edin -- kullanıcı girişi anında gerekli olan bütün özkaynaklar, çekirdeğe gömülü olmalıdır, modüler yapıda değil. Bu nedenle <i>ramdisk ve ext2 desteği modüler olarak kullanılamaz</i>.
+    </div></li><li><div class="para">
+Çekirdek kök aygıtı ve ramdisk ayarlarınızı kontrol edin.
+    </div></li></ul><div class="para">
+Bu genel kaideleri geçtikten sonra, kontrol edebileceğiniz bazı belli başlı dosyalar  vardır:
+    </div><ol class="orderedlist" start="ignore" type="1"><li><div class="listitem"><div class="para">
+<b><tt>init</tt></b>'in  <tt>/sbin/init</tt> veya <tt>/bin/init</tt> olarak yüklendiğinden ve çalıştırılabilir olduğundan emin olun.
+    </div></div></li><li><div class="listitem"><div class="para">
+<b><tt>init</tt></b>'in kütüphanelerini kontrol etmek için <b><tt>ldd init</tt></b> komutunu kullanın. Genelde bu sadece <tt>libc.so</tt> olur ama yine de kontrol etmekte fayda vardır.
+    </div></div></li><li><div class="listitem"><div class="para">
+Kütüphaneler için doğru yükleyicilere sahip olduğunuzdan emin olun -- a.out için <tt>ld.so</tt> veya ELF için <tt>ld-linux.so</tt>.
+<a class="indexterm" name="idx55" id="idx55"></a>
+    </div></div></li><li><div class="listitem"><div class="para">
+Açılış disketi dosya sisteminizdeki <tt>/etc/inittab</tt>'ı <b><tt>getty</tt></b> (veya bazı <b><tt>getty</tt></b>-benzeri uygulamalar; mesela <b><tt>agetty</tt></b>, <b><tt>mgetty</tt></b> veya <b><tt>getty_ps</tt></b>) çağrıları için kontrol edin. Sabit diskinizdeki <tt>inittab</tt> ile iki kere karşılaştırın.  Kullandığınız uygulamaların man sayfalarını kontrol edin. Muhtemelen, <tt>inittab</tt> zincirin en zayıf halkasıdır: sözdizimi ve sistemin doğal yapısından dolayı. Bu sorunu çözmenin tek yolu <b><tt>init</tt></b>'in ve <tt>inittab</tt>'ın man sayfalarını okumak ve  elinizdeki sistemin açılış esnasında ne yaptığını anlamaya çalışmaktır. <tt>/etc/inittab</tt> içinde sistem başlatma girdisi olup olmadığını kontrol edin.  Sistem başlatma betiğini çalıştıracak bir satır olması gerekmektedir.
+    </div></div></li><li><div class="listitem"><div class="para">
+Tıpkı <b><tt>init</tt></b>'e yaptığımız gibi, <b><tt>ldd</tt></b> komutunu  <b><tt>getty</tt></b> için de çalıştırın ve onun gereksinimlerini kontrol edin. Gerekli kütüphane ve yükleyicilerin kök dosya sisteminizde bulunduğundan emin olun.
+    </div></div></li><li><div class="listitem"><div class="para">
+rc betiklerini çalıştırma yeteneğine sahip bir kabuk programı eklediğinizden emin olun(örneğin <b><tt>bash</tt></b> veya
+<b><tt>ash</tt></b>).
+<a class="indexterm" name="idx56" id="idx56"></a>
+    </div></div></li><li><div class="listitem"><div class="para">
+Kurtarma diskinizde bir <tt>/etc/ld.so.cache</tt> dosyası varsa, bu dosyayı tekrar oluşturun.
+    </div></div></li></ol><div class="para">
+Şayet <b><tt>init</tt></b> başlıyor ama bunun gibi bir ileti alıyorsanız:
+    </div>
+<div class="para"><div align="right"><pre class="screen">Id xxx respawning too fast: disabled for 5 minutes</pre></div></div>
+    <div class="para">
+Bunu sebebi <b><tt>init</tt></b>'dir, genelikle  <b><tt>getty</tt></b> veya <b><tt>login</tt></b>'in başlar başlamaz sonlandığı anlamına gelir.  <b><tt>getty</tt></b> ve <b><tt>login</tt></b> çalıştırılabilir dosyalarını ve kütüphanelerini kontrol edin. <tt>/etc/inittab</tt> içinde belirtilmiş çağrıların doğru olduğunu kontrol edin. Şayet  <b><tt>getty</tt></b>'den acayip iletiler alıyorsanız, bunu anlamı <tt>/etc/inittab</tt> içinden yapılan çağrıların hatalı olabileceğidir.
+    </div><div class="para">
+Şayet bir bağlantı ekranına kadar geliyor, geçerli bir isim giriyor ama sistem sizden başka bir isim girmenizi istiyorsa, problemin kaynağı PAM veya NSS olabilir. <a href="../howto/bootdisk-howto_buildroot.html#bootdisk-howto_PAMandNSS" class="xref" title="PAM ve NSS'in sağlanması">PAM ve NSS'in sağlanması</a> bölümüne göz atınız. Ayrıca gölgeli parolalar kullanıyor ama <tt>/etc/shadow</tt> dosyasını açılış disketinize kopyalamamış olabilirsiniz.
+    </div><div class="para">
+Şayet kurtarma disketinizdeki <b><tt>df</tt></b> gibi bazı çalıştırılabilir dosyaları deniyorsanız ve  <tt>df: command not
+found</tt>  gibi bir hata alıyorsanız; iki şeyi kontrol etmeniz gerekir:
+    </div><ol class="orderedlist" start="ignore" type="1"><li><div class="listitem"><tt>PATH</tt> içinde, dosyanın içinde bulunduğu dizinin tanımlı olduğunu,
+    </div></li><li><div class="listitem">
+komut için gerekli olan kütüphane ve yükleyicilerin diskette bulunduğunu.
+    </div></li></ol></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/bootdisk-howto_makingdisket.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/bootdisk-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/bootdisk-howto_slimfast.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Herşeyi biraraya getirelim </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Kök dosya sistemi boyutunun küçültülmesi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

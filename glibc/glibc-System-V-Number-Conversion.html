@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:21+03:00" /><title>Eski Moda System V Sayıdan Dizgeye Dönüşüm İşlevleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Arithmetic.html" title="XX. Oylum - Aritmetik İşlevleri" /><link rel="previous" href="../glibc/glibc-Parsing-of-Floats.html" title="Gerçek Sayıların Çözümlenmesi" /><link rel="next" href="../glibc/glibc-Date-and-Time.html" title="XXI. Oylum - Tarih ve Zaman" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Eski Moda System V Sayıdan Dizgeye Dönüşüm İşlevleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Parsing-of-Floats.html">Önceki</a> </td><th width="60%" align="center">XX. Oylum - Aritmetik İşlevleri</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Date-and-Time.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="glibc-System-V-Number-Conversion" id="glibc-System-V-Number-Conversion"></a>Eski Moda System V Sayıdan Dizgeye Dönüşüm İşlevleri</div></div></div><dl><dd><div class="para">
+Eski System V C kütüphanesi sayıları dizgelere çeviren, kullanımı zor ve kullanışsız üç işlev içerir. GNU C kütüphanesi bu işlevleri bazı doğal oluşumlarla birlikte içerir.
+   </div><div class="para">
+Bu işlevler sadece glibc'de ve AT&amp;T Unix soyundan gelen sistemlerde vardır. Bu bakımdan, bunlara özellikle ihtiyaç duymuyorsanız bunların yerine standart olan <b><tt>sprintf</tt></b>'i kullanmak daha iyidir.
+   </div><div class="para">
+Bu işlevlerin tamamı <tt>stdlib.h</tt> dosyasında bildirilmiştir.
+   </div>
+<a class="indexterm" name="idx2332" id="idx2332"></a>
+<a name="glibc-ecvt" id="glibc-ecvt"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>char *<b><tt>ecvt</tt></b></tt></td><td valign="top"><pre class="paramdef">(double <i><tt>değer</tt></i>,
+ int    <i><tt>hane-sayısı</tt></i>,
+ int   *<i><tt>ondalık-nokta</tt></i>,
+ int   *<i><tt>negatif</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>ecvt</tt></b> işlevi <i><tt>değer</tt></i> gerçek sayısını en fazla <i><tt>hane-sayısı</tt></i> onluk rakama dönüştürür. Dönen dizge ondalık noktayı ve işareti içermez. Dizgenin ilk rakamı sıfırdan farklıdır (<i><tt>değer</tt></i> sıfır olmadıkça) ve son rakan en yakına yuvarlanır. <i><tt>*ondalık-nokta</tt></i>'ya ondalık noktadan sonraki ilk hanenin indisi yerleşir. <i><tt>değer</tt></i> negatifse <i><tt>*negatif</tt></i>'e sıfırdan farklı bir değer, değilse sıfır yerleşir.
+   </div><div class="para">
+Eğer <i><tt>hane-sayısı</tt></i> rakam <b><tt>double</tt></b> türünün hassasiyetini aşarsa sisteme özel değere düşürülür.
+   </div><div class="para">
+Dönen dizge durağan olarak ayrıldığından işlevin sonraki çağrıları bunun üzerine yazar.
+   </div><div class="para">
+Eğer <i><tt>değer</tt></i> sıfırsa, <i><tt>*ondalık-nokta</tt></i>'nın <b><tt>0</tt></b> mı yoksa <b><tt>1</tt></b> mi olacağı gerçeklemeye bağlıdır.
+   </div><div class="para">
+Örnek: <b><tt>ecvt (12.3, 5, &amp;d, &amp;n)</tt></b> çağrısı <b><tt>"12300"</tt></b> ile döner ve <i><tt>d</tt></i>'ye <b><tt>2</tt></b>, <i><tt>n</tt></i>'ye <b><tt>0</tt></b> atanır.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2333" id="idx2333"></a>
+<a name="glibc-fcvt" id="glibc-fcvt"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>char *<b><tt>fcvt</tt></b></tt></td><td valign="top"><pre class="paramdef">(double <i><tt>değer</tt></i>,
+ int    <i><tt>hane-sayısı</tt></i>,
+ int   *<i><tt>ondalık-nokta</tt></i>,
+ int   *<i><tt>negatif</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>fcvt</tt></b> işlevi <i><tt>hane-sayısı</tt></i>'nın ondalık noktadan sonraki hane sayısını göstermesi dışında <b><tt>ecvt</tt></b> gibidir. Eğer <i><tt>hane-sayısı</tt></i> sıfırdan küçükse, <i><tt>değer</tt></i> ondalık noktanın solundaki  <i><tt>hane-sayısı</tt></i>+1'inci haneye yuvarlanır.  Örneğin,  <i><tt>hane-sayısı</tt></i>  <b><tt>-1</tt></b> ise, <i><tt>değer</tt></i> en yakın 10'a yuvarlanır. Eğer <i><tt>hane-sayısı</tt></i> negatifse ve  <i><tt>değer</tt></i>'deki ondalık noktanın solundaki hane sayısından daha büyükse, <i><tt>değer</tt></i> bir en kıymetli rakama yuvarlanacaktır.
+   </div><div class="para">
+Eğer <i><tt>hane-sayısı</tt></i> rakam <b><tt>double</tt></b> türünün hassasiyetini aşarsa sisteme özel değere düşürülür.
+   </div><div class="para">
+Dönen dizge durağan olarak ayrıldığından işlevin sonraki çağrıları bunun üzerine yazar.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2334" id="idx2334"></a>
+<a name="glibc-gcvt" id="glibc-gcvt"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>char *<b><tt>fcvt</tt></b></tt></td><td valign="top"><pre class="paramdef">(double <i><tt>değer</tt></i>,
+ int    <i><tt>hane-sayısı</tt></i>,
+ char  *<i><tt>tampon</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>gcvt</tt></b> işlevi <b><tt>sprintf(tampon, "%*g", hanesayisi, deger</tt></b> çağrısına eşdeğerdir. Sadece uyumluluk adına vardır. <i><tt>tampon</tt></i> ile döner.
+   </div><div class="para">
+Eğer <i><tt>hane-sayısı</tt></i> rakam <b><tt>double</tt></b> türünün hassasiyetini aşarsa sisteme özel değere düşürülür.
+</div></dd></dl><div style="padding:5px"></div><div class="para">
+Bu üç işleve ek olarak, GNU C kütüphanesi bu işlevlerin <b><tt>long double</tt></b> argüman alan sürümlerini de içerir.
+   </div>
+<a class="indexterm" name="idx2335" id="idx2335"></a>
+<a name="glibc-qecvt" id="glibc-qecvt"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>char *<b><tt>qecvt</tt></b></tt></td><td valign="top"><pre class="paramdef">(long double <i><tt>değer</tt></i>,
+ int         <i><tt>hane-sayısı</tt></i>,
+ int        *<i><tt>ondalık-nokta</tt></i>,
+ int        *<i><tt>negatif</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev ilk parametresinde <b><tt>long double</tt></b> argüman alması ve <i><tt>hane-sayısı</tt></i>'nı <b><tt>long double</tt></b> hassasiyeti ile sınırlaması dışında <b><tt>ecvt</tt></b> işlevinin benzeridir.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2336" id="idx2336"></a>
+<a name="glibc-qfcvt" id="glibc-qfcvt"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>char *<b><tt>qfcvt</tt></b></tt></td><td valign="top"><pre class="paramdef">(long double <i><tt>değer</tt></i>,
+ int         <i><tt>hane-sayısı</tt></i>,
+ int        *<i><tt>ondalık-nokta</tt></i>,
+ int        *<i><tt>negatif</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev ilk parametresinde <b><tt>long double</tt></b> argüman alması ve <i><tt>hane-sayısı</tt></i>'nı <b><tt>long double</tt></b> hassasiyeti ile sınırlaması dışında <b><tt>fcvt</tt></b> işlevinin benzeridir.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2337" id="idx2337"></a>
+<a name="glibc-qgcvt" id="glibc-qgcvt"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>char *<b><tt>qgcvt</tt></b></tt></td><td valign="top"><pre class="paramdef">(long double <i><tt>değer</tt></i>,
+ int         <i><tt>hane-sayısı</tt></i>,
+ char       *<i><tt>tampon</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev ilk parametresinde <b><tt>long double</tt></b> argüman alması ve <i><tt>hane-sayısı</tt></i>'nı <b><tt>long double</tt></b> hassasiyeti ile sınırlaması dışında <b><tt>gcvt</tt></b> işlevinin benzeridir.
+</div></dd></dl><div style="padding:5px"></div><div class="para">
+<a class="indexterm" name="idx2338" id="idx2338"></a>
+<b><tt>ecvt</tt></b> ve <b><tt>fcvt</tt></b> işlevleri ve onların <b><tt>long double</tt></b> eşdeğerlerinde, dönen dizge durağan olarak ayrıldığından işlevin sonraki çağrıları bunun üzerine yazar. GNU C kütüphanesi ek işlevlerin dönen dizgeyi kullanıcı tanımlı tampona yazarak döndüğü sürümlerini de içerir. Bunların isimleri teamüen <b><tt>_r</tt></b> soneki alır.
+   </div><div class="para">
+<b><tt>gcvt</tt></b> işlevi zaten kullanıcı tanımlı tampon kullandığından onun için bir <b><tt>gcvt_r</tt></b> işlevi yoktur.
+   </div>
+<a class="indexterm" name="idx2339" id="idx2339"></a>
+<a name="glibc-ecvt_r" id="glibc-ecvt_r"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>ecvt_r</tt></b></tt></td><td valign="top"><pre class="paramdef">(double <i><tt>değer</tt></i>,
+ int    <i><tt>hane-sayısı</tt></i>,
+ int   *<i><tt>ondalık-nokta</tt></i>,
+ int   *<i><tt>negatif</tt></i>,
+ char  *<i><tt>tampon</tt></i>,
+ size_t <i><tt>uzunluk</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>ecvt_r</tt></b> işlevi, sonucu <i><tt>uzunluk</tt></i> uzunluktaki kullanıcı tanımlı <i><tt>tampon</tt></i>'a yerleştirmesi dışında <b><tt>ecvt</tt></b> işlevi ile aynıdır. Bir hata durumunda dönüş değeri <b><tt>-1</tt></b>, aksi takdirde sıfırdır.
+   </div><div class="para">
+Bu işlev bir GNU oluşumudur.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2340" id="idx2340"></a>
+<a name="glibc-fcvt_r" id="glibc-fcvt_r"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>fcvt_r</tt></b></tt></td><td valign="top"><pre class="paramdef">(double <i><tt>değer</tt></i>,
+ int    <i><tt>hane-sayısı</tt></i>,
+ int   *<i><tt>ondalık-nokta</tt></i>,
+ int   *<i><tt>negatif</tt></i>,
+ char  *<i><tt>tampon</tt></i>,
+ size_t <i><tt>uzunluk</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>fcvt_r</tt></b> işlevi, sonucu <i><tt>uzunluk</tt></i> uzunluktaki kullanıcı tanımlı <i><tt>tampon</tt></i>'a yerleştirmesi dışında <b><tt>fcvt</tt></b> işlevi ile aynıdır. Bir hata durumunda dönüş değeri <b><tt>-1</tt></b>, aksi takdirde sıfırdır.
+   </div><div class="para">
+Bu işlev bir GNU oluşumudur.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2341" id="idx2341"></a>
+<a name="glibc-qecvt_r" id="glibc-qecvt_r"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>qecvt_r</tt></b></tt></td><td valign="top"><pre class="paramdef">(long double <i><tt>değer</tt></i>,
+ int         <i><tt>hane-sayısı</tt></i>,
+ int        *<i><tt>ondalık-nokta</tt></i>,
+ int        *<i><tt>negatif</tt></i>,
+ char       *<i><tt>tampon</tt></i>,
+ size_t      <i><tt>uzunluk</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>qecvt_r</tt></b> işlevi, sonucu <i><tt>uzunluk</tt></i> uzunluktaki kullanıcı tanımlı <i><tt>tampon</tt></i>'a yerleştirmesi dışında <b><tt>qecvt</tt></b> işlevi ile aynıdır. Bir hata durumunda dönüş değeri <b><tt>-1</tt></b>, aksi takdirde sıfırdır.
+   </div><div class="para">
+Bu işlev bir GNU oluşumudur.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2342" id="idx2342"></a>
+<a name="glibc-qfcvt_r" id="glibc-qfcvt_r"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>qfcvt_r</tt></b></tt></td><td valign="top"><pre class="paramdef">(long double <i><tt>değer</tt></i>,
+ int         <i><tt>hane-sayısı</tt></i>,
+ int        *<i><tt>ondalık-nokta</tt></i>,
+ int        *<i><tt>negatif</tt></i>,
+ char       *<i><tt>tampon</tt></i>,
+ size_t      <i><tt>uzunluk</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>qfcvt_r</tt></b> işlevi, sonucu <i><tt>uzunluk</tt></i> uzunluktaki kullanıcı tanımlı <i><tt>tampon</tt></i>'a yerleştirmesi dışında <b><tt>qfcvt</tt></b> işlevi ile aynıdır.Bir hata durumunda dönüş değeri <b><tt>-1</tt></b>, aksi takdirde sıfırdır.
+   </div><div class="para">
+Bu işlev bir GNU oluşumudur.
+   </div></dd></dl><div style="padding:5px"></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Parsing-of-Floats.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Arithmetic.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Date-and-Time.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Gerçek Sayıların Çözümlenmesi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> XXI. Oylum - Tarih ve Zaman</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

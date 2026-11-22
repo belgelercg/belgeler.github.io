@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:17+03:00" /><title>Yuvarlama Kipleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Arithmetic.html" title="XX. Oylum - Aritmetik İşlevleri" /><link rel="previous" href="../glibc/glibc-Math-Error-Reporting.html" title="Hataların Matematiksel İşlevlerce Raporlanması" /><link rel="next" href="../glibc/glibc-Control-Functions.html" title="Kayan Nokta Denetim İşlevleri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Yuvarlama Kipleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Math-Error-Reporting.html">Önceki</a> </td><th width="60%" align="center">XX. Oylum - Aritmetik İşlevleri</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Control-Functions.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="glibc-Rounding" id="glibc-Rounding"></a>Yuvarlama Kipleri</div></div></div><dl><dd><div class="para">
+Gerçek sayılarla yapılan hesaplamalarda dahili hassasiyet daha yüksektir ve hedef türe sığacak şekilde yuvarlama yapılır. Bu, sonuçların girilen veri kadar hassas olmasını sağlar. IEEE 754 dört olası yuvarlama kipi tanımlar:
+   </div><div class="variablelist"><dl><dt><span class="term">En yakına yuvarlama</span></dt><dd class="varlist"><div class="para">
+Bu öntanımlı kiptir. Diğer kiplerden birine özellikle ihtiyaç duyulmadıkça kullanılması gereken kip budur. Bu kipte sonuçlar gösterilebilen en yakın değere yuvarlanır. Sonuç iki gösterilebilen değerin ortasındaysa çift sayı olanı seçilir. Burada "çift" en düşük seviyeli biti sıfır olan anlamındadır. Bu yuvarlama kipi istatistiksel sapmadan korur ve sayısal kararlılığı garantiler: uzunca bir hesaplamada yuvarlayamama hataları <b><tt>FLT_EPSILON</tt></b>'un yarısından daha küçük kalacaktır.
+      </div></dd><dt><span class="term">Artı sonsuza yuvarlama</span></dt><dd class="varlist"><div class="para">
+Tüm sonuçlar, sonuçtan daha büyük olan gösterilebilir en küçük değere yuvarlanır.
+      </div></dd><dt><span class="term">Eksi sonsuza yuvarlama</span></dt><dd class="varlist"><div class="para">
+Tüm sonuçlar, sonuçtan daha küçük olan gösterilebilir en büyük değere yuvarlanır.
+      </div></dd><dt><span class="term">Sıfıra yuvarlama</span></dt><dd class="varlist"><div class="para">
+Tüm sonuçlar, sıfıra en yakın gösterilebilir en büyük değere yuvarlanır. Başka bir deyişle, negatif sonuçlar üste, pozitif sonuçlar alta yuvarlanır.
+      </div></dd></dl></div>
+    <div class="para">
+<tt>fenv.h</tt> dosyasında tanımlanan sabitleri yuvarlama kiplerini belirtmek için kullanabilirsiniz. Her biri yalnız ve yalnız kayan nokta birimi ilgili yuvarlama kipini destekliyorsa tanımlıdır.
+   </div><div class="variablelist"><dl><dt><span class="term"><tt>FE_TONEAREST</tt></span></dt><dd class="varlist"><div class="para">
+<a class="indexterm" name="idx2140" id="idx2140"></a>
+En yakına yuvarlama.
+      </div></dd><dt><span class="term"><tt>FE_UPWARD</tt></span></dt><dd class="varlist"><div class="para">
+<a class="indexterm" name="idx2141" id="idx2141"></a>
+Artı sonsuza yuvarlama.
+      </div></dd><dt><span class="term"><tt>FE_DOWNWARD</tt></span></dt><dd class="varlist"><div class="para">
+<a class="indexterm" name="idx2142" id="idx2142"></a>
+Eksi sonsuza yuvarlama.
+      </div></dd><dt><span class="term"><tt>FE_TOWARDZERO</tt></span></dt><dd class="varlist"><div class="para">
+<a class="indexterm" name="idx2143" id="idx2143"></a>
+Sıfıra yuvarlama.
+      </div></dd></dl></div>
+    <div class="para">
+Alttan taşma gereksiz bir durumdur. Normalde, IEEE 754 kayan noktalı sayıları daima normalleştirilirler (bkz. <a href="../glibc/glibc-Data-Type-Measurements.html#glibc-Floating-Point-Concepts" class="xref" title="Gerçek Sayı Gösterimi ile İlgili Kavramlar">Gerçek Sayı Gösterimi ile İlgili Kavramlar</a>). <tt>2^r</tt>'den küçük sayılar (burada r en küçük üstür ve  <i><tt>float</tt></i> türü için <b><tt>FLT_MIN_RADIX-1</tt></b>'dir) normallşetirilmiş sayılar olarak gösterilemezler. Böyle sayıların sıfıra ya da <tt>2^r</tt>'ye yuvarlanması bazı algoritmaların sıfırda başarısız olmasına sebep olur. Bu bakımdan bunlar normalleştirilmemiş şekilde kalır. Ondalık kısmın bazı bitleri ondalık noktayı göstermek için kaynayıp gittiğinden bu hassasiyet kaybına sebep olur.
+   </div><div class="para">
+Eğer bir sonuç bir normalleştirilmemiş sayı olarak göstremek için bile çok küçükse sıfıra yuvarlanır. Yine de, sonucun işareti korunur; eğer hesaplama negatifse sonuç eksi sıfırdır. Negatif sıfır değeri ayrıca <tt>4/-oo</tt> gibi sonsuz değeri kullanılan işlemlerinde sonucu olur. Negatif sıfır, işaret bitini <b><tt>signbit</tt></b> veya <b><tt>copysign</tt></b> ile doğrudan sınanmadıkça tüm hesaplamalarda sıfır gibi davranır.
+   </div><div class="para">
+Herhangi bir anda yukarıdaki dört yuvarlama kipinden biri seçilidir. Hangi kipin seçili olduğunu şu işlevle bulabilirsiniz:
+   </div>
+<a class="indexterm" name="idx2144" id="idx2144"></a>
+<a name="glibc-fegetround" id="glibc-fegetround"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>fegetround</tt></b></tt></td><td valign="top"><pre class="paramdef">(void)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+O an seçili olan yuvarlama kipini yuvarlama kipini tanımlayan makrolardan birinin değeri olarak döndürür.
+</div></dd></dl><div style="padding:5px"></div><div class="para">
+Yuvarlama kipini değiştirmek için şu işlevi kullanın:
+   </div>
+<a class="indexterm" name="idx2145" id="idx2145"></a>
+<a name="glibc-fesetround" id="glibc-fesetround"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>fesetround</tt></b></tt></td><td valign="top"><pre class="paramdef">int <i><tt>yuvarlama</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+O an seçili yuarlama kipini <i><tt>yuvarlama</tt></i> kipi olarak değiştirir. Eğer <i><tt>yuvarlama</tt></i> değeri desteklenen yuvarlama kiplerinden birine karşılık değilse hiçbir değişiklik yapılmaz. İşlev kipi değiştirebilmişse sıfırla, kip desteklenmiyorsa sıfırdan farklı bir değerle döner.
+   </div><div class="para">
+Mümkünse, yuvarlama kipini değiştirmekten kaçınmalısınız. Masraflı bir işlem haline gelebilir; ayrıca bazı donanımlar yazılımınızın çalıştığından farklı derlenmesini gerektirebilir. Sonuçlanan kod daha yavaş çalışabilir. Daha ayrıntılı bilgi için derleyicinizin belgelerine bakınız.
+  </div></dd></dl><div style="padding:5px"></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Math-Error-Reporting.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Arithmetic.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Control-Functions.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Hataların Matematiksel İşlevlerce Raporlanması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Kayan Nokta Denetim İşlevleri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,75 +1,19 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="tr" xml:lang="tr">
-  <head>
-    <title>10.3.5. Alt ifade Eşlemesindeki Zorluklar</title>
-    <meta name="generator" content="DocBook XSL Stylesheets V-special (derived from DocBook XSL v1.79.1 for Turkish Linux Documentation Project by Nilgün Belma Bugüner - nilgun (at) tlbp.org.tr)" />
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="/style/nav.css" />
-    <link rel="icon" type="image/png" href="/images/belgeler-logo.png" />
-    <meta name="robots" content="index, follow" />
-  </head>
-  <body>
-    <header>
-      <div class="navbar">
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Regexp-Subexpressions.html')">Önceki</button>
-          <div class="dropdown-content">10.3.4. Alt İfadelerle Eşleşmeler</div>
-        </div>
-        <div style="width:34%" class="dropdown">
-          <button class="dropbtn">Yukarı</button>
-          <div class="dropdown-content">
-            <button type="button" class="dropbtn" onclick="window.location.assign('/index.html')">Baş Sayfa</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('/KiTAPLIK/index.html')">Kitaplık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc.html')">Ana Başlık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Regular-Expressions.html')">Üst Başlık</button>
-          </div>
-        </div>
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Regexp-Cleanup.html')">Sonraki</button>
-          <div class="dropdown-content">10.3.6. POSIX Şablonunun Temizlenmesi</div>
-        </div>
-      </div>
-    </header>
-    <section class="mainpage">
-      <div class="crumbs">
-        <p>  </p>
-      </div>
-      <section class="sect1" id="glibc-Subexpression-Complications">
-        <div class="titlepage">
-          <div>
-            <div>
-              <h2 class="title" style="clear: both">10.3.5. Alt ifade Eşlemesindeki Zorluklar</h2>
-            </div>
-          </div>
-        </div>
-        <p>
-    Kimi zaman bir alt ifade hiçbir karakter içermeyen bir altdizge ile eşleşebilir. Bu durum örneğin <code class="code">fum</code> dizgesi <code class="code">f\(o*\)</code> ifadesiyle eşleştiğinde ortaya çıkar. (Aslında sadece <code class="code">f</code> eşleşir.) Bu durumda, konumların her ikisi de bulunan boş alt dizgeleri gösterir. Bu örnekte her iki konum da <code class="code">1</code>'dir.
-   </p>
-        <p>
-    Kimi zaman bir düzenli ifade, alt ifadeler hiç kullanılmadan eşleşir; örneğin, <code class="code">ba\(na\)*</code> ifadesi <code class="code">ba</code> dizgesiyle eşleşirken yaylı ayraçlı alt ifade kullanılmaz. Bu durumda bu alt ifadenin elemanındaki her iki alan da <code class="code">-1</code> içerir.
-   </p>
-        <p>
-    Kimi zaman düzenli ifadenin tamamının eşleştirilmesinde belli bir alt ifade defalarca eşleşebilir; örneğin, <code class="code">ba\(na\)*</code> ifadesi <code class="code">bananana</code> dizgesi ile eşleştirilirken yaylı ayraçlı alt ifade üç kere eşleştirilir. Bu durumda <a href="glibc-Matching-POSIX-Regexps.html#glibc-fn-regexec"><strong class="function"><code>regexec</code></strong></a> çağrısı alt ifade ile eşleşen son dizge parçasının konumlarını kaydeder; <code class="code">bananana</code> için bu komumlar <code class="code">6</code> ve <code class="code">8</code>'dir.
-   </p>
-        <p>
-    Fakat son eşleşme daima seçilenlerden biri olmaz. Eşleşme için en elverişli olanın öncelikli olanlardan biri olduğu söylenebilir. Yani, bir alt ifade bir diğerinin içinde görünüyorsa sonuçlar son eşleşen dış alt ifadedeki eşleşmeyi ifade eden içteki alt ifade için raporlanır. Örneğin, <code class="code">\(ba\(na\)*s \)*</code> ifadesinin <code class="code">"bananas bas "</code> dizgesi ile eşleştiği varsayılsın.
-    Son defasında içteki ifade aslında ilk sözcüğün sonuna doğru eşlenir. Ancak ikinci sözcüğün tekrar eşleşeceği varsayıldığında eşleme başarısız olur. <a href="glibc-Matching-POSIX-Regexps.html#glibc-fn-regexec"><strong class="function"><code>regexec</code></strong></a>, <code class="code">"na"</code> alt ifadesinin kullanılmadığını raporlar.
-   </p>
-        <p>
-    Bu kuralın uygulandığı başka bir örnek:
-   </p>
-        <pre class="literallayout monospaced">\(ba\(na\)*s \|nefer\(ti\)* \)*
-</pre>
-        <p>
-    Bu ifade <code class="code">bananas nefertiti</code> ile eşleşir.  İlk sözcükte <code class="code">"na"</code> alt ifadesi eşleşir, ama ikinci sözcükte bu alt ifade değil, onun benzeri olan alt ifade eşleşir. Bir kere daha, dış alt ifadenin ikinci yinelemesi birincinin üzerine yazar ve bu ikinci yinelemede <code class="code">"na"</code> alt ifadesi kullanılmaz. Bu durumda, <a href="glibc-Matching-POSIX-Regexps.html#glibc-fn-regexec"><strong class="function"><code>regexec</code></strong></a>, <code class="code">"na"</code> alt ifadesinin kullanılmadığını raporlar.
-   </p>
-      </section>
-      <footer>
-        <div align="center" class="footer">
-          <small>Bir <a href="http://belgeler.org.tr/">Linux Kitaplığı</a> Sayfası</small>
-        </div>
-      </footer>
-    </section>
-  </body>
-</html>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:26:31+03:00" /><title>Alt-ifade Eşlemesindeki Sorunlar</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Regular-Expressions.html" title="Düzenli İfade Eşleştirme" /><link rel="previous" href="../glibc/glibc-Regexp-Subexpressions.html" title="Alt İfadelerle Eşleşmeler" /><link rel="next" href="../glibc/glibc-Regexp-Cleanup.html" title="POSIX Şablonunun Temizlenmesi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Alt-ifade Eşlemesindeki Sorunlar</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Regexp-Subexpressions.html">Önceki</a> </td><th width="60%" align="center">Düzenli İfade Eşleştirme</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Regexp-Cleanup.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Subexpression-Complications" id="glibc-Subexpression-Complications"></a>Alt-ifade Eşlemesindeki Sorunlar</div><dl><dd><div class="para">
+Kimi zaman bir alt-ifade hiçbir karakter içermeyen bir altdizge ile eşleşebilir. Bu durum örneğin <b><tt>fum</tt></b> dizgesi <b><tt>f\(o*\)</tt></b> ifadesiyle eşleştiğinde ortaya çıkar. (Aslında sadece <b><tt>f</tt></b> eşleşir.) Bu durumda, konumların her ikisi de bulunan boş altdizgeleri gösterir. Bu örnekte her iki konum da <b><tt>1</tt></b>'dir.
+    </div><div class="para">
+Kimi zaman bir düzenli ifade, alt-ifadeler hiç kullanılmadan eşleşir; örneğin, <b><tt>ba\(na\)*</tt></b> ifadesi <b><tt>ba</tt></b> dizgesiyle eşleşirken parantezli alt-ifade kullanılmaz. Bu durumda bu alt-ifadenin elemanındaki her iki alan da <b><tt>-1</tt></b> içerir.
+    </div><div class="para">
+Kimi zaman düzenli ifadenin tamamının eşleştirilmesinde belli bir alt-ifade defalarca eşleşebilir; örneğin, <b><tt>ba\(na\)*</tt></b> ifadesi <b><tt>bananana</tt></b> dizgesi ile eşleştirilirken parantezli alt-ifade üç kere eşleştirilmiştir. Bu durumda <b><tt>regexec</tt></b> çağrısı alt-ifade ile eşleşen son dizge parçasının konumlarını kaydeder; <b><tt>bananana</tt></b> için bu komumlar <b><tt>6</tt></b> ve <b><tt>8</tt></b>'dir.
+    </div><div class="para">
+Fakat son eşleşme daima seçilenlerden biri olmaz. Eşleşme için en elverişli olanın öncelikli olanlardan biri olduğu söylenebilir. Yani, bir alt-ifade bir diğerinin içinde görünüyorsa sonuçlar son eşleşen dış alt-ifadedeki eşleşmeyi ifade eden içteki alt-ifade için raporlanır. Örneğin, <b><tt>\(ba\(na\)*s \)*</tt></b> ifadesinin <b><tt>"bananas bas "</tt></b> dizgesi ile eşleştiğini varsayalım.
+Son defasında içteki ifade aslında ilk sözcüğün sonuna doğru eşlenir. Ancak ikinci sözcüğün tekrar eşleşeceği varsayıldığında eşleme başarısız olur. <b><tt>regexec</tt></b>, "na" alt-ifadesinin kullanılmadığını raporlar.
+    </div><div class="para">
+Bu kuralın uygulandığı başka bir örnek:
+    </div>
+<div class="para"><div align="right"><pre class="screen">\(ba\(na\)*s \|nefer\(ti\)* \)*</pre></div></div>
+    <div class="para">
+Bu ifade <b><tt>bananas nefertiti</tt></b> ile eşleşir.  İlk sözcükte "na" alt-ifadesi eşleşir, ama ikinci sözcükte bu alt-ifade değil, onun alternatifi olan alt-ifade eşleşir. Bir kere daha, dış alt-ifadenin ikinci yinelemesi birincinin üzerine yazar ve bu ikinci yinelemede "na" alt ifadesi kullanılmaz. Bu durumda, <b><tt>regexec</tt></b>, "na" alt-ifadesinin kullanılmadığını raporlar.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Regexp-Subexpressions.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Regular-Expressions.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Regexp-Cleanup.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Alt İfadelerle Eşleşmeler </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> POSIX Şablonunun Temizlenmesi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

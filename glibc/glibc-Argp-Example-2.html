@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2006-09-29T19:17:47+03:00" /><title>2. Örnek</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Argp-Examples.html" title="Argp Örnekleri" /><link rel="previous" href="../glibc/glibc-Argp-Example-1.html" title="1. Örnek" /><link rel="next" href="../glibc/glibc-Argp-Example-3.html" title="3. örnek" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">2. Örnek</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Argp-Example-1.html">Önceki</a> </td><th width="60%" align="center">Argp Örnekleri</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Argp-Example-3.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="glibc-Argp-Example-2" id="glibc-Argp-Example-2"></a>2. Örnek</div><dl><dd><div class="para">
+Bu yazılımda GNU standart komut satırı biçimi ile uyumlu argp kullanımı dışında herhangi bir seçenek ya da argüman tanımlanmamıştır.
+     </div><div class="para">
+<b><tt>--help</tt></b> ve <b><tt>--usage</tt></b> seçeneklerine ek olarak GNU standartlarına uygun olarak bir de <b><tt>--version</tt></b> seçeneğine sahiptir. GNU standardındaki gibi <b><tt>--help</tt></b> çıktısında açıklayıcı bir dizge ile hata bildirme adresi basar.
+     </div><div class="para">
+<b><tt>argp</tt></b> değişkeni argüman çözümleyici belirtimini içerir. <b><tt>argp_parse</tt></b> işlevine parametreler bu yapının alanları üzerinden aktarılır. Normalde ilk üç alan kullanılır ama bu küçük yazılımda kullanılmamıştır. Argp arayüzünün kullandığı iki genel değişken bu yazılımda kullanılmıştır: <b><tt>argp_program_version</tt></b> ve <b><tt>argp_program_bug_address</tt></b>.  Bunlar, hemen hemen her yazılımda çeşitli görevler için farklı argüman çözümleyiciler kullanılıyor olsa bile, daima birer sabit olarak verildiğinden genel değişkenler olacağı varsayılmıştır.
+     </div>
+<div class="para" align="right"><pre class="screen">/* 2. Argp Örneği - Argp kullanılan az küçük bir yazılım */
+
+/*  Bu yazılımda GNU standart komut satırı biçimi ile uyumlu argp
+    kullanımı dışında herhangi bir seçenek ya da argüman
+    tanımlanmamıştır.
+
+    <b><tt>--help</tt></b> ve <b><tt>--usage</tt></b> seçeneklerine ek olarak GNU standartlarına uygun
+    olarak bir de <b><tt>--version</tt></b> seçeneğine sahiptir. GNU standardındaki gibi
+    <b><tt>--help</tt></b> çıktısında açıklayıcı bir dizge ile hata bildirme adresi basar.
+
+    <b><tt>argp</tt></b> değişkeni argüman çözümleyici belirtimini içerir. <b><tt>argp_parse</tt></b>
+    işlevine parametreler bu yapının alanları üzerinden aktarılır. Normalde
+    ilk üç alan kullanılır ama bu küçük yazılımda kullanılmamıştır. Argp
+    arayüzünün kullandığı iki genel değişken bu yazılımda kullanılmıştır:
+    <b><tt>argp_program_version</tt></b> ve  <b><tt>argp_program_bug_address</tt></b>.
+    Bunlar, hemen hemen her yazılımda çeşitli görevler için farklı
+    argüman çözümleyiciler kullanılıyor olsa bile, daima birer sabit
+    olarak verildiğinden genel değişkenler olacağı varsayılmıştır. */
+
+#include &lt;argp.h&gt;
+
+const char *argp_program_version =
+  "argp-ex2 1.0";
+const char *argp_program_bug_address =
+  "&lt;bug-gnu-utils@gnu.org&gt;";
+
+/* Yazılım açıklaması. */
+static char doc[] =
+  "Argp example #2 -- a pretty minimal program using argp";
+
+/*  Argüman çözümleyicimiz. options, parser, ve
+    args_doc alanları sıfırdır, çünkü bizim seçenek ve
+    argümanımız yok. --help seçeneğinin çıktısında doc ve
+    argp_program_bug_address, --version seçeneğinin çıktısında ise
+    argp_program_version kullanılacak.  */
+static struct argp argp = { 0, 0, 0, doc };
+
+int main (int argc, char **argv)
+{
+  argp_parse (&amp;argp, argc, argv, 0, 0, 0);
+  exit (0);
+}
+</pre></div>
+     <div class="para">
+Çıktısı şöyle birşey oluyor:
+     </div>
+<div class="para" align="right"><pre class="screen">
+<tt>~/deneme$ </tt><b><tt>gcc -o argp-ex2 deneme.c</tt></b>
+<tt>~/deneme$ </tt><b><tt>./argp-ex2 --version</tt></b>
+argp-ex2 1.0
+<tt>~/deneme$ </tt><b><tt>./argp-ex2 --help</tt></b>
+Usage: argp-ex2 [OPTION...]
+Argp example #2 -- a pretty minimal program using argp
+
+  -?, --help                 Give this help list
+      --usage                Give a short usage message
+  -V, --version              Print program version
+
+Report bugs to &lt;bug-gnu-utils@gnu.org&gt;.
+<tt>~/deneme$ </tt><b><tt>./argp-ex2 --usage</tt></b>
+Usage: argp-ex2 [-?V] [--help] [--usage] [--version]
+</pre></div>
+     </dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Argp-Example-1.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Argp-Examples.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Argp-Example-3.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">1. Örnek </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> 3. örnek</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

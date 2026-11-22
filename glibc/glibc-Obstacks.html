@@ -1,88 +1,444 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="tr" xml:lang="tr">
-  <head>
-    <title>3.2.6. Yığınaklar (Obstacks)</title>
-    <meta name="generator" content="DocBook XSL Stylesheets V-special (derived from DocBook XSL v1.79.1 for Turkish Linux Documentation Project by Nilgün Belma Bugüner - nilgun (at) tlbp.org.tr)" />
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="/style/nav.css" />
-    <link rel="icon" type="image/png" href="/images/belgeler-logo.png" />
-    <meta name="robots" content="index, follow" />
-  </head>
-  <body>
-    <header>
-      <div class="navbar">
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Replacing-malloc.html')">Önceki</button>
-          <div class="dropdown-content">3.2.5. <code class="code">malloc</code> İkamesi</div>
-        </div>
-        <div style="width:34%" class="dropdown">
-          <button class="dropbtn">Yukarı</button>
-          <div class="dropdown-content">
-            <button type="button" class="dropbtn" onclick="window.location.assign('/index.html')">Baş Sayfa</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('/KiTAPLIK/index.html')">Kitaplık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc.html')">Ana Başlık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Memory-Allocation.html')">Üst Başlık</button>
-          </div>
-        </div>
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Creating-Obstacks.html')">Sonraki</button>
-          <div class="dropdown-content">3.2.6.1. Yığınak Oluşturma</div>
-        </div>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:26:15+03:00" /><title>Yığınaklar (Obstacks)</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Memory-Allocation.html" title="Yazılım Verisine Saklama Alanı Ayrılması" /><link rel="previous" href="../glibc/glibc-Allocation-Debugging.html" title="Bellek Ayırmada Hata Ayıklama" /><link rel="next" href="../glibc/glibc-Variable-Size-Automatic.html" title="Değişken Boyutlu Özdevinimli Saklama" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Yığınaklar (Obstacks)</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Allocation-Debugging.html">Önceki</a> </td><th width="60%" align="center">Yazılım Verisine Saklama Alanı Ayrılması</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Variable-Size-Automatic.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Obstacks" id="glibc-Obstacks"></a>Yığınaklar (Obstacks)</div><dl><dd><a class="indexterm" name="idx302" id="idx302"></a><div class="para">
+<a class="indexterm" name="idx303" id="idx303"></a>
+<a class="indexterm" name="idx304" id="idx304"></a>
+Bir <span class="wordasword"><i>yığınak</i></span> bir nesne yığını içeren bir bellek havuzudur. Çok sayıda ayrı yığınak oluşturabilir ve nesneleri bunların içinde ayırabilirsiniz. Her yığınağın içinde ayrılan son nesneye karşılık daima ilki serbest bırakılır ancak her yığınak diğerinden bağımsızdır.
+    </div><div class="para">
+Serbest bırakma ile ilgili bu kısıtlama dışında yığınaklar tamamen geneldir: Bir yığınak farklı boyutlarda olabilen çok sayıda nesne içerebilir. Yığınaklar makrolarla gerçeklenmiştir. Böylece, nesneler küçük oldukları sürece ayırma işlemi çok hızlı yapılır. Her nesneyi belli bir adım aralığı ile oluşturmak gerektiğinden her nesne için sabit yer ayrılır.
+    </div> <div class="head3"><a name="glibc-Creating-Obstacks" id="glibc-Creating-Obstacks"></a>Yığınak Oluşturma</div><dl><dd><div class="para">
+Yığınaklar üzerinde işlem yapmak için gereken araçlar <tt>obstack.h</tt> başlık dosyasında bildirilmiştir.
+<a class="indexterm" name="idx305" id="idx305"></a>
+      </div><a name="glibc-obstack_struct" id="glibc-obstack_struct"></a>
+<a class="indexterm" name="idx306" id="idx306"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct <b><tt>obstack</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+Bir yığınak <b><tt>struct obstack</tt></b> türünde bir veri yapısı ile ifade edilir. Bu veri yapısı çok küçük ve sabit boyutludur. Nesnelerin içinde ayrıldıkları alanın nasıl bulunacağı ve yığınağın durumu hakkında bilgileri kaydeder. Nesnelerin kendileri hakkında bir bilgi içermez. Bu yapının içeriğine doğrudan erişmeye çalışmayın; sadece bu bölümde açıklanmış olan işlevleri kullanın.
+</div></dd></dl><div style="padding:5px"></div>
+      <div class="para">
+Değişkenleri <b><tt>struct obstack</tt></b> türünde bildirebilir ve onları yığınak olarak kullanabilirsiniz ya da bir yığınağı diğer nesne çeşitlerinde olduğu gibi özdevimli olarak ayırabilirsiniz. Yığınakların özdevimli olarak ayrılması yazılımınızın çok sayıda farklı yığınağa sahip olmasını mümkün kılar. (Hatta bir yığınak yapısını bir başka yığınağın içinde ayırabilirsiniz ancak bu pek kullanışlı olmaz.)
+      </div><div class="para">
+Yığınaklar ile çalışan işlevlerin tümü hangi yığınağın kullanılacağının belirtilmesini gerektirir.  Bunu <b><tt>struct obstack *</tt></b> türünden bir gösterici ile yapabilirsiniz. Bundan sonra bir yığınaktan bahsettiğimizde ona bir gösterici üzerinden eriştiğiniz kabul edilecektir.
+      </div><div class="para">
+Yığınaktaki nesneler <span class="wordasword"><i>tomar</i></span> olarak adlandırılan büyük bloklar halindedir. <b><tt>struct obstack</tt></b> yapısı ise bu tomarlardan oluşan bir zincirin kaydını tutar.
+      </div><div class="para">
+Yığınak kütüphanesi, önceki tomara sığmayan bir nesne ayırdığınızda, yeni bir tomar oluşturur. Yığınak kütüphanesi tomarları özdevinimli olarak yönettiğinden bu işlemlere fazla dikkat etmeniz gerekmez. Ancak, yığınak kütüphanesinin bir tomarı ayırırken kullanacağı bir işlevi sağlamanız gerekir. Bu işlev <b><tt>malloc</tt></b> işlevini doğrudan ya da dolaylı kullanmalıdır. Ayrıca bir tomarı serbest bırakacak bir işlev daha sağlamanız gerekir. Bu konular aşağıdaki bölümde açıklanmıştır.
+      </div></dd></dl> <div class="head3"><a name="glibc-Preparing-for-Obstacks" id="glibc-Preparing-for-Obstacks"></a>Yığınakları Kullanıma Hazırlama</div><dl><dd><div class="para">
+Yığınak işlevlerini kullanmayı tasarladığınız her kaynak dosyası
+ <a class="ulink" href="file:/usr/include/obstack.h" target="_top"><tt>obstack.h</tt></a>
+ başlık dosyasını aşağıdaki gibi içermelidir:
+      </div><div class="para"><div align="right"><pre class="screen">#include &lt;obstack.h&gt;</pre></div></div><div class="para">
+<a class="indexterm" name="idx307" id="idx307"></a>
+<a class="indexterm" name="idx308" id="idx308"></a>
+Ayrıca, kaynak dosyası <b><tt>obstack_init</tt></b> makrosunu da kullanıyorsa, yığınak kütüphanesi tarafından kullanılmak üzere iki işlev veya makro bildirmeli ya da tanımlamalıdır. Biri, içine nesnelerin paketleneceği bellek tomarlarını ayırmada kullanılacak olan <b><tt>obstack_chunk_alloc</tt></b> işlevi diğeri ise, içindeki
+ nesneler serbest bırakıldığında bellek tomarlarını sisteme döndürecek olan <b><tt>obstack_chunk_free</tt></b> işlevidir. Bu makrolar kaynak dosyaları içinde yığınaklar kullanılmadan önce tanımlanmış olmalıdır.
+      </div><div class="para">
+Bunlar <b><tt>xmalloc</tt></b> (<a href="../glibc/glibc-Unconstrained-Allocation.html" class="xref" title="Özgür Bellek Ayırma">Özgür Bellek Ayırma</a>) araortamı üzerinden <b><tt>malloc</tt></b> kullanacak şekilde tanımlanır. Bu tanımlama aşağıdaki makro tanım çifti ile yapılır:
       </div>
-    </header>
-    <section class="mainpage">
-      <div class="crumbs">
-        <p>  </p>
+<div class="para"><div align="right"><pre class="screen">
+#define obstack_chunk_alloc xmalloc
+#define obstack_chunk_free free
+</pre></div></div><div class="para">
+Yığınak kullanarak ayırdığınız bellek gerçekte <b><tt>malloc</tt></b>'dan gelmesine karşın, yığınakların kullanılması daha hızlıdır çünkü daha büyük bellek blokları halinde olduğundan <b><tt>malloc</tt></b> daha az sıklıkta çağrılır. Daha ayrıntılı bilgi için <a href="../glibc/glibc-Obstacks.html#glibc-Obstack-Chunks" class="xref" title="Yığınak Tomarları">Yığınak Tomarları</a> bölümüne bakınız.
+      </div><div class="para">
+Çalışma anında yazılım, yığınak olarak bir <b><tt>struct obstack</tt></b> yapısını kullanmaya başlamadan önce bir <b><tt>obstack_init</tt></b> çağrısı ile yığını ilklendirmelidir.
+      </div><a name="glibc-obstack_init" id="glibc-obstack_init"></a>
+<a class="indexterm" name="idx309" id="idx309"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>obstack_init</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Nesnelerin ayrılacağı <i><tt>yığınak</tt></i> nesnesini ilklendirir. Bu işlev yığınağın <b><tt>obstack_chunk_alloc</tt></b> işlevini çağırır. Eğer bellek ayırma işlemi başarısız olursa <b><tt>obstack_alloc_failed_handler</tt></b> tarafından gösterilen işlev çağrılır. <b><tt>obstack_init</tt></b> işlevi daima 1 ile döner.
       </div>
-      <section class="sect1" id="glibc-Obstacks">
-        <div class="titlepage">
-          <div>
-            <div>
-              <h2 class="title" style="clear: both">3.2.6. Yığınaklar (Obstacks)</h2>
-            </div>
-          </div>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Uyumluluk bilgisi</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">Yığınak kütüphanelerinin daha şekilci sürümleri bu işlev başarısız olduğunda 0 ile döner.</div></td></tr></table></div>
+</dd></dl><div style="padding:5px"></div>
+      <div class="para">
+Aşağıda bir yığınak için alan ayrılması ve onun ilklendirilmesi üzerine iki örnek bulunmaktadır. İlkinde yığınak bir durağan değişkendir:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+static struct obstack myobstack;
+…
+obstack_init (&amp;myobstack);
+</pre></div></div><div class="para">
+İkincisinde ise yığınak kendisini özdevimli ayırmaktadır:
+     </div>
+<div class="para"><div align="right"><pre class="screen">
+struct obstack *myobstack_ptr
+  = (struct obstack *) xmalloc (sizeof (struct obstack));
+
+obstack_init (myobstack_ptr);
+</pre></div></div><a name="glibc-obstack_alloc_failed_handler" id="glibc-obstack_alloc_failed_handler"></a>
+<a class="indexterm" name="idx310" id="idx310"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt><b><tt>obstack_alloc_failed_handler</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">değişken</div></div></div><dl><dd><div class="para">
+Bu değişkenin değeri, <b><tt>obstack_chunk_alloc</tt></b> işlevi bellek ayırma sırasında başarısız olduğunda çağıracağı işleve bir göstericidir. Bu göstericiye belirteceğiniz işlev ya <b><tt>exit</tt></b> (<a href="../glibc/glibc-Program-Termination.html" class="xref" title="Yazılımın Sonlandırılması">Yazılımın Sonlandırılması</a>) ya da  <b><tt>longjmp</tt></b> (<a href="../glibc/glibc-Non-Local-Exits.html" class="xref" title="XXIII. Oylum - Yerel Olmayan Çıkışlar">Yerel Olmayan Çıkışlar</a>) çağırmalı, yani dönmemelidir.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+void my_obstack_alloc_failed (void)
+…
+obstack_alloc_failed_handler = &amp;my_obstack_alloc_failed;
+</pre></div></div></dd></dl><div style="padding:5px"></div>
+      </dd></dl> <div class="head3"><a name="glibc-Allocation-in-an-Obstack" id="glibc-Allocation-in-an-Obstack"></a>Bir Yığınağa Nesne Eklenmesi</div><dl><dd><div class="para">
+<a class="indexterm" name="idx311" id="idx311"></a>
+Bir nesne için bir yığınakta yer ayırmanın en kestirme yolu, <b><tt>malloc</tt></b> çağırır gibi <b><tt>obstack_alloc</tt></b> çağrısı yapmaktır.
+      </div><a name="glibc-obstack_alloc" id="glibc-obstack_alloc"></a>
+<a class="indexterm" name="idx312" id="idx312"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void *<b><tt>obstack_alloc</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>,
+ int             <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+İşlev, bir yığınakta <i><tt>boyut</tt></i> baytlık bir ilkendirilmemiş blok ayırır ve onun adresi ile döner. Burada <i><tt>yığınak</tt></i>, içinde blok ayrılacak olan yığınağı belirten <b><tt>struct obstack</tt></b> yapısının adresidir. Her yığınak işlevi ya da makrosu ilk argüman olarak daima bir <b><tt><i><tt>* yığınak</tt></i></tt></b> belirtmeyi gerektirir.
+      </div><div class="para">
+Bellekte yeni bir tomar ayrılması gerekirse bu işlev yığınağın <b><tt>obstack_chunk_alloc</tt></b> işlevini çağırır. <b><tt>obstack_chunk_alloc</tt></b> işlevi bellek ayırmada başarısız  olursa <b><tt>obstack_alloc_failed_handler</tt></b> işlevi çağrılır.
+</div></dd></dl><div style="padding:5px"></div>
+      <div class="para">
+Aşağıdaki örnekte, <b><tt>string_obstack</tt></b> yığınağında  <i><tt>string</tt></i> dizgesinin bir kopyası için yer ayrılmaktadır:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+struct obstack string_obstack;
+
+char * copystring (char *string)
+{
+  size_t len = strlen (string) + 1;
+  char *s = (char *) obstack_alloc (&amp;string_obstack, len);
+  memcpy (s, string, len);
+  return s;
+}
+</pre></div></div><div class="para">
+İçeriğini belirterek bir blok ayırmak için <b><tt>obstack_copy</tt></b> işlevi kullanılır:
+      </div><a name="glibc-obstack_copy" id="glibc-obstack_copy"></a>
+<a class="indexterm" name="idx313" id="idx313"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void *<b><tt>obstack_copy</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>,
+ void           *<i><tt>adres</tt></i>,
+ int             <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev bir blok ayırır ve <i><tt>adres</tt></i> adresinden başlayan  <i><tt>boyut</tt></i> baytlık veriyi ayrılan yere kopyalayarak bloğu ilklendirir. <b><tt>obstack_chunk_alloc</tt></b> tarafından bellek ayırma işlemi başarısız olursa <b><tt>obstack_alloc_failed_handler</tt></b> işlevini çağırır.
+</div></dd></dl><div style="padding:5px"></div>
+      <a name="glibc-obstack_copy0" id="glibc-obstack_copy0"></a>
+<a class="indexterm" name="idx314" id="idx314"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void *<b><tt>obstack_copy0</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>,
+ void           *<i><tt>adres</tt></i>,
+ int             <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>obstack_copy</tt></b> işlevi gibidir, farklı olarak, bir boş karakter ekler. Bu fazladan bayt <i><tt>boyut</tt></i>'a dahil değildir.
+      </div></dd></dl><div style="padding:5px"></div><div class="para">
+Bu işlev, bir yığınağa bir dizgeyi bir boş sonlandırmalı dizge olarak kopyalamanın en uygun yoludur. Aşağıdaki bir kullanım örneğine bakınız:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+char * obstack_savestring (char *addr, int size)
+{
+  return obstack_copy0 (&amp;myobstack, addr, size);
+}
+</pre></div></div><div class="para">
+Önceki örnekte aynı işi yapan <b><tt>copystring</tt></b> işlevi için <b><tt>malloc</tt></b> (<a href="../glibc/glibc-Unconstrained-Allocation.html#glibc-Basic-Allocation" class="xref" title="Özdevimli Olarak Basit Bellek Ayırma">Özdevimli Olarak Basit Bellek Ayırma</a>) kullanılmıştı.
+      </div></dd></dl> <div class="head3"><a name="glibc-Freeing-Obstack-Objects" id="glibc-Freeing-Obstack-Objects"></a>Bir Yığınaktan Nesne Çıkarılması</div><dl><dd><div class="para">
+<a class="indexterm" name="idx315" id="idx315"></a>
+Yığınaktan bir nesneyi çıkarmak için <b><tt>obstack_free</tt></b> işlevi kullanılır. Bir yığınak aslında bir nesne yığıtı olduğundan, serbest bırakılan nesne kendinden sonra ayrılan diğer nesnelerin de serbest bırakılmasına sebep olur.
+      </div><a name="glibc-obstack_free" id="glibc-obstack_free"></a>
+<a class="indexterm" name="idx316" id="idx316"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>obstack_free</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>,
+ void           *<i><tt>nesne</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<i><tt>nesne</tt></i> hiçbir şey göstermiyorsa yığınaktan tüm nesneler çıkarılır. Aksi takdirde, gösterdiği nesne ve o nesneden sonra yığınağa konulmuş tüm nesneler serbest bırakılır.
+      </div>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para"><i><tt>nesne</tt></i> hiçbir şey göstermiyorsa işlevin sonucu ilklendirilmemiş bir yığınaktır. Bir yığınağı boşaltmak ve onu kullanılabilir yapmak isterseniz <b><tt>obstack_free</tt></b> işlevini yığınaktaki ilk nesnenin göstericisi ile çağırmalısınız:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+obstack_free (obstack_ptr, first_object_allocated_ptr);
+</pre></div></div><div class="para">
+Bir yığınaktaki nesneler tomarlar halinde gruplanır. Bir tomardan tüm nesneler çıkarıldığında yığınak kütüphanesi tomarı özdevinimli olarak serbest bırakır (Bkz. <a href="../glibc/glibc-Obstacks.html#glibc-Preparing-for-Obstacks" class="xref" title="Yığınakları Kullanıma Hazırlama">Yığınakları Kullanıma Hazırlama</a>). Böylece diğer yığınaklar ve bellek ayırma işlemleri için tomar alanı yeniden kullanılabilir.
+</div></td></tr></table></div></dd></dl><div style="padding:5px"></div></dd></dl> <div class="head3"><a name="glibc-Obstack-Functions" id="glibc-Obstack-Functions"></a>Yığınak İşlevleri ve Makroları</div><dl><dd><div class="para">
+<a class="indexterm" name="idx317" id="idx317"></a>
+Derleyiciye bağlı olarak, yığınakların kullanılmasını sağlayan arayüzler bir işlev ya da makro olarak tanımlanabilir. Yığınak oluşumu ISO C ve geleneksel C içeren tüm C derleyicileri ile çalışır, ancak GNU C derleyicisi dışındaki derleyicileri kullanacaksanız almanız gereken bazı önlemler vardır.
+      </div><div class="para">
+Eski moda, ISO C olmayan bir derleyici kullanıyorsanız, tüm yığınak işlevleri aslında birer makro olarak tanımlanmalıdır. Bu makroları birer işlev gibi çağırabilirsiniz ama bir işlevin sağladığı diğer kolaylıklardan (işlev adresini almak gibi) yararlanamazsınız.
+      </div><div class="para">
+Makroların çağrılması bir özel önlem almayı gerektirir: İsim olarak, ilk terim (yığınak göstericisi) herhangi bir yan etki barındırmamalıdır. Örneğin,
+      </div><div class="para"><div align="right"><pre class="screen">obstack_alloc (get_obstack (), 4);</pre></div></div><div class="para">
+yazarsanız, <b><tt>get_obstack</tt></b> defalarca çağrılacaktır. Ya da yığınak göstericisi argümanı olarak <b><tt>*obstack_list_ptr++</tt></b> kullanırsanız, defalarca arttırım uygulanacağından çok tuhaf sonuçlar elde edebilirsiniz.
+      </div><div class="para">
+ISO C'de her işlevin bir makro bir de işlev olarak tanımı vardır. Bir işlevi çağırmadan sadece adresini almak isterseniz işlev tanımı kullanılır. Normal bir işlev çağrısında ise öntanımlı olarak makro tanımı kullanılır, ancak isterseniz işlev ismini parantez içinde kullanarak işlev tanımını kullanabilirsiniz. Örnek:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+char *x;
+void *(*funcp) ();
+
+/* Makro kullanımı.  */
+x = (char *) obstack_alloc (ynk_gstr, boyut);
+
+/* İşlev çağrısı.  */
+x = (char *) (obstack_alloc) (ynk_gstr, boyut);
+
+/* İşlev adresinin alınması.  */
+funcp = obstack_alloc;
+</pre></div></div><div class="para">
+Aynı durum ISO C'deki standart kütüphane işlevleri için de geçerlidir. Bkz. <a href="../glibc/glibc-Macro-Definitions.html" class="xref" title="Makro Olarak Tanımlanmış İşlevler">Makro Olarak Tanımlanmış İşlevler</a>.
+      </div>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/warning.png" /></td><th class="admon">Uyarı</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">ISO C'de bile, makroları kullanırken ilk terimin yan etkiler oluşturmasına karşı önlem almanız gereklidir.
+      </div><div class="para">
+GNU C derleyicisini kullanıyorsanız, bu önlem gereksizdir, çünkü GNU C'deki çeşitli dil oluşumları, makroların, her argümanının bir kere hesaplanmasını sağlayacak şekilde tanımlanmasına izin verir.</div></td></tr></table></div>
+      </dd></dl> <div class="head3"><a name="glibc-Growing-Objects" id="glibc-Growing-Objects"></a>Büyüyen Nesneler</div><dl><dd><div class="para">
+<a class="indexterm" name="idx318" id="idx318"></a>
+<a class="indexterm" name="idx319" id="idx319"></a>
+<a class="indexterm" name="idx320" id="idx320"></a>
+Yığınak tomarları içindeki bellek sıralı erişimle kullanıldığından, bir nesneyi, nesne için ayrılan alanın sonuna bayt ya da baytlar ekleyerek adım adım oluşturmak mümkündür. Bu teknikle, bir nesneye veri aktarırken acaba yer kaldı mı diye düşünmeniz gerekmez. Bu tekniğe <span class="wordasword"><i>Nesnelerin Büyütülmesi</i></span> diyoruz. Bu bölümde nesneleri sonuna veri ekleyerek büyütmek için kullanılan özel işlevlere yer verilmiştir.
+      </div><div class="para">
+Bu işlevlerden birini kullanarak nesneye veri eklemek istediğinizde nesnenin büyütülmesi özdevinimli olarak gerçekleştiğinden, bir nesneyi büyütmeye başladığınızda özel olarak hiçbir şey yapmanız gerekmez. Ancak büyütme işlemi bittiğinde, bittiğinin belirtilmesi gerekir. Bunun için <b><tt>obstack_finish</tt></b> işlevi kullanılır.
+      </div><div class="para">
+Büyütme işleminin bittiği belirtilene kadar her veri eklemesinde nesne yeni bir tomara kopyalandığı için nesnenin büyütülmesi bitene kadar nesnenin gerçek adresi bilinmez.
+      </div><div class="para">
+Bir yığınak bir nesneyi büyütmek için kullanıldığında, bir başka nesneyi o yığına yerleştiremezsiniz. Bunu yapmayı denerseniz, eklediğiniz nesneye ayrı bir nesne olarak erişilemez; büyütülen nesneye bir alan eklenmiş olur ve eklediğiniz nesne büyütülen nesnenin bir parçası haline gelir.
+      </div><a name="glibc-obstack_blank" id="glibc-obstack_blank"></a>
+<a class="indexterm" name="idx321" id="idx321"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>obstack_blank</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>,
+ int             <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bir büyüyen nesneye alan oluşturmak için kullanılır. <b><tt>obstack_blank</tt></b> ilklendirilmemiş bir alan oluşturur.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-obstack_grow" id="glibc-obstack_grow"></a>
+<a class="indexterm" name="idx322" id="idx322"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>obstack_grow</tt></b></tt></td><td valign="top"><pre class="paramdef">
+(struct obstack *<i><tt>yığınak</tt></i>,
+ void           *<i><tt>veri</tt></i>,
+ int             <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+İlklendirilmiş bir blok eklemekte kullanılır. <b><tt>obstack_grow</tt></b> işlevi nesne büyüten bir <b><tt>obstack_copy</tt></b> işlevi gibi düşünülebilir. Büyüyen nesneye <i><tt>boyut</tt></i> uzunlukta  <i><tt>veri</tt></i> ekler.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-obstack_grow0" id="glibc-obstack_grow0"></a>
+<a class="indexterm" name="idx323" id="idx323"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>obstack_grow0</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>,
+ void           *<i><tt>veri</tt></i>,
+ int             <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Nesne büyüten bir <b><tt>obstack_copy0</tt></b> işlevi gibi düşünülenilir. Büyüyen nesneye <i><tt>boyut</tt></i> uzunlukta <i><tt>veri</tt></i>  sonuna bir boş karakter getirilerek eklenir.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-obstack_1grow" id="glibc-obstack_1grow"></a>
+<a class="indexterm" name="idx324" id="idx324"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>obstack_1grow</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>,
+ char            <i><tt>c</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>obstack_1grow</tt></b> işlevi büyüyen nesneye bir defada sadece bir karakter eklemek için kullanılır. Büyüyen nesneye <i><tt>c</tt></i> karakterini içeren bir bayt ekler.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-obstack_ptr_grow" id="glibc-obstack_ptr_grow"></a>
+<a class="indexterm" name="idx325" id="idx325"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>obstack_ptr_grow</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>,
+ void           *<i><tt>veri</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bir oluşumun gösterici değerini büyüyen nesneye eklemek için kullanılır. Büyüyen nesneye <i><tt>veri</tt></i>’nin değerini içeren <b><tt>sizeof (void *)</tt></b> bayt ekler.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-obstack_int_grow" id="glibc-obstack_int_grow"></a>
+<a class="indexterm" name="idx326" id="idx326"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>obstack_int_grow</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>,
+ int             <i><tt>veri</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Büyüyen nesneye <b><tt>int</tt></b> türünde tek bir değer eklemek için kullanılır. Büyüyen nesneye <b><tt>sizeof (int)</tt></b> bayt ekler ve <i><tt>veri</tt></i>'nin değeri ile ilklendirir.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-obstack_finish" id="glibc-obstack_finish"></a>
+<a class="indexterm" name="idx327" id="idx327"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void *<b><tt>obstack_finish</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bir büyüyen nesne ile işiniz bittiğinde onu kapatmak ve son adresini almak için bu işlevi kullanacaksınız.
+        </div><div class="para">
+Büyüyen bir nesneyi bitirdiğinizde, yığınak, normal nesne ayırma ya da yeni bir büyüyen nesne oluşturmak için kullanılabilir.
+        </div><div class="para">
+Bu işlev <b><tt>obstack_alloc</tt></b> işlevi gibi aynı koşullar altında bir boş gösterici ile de dönebilir. Bkz. <a href="../glibc/glibc-Obstacks.html#glibc-Allocation-in-an-Obstack" class="xref" title="Bir Yığınağa Nesne Eklenmesi">Bir Yığınağa Nesne Eklenmesi</a>.
+</div></dd></dl><div style="padding:5px"></div>
+      <div class="para">
+Bir büyüyen nesne ile çalışırken ne büyüklüğe ulaştığını bilmek isteyebilirsiniz. Bir büyüyen nesneyi bitirmeden <b><tt>obstack_object_size</tt></b> işlevini kullanarak yığınağın eriştiği boyutu öğrenebilirsiniz:
+      </div><a name="glibc-obstack_object_size-1" id="glibc-obstack_object_size-1"></a>
+<a class="indexterm" name="idx328" id="idx328"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>obstack_object_size</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev, büyüyen nesnenin o andaki bayt cinsinden uzunluğu ile döner. Bu işlevin nesneyi bitirmeden çağrılabileceğini unutmayın. Nesneyi bitirdikten sonra <b><tt>obstack_object_size</tt></b> işlevi sıfır değeri ile döner.
+</div></dd></dl><div style="padding:5px"></div>
+      <div class="para">
+Bir büyüyen nesne oluşturduktan sonra onu iptal etmek isterseniz, önce onu bitirin sonra da serbest bırakın. Örnek:
+     </div>
+<div class="para"><div align="right"><pre class="screen">
+obstack_free (obstack_ptr, obstack_finish (obstack_ptr));
+</pre></div></div><div class="para">
+Nesne bir büyüyen nesne değilse bu etkisizdir.
+      </div><div class="para">
+<a class="indexterm" name="idx329" id="idx329"></a>
+Bir nesneyi küçültmek için <b><tt>obstack_blank</tt></b> işlevini bir negatif boyutla çağırabilirsiniz. Ancak nesneyi küçültürken boyunun sıfırın altına inmemesine dikkat edin, aksi takdirde neler olacağı bilinemez.
+      </div></dd></dl> <div class="head3"><a name="glibc-Extra-Fast-Growing" id="glibc-Extra-Fast-Growing"></a>Çok Hızlı Büyüyen Nesneler</div><dl><dd><div class="para">
+<a class="indexterm" name="idx330" id="idx330"></a>
+Büyüyen nesneleri büyütürken o anki tomarın yeterli yere sahip olup olmadığının denetlenmesi için işlevler içinde yapılan işlemler bir sürü masraf kalemi oluşturur. Üstelik siz bu nesneleri küçük küçük adımlarla ve sıklıkla büyütürseniz bu israf kaydadeğer olmaya başlar.
+      </div><div class="para">
+Bu masrafı, bu denetimlerin yapılmadığı özel "hızlı büyütme" işlevlerini kullanarak düşürebilirsiniz. Sağlam bir yazılım istiyorsanız bu denetimleri kendiniz yapmalısınız. Bu denetimi en basit yolla, nesneye veri eklemeye hazırlanırken yaparsanız hiçbir şeyi saklamak zorunda kalmazsınız, çünkü normal büyütme işlevleri de bunu zaten böyle yapar. Bu düzenlemeyi ne kadar az sıklıkta yaparsanız yazılımınız o kadar hızlı olur.
+      </div><div class="para">
+<b><tt>obstack_room</tt></b> işlevi kullanılan tomar içindeki kullanılabilir alanın miktarı ile döner:
+      </div><a name="glibc-obstack_room" id="glibc-obstack_room"></a>
+<a class="indexterm" name="idx331" id="idx331"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>obstack_room</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev, kullanılmakta olan (ya da yeni oluşturulan) <i><tt>yığınak</tt></i>  büyüyen nesnesine yeni bir tomar oluşturmadan hızlı büyütme işlevleri kullanılarak eklenebilecek baytların sayısı ile döner.
+</div></dd></dl><div style="padding:5px"></div>
+      <div class="para">
+Ne kadar yeriniz olduğunu bildiğinize göre aşağıdaki hızlı büyütme işlevlerini kullanarak büyüyen nesnenize güvenle veri ekleyebilirsiniz:
+      </div><a name="glibc-obstack_1grow_fast" id="glibc-obstack_1grow_fast"></a>
+<a class="indexterm" name="idx332" id="idx332"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>obstack_1grow_fast</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>,
+ char            <i><tt>c</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<i><tt>yığınak</tt></i>’taki büyüyen nesneye <i><tt>c</tt></i> karakterini içeren tek bir bayt eklemekte kullanılır.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-obstack_ptr_grow_fast" id="glibc-obstack_ptr_grow_fast"></a>
+<a class="indexterm" name="idx333" id="idx333"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>obstack_ptr_grow_fast</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>,
+ void           *<i><tt>veri</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<i><tt>yığınak</tt></i>’taki büyüyen nesneye <i><tt>veri</tt></i> değerini içeren <b><tt>sizeof (void *)</tt></b> bayt ekler.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-obstack_int_grow_fast" id="glibc-obstack_int_grow_fast"></a>
+<a class="indexterm" name="idx334" id="idx334"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>obstack_int_grow_fast</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>,
+ int             <i><tt>veri</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<i><tt>yığınak</tt></i>’taki büyüyen nesneye <i><tt>veri</tt></i> değerini içeren <b><tt>sizeof (int)</tt></b> bayt ekler.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-obstack_blank_fast" id="glibc-obstack_blank_fast"></a>
+<a class="indexterm" name="idx335" id="idx335"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>obstack_blank_fast</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>,
+ int             <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<i><tt>yığınak</tt></i>’taki büyüyen nesneye ilklendirmeksizin <i><tt>boyut</tt></i> bayt ekler.
+</div></dd></dl><div style="padding:5px"></div>
+      <div class="para">
+Kalan yeri <b><tt>obstack_room</tt></b> ile tespit ettiğinizde yeterli yer kalmadığını öğrenirseniz hızlı büyütme işlevlerini kullanmak artık güvenilir olmaz. Bu durmda, basitçe normal büyütme işlevlerine geçmek gerekir. Sonuç olarak, az yer kalmışsa normal büyütme işlevleri yeni bir tomar açar ve böylece bol bol yeriniz olur.
+      </div><div class="para">
+Demek ki, <b><tt>obstack_room</tt></b> ile yeterli yer kalmadığını her anladığınızda normal büyütme işlevlerini kullanabilecek ve nesneniz yeni bir tomara kopyalandığında tekrar hızlı büyütme işlevlerini kullanabileceğiniz güvenilir bir alana sahip olabileceksiniz.
+      </div><div class="para">Burada bir örnek var:</div>
+<div class="para"><div align="right"><pre class="screen">
+void dizge_ekle (struct obstack *yiginak, const char *dizge, int uzunluk)
+{
+  while (uzunluk &gt; 0)
+  {
+    int bosyer = obstack_room (yiginak);
+    if (bosyer == 0)
+    {
+      /* Yeterli boş yer yok. Bir karakter eklersek nesnemiz
+         yeni bir tomara kopyalacak ve boş yer olacak. */
+      obstack_1grow (yiginak, *dizge++);
+      uzunluk--;
+    }
+    else
+    {
+      if (bosyer &gt; uzunluk)
+        bosyer = uzunluk;
+
+      /* Boş yer olduğuna göre hızlı olarak ekleme yapabiliriz. */
+      uzunluk -= bosyer;
+      while (bosyer-- &gt; 0)
+        obstack_1grow_fast (yiginak, *dizge++);
+    }
+  }
+}
+</pre></div></div></dd></dl> <div class="head3"><a name="glibc-Status-of-an-Obstack" id="glibc-Status-of-an-Obstack"></a>Bir Yığınağın Durumu</div><dl><dd><div class="para">
+<a class="indexterm" name="idx336" id="idx336"></a>
+Burada açıklanan işlevler kullanımdaki bir yığınağın durumu hakkında bilgi verirler. Buradaki işlevleri büyümekte olan nesneler hakkında bilgi edinmek için de kullanabilirsiniz.
+      </div><a name="glibc-obstack_base" id="glibc-obstack_base"></a>
+<a class="indexterm" name="idx337" id="idx337"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void *<b><tt>obstack_base</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev <i><tt>yığınak</tt></i>'da büyüyen nesnenin başlangıçta geçici olarak kullanılan adresi ile döner. Bu işlevin hemen ardından büyüyen nesne bitirilirse bu adres dönecektir. Ama bitirme işlemini nesneyi fazlaca büyüttükten sonra yaparsanız dönen adres farklı olabilecektir.
+        </div><div class="para">
+Büyüyen bir nesne yoksa, sonraki nesnenin başlangıç adresi ile döner (tomarın yeni bir nesne için yeterli olduğu varsayımıyla).
+</div></dd></dl><div style="padding:5px"></div>
+<a name="glibc-obstack_next_free" id="glibc-obstack_next_free"></a>
+<a class="indexterm" name="idx338" id="idx338"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void *<b><tt>obstack_next_free</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<i><tt>yığınak</tt></i>'ın bulunduğu tomardaki ilk serbest baytın adresi ile döner. Bu adres, büyümekte olan nesnenin sonundadır. Eğer nesne bir büyüyen nesne değilse, <b><tt>obstack_base</tt></b> ile dönen adresin aynısı döner.
+</div></dd></dl><div style="padding:5px"></div>
+<a name="glibc-obstack_object_size" id="glibc-obstack_object_size"></a>
+<a class="indexterm" name="idx339" id="idx339"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>obstack_object_size</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Büyümekte olan nesnenin uzunluğu ile döner. Bu değer aşağıdaki ifade ile elde edilen değere eşittir:
         </div>
-        <div class="preliminary">
-          <div class="titlepage">
-            <div>
-              <div>
-                <h3 class="title">Ön Bilgi</h3>
-              </div>
-            </div>
-          </div>
-          <p>
-    <span id="idm87277" class="indexterm"></span>
-    <span id="idm87279" class="indexterm"></span>
-    <span id="idm87281" class="indexterm"></span>
-    <em class="wordasword">yığınak</em> nesne yığını içeren bellek havuzudur. Çok sayıda bağımsız yığınak oluşturulabilir ve bellek nesneleri bunların içinde tahsis edilebilir. Her yığınağın içinde tahsis edilen son bellek nesnesine karşılık daima ilki serbest bırakılır ancak her yığınak diğerinden bağımsızdır.
-   </p>
-          <p>
-    Serbest bırakma sırası ile ilgili bu kısıtlama dışında yığınaklar tamamen geneldir: Bir yığınak farklı boyutlarda çok sayıda nesne içerebilir. Yığınaklar makrolarla gerçeklenmiştir. Böylece, nesneler küçük oldukları takdirde tahsis işlemi çok hızlı yapılır. Ve nesne başına düşen tek boşluk, her nesneyi uygun bir sınırda başlatmak için gereken dolgudur.
-   </p>
+<div class="para"><pre class="literallayout">
+obstack_next_free (<i><tt>yiginak</tt></i>) - obstack_base (<i><tt>yiginak</tt></i>)
+</pre></div>
+</dd></dl><div style="padding:5px"></div></dd></dl> <div class="head3"><a name="glibc-Obstacks-Data-Alignment" id="glibc-Obstacks-Data-Alignment"></a>Yığınaktaki Verinin Adreslenmesi</div><dl><dd><div class="para">
+<a class="indexterm" name="idx340" id="idx340"></a>
+Her yığınak bir <span class="wordasword"><i>adres boyu</i></span>’na sahiptir. Yığınağa konulan ilk nesne özdevimli olarak bir adrese konur ve her nesne bu adresin belirtilen adres boyunun katlarındaki adreslere yerleştirilir. Öntanımlı olarak bu adres boyu her veri türünü tutabilecek bir nesneye gereken kadardır.
+      </div><div class="para">
+Adres boyunu öğrenmek için <b><tt>obstack_alignment_mask</tt></b> işlevi kullanılır:
+      </div><a name="glibc-obstack_alignment_mask" id="glibc-obstack_alignment_mask"></a>
+<a class="indexterm" name="idx341" id="idx341"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>obstack_alignment_mask</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>)</pre></td></tr></table></div><div class="sagsutun">makro</div></div></div><dl><dd><div class="para">
+Dönen değer bir bit maskesidir; değeri 1 olan bir bit, nesnenin adresinin ilgili bitinin 0 olması gerektiğini belirtir. Maske değeri, nesneler ikinin kuvvetlerindeki adres boylarında adreslendiğinden, ikinin kuvveti eksi birdir. Öntanımlı maske değeri hizalı nesnelerin her veri türünü tutmasını mümkün kılacak bir değerdir: Örneğin, maske değeri 3 ise adresleri 4'ün katları olan her veri türü saklanabilir. Maske değeri sıfırsa adresleme birer baytlıktır ve bu durumda adresleme yoktur denir.
+        </div><div class="para">
+<b><tt>obstack_alignment_mask</tt></b> makrosu bir sol taraf değeri olarak yorumlanır, yani maskı siz değiştirebilirsiniz. Örnek:
         </div>
-        <div class="toc">
-          <div class="toc-title">İçindekiler</div>
-          <dl class="toc">
-            <dt>3.2.6.1. <a href="glibc-Creating-Obstacks.html">Yığınak Oluşturma</a>  -  Yığınaklar nasıl bildirilir.</dt>
-            <dt>3.2.6.2. <a href="glibc-Preparing-for-Obstacks.html">Yığınakları Kullanıma Hazırlama</a>  -  Yığınakları kullanmadan önce birtakım hazırlıklar gerekir.</dt>
-            <dt>3.2.6.3. <a href="glibc-Allocation-in-an-Obstack.html">Bir Yığınağa Nesne Eklenmesi</a>  -  Bir yığınakta nesnelere yer tahsisi</dt>
-            <dt>3.2.6.4. <a href="glibc-Freeing-Obstack-Objects.html">Yığınaktan Nesne Çıkarılması</a>  -  Yığınakta bir nesneye tahsis edilmiş yerin serbest bırakılması</dt>
-            <dt>3.2.6.5. <a href="glibc-Obstack-Functions.html">Yığınak İşlevleri ve Makroları</a>  -  Yığınak işlevleri hem işlev hem de makrodur.</dt>
-            <dt>3.2.6.6. <a href="glibc-Growing-Objects.html">Büyüyen Nesneler</a>  -  Bir nesneyi adım adım büyütmek.</dt>
-            <dt>3.2.6.7. <a href="glibc-Extra-Fast-Growing.html">Çok Hızlı Büyüyen Nesneler</a>  -  Çok yüksek verimle (daha karmaşık olduğu halde) büyüyen nesneler.</dt>
-            <dt>3.2.6.8. <a href="glibc-Status-of-an-Obstack.html">Bir Yığınağın Durumu</a>  -  Bir yığınağın durumu hakkında bilgi edinmek.</dt>
-            <dt>3.2.6.9. <a href="glibc-Obstacks-Data-Alignment.html">Yığınaktaki Verinin Hizalanması</a>  -  Yığınaktaki nesnelerin hizaya sokulması</dt>
-            <dt>3.2.6.10. <a href="glibc-Obstack-Chunks.html">Yığınak Öbekleri</a>  -  Yığınaklar öbekleri nasıl oluşturur ve serbest bırakır; verimlilik kaygıları.</dt>
-            <dt>3.2.6.11. <a href="glibc-Summary-of-Obstacks.html">Yığınak İşlevlerinin Listesi</a></dt>
-          </dl>
-        </div>
-      </section>
-      <footer>
-        <div align="center" class="footer">
-          <small>Bir <a href="http://belgeler.org.tr/">Linux Kitaplığı</a> Sayfası</small>
-        </div>
-      </footer>
-    </section>
-  </body>
-</html>
+<div class="para"><div align="right"><pre class="screen">
+obstack_alignment_mask (yiginak) = 0;
+</pre></div></div><div class="para">
+Burada, belirtilen yığınakta adresleme işlemi kapatılmıştır.
+</div></dd></dl><div style="padding:5px"></div>
+      <div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Adresleme boyu değişikliği bir nesne ayrıldıktan sonra ya da bitirildiğinde etkisizdir. Bir nesneyi hiç büyütmeden yeni bir adres boyu belirtip nesneyi <b><tt>obstack_finish</tt></b> ile sıfır uzunlukta bitirip sonraki nesneler için yeni adres boyunu geçerli yapabilirsiniz.
+      </div></td></tr></table></div></dd></dl> <div class="head3"><a name="glibc-Obstack-Chunks" id="glibc-Obstack-Chunks"></a>Yığınak Tomarları</div><dl><dd><div class="para">
+<a class="indexterm" name="idx342" id="idx342"></a>
+<a class="indexterm" name="idx343" id="idx343"></a>
+Yığınaklar kendilerine büyük tomarlar halinde yer ayırırlar ve bu alanı sizin isteklerinizi karşılamak üzere parsellerler. Başka bir tomar uzunluğu belirtilmediği sürece öntanımlı tomar uzunluğu 4096 bayttır. Tomarın 8 baytlık bölümü nesneleri saklamakta kullanılmaz. Bir tomar uzunluğu belirtilmiş bile olsa, büyük nesneler için gerekirse daha büyük uzunlukta tomarlar ayrılabilir.
+      </div><div class="para">
+Yığınak kütüphanesi tomarları sizin tanımlayacağınız <b><tt>obstack_chunk_alloc</tt></b> işlevini çağırarak ayırır. İçindeki tüm nesnelerin çıkarılmasıyla boşalan bir tomarı yine sizin tanımlayacağınız <b><tt>obstack_chunk_free</tt></b> işlevini çağırarak serbest bırakır.
+      </div><div class="para">
+Bu iki işlev, <a class="link" href="../glibc/glibc-Obstacks.html#glibc-Creating-Obstacks" title="Yığınak Oluşturma"><b><tt>obstack_init </tt></b></a> kullanılan her kaynak dosyasında ya makro olarak tanımlanmalı ya da işlev olarak bildirilmelidir. Bunlar makro olarak çoğunlukla aşağıdaki gibi tanımlanır:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+#define obstack_chunk_alloc malloc
+#define obstack_chunk_free free
+</pre></div></div><div class="para">
+Bunlar basit makrolardır (argümansız). Argümanlı makro tanımları çalışmayacaktır. Bu, <b><tt>obstack_chunk_alloc</tt></b> veya <b><tt>obstack_chunk_free</tt></b> nin, tek başına kendisi bir işlev değilse bir işlev ismi olarak kullanılacağından böyledir.
+      </div><div class="para">
+Tomarları <b><tt>malloc</tt></b> ile ayırırsanız tomar boyu ikinin kuvvetlerinden biri olmalıdır. Öntanımlı tomar boyu 4096 bayttır. Bu boyut, son tomarda kullanılmadan çok fazla bellek kalmasına yol açmayacak kadar küçük, sıradan isteklere yanıt verecek kadar da büyük bir bellek boyudur.
+      </div><a name="glibc-obstack_chunk_size" id="glibc-obstack_chunk_size"></a>
+<a class="indexterm" name="idx344" id="idx344"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>obstack_chunk_size</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>)</pre></td></tr></table></div><div class="sagsutun">makro</div></div></div><dl><dd><div class="para">
+Belirtilen yığınağın tomar boyu ile döner.
+      </div><div class="para">
+Bu makro bir sol taraf değeri olarak yorumlandığından ona yeni bir değer atayarak farklı bir tomar boyu belirtebilirsiniz. Bunun yapılması, mevcut ayrılmış tomarları etkilemez, sadece bu atamadan sonra ayrılan tomarlar etkilenir. Bir tomarı bu yöntemle daha küçük boylarda ayırmak mümkünse de, çok fazla nesne kullanacaksanız daha büyük tomar boyları daha verimli olacaktır. Örnek:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+if (obstack_chunk_size (yiginak-gstr) &lt; <i><tt>yeni-tomar-boyu</tt></i>)
+  obstack_chunk_size (yiginak-gstr) = <i><tt>yeni-tomar-boyu</tt></i>;
+</pre></div></div></dd></dl><div style="padding:5px"></div></dd></dl> <div class="head3"><a name="glibc-Summary-of-Obstacks" id="glibc-Summary-of-Obstacks"></a>Yığınak İşlevlerinin Listesi</div><dl><dd><div class="para">
+Burada yığınaklarla ilgili işlevlerin bir özet listesine yer verilmiştir. Her biri ilk argüman olarak <b><tt>struct obstack *</tt></b> türünde bir yığınak adresi alır.
+      </div>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>obstack_init</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bir yığınağı ilklendirir. Bkz.  <a href="../glibc/glibc-Obstacks.html#glibc-Creating-Obstacks" class="xref" title="Yığınak Oluşturma">Yığınak Oluşturma</a>.
+</div></dd></dl><div style="padding:5px"></div>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void *<b><tt>obstack_alloc</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>,
+ int             <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+İlklendirmeden <i><tt>boyut</tt></i> baytlık bir nesneye yer ayrılır. Bkz. <a href="../glibc/glibc-Obstacks.html#glibc-Allocation-in-an-Obstack" class="xref" title="Bir Yığınağa Nesne Eklenmesi">Bir Yığınağa Nesne Eklenmesi</a>.
+</div></dd></dl><div style="padding:5px"></div>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void *<b><tt>obstack_copy</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>,
+ void          *<i><tt>adres</tt></i>,
+ int            <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+İçeriğini <i><tt>adres</tt></i>’ten kopyalayarak <i><tt>boyut</tt></i> baytlık bir nesneye yer ayırır. Bkz.  <a href="../glibc/glibc-Obstacks.html#glibc-Allocation-in-an-Obstack" class="xref" title="Bir Yığınağa Nesne Eklenmesi">Bir Yığınağa Nesne Eklenmesi</a>.
+</div></dd></dl><div style="padding:5px"></div>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void *<b><tt>obstack_copy0</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>,
+ void          *<i><tt>adres</tt></i>,
+ int            <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+İçeriğini <i><tt>adres</tt></i>’ten kopyalayarak <i><tt>boyut</tt></i> baytlık bir nesneye sonuna bir boş karakter ekleyerek yer ayırır. Bkz. <a href="../glibc/glibc-Obstacks.html#glibc-Allocation-in-an-Obstack" class="xref" title="Bir Yığınağa Nesne Eklenmesi">Bir Yığınağa Nesne Eklenmesi</a>.
+</div></dd></dl><div style="padding:5px"></div>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>obstack_free</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>,
+ void          *<i><tt>nesne</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<i><tt>nesne</tt></i> ve <i><tt>nesne</tt></i>’den sonra ayrılan tüm nesneleri yığınaktan çıkarır (serbest bırakır). Bkz. <a href="../glibc/glibc-Obstacks.html#glibc-Freeing-Obstack-Objects" class="xref" title="Bir Yığınaktan Nesne Çıkarılması">Bir Yığınaktan Nesne Çıkarılması</a>.
+</div></dd></dl><div style="padding:5px"></div>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>obstack_blank</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>,
+ int             <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Büyüyen nesneye ilklendirilmemiş <i><tt>boyut</tt></i> bayt ekler. Bkz. <a href="../glibc/glibc-Obstacks.html#glibc-Growing-Objects" class="xref" title="Büyüyen Nesneler">Büyüyen Nesneler</a>.
+</div></dd></dl><div style="padding:5px"></div>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>obstack_grow</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>,
+ void          *<i><tt>adres</tt></i>,
+ int            <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Büyüyen nesneye içeriğini <i><tt>adres</tt></i>’ten kopyalarak <i><tt>boyut</tt></i> bayt ekler. Bkz. <a href="../glibc/glibc-Obstacks.html#glibc-Growing-Objects" class="xref" title="Büyüyen Nesneler">Büyüyen Nesneler</a>.
+</div></dd></dl><div style="padding:5px"></div>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>obstack_grow0</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>,
+ void          *<i><tt>adres</tt></i>,
+ int            <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Büyüyen nesneye içeriğini <i><tt>adres</tt></i>’ten kopyalarak <i><tt>boyut</tt></i> bayt artı bir boş karakter ekler. Bkz. <a href="../glibc/glibc-Obstacks.html#glibc-Growing-Objects" class="xref" title="Büyüyen Nesneler">Büyüyen Nesneler</a>.
+</div></dd></dl><div style="padding:5px"></div>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>obstack_1grow</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>,
+ char            <i><tt>karakter</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Büyüyen nesneye <i><tt>karakter</tt></i> içeren bir bayt ekler. Bkz. <a href="../glibc/glibc-Obstacks.html#glibc-Growing-Objects" class="xref" title="Büyüyen Nesneler">Büyüyen Nesneler</a>.
+</div></dd></dl><div style="padding:5px"></div>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void *<b><tt>obstack_finish</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Büyüyen nesneyi kapatarak (bitirerek) son adresi ile döner. Bkz.  <a href="../glibc/glibc-Obstacks.html#glibc-Growing-Objects" class="xref" title="Büyüyen Nesneler">Büyüyen Nesneler</a>.
+</div></dd></dl><div style="padding:5px"></div>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>obstack_object_size</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Büyüyen nesnenin o andaki boyu ile döner. Bkz. <a href="../glibc/glibc-Obstacks.html#glibc-Growing-Objects" class="xref" title="Büyüyen Nesneler">Büyüyen Nesneler</a>.
+</div></dd></dl><div style="padding:5px"></div>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>obstack_blank_fast</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>,
+ int            <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Yeterli yer olup olmadığını denetlemeksizin büyüyen nesneye ilklendirmeden <i><tt>boyut</tt></i> bayt ekler. Bkz. <a href="../glibc/glibc-Obstacks.html#glibc-Extra-Fast-Growing" class="xref" title="Çok Hızlı Büyüyen Nesneler">Çok Hızlı Büyüyen Nesneler</a>.
+</div></dd></dl><div style="padding:5px"></div>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>obstack_1grow_fast</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>,
+ char            <i><tt>karakter</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Yeterli yer olup olmadığını denetlemeksizin büyüyen nesneye  <i><tt>karakter</tt></i> içeren bir bayt ekler. Bkz. <a href="../glibc/glibc-Obstacks.html#glibc-Extra-Fast-Growing" class="xref" title="Çok Hızlı Büyüyen Nesneler">Çok Hızlı Büyüyen Nesneler</a>.
+</div></dd></dl><div style="padding:5px"></div>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>obstack_room</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Büyüyen nesnede o andaki kullanılabilir alanın miktarı ile döner. Bkz. <a href="../glibc/glibc-Obstacks.html#glibc-Extra-Fast-Growing" class="xref" title="Çok Hızlı Büyüyen Nesneler">Çok Hızlı Büyüyen Nesneler</a>.
+</div></dd></dl><div style="padding:5px"></div>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>obstack_alignment_mask</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bir nesnenin başlangıcını hizalamakta kullanılan maske ile döner. Bu bir sol taraf değeridir. Bkz.  <a href="../glibc/glibc-Obstacks.html#glibc-Obstacks-Data-Alignment" class="xref" title="Yığınaktaki Verinin Adreslenmesi">Yığınaktaki Verinin Adreslenmesi</a>.
+</div></dd></dl><div style="padding:5px"></div>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>obstack_chunk_size</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Ayrılan tomarların boyunu verir, ayrılacak tomarlar için boy belirtilir. Bir sol taraf değeridir. Bkz.  <a href="../glibc/glibc-Obstacks.html#glibc-Obstack-Chunks" class="xref" title="Yığınak Tomarları">Yığınak Tomarları</a>.
+</div></dd></dl><div style="padding:5px"></div>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void *<b><tt>obstack_base</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Büyüyen nesnenin geçici başlangıç adresi ile döner. Bkz. <a href="../glibc/glibc-Obstacks.html#glibc-Status-of-an-Obstack" class="xref" title="Bir Yığınağın Durumu">Bir Yığınağın Durumu</a>.
+</div></dd></dl><div style="padding:5px"></div>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void *<b><tt>obstack_next_free</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Belirtilen büyüyen nesnenin sonundan sonraki adres ile döner. Bkz. <a href="../glibc/glibc-Obstacks.html#glibc-Status-of-an-Obstack" class="xref" title="Bir Yığınağın Durumu">Bir Yığınağın Durumu</a>.
+</div></dd></dl><div style="padding:5px"></div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Allocation-Debugging.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Memory-Allocation.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Variable-Size-Automatic.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Bellek Ayırmada Hata Ayıklama </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Değişken Boyutlu Özdevinimli Saklama</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

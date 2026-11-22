@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:25+03:00" /><title>mod_php Ön Gereksinimleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/apache-compile-howto.html" title="Apache Derleme NASIL" /><link rel="previous" href="../howto/apache-compile-howto-compress.html" title="Sıkıştırılmış Dağıtım" /><link rel="next" href="../howto/apache-compile-howto-phpext.html" title="PHP Eklentileri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">mod_php Ön Gereksinimleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/apache-compile-howto-compress.html">Önceki</a> </td><th width="60%" align="center">Apache Derleme NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/apache-compile-howto-phpext.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="apache-compile-howto-php" id="apache-compile-howto-php"></a><tt>mod_php</tt> Ön Gereksinimleri</div><dl><dd> <div class="head3"><a name="id1" id="id1"></a><tt>mod_php</tt> nedir?</div><dl><dd><div class="blockquote"><div class="para">
+PHP sunucu taraflı, HTML içine gömülü bir betik dilidir.
+</div><div class="para">
+İlk başlarda sadece bir misafir defteri işlemcisiydi, gelişti, gelişti. 3.0 sürümünden itibaren gerçekten güçlü bir Web geliştirme dili oldu.</div><div class="attribution">    -- www.php.net</div></div><div class="para">
+4.0 sürümünden beri kurumsal web uygulamaları için yeteri kadar güvenli ve yeteneklidir. Çok güçlüdür, hemen hemen bütün önemli veritabanlarını destekler ve diğerlerini de ODBC (Open Database Connectivity) yoluyla destekler. Aynı donanımla, Windows sistemi üzerindeki ASP'den birkaç kat daha hızlıdır.
+      </div><div class="para">
+Yazdığınız koda bağlı olarak işlem hızını %50-%400 artıran APC (Alternatif PHP önbelleği) gibi eklentileri de mevcuttur.
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Ön Gereksinimler</div><dl><dd><div class="para">
+İhtiyaçlarınıza bağlı olarak öncelikle kurulması gereken bazı yazılımlar var. <b><tt>mod_auth_mysql</tt></b> tarafından ihtiyaç duyulduğundan, bu belgeye göre öncelikle kurulması gereken yazılım MySQL'dir.
+      </div> <div class="head4"><a name="id12" id="id12"></a>IMAP istemci</div><dl><dd><div> <div class="head5"><a name="id112" id="id112"></a>IMAP istemci nedir?</div></div><div class="para">
+IMAP <b><tt>I</tt></b>nternet <b><tt>M</tt></b>ail <b><tt>A</tt></b>pplication <b><tt>P</tt></b>rotocol sözcüklerinin baş harflerinden oluşmuş bir kısaltma olup,  POP'u (Posta Ofis Protokolü) ikame eder. Sunucu üzerinde yedeklenmesi gereken bütün epostalarınızı farklı dosyalarda saklamanıza izin verir. Önemli epostalarınızı kaybetmeyin, yedekleyin, Allah korusun, yerel diskiniz çökebilir.
+        </div></dd></dl> <div class="head4"><a name="id22" id="id22"></a>Kaynak paketini indirin</div><dl><dd><div class="para">Adres: <a class="ulink" href="http://www.washington.edu/imap/" target="_top">http://www.washington.edu/imap/</a></div></dd></dl> <div class="head4"><a name="id32" id="id32"></a>Derleme ve Kurulum</div><dl><dd>
+<div class="para"><div align="right"><pre class="screen">
+$ <b><tt>cd /usr/local</tt></b>
+
+$ <b><tt>tar -xvfz imap.tar.Z</tt></b>
+
+$ <b><tt>cd imap</tt></b>
+
+
+$ <b><tt>make slx SSLTYPE=nopwd</tt></b> <a name="apache-compile-howto-imap" id="apache-compile-howto-imap"></a><b style="background: transparent url(&quot;../images/xsl/callouts/1.png&quot;) no-repeat left 40%;">  </b>
+</pre></div></div>
+        <div class="para">
+<div class="calloutlist"><table border="0" summary="Dikkat edilecek hususlar" cellspacing="0" cellpadding="3" width="100%"><tr><td width="15" valign="top" align="left" class="coimage"><a href="#apache-compile-howto-imap"><img src="../images/xsl/callouts/1.png" alt="1" border="0" /></a> </td><td valign="top" align="left"><div class="para">
+SSL desteğine ihtiyacınız olup olmadığına göre <tt>SSLTYPE=unix</tt> parametreli tanımlayabilirsiniz. Belirtilmemesi SSL desteğinin olmaması ile sonuçlanır.
+</div></td></tr></table></div>
+        </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/tip.png" /></td><th class="admon">İndirilecek dosya</th></tr><tr><td align="left" valign="top" class="admon"><div class="para"><tt>imap.tar.Z</tt>, genellikle son sürüme sembolik bağdır, bugün <tt>imap-2005a.tar.Z</tt> dosyasına sembolik bağdır.</div></td></tr></table></div></dd></dl> <div class="head4"><a name="apache-compile-howto-postgresql" id="apache-compile-howto-postgresql"></a>PostgreSQL</div><dl><dd><div> <div class="head5"><a name="id142" id="id142"></a>PostgreSQL nedir?</div></div><div class="para">
+PostgreSQL çok güçlü ve hızlı bir veritabanıdır.
+          </div><div class="para">
+MySQL gibi, web uygulamaları için mükemmeldir. Benim görüşüme göre MySQL'i yönetmek kadar kolay ve rahat değil ama, web uygulamanız çokça veritabanına yazma ve hesap hareketlerine ihtiyaç duyuyorsa sizin için PostgreSQL daha uygun olacaktır.
+          </div><div> <div class="head5"><a name="id242" id="id242"></a>Kaynak paketini indirin</div></div><div class="para">Adres: <a class="ulink" href="http://www.postgresql.org" target="_top">http://www.postgresql.org</a>  (Size en yakın olan yansıyı seçiniz)</div><div> <div class="head5"><a name="id342" id="id342"></a>Derleme ve Kurulum</div></div>
+<div class="para"><div align="right"><pre class="screen">
+$ <b><tt>cd /usr/local</tt></b>
+
+$ <b><tt>tar -xvzf postgresql-7.3.2.tar.gz</tt></b>
+
+$ <b><tt>cd postgresql-7.3.2</tt></b>
+
+$ <b><tt>./configure \</tt></b>
+<b><tt>--with-perl \</tt></b>
+<b><tt>--enable-odbc \</tt></b>
+<b><tt>--with-unixodbc  \</tt></b>
+<b><tt>--with-pam \</tt></b>
+<b><tt>--with-openssl</tt></b>
+
+$ <b><tt>make</tt></b>
+# <b><tt>make install</tt></b>
+
+# <b><tt>echo /usr/local/pgsql/lib &gt;&gt; /etc/ld.so.conf</tt></b>
+
+# <b><tt>ldconfig</tt></b>
+</pre></div></div>
+          </dd></dl> <div class="head4"><a name="apache-compile-howto-sablotron" id="apache-compile-howto-sablotron"></a>Sablotron</div><dl><dd><div> <div class="head5"><a name="id152" id="id152"></a>Sablotron nedir?</div></div><div class="blockquote"><div class="para">Sablotron hızlı, bütünleşik ve taşınabilir XSLT 1.0, DOM Level2 ve XPath 1.0 için geliştirilen bir XML aracıdır. Sablotron açık bir projedir; kullanıcıları ve geliştiricileri onu geliştirmek ve denemek için kullanmaya veya denemeye teşvik edin. Bu projenin amacı, genel kullanıma açık ve çok platformlu XML uygulamalarında bir temel olarak kullanılabilecek, güvenilir, hızlı ve W3C şartlarına uyan bir kütüphane işlemcisi oluşturmaktır.</div><div class="attribution">    -- http://www.gingerall.com/charlie/ga/xml/p_sab.xml</div></div><div> <div class="head5"><a name="id252" id="id252"></a>Kaynak paketini indirin</div></div><div class="para">Adres: <a class="ulink" href="http://download-2.gingerall.cz/download/sablot/Sablot-0.97.tar.gz" target="_top">http://download-2.gingerall.cz/download/sablot/Sablot-0.97.tar.gz</a></div><div> <div class="head5"><a name="id352" id="id352"></a>Derleme ve Kurulum</div></div>
+<div class="para"><div align="right"><pre class="screen">
+$ <b><tt>tar -xvzf Sablot-0.97.tar.gz</tt></b>
+$ <b><tt>cd Sablot-0.97</tt></b>
+
+$ <b><tt>./configure</tt></b>
+$ <b><tt>make</tt></b>
+# <b><tt>make install</tt></b>
+
+# <b><tt>ldconfig</tt></b>
+</pre></div></div></dd></dl> <div class="head4"><a name="id62" id="id62"></a>pdflib</div><dl><dd><div> <div class="head5"><a name="id162" id="id162"></a>pdflib nedir?</div></div><div class="blockquote"><div class="para">PDFlib:  PDF üretmek için bir kütüphane. Sadece istendiğinde sunucuda PDF üreten kütüphane, ürününüzdeki metin ve grafikleri PDF biçimine çevirir.</div><div class="attribution">    -- www.pdflib.com</div></div><div class="para">Yazarın bakış açısından:</div>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/caution.png" /></td><th class="admon">Bu bir ticari üründür</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">PDFLIB bir ticari üründür, lisansını dikkatle okuyun ve "ticari bir lisansa ihtiyacınız olup olmadığına" karar verin.
+          </div></td></tr></table></div><div> <div class="head5"><a name="id262" id="id262"></a>Kaynak paketini indirin</div></div><div class="para">
+Adres: <a class="ulink" href="http://www.pdflib.com/pdflib/download/pdflib-4.0.3.tar.gz" target="_top">http://www.pdflib.com/pdflib/download/pdflib-4.0.3.tar.gz</a></div><div> <div class="head5"><a name="id362" id="id362"></a>Derleme ve Kurulum</div></div>
+<div class="para"><div align="right"><pre class="screen">
+$ <b><tt>cd /usr/local/</tt></b>
+$ <b><tt>tar -xvzf pdflib-4.0.3.tar.gz</tt></b>
+
+$ <b><tt>cd pdflib-4.0.3</tt></b>
+
+$ <b><tt>./configure --enable-shared-pdflib --enable-cxx</tt></b>
+
+$ <b><tt>make</tt></b>
+# <b><tt>make install</tt></b>
+
+# <b><tt>ldconfig</tt></b>
+</pre></div></div></dd></dl> <div class="head4"><a name="id72" id="id72"></a>gettext</div><dl><dd><div> <div class="head5"><a name="id172" id="id172"></a>gettext nedir?</div></div><div class="para">
+PHP tarafından ihtiyaç duyulan, yazılımın i18n (Internationalization, "I", 18 karakter ve "n"; Uluslararasılaştırma) uyumu için bir kütüphanedir.</div><div> <div class="head5"><a name="id272" id="id272"></a>Kaynak paketini indirin</div></div><div class="para">Adres: <a class="ulink" href="ftp://ftp.gnu.org/gnu/gettext" target="_top">ftp://ftp.gnu.org/gnu/gettext</a> (Size en yakın yansıyı seçiniz)</div><div> <div class="head5"><a name="id372" id="id372"></a>Derleme ve Kurulum</div></div>
+<div class="para"><div align="right"><pre class="screen">
+$ <b><tt>cd /usr/local</tt></b>
+
+$ <b><tt>tar -xvzf gettext-0.11.2.tar.gz</tt></b>
+
+$ <b><tt>cd gettext-0.11.2</tt></b>
+
+$ <b><tt>./configure</tt></b>
+
+$ <b><tt>make</tt></b>
+$ <b><tt>make check</tt></b>
+# <b><tt>make install</tt></b>
+
+# <b><tt>ldconfig</tt></b>
+</pre></div></div></dd></dl> <div class="head4"><a name="id82" id="id82"></a>zlib</div><dl><dd><div> <div class="head5"><a name="id182" id="id182"></a>zlib nedir?</div></div><div class="para">
+<b><tt>zlib</tt></b> hemen hemen bütün bilgisayar donanımlarında ve işletim sistemlerinde kullanılmak için kayıpsız veri sıkıştırma kütüphanesidir.
+        </div><div> <div class="head5"><a name="id282" id="id282"></a>Kaynak paketini indirin</div></div><div class="para">Adres: <a class="ulink" href="ftp://ftp.info-zip.org/pub/infozip/zlib/zlib-1.1.4.tar.gz" target="_top">ftp://ftp.info-zip.org/pub/infozip/zlib/zlib-1.1.4.tar.gz</a> (Size en yakın yansıyı seçiniz.)
+        </div><div> <div class="head5"><a name="id382" id="id382"></a>Derleme ve Kurulum</div></div>
+<div class="para"><div align="right"><pre class="screen">
+$ <b><tt>cd /usr/local</tt></b>
+
+$ <b><tt>tar -xvzf zlib-1.1.4.tar.gz</tt></b>
+
+$ <b><tt>cd zlib-1.1.4/</tt></b>
+
+$ <b><tt>./configure</tt></b>
+
+$ <b><tt>make</tt></b>
+$ <b><tt>make test</tt></b>
+# <b><tt>make install</tt></b>
+
+# <b><tt>ldconfig</tt></b>
+</pre></div></div></dd></dl></dd></dl> <div class="head3"><a name="apache-compile-howto-build-php" id="apache-compile-howto-build-php"></a>PHP4'ün Derlenmesi ve Kurulması</div><dl><dd>
+<div class="para"><div align="right"><pre class="screen">$ <b><tt>cd /usr/local</tt></b>
+
+$ <b><tt>tar -xvzf php-4.3.0.tar.gz</tt></b>
+
+$ <b><tt>cd php-4.3.0</tt></b>
+
+$ <b><tt>export LDFLAGS=-lstdc++</tt></b>
+
+$ <b><tt>./configure \</tt></b>
+<b><tt>--with-apxs=/usr/local/apache/bin/apxs \</tt></b>
+<b><tt>--with-mysql=/usr/local/mysql \</tt></b>
+<b><tt>--with-pgsql=/usr/local/pgsql \</tt></b>
+<b><tt>--enable-track-vars \</tt></b>
+<b><tt>--with-openssl=/usr/local/ssl \</tt></b>
+<b><tt>--with-imap=/usr/local/imap \</tt></b>
+<b><tt>--with-gd \</tt></b>
+<b><tt>--with-ldap \</tt></b>
+<b><tt>--enable-ftp \</tt></b>
+<b><tt>--enable-sysvsem \</tt></b>
+<b><tt>--enable-sysvshm \</tt></b>
+<b><tt>--enable-sockets \</tt></b>
+<b><tt>--with-pdflib=/usr/local \</tt></b>
+<b><tt>--with-gettext \</tt></b>
+<b><tt>--with-mm=/usr/local/mm-1.1.3 \</tt></b>
+<b><tt>--with-jpeg-dir=/usr/lib \</tt></b>
+<b><tt>--with-zlib-dir=/usr/local \</tt></b>
+<b><tt>--enable-wddx \</tt></b>
+<b><tt>--with-mcrypt \</tt></b>
+<b><tt>--with-mhash \</tt></b>
+<b><tt>--with-mcal=/usr \</tt></b>
+<b><tt>--enable-exif \</tt></b>
+<b><tt>--enable-xslt \</tt></b>
+<b><tt>--with-xslt-sablot=/usr/local \</tt></b>
+<b><tt>--with-dom \</tt></b>
+<b><tt>--with-dom-xslt</tt></b>
+</pre></div></div>
+      <div class="para">
+<tt>Makefile</tt>'ı düzenleyerek <tt>EXTRA_LIBS</tt> değişkenine <tt>-lstdc++</tt> atayın. Buna sadece, Sablotron 0.9.7 kullanıldığında ihtiyaç duyulur.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ <b><tt>make</tt></b>
+# <b><tt>make install</tt></b>
+</pre></div></div>
+    <div class="para">
+Kurulumdan sonra <tt>httpd.conf</tt> <b><tt>axps</tt></b> tarafından düzenlenir. Bakarsanız, aşağıdaki gibi gözükmesi gerekir:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+&lt;IfDefine SSL&gt;
+LoadModule ssl_module         libexec/libssl.so
+LoadModule php4_module        libexec/libphp4.so
+&lt;/IfDefine&gt;
+</pre></div></div>
+    <div class="para">
+Eğer Apache'yi <b><tt>mod_ssl</tt></b> ile derlediyseniz, php modülü sadece Apache ssl ile başlatıldığında (<b><tt>apachectl startssl</tt></b>) yüklenecektir. Eğer Apache'yi ssl desteği olmadan başlatacaksanız (ama bu belgede anlatıldığı gibi derlediyseniz), dosyayı aşağıdaki gibi değiştirmeniz gerekir:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+&lt;IfDefine SSL&gt;
+LoadModule ssl_module         libexec/libssl.so
+&lt;/IfDefine&gt;
+LoadModule php4_module        libexec/libphp4.so
+</pre></div></div>
+    <div class="para">
+<tt>php.ini-dist</tt> dosyasını  <tt>/usr/local/lib/php.ini</tt>'ye kopyalayın.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>cp /usr/local/php-4.3.0/php.ini-dist /usr/local/lib/php.ini</tt></b>
+</pre></div></div>
+    <div class="para">
+<tt>/usr/local/apache/conf/httpd.conf</tt>  dosyasının içinde, aşağıdaki satırların başındaki  "#" işaretini kaldırın.
+    </div><div class="para">
+Apache 1.3.27 öntanımlı olarak <tt>httpd.conf</tt>'ta başında "#" işareti bulunan satırları yoksayar. Satırların başlarındaki "#" işaretlerini kaldırmak yerine onları yeni birer satır olarak eklerseniz daha iyi olur.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+AddType application/x-httpd-php .php
+AddType application/x-httpd-php .phtml
+AddType application/x-httpd-php .php3
+
+# If you want to display PHP source
+
+AddType application/x-httpd-php-source .phps <a name="apache-compile-howto-source" id="apache-compile-howto-source"></a><b style="background: transparent url(&quot;../images/xsl/callouts/1.png&quot;) no-repeat left 40%;">  </b>
+</pre></div></div>
+    <div class="para">
+<div class="calloutlist"><table border="0" summary="Dikkat edilecek hususlar" cellspacing="0" cellpadding="3" width="100%"><tr><td width="15" valign="top" align="left" class="coimage"><a href="#apache-compile-howto-source"><img src="../images/xsl/callouts/1.png" alt="1" border="0" /></a> </td><td valign="top" align="left"><div class="para">
+Bu satır sadece, kaynak kodu tarayıcıda göstermek istediğinizde ihtiyaç duyulur. Dosya uzantısı <tt>.phps</tt> olmalıdır.
+</div></td></tr></table></div>
+    </div>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/tip.png" /></td><th class="admon">register_globals</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+PHP Versiyon 4.2.1'den beri <tt>register_globals</tt> değişkeninin değeri <tt>Off</tt>'tur. Bu da <tt>$HTTP_GET_VARS</tt> yöntemini kullanmadan çalışan PHP kodunda sorun çıkarır. <tt>register_globals</tt>'ı etkin kılmak için <tt>/usr/local/lib/php.ini</tt> dosyasında aşağıdaki satırı düzenleyiniz.
+    </div>
+<div class="para"><div align="right"><pre class="screen">register_globals = On</pre></div></div>
+    <div class="para">
+Eğer yeni yöntemleri kullanan yeni bir yazılım geliştiriyorsanız, lütfen bunu yapmadan önce iyi düşünün. Eski yöntemler er veya geç desteklenmez olacaktır.
+    </div></td></tr></table></div><div class="para">
+Apache'yi aşağıdaki gibi yeniden başlatın:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>/usr/local/apache/bin/apachectl restart</tt></b></pre></div></div>
+    </dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/apache-compile-howto-compress.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/apache-compile-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/apache-compile-howto-phpext.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Sıkıştırılmış Dağıtım </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> PHP Eklentileri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:26:30+03:00" /><title>Genelleme Seçenekleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Globbing.html" title="Genelleme" /><link rel="previous" href="../glibc/glibc-Calling-Glob.html" title="glob çağrısı" /><link rel="next" href="../glibc/glibc-More-Flags-for-Globbing.html" title="Diğer Genelleme Seçenekleri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Genelleme Seçenekleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Calling-Glob.html">Önceki</a> </td><th width="60%" align="center">Genelleme</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-More-Flags-for-Globbing.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Flags-for-Globbing" id="glibc-Flags-for-Globbing"></a>Genelleme Seçenekleri</div><dl><dd><div class="para">
+Bu bölümde <b><tt>glob</tt></b> işlevinin <i><tt>seçenekler</tt></i> argümanında belirtilebilecek seçenekler açıklanmıştır. Seçtiğiniz seçenekleri C'nin bit seviyesi VEYA işleci olan <b><tt>|</tt></b> işlecini kullanarak birlikte belirtebilirsiniz.
+    </div><div class="variablelist"><dl><dt><span class="term"><b><tt>GLOB_APPEND</tt></b></span></dt><dd class="varlist"><div class="para">
+Önceki bir <b><tt>glob</tt></b> çağrısı ile üretilen dizge göstericileri dizisine bu genişletmeden dizgeler eklenir. İşlem bir dizgeye aralarında boşluklar bırakarak yeni sözcükler eklenmesi gibidir.
+       </div><div class="para">
+Ekleme işlemi sırasında, <b><tt>glob</tt></b> çağrısından önce dizge göstericileri dizisine ilişkin bilgileri içeren yapının içeriğinde değişiklik yapmamalısınız. Eğer ilk çağrıda <b><tt>GLOB_DOOFFS</tt></b> seçeneğini kullanmışsanız, ekleme amacıyla yaptığınız çağrıda da bu seçeneği kullanmalısınız.
+       </div><div class="para">
+Yapının <b><tt>gl_pathv</tt></b> üyesindeki gösterici ikinci <b><tt>glob</tt></b> çağrısından sonra artık geçerli olmayacaktır, çünkü <b><tt>glob</tt></b> işlevi diziyi yeniden ayırır. Böylece her <b><tt>glob</tt></b> çağrısından sonra <b><tt>glob_t</tt></b> yapısının <b><tt>gl_pathv</tt></b> üyesinden doğru gösterici elde edilir; çağrılar arasında gösterici asla saklanmamalıdır.
+       </div></dd><dt><span class="term"><tt>GLOB_DOOFFS</tt></span></dt><dd class="varlist"><div class="para">
+Gösterici dizisinin başlangıcında boş göstericiler bırakır. <b><tt>gl_offs</tt></b> alanında bunun sayısı belirtilir.
+       </div></dd><dt><span class="term"><tt>GLOB_ERR</tt></span></dt><dd class="varlist"><div class="para">
+Eğer <i><tt>kalıp</tt></i>'ın eşleştirilmesi sırasında okunması gereken dizinlerin okunmasında zorluk varsa, bir hata raporlanır ve hemen çıkılır. Okunmak istenen dizinin erişim izinlerinin yetersizliği bu zorluklardan biridir.
+       </div><div class="para">
+<b><tt>glob</tt></b> çağrısında hataları elde edebilen bir <i><tt>hata-işlevi</tt></i> belirterek bu hatalar üzerinde daha fazla denetim sağlayabilirsiniz. <i><tt>hata-işlevi</tt></i> olarak bir boş gösterici belirtmemişseniz, <b><tt>glob</tt></b> bir dizini okuyamadığında hemen çıkmaz, iki argümanla şuna benzer biçimde <i><tt>hata-işlevi</tt></i> işlevini çağırır:
+       </div>
+<div class="para"><pre class="literallayout">
+(*<i><tt>hata-işlevi</tt></i>) (<i><tt>dosyaismi</tt></i>, <i><tt>hatakodu</tt></i>)
+</pre></div><div class="para">
+<i><tt>dosyaismi</tt></i> argümanı <b><tt>glob</tt></b> işlevinin açamadığı ya da okuyamadığı dizinin ismidir, <i><tt>hatakodu</tt></i> ise <b><tt>glob</tt></b> tarafından raporlanan <b><tt>errno</tt></b> değeridir.
+       </div><div class="para">
+Hata eylemci işlev sıfırdan farklı bir değerle dönerse <b><tt>glob</tt></b> hemen döner, aksi takdirde işleme devam eder.
+       </div></dd><dt><span class="term"><tt>GLOB_MARK</tt></span></dt><dd class="varlist"><div class="para">
+Kalıp dizin ismiyle eşleşirse, dizin ismi döndürülürken ismine <b><tt>/</tt></b> eklenir.
+       </div></dd><dt><span class="term"><tt>GLOB_NOCHECK</tt></span></dt><dd class="varlist"><div class="para">
+Eğer kalıp hiçbir dosya ismiyle eşleşmezse, işlev sanki bir eşleşme bulunmuş gibi döner. (Normalde, kalıp hiçbirşeyle eşleşmemişse <b><tt>glob</tt></b> eşleşme bulunmadığını belirtecek şekilde döner.)
+       </div></dd><dt><span class="term"><tt>GLOB_NOSORT</tt></span></dt><dd class="varlist"><div class="para">
+Dosya isimleri alfabetik olarak sıralanmaz; okundukları sırada döndürülürler. (Pratikte sıralama, dosyaların dizine giriş sırasına bağlıdır.) Sıralama yapılmak istenmemesinin tek sebebi zaman kazanmak olabilir.
+       </div></dd><dt><span class="term"><tt>GLOB_NOESCAPE</tt></span></dt><dd class="varlist"><div class="para">
+Kalıpta <b><tt>\</tt></b> karakteri özel olarak değil kendisi olarak ele alınır. Normalde, <b><tt>\</tt></b> başka bir karakteri öncelemek için kullanılır. Bu seçenek bu şekilde yorumlanmasını engeller. Önceleme etkinse, <b><tt>\?</tt></b> kalıbı sadece <b><tt>?</tt></b> dizgesiyle eşleşir, çünkü bu biçimde belirtilen soru işareti kalıpta sıradan bir karakter olarak işlem görür.
+       </div><div class="para">
+<b><tt>GLOB_NOESCAPE</tt></b> seçeneği etkinse,<b><tt>\</tt></b> bir sıradan karakterdir.
+       </div><div class="para">
+<b><tt>glob</tt></b> işlevi <b><tt>fnmatch</tt></b> işlevini defalarca çağırarak çalışır.  <b><tt>GLOB_NOESCAPE</tt></b> seçeneğini <b><tt>fnmatch</tt></b> çağrılarında <b><tt>FNM_NOESCAPE</tt></b> seçeneğini etkinleştirmek için kullanır.
+       </div></dd></dl></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Calling-Glob.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Globbing.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-More-Flags-for-Globbing.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">glob çağrısı </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Diğer Genelleme Seçenekleri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

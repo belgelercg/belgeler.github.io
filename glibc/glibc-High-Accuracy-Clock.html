@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:23+03:00" /><title>Yüksek Doğrulukta Saat</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Calendar-Time.html" title="Mutlak Zaman" /><link rel="previous" href="../glibc/glibc-Broken-down-Time.html" title="Yerel Zaman" /><link rel="next" href="../glibc/glibc-Formatting-Calendar-Time.html" title="Zaman Değerlerinin Biçimlenmesi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Yüksek Doğrulukta Saat</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Broken-down-Time.html">Önceki</a> </td><th width="60%" align="center">Mutlak Zaman</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Formatting-Calendar-Time.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-High-Accuracy-Clock" id="glibc-High-Accuracy-Clock"></a>Yüksek Doğrulukta Saat</div><dl><dd><div class="para">
+<a class="indexterm" name="idx2400" id="idx2400"></a>
+<a class="indexterm" name="idx2401" id="idx2401"></a>
+<a class="indexterm" name="idx2402" id="idx2402"></a>
+<a class="indexterm" name="idx2403" id="idx2403"></a>
+<a class="indexterm" name="idx2404" id="idx2404"></a>
+<b><tt>ntp_gettime</tt></b> ve <b><tt>ntp_adjtime</tt></b> işlevleri doğruluğunu arttırmak amacıyla sistem saatini izlemek ve değiştirmek için bir arayüz sağlar. Örneğin, saat hızını daha iyi bir ayar için hızlandırabilir ya da başka bir kaynaktan saati ayarlayabilirsiniz.
+    </div><div class="para">
+Bu işlevler özellikle çok sayıda sistemin saatini yüksek hassasiyetli bir saat kullanarak ayarlamak için ağ zaman protokolü (NTP - Network Time Protocol) ile gerçeklenmiş sunucular tarafından kullanılır.
+    </div><div class="para">
+Bu işlevler <tt>sys/timex.h</tt> başlık dosyasında bildirilmiştir.
+    </div>
+<a class="indexterm" name="idx2405" id="idx2405"></a>
+<a name="glibc-struct-ntptimeval" id="glibc-struct-ntptimeval"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct <b><tt>ntptimeval</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+Bu yapı sistem saati ile ilgili bilgiler için kullanılır. Şu üyelere sahiptir:
+   </div><dl><dt><span class="glossterm">
+   <tt>struct <b><tt>timeval time</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Mutlak zaman başlangıcından (epoch) itibaren geçen süre olarak ifade edilen, o anki mutlak zamandır. <b><tt>struct timeval</tt></b> veri türü <a href="../glibc/glibc-Elapsed-Time.html" class="xref" title="Süre">Süre</a> bölümünde açıklanmıştır.
+   </div></dd><dt><span class="glossterm">
+   <tt>long int <b><tt>maxerror</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Mikrosaniyeler cinsinden ölçülen en büyük hata miktarıdır. <b><tt>ntp_adjtime</tt></b> ile düzenli aralıklarla güncellenmedikçe, bu değer platforma özel en büyük değere ulaşacaktır.
+   </div></dd><dt><span class="glossterm">
+   <tt>long int <b><tt>esterror</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Mikrosaniyeler cinsinde ölçülen tahmini hatadır. Bu değer gerçek mutlak zamandaki sistem saatinin tahmini ayar noktasını belirtmek için <b><tt>ntp_adjtime</tt></b> tarafından ayarlanabilir.
+   </div></dd></dl>
+</dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2406" id="idx2406"></a>
+<a name="glibc-ntp_gettime" id="glibc-ntp_gettime"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>ntp_gettime</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct ntptimeval *<i><tt>tptr</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>ntp_gettime</tt></b> işlevi <i><tt>tptr</tt></i> tarafından gösterilen yapıyı o anki değerlerle doldurur. Bundan sonra yapının elemanları çekirdeğin kabul ettiği zamanlayıcı gerçeklemesinin değerlerini içerir. Böyle değilse, bir <b><tt>ntp_adjtime</tt></b> çağrısı gerekir.
+    </div><div class="para">
+Başarı durumunda dönüş değeri sıfır, aksi takdirde sıfırdan farklıdır. Aşağıdaki <b><tt>errno</tt></b> değeri bu işlev için atanmıştır:
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>TIME_ERROR</tt></span></dt><dd class="varlist"><div class="para">
+Hassas saat modeli şu an için düzgün olarak ayarlanamadı; saat eşzamanlanmış kabul edilemediğinden bu değerleri dikkatli kullanmalısınız.
+       </div></dd></dl></div>
+</dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2407" id="idx2407"></a>
+<a name="glibc-struct-timex" id="glibc-struct-timex"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct <b><tt>timex</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+Bu yapı sistem saatini izlemek ve denetlemek için kullanılır. Şu üyeleri içerir:
+   </div><dl><dt><span class="glossterm">
+   <tt>unsigned int<b><tt>modes</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Hangi kiplerin geçerli olduğunu belirtir. Etkin kip belirtmek için çeşitli sembolik sabitler "ikil veya"lanarak birleştirilebilir. Bu sabitler <b><tt>MOD_</tt></b> ile başlar.
+   </div></dd><dt><span class="glossterm">
+   <tt>long int <b><tt>offset</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Gerçek mutlak zamandaki sistem saatinin o anki ayar noktasını belirtir. Değer mikrosaniye cinsindendir. <b><tt>modes</tt></b> üyesinde <b><tt>MOD_OFFSET</tt></b> biti varsa ayar noktası (ve olası başka bağımlı değerler) atanmış olabilir. Ayar noktasının mutlak değeri <b><tt>MAXPHASE</tt></b>'dan büyük olmamalıdır.
+   </div></dd><dt><span class="glossterm">
+   <tt>long int <b><tt>frequency</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Gerçek mutlak zamanla sistem saati arasındaki farkı frekans olarak belirtir. Değer bir PPM oranıdır (milyonda birlik değerler, 0.0001%). Oranlama <b><tt>1 &lt;&lt; SHIFT_USEC</tt></b>'dir. Değer, <b><tt>MOD_FREQUENCY</tt></b> biti ile atanabilir, fakat <b><tt>MAXFREQ</tt></b> değerinden büyük olamaz.
+   </div></dd><dt><span class="glossterm">
+   <tt>long int <b><tt>maxerror</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Mikrosaniyeler cinsinden ölçülen en büyük hata miktarıdır. Yeni bir değer <b><tt>MOD_MAXERROR</tt></b> biti kullanılarak atanabilir. <b><tt>ntp_adjtime</tt></b> ile düzenli aralıklarla güncellenmedikçe, bu değer platforma özel en büyük değere ulaşacaktır.
+   </div></dd><dt><span class="glossterm">
+   <tt>long int <b><tt>esterror</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Mikrosaniyeler cinsinden ölçülen tahmini hata miktarıdır. Yeni bir değer <b><tt>MOD_ESTERROR</tt></b> biti kullanılarak atanabilir.
+   </div></dd><dt><span class="glossterm">
+   <tt>int <b><tt>status</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Bu üye, saat çarkının çeşitli durumlarını gösterir. Bunlar önemli bitlerle ifade edilen sembolik sabitlerdir ve <b><tt>STA_</tt></b> ile başlarlar. Bu bitlerin bazıları <b><tt>MOD_STATUS</tt></b> biti kullanılarak güncellenebilir.
+   </div></dd><dt><span class="glossterm">
+   <tt>long int <b><tt>constant</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Çekirdek içinde gerçeklenmiş PLL'in (phase locked loop - faz kilitlemeli çevrim) değişmezliğini ya da band genişliğini ifade eder. Bu değer <b><tt>MOD_TIMECONST</tt></b> biti kullanılarak değiştirilebilir.
+   </div></dd><dt><span class="glossterm">
+   <tt>long int <b><tt>precision</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Sistem saati okumasındaki en büyük hatayı ya da doğruluğu ifade eder. Değer mikrosaniye cinsindendir.
+   </div></dd><dt><span class="glossterm">
+   <tt>long int <b><tt>tolerance</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Sistem saatindeki en büyük frekans hatasını milyonda birlik değerler (PPM) olarak ifade eder. Bu değer <b><tt>maxerror</tt></b>'ü her saniyede bir arttırmakta kullanılır.
+   </div></dd><dt><span class="glossterm">
+   <tt>struct timeval <b><tt>time</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+O anki mutlak zamanı gösterir.
+   </div></dd><dt><span class="glossterm">
+   <tt>long int <b><tt>tick</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Mikrosaniye cinsinden saat tikleri arasındaki süredir. Bir saat tiki sistem saatinin temel aldığı sürekli tekrarlanan bir zamanlayıcı kesmesidir.
+   </div></dd><dt><span class="glossterm">
+   <tt>long int <b><tt>ppsfreq</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Sistem saatinin zapturapt altına alınması için saniyede bir darbelik (PPS) bir sinyalin kullanılması durumunda anlamlı olan bir kaç isteğe bağlı üyeden ilkidir. Değer milyonda birlik (PPM) bir oran olarak, sistem saati ile PPS sinyali arasındaki frekans farkını belirtir.
+   </div></dd><dt><span class="glossterm">
+   <tt>long int <b><tt>jitter</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+PPS sinyalindeki saçılmanın ortasına göre mikrosaniye cinsinden bir ortalamasıdır.
+   </div></dd><dt><span class="glossterm">
+   <tt>int <b><tt>shift</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+PPS kalibrasyon aralığının <b><tt>PPS_SHIFT</tt></b>'den <b><tt>PPS_SHIFTMAX</tt></b>'a kadar ikilik üstel değeridir.
+   </div></dd><dt><span class="glossterm">
+   <tt>long int <b><tt>stabil</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+PPS sinyalindeki ortasına göre saçılmanın milyonda birlik (PPM) oranıdır.
+   </div></dd><dt><span class="glossterm">
+   <tt>long int <b><tt>jitcnt</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Seğirmenin (jitter) izin verilen en büyük değer olan <b><tt>MAXTIME</tt></b>'ı aştığında darbe sayısını gösteren bir sayaçtır.
+   </div></dd><dt><span class="glossterm">
+   <tt>long int <b><tt>calcnt</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Başarılı kalibrasyon aralıklarının sayısını gösteren bir sayaçtır.
+   </div></dd><dt><span class="glossterm">
+   <tt>long int <b><tt>errcnt</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Kalibrasyon hatalarının sayısını gösteren bir sayaçtır (hatalar çok geniş ayar aralıklarından ya da seğirmelerden kaynaklanır).
+   </div></dd><dt><span class="glossterm">
+   <tt>long int <b><tt>stbcnt</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Kararlılık eşiği aşıldığında yapılan kalibrasyonların sayısını gösteren bir sayaçtır.
+   </div></dd></dl>
+</dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2408" id="idx2408"></a>
+<a name="glibc-ntp_adjtime" id="glibc-ntp_adjtime"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>ntp_adjtime</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct timex *<i><tt>tptr</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>ntp_adjtime</tt></b> işlevi <i><tt>tptr</tt></i> ile gösterilen yapıyı o anki değerlerle doldurur.
+    </div><div class="para">
+Ek olarak, <b><tt>ntp_adjtime</tt></b> işlevi *<i><tt>tptr</tt></i> içinde aktardığınız değerlerle eşleşen bazı ayarları günceller. Güncellenecek ayarları belirtmek için *<i><tt>tptr</tt></i>'nin <b><tt>modes</tt></b> elemanı kullanılır. Bu yolla, <b><tt>offset</tt></b>, <b><tt>freq</tt></b>, <b><tt>maxerror</tt></b>, <b><tt>esterror</tt></b>, <b><tt>status</tt></b>, <b><tt>constant</tt></b> ve <b><tt>tick</tt></b> değerlerini güncelleyebilirsiniz.
+    </div><div class="para">
+<b><tt>modes</tt></b> = sıfır ise hiçbir şey yapılmaz.
+    </div><div class="para">
+Yalnız süper kullanıcı bu ayarları güncelleyebilir.
+    </div><div class="para">
+Başarı durumunda dönüş değeri sıfır, aksi takdirde sıfırdan farklıdır. Aşağıdaki <b><tt>errno</tt></b> değerleri bu işlev için atanmıştır:
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>TIME_ERROR</tt></span></dt><dd class="varlist"><div class="para">
+Hassas saat modeli şu an için düzgün olarak ayarlanamadı; saat eşzamanlanmış kabul edilemediğinden bu değerleri dikkatli kullanmalısınız. Başka bir sebep de izin verilmediği halde yeni değerlerin belirtilmesi olabilirdi.
+       </div></dd><dt><span class="term"><tt>EPERM</tt></span></dt><dd class="varlist"><div class="para">
+Süreç bir ayarın güncellenmesini belirtiyor ama süper kullanıcı değil.
+       </div></dd></dl></div>
+     <div class="para">
+Daha ayrıntılı bilgi için RFC1305 (Network Time Protocol, Version 3 [Ağ Zaman Protokolü, 3. sürüm]) ve onunla ilgili belgelere bakınız.
+    </div>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Taşınabilirlik Bilgisi</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">GNU C kütüphanesinin eski sürümlerinde bu işlev yoktu ama eşanlamlısı olan <b><tt>adjtimex</tt></b> işlevi vardı.</div></td></tr></table></div>
+  </dd></dl><div style="padding:5px"></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Broken-down-Time.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Calendar-Time.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Formatting-Calendar-Time.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Yerel Zaman </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Zaman Değerlerinin Biçimlenmesi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

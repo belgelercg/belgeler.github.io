@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:07+03:00" /><title>openlog</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Submitting-Syslog-Messages.html" title="Syslog İletilerinin Teslim Edilmesi" /><link rel="previous" href="../glibc/glibc-Submitting-Syslog-Messages.html" title="Syslog İletilerinin Teslim Edilmesi" /><link rel="next" href="../glibc/glibc-syslog--vsyslog.html" title="syslog, vsyslog" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">openlog</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Submitting-Syslog-Messages.html">Önceki</a> </td><th width="60%" align="center">Syslog İletilerinin Teslim Edilmesi</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-syslog--vsyslog.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-openlog" id="glibc-openlog"></a>openlog</div><dl><dd><div class="para">
+Bu böümdeki semboller  <tt>syslog.h</tt> dosyasında bildirilmiştir.
+<a class="indexterm" name="idx1836" id="idx1836"></a>
+    </div>
+<a class="indexterm" name="idx1837" id="idx1837"></a>
+<a name="glibc-func-openlog" id="glibc-func-openlog"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>openlog</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *<i><tt>kimlik</tt></i>,
+ int         <i><tt>seçenek</tt></i>,
+ int         <i><tt>oluşum</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>openlog</tt></b> işlevi iletileri teslim etmek için Syslog'a bir bağlantı açar ya da bir bağlantıyı yeniden açar.
+    </div><div class="para">
+<i><tt>kimlik</tt></i> ileride yapılacak <b><tt>syslog</tt></b> çağrılarında iletinin başına eklenecek keyfi bir kimliklendirme dizgesidir. Bu iletinin kaynağını belirtmek için düşünülmüştür ve teamülen iletileri teslim edecek yazılımın ismidir.
+    </div><div class="para">
+Eğer <i><tt>kimlik</tt></i> bir boş gösterici ise ya da <b><tt>openlog</tt></b> çağrısı yapılmazsa, ön tanımlı kimliklendirme dizgesi <tt>argv[0]</tt>'dan alınan yazılım ismi olacaktır.
+    </div><div class="para">
+<i><tt>kimlik</tt></i> dizge göstericisinin Syslog yordamları tarafından dahili olarak saklanacağını lütfen hatırlayın. <i><tt>kimlik</tt></i> ile gösterilen belleği serbest bırakmamalısınız. Etki alanından çıkmak değişkenin yaşamının sonu demek olduğundan dizgeyi bir özdevinimli değişkende saklamak ayrıca tehlikelidir de. <i><tt>kimlik</tt></i> dizgesini değiştirmek isterseniz <b><tt>openlog</tt></b> işlevini tekrar çağırmalısınız; <i><tt>kimlik</tt></i> ile gösterilen dizgeye yazma işlemi evresel değildir.
+    </div><div class="para">
+Syslog yordamlarının <i><tt>kimlik</tt></i> başvurusunu bırakmasını sağlayabilir ve <b><tt>closelog</tt></b> çağrısı ile öntanımlı dizgeye (<tt>argv[0]</tt>'dan alınan yazılım ismi) geri dönebilirsiniz: <a href="../glibc/glibc-closelog.html" class="xref" title="closelog">closelog</a>.
+    </div><div class="para">
+Kodu, yüklenebilen bir paylaşımlı kütüphane (örn, bir PAM modülü) için yazıyorsanız ve <b><tt>openlog</tt></b> kullanıyorsanız, kütüphaneyi yüklenmemiş duruma getirmeden önce bir noktada <b><tt>closelog</tt></b> çağrısı yapmalısınız. Bir örnek:
+    </div>
+<div class="para"><div align="right"><pre class="screen">#include &lt;syslog.h&gt;
+
+void
+shared_library_function (void)
+{
+  openlog ("mylibrary", option, priority);
+
+  syslog (LOG_INFO, "shared library has been invoked");
+
+  closelog ();
+}
+</pre></div></div><div class="para">
+<b><tt>closelog</tt></b> çağrılmaksızın kütüphane yüklenmemiş duruma getirilip <b><tt>"mylibrary"</tt></b> dizgesini içeren bellek anlamsız hale getirilirse, kütüphaneyi kullanan yazılım tarafından ileride yapılacak bir <b><tt>syslog</tt></b> çağrısı bir çökmeye sebep olabilir. Bu BSD syslog arayüzünün bir sınırlamasıdır.
+    </div><div class="para">
+<b><tt>openlog</tt></b> işlevi <i><tt>seçenek</tt></i> değerine bağlı olarak <b><tt>/dev/log</tt></b> soketini açabilir de açmayabilir de. Eğer açması gerekiyorsa, onu açmayı dener ve bir datagram soketi olarak ona bağlanır. Soket, "Close on Exec" özniteliğine sahiptir, bu bakımdan eğer süreç bir <b><tt>exec</tt></b> çağrısı yaparsa çekirdek onu kapatacaktır.
+    </div><div class="para">
+<b><tt>openlog</tt></b> kullanmak zorunda değilsiniz. Eğer <b><tt>openlog</tt></b> çağrısı yapmaksızın bir  <b><tt>syslog</tt></b> çağrısı yaprsanız, <i><tt>kimlik</tt></i> ve
+<i><tt>options</tt></i> için öntanımlı değerler kullanılarak bağlantı anında açılır.
+    </div><div class="para">
+<i><tt>options</tt></i> bir bit dizgesidir. Bitler aşağıdaki tek bitlik maskelerle tanımlanmıştır:
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>LOG_PERROR</tt></span></dt><dd class="varlist"><div class="para">
+Bit varsa, <b><tt>openlog</tt></b> bağlantıyı öyle ayarlar ki, bu bağlantı üzerinden yapılan herhangi bir <b><tt>syslog</tt></b> çağrısı iletiyi Syslog'a teslim ederken ek olarak iletiyi sürecin standart hata akımına yazar. Aksi takdirde, <b><tt>syslog</tt></b> iletiyi standart hataya yazmaz.
+       </div></dd><dt><span class="term"><tt>LOG_CONS</tt></span></dt><dd class="varlist"><div class="para">
+Bit varsa, <b><tt>openlog</tt></b> bağlantıyı öyle ayarlar ki, bu bağlantı üzerinden yapılan herhangi bir <b><tt>syslog</tt></b> çağrısında bir ileti Syslog'a teslim edilemezse ileti sistem konsoluna yazılır. Aksi takdirde,  <b><tt>syslog</tt></b> çağrısı sistem konsoluna yazmaz (ama şüphesiz kendi konsoluna yazabilir).
+       </div></dd><dt><span class="term"><tt>LOG_PID</tt></span></dt><dd class="varlist"><div class="para">
+Bit varsa, <b><tt>openlog</tt></b> bağlantıyı öyle ayarlar ki, bu bağlantı üzerinden yapılan herhangi bir <b><tt>syslog</tt></b> çağrısında, çağrıldığı sürecin süreç kimliğini (PID) iletiye yerleştirir. Aksi takdirde, <b><tt>openlog</tt></b> PID'i yerleştirmez.
+       </div></dd><dt><span class="term"><tt>LOG_NDELAY</tt></span></dt><dd class="varlist"><div class="para">
+Bit varsa, <b><tt>openlog</tt></b>, <b><tt>/dev/log</tt></b> soketini açar ve bağlanır. Aksi tadirde, ileride yapılacak bir <b><tt>syslog</tt></b> çağrısı soketi açmalı ve bağlanmalıdır.
+       </div>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Taşınabilirlik Bilgisi</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">Erken dönemdeki sistemlerde, bu bit tamamen ters çalışırdı.</div></td></tr></table></div>
+       </dd><dt><span class="term"><tt>LOG_ODELAY</tt></span></dt><dd class="varlist"><div class="para">
+Bu bit hiçbir şey yapmaz. Sadece geriye uyumluluk adına vardır.
+       </div></dd></dl></div><div class="para">
+<i><tt>options</tt></i> içindeki diğer bitler birse sonuç belirsizdir.
+    </div><div class="para">
+<i><tt>oluşum</tt></i> bu bağlantı için öntanımlı oluşum kodudur. Bu bağlantı üzerinden öntanımlı oluşum belirten bir <b><tt>syslog</tt></b> çağrısı, iletinin bu oluşumla ilişkilendirilmesine sebep olur. Olası değerler için <b><tt>syslog</tt></b> işlevinin açıklamasına bakın. Belirtilen bir sıfır değeri öntanımlı olan <b><tt>LOG_USER</tt></b>'ı öntanımlı oluşum yapar.
+    </div><div class="para">
+<b><tt>openlog</tt></b> çağrısı yaptığınızda, eğer bir Syslog bağlantısı zaten açıksa, <b><tt>openlog</tt></b> bağlantıyı "yeniden" açar. Yeniden açma öntanımlı oluşum kodu için sıfır belirtilmesi dışında açma gibidir, öntanımlı kod basitçe değişmeden kalır ve <b><tt>LOG_NDELAY</tt></b> belirtilmişse, soket zaten açık ve bağlı olduğundan <b><tt>openlog</tt></b> onu olduğu gibi bırakır.
+    </div></dd></dl><div style="padding:5px"></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Submitting-Syslog-Messages.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Submitting-Syslog-Messages.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-syslog--vsyslog.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Syslog İletilerinin Teslim Edilmesi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> syslog, vsyslog</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

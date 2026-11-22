@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:16+03:00" /><title>Önyükleme sürecine yakından bakalım</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../sag/sag_boots-and-shutdowns.html" title="Açılışlar ve Kapanışlar" /><link rel="previous" href="../sag/sag_boots-and-shutdowns_overview.html" title="Açılışlar ve kapanışlara genel bir bakış" /><link rel="next" href="../sag/sag_boots-and-shutdowns-shuts.html" title="Kapanışla ilgili ayrıntılar" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Önyükleme sürecine yakından bakalım</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../sag/sag_boots-and-shutdowns_overview.html">Önceki</a> </td><th width="60%" align="center">Açılışlar ve Kapanışlar</th><td width="20%" align="right"> <a accesskey="n" href="../sag/sag_boots-and-shutdowns-shuts.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="sag_boots-and-shutdowns_booting" id="sag_boots-and-shutdowns_booting"></a>Önyükleme sürecine yakından bakalım</div><dl><dd><div class="para">
+      Linux işletim sistemini sabit diskten veya bir disketten
+      başlatabilirsiniz. "Kurulum ve Başlatma Kılavuzu"nun (Installation
+      and Getting Start Guide) Kurulum bölümü Linux'un nasıl kurulacağını
+      ve nasıl istediğiniz şekilde açılış işlemini gerçekleştirebileceğinizi
+      anlattır.
+    </div><div class="para">
+      Bir PC açıldığında BIOS her şeyin sağlıklı bir şekilde çalışıp
+      çalışmadığını anlamak için pek çok testler yapar<sup>[<a name="id125" href="#ftn.id125" id="id125">125</a>]</sup> ve daha sonra asıl açılış işlemine
+      geçilir.  Bir disk sürücüsü seçip onun ilk sektörünü okur. Genel
+      seçim sırası şu şekildedir: ilk önce disket sürücüye bakılır, orada
+      bir disket yok ise sabit diske bakılır, orada da önyükleme sektörü
+      yoksa CDROM sürücü ve diğer aygıtlara bakılır. Bu açılış sırası
+      kullanıcıya göre değiştirilebilir.  Bu ilk sektöre <span><i>önyükleme
+      sektörü</i></span> denir, şayet bu önyükleme sektörü bir sabit disk
+      üzerinde ise buna <span><i>Ana Önyükleme Sektörü</i></span>
+      (Master Boot Sector - MBR) adı verilir, çünkü sabit disk üzerinde
+      pek çok bölüm ve her bölümün kendine ait bir önyükleme sektörü
+      olabilir.
+    </div><div class="para">
+      Önyükleme sektörü, sorumluluğu gerçek işletim sistemini diskten
+      okuyup başlatmak olan, küçük bir (ama bir sektörü doldurur)
+      program içerir.  Şayet disketten açılış yapılacaksa önyükleme
+      sektörü içerisindeki kodlar sadece, bellek içine daha önceden
+      kararlaştırılmış bir yerde bulunan ilk birkaç yüz bloğu okur.
+      Tabii ki bu blokların sayısı çekirdeğin gerçek boyutuna
+      dayanmaktadır. Bir Linux açılış disketi içinde dosya sistemi
+      yoktur.  Açılış işlemini basitleştirmek için ardışık bloklar
+      içine yerleştirilmiş çekirdek kodları bulunur. Bununla beraber
+      içinde LILO (LInux LOader - Linux Yükleyicisi) bulunan ve
+      bir dosya sistemine sahip bir disket ile de sistemi açabilirsiniz.
+    </div><div class="para">
+      Bir sabit diskten açılış yapılırsa önce MBR içindeki kodlar
+      bölümleme tablosunu inceler, açılabilir olarak işaretlenmiş
+      etkin bölümü bulur, o bölümden önyükleme sektörünü okur ve
+      daha sonra bu önyükleme sektörü içindeki kodları çalıştırır.
+      Bu önyükleme sektörü içerisinde bulunan kodlar, bir açılış
+      disketinin önyükleme sektörü içinde bulunan kodlar ne yaparsa
+      aynısını yapar: bölüm içerisindeki çekirdeği okur ve onu başlatır.
+      Ayrıntılar çeşitli olmakla birlikte; sadece çekirdek için ayrı
+      bir bölüme sahip olmak genellikle pek kullanışlı olmaz.
+      Çekirdek için ayrı bir bölüm açılırsa, önyükleme sektörü içerisindeki
+      kodlar gerekli bilgileri zincirleme bir halde okuyamaz ve dosya
+      sistemi onları hangi sektörlere koydu ise oraları bulmak zorunda
+      kalırlar. Bu sorunu çözmenin pek çok yöntemi vardır ama en genel
+      kabul göreni LILO'dur.  Bunun konumuzla bir alakası yoktur, ama
+      LILO belgelerine bakmanız yararlı olabilir.
+    </div><div class="para">
+      LILO ile açılış işleminde, doğrudan diskin başına gidilir ve
+      buradan öntanımlı çekirdeğin yeri okunarak çekirdek yüklenir.
+      LILO ile çeşitli yapılandırmalar mümkündür. Çekirdekler arasında
+      seçim yapılabilir, farklı işletim sistemlerini yüklenebilir ve
+      açılış esnasında kullanıcının bu işletim sistemlerinden birisini
+      seçmesi sağlanabilir. LILO yüklenirken &lt;<b>alt</b>&gt;,
+      &lt;<b>shift</b>&gt;  veya &lt;<b>ctrl</b>&gt; tuşlarından
+      birine basılıp, LILO'da öntanımlı yükleme seçeneğinin yerine,
+      ne yüklenmesini istediğinizi soracak şekilde de ayarlamalar
+      yapabilirsiniz. Alternatif olarak; LILO'yu seçenekler sunacak,
+      şayet her hangi bir seçim yapılmazsa belirli bir süre sonra
+      öntanımlı çekirdeği yükleyecek şekilde de ayarlayabilirsiniz.
+    </div><div class="para">
+      LILO ile çekirdeğe, çekirdeğin ya da işletim sisteminin isminden
+      sonra bir komut satırı seçeneği vermek mümkündür.
+    </div><div class="para">
+      Disketten veya diskten açmak çeşitli getirilere sahip olmakla
+      birlikte, sabit diskten açmak disketle uğraşma zahmetinden bizi
+      kurtaracaktır. Ayrıca daha hızlıdır. Bununla birlikte, sistemi
+      sabit diskten açılacak şekilde yüklemek bazen çok zahmetli
+      olabilmektedir. Bu nedenle pek çok kullanıcı ilk önce disketten
+      açılış yolu ile kurulum yapar ve her şeyin düzgün çalıştığını
+      gördükten sonra LILO'yu ayarlayarak disk açılış kipine geçer.
+    </div><div class="para">
+      Linux çekirdeği belleğe okunduktan sonra ya da adına ne dersin
+      deyin, gerçekte başlatıldıktan sonra, kabaca aşağıdaki olaylar
+      gerçekleşir:
+    </div>
+      <ul type="disc" class="itemizedlist"><li><div class="para">
+          Linux çekirdeği diskte sıkıştırılmış olarak tutulur. Bu nedenle
+          ilk önde kendi kendini  çözer. Bu, çekirdeğin başlangıcındaki
+          küçük bir programla yapılır.
+        </div></li><li><div class="para">
+          Şayet Linux'un tanıdığı ve çeşitli metin kipleri bulunan Super-VGA
+          bir ekran kartınız varsa, Linux size hangi metin kipinde çalışmak
+          istediğinizi sorar. Çekirdek derlemesi sırasında bir video kipi
+          girilebilir ve böylece daima bu kip kullanılır. Bu ayrıca LILO
+          veya <b><tt>rdev</tt></b> ile de yapılabilir.
+        </div></li><li><div class="para">
+          Bundan sonra çekirdek diğer donanımları kontrol eder (sabit disk,
+          disket sürücü, ağ bağdaştırıcısı, vb) ve bazı donanım sürücülerini
+          uygun bir şekilde yapılandırır ve bunu yaparken buldukları ile
+          ilgili bir çıktı verir. Örneğin ben sistemi açtığım zaman, şuna
+          benzer bir mesaj almaktayım:
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+LILO boot:
+Loading linux.
+Console: colour EGA+ 80x25, 8 virtual consoles
+Serial driver version 3.94 with no serial options enabled
+tty00 at 0x03f8 (irq = 4) is a 16450
+tty01 at 0x02f8 (irq = 3) is a 16450
+lp_init: lp1 exists (0), using polling driver
+Memory: 7332k/8192k available (300k kernel code, 384k reserved, 176k
+data)
+Floppy drive(s): fd0 is 1.44M, fd1 is 1.2M
+Loopback device init
+Warning WD8013 board not found at i/o = 280.
+Math coprocessor using irq13 error reporting.
+Partition check:
+  hda: hda1 hda2 hda3
+VFS: Mounted root (ext filesystem).
+Linux version 0.99.pl9-1 (root@haven) 05/01/93 14:12:20
+</pre></div></div>
+        <div class="para">
+          Bu çıktı sistemdeki donanımlara, kullanılan işletim sistemi
+          çeşidine ve yapılmış olan ayarlara göre değişiklik gösterebilir.
+        </div></li><li><div class="para">
+          Daha sonra çekirdek kök dosya sistemini bağlamayı deneyecektir.
+          Yer ayarlaması derleme esnasında veya herhangi bir zaman
+          <b><tt>rdev</tt></b> komutu veya LILO ile yapılabilir.
+          Dosya sistemi türü otomatik olarak bulunur. Kök dosya sisteminin
+          bağlanması esnasında bir terslik olursa, örneğin: çekirdek içinde
+          uygun dosya sistemi sürücüsü yoksa, çekirdek PANİKLER ve sistemi
+          kapatır. Aslında yapabileceği başka da bir şey yoktur zaten.
+        </div><div class="para">
+          Kök dosya sistemi genellikle salt okunur bir şekilde bağlanır.
+          Bu dosya sistemi bağlı durumdayken, dosya sisteminin sınanmasını
+          sağlar. Oku-yaz kipinde bağlanmış bir dosya sistemi üzerinde
+          sınama yapmak hiç de iyi bir fikir değildir. Burada bahsedilen
+          sınama işlemi <b><tt>fsck</tt></b> ile yapılır.
+        </div></li><li><div class="para">
+          Bundan sonra çekirdek, <b><tt>init</tt></b> (<tt>/sbin/init</tt>)
+          programını başlatır (daima süreç numarası olarak 1'i alır).
+          <b><tt>init</tt></b> pek çok ufak tefek iş yapar. Aslında
+          yaptıkları ne şekilde ayarlandığına bağlıdır.  <a href="../sag/sag_init.html" class="xref" title="init">init</a> bölümünde daha ayrıntılı (henüz yazlmadı)
+          bilgi bulabilirsiniz.  En azından, çok gerekli olan birkaç
+          artalan sürecini çalıştırır.
+        </div></li><li><div class="para">
+          <b><tt>init</tt></b> daha sonra çok kullanıcılı kipe geçer,
+          sanal konsollar ve seri bağlantılar için <b><tt>getty</tt></b>
+          programını çalıştırır. <b><tt>getty</tt></b>, kişilerin sanal
+          konsollar veya seri hatlar üzerinden sisteme bağlanmasını sağlar.
+          <b><tt>init</tt></b> ayrıca nasıl ayarlandığına bağlı olarak
+          diğer programları da çalıştırır.
+        </div></li><li><div class="para">
+          Bütün bunlardan sonra açılış işlemi bitmiş olur, artık sistem
+          açık ve normal çalışma kipine geçmiş haldedir.
+        </div></li></ul>
+    <div class="footnotes"><br /><hr width="100" align="left" /><div class="footnote"><div class="para"><sup>[<a name="ftn.id125" href="#id125" id="ftn.id125">125</a>] </sup>
+      Buna kısaca POST (Power On Self Test), açılışta kendi kendini sınama
+      adı verilir.</div></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../sag/sag_boots-and-shutdowns_overview.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../sag/sag_boots-and-shutdowns.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../sag/sag_boots-and-shutdowns-shuts.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Açılışlar ve kapanışlara genel bir bakış </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Kapanışla ilgili ayrıntılar</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

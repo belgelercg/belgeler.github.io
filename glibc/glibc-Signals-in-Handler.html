@@ -1,75 +1,16 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="tr" xml:lang="tr">
-  <head>
-    <title>24.4.4. İşleyici Çalışırken Sinyal Alınması</title>
-    <meta name="generator" content="DocBook XSL Stylesheets V-special (derived from DocBook XSL v1.79.1 for Turkish Linux Documentation Project by Nilgün Belma Bugüner - nilgun (at) tlbp.org.tr)" />
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="/style/nav.css" />
-    <link rel="icon" type="image/png" href="/images/belgeler-logo.png" />
-    <meta name="robots" content="index, follow" />
-  </head>
-  <body>
-    <header>
-      <div class="navbar">
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Longjmp-in-Handler.html')">Önceki</button>
-          <div class="dropdown-content">24.4.3. İşleyici İşlevlerde Denetimin Aktarımı</div>
-        </div>
-        <div style="width:34%" class="dropdown">
-          <button class="dropbtn">Yukarı</button>
-          <div class="dropdown-content">
-            <button type="button" class="dropbtn" onclick="window.location.assign('/index.html')">Baş Sayfa</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('/KiTAPLIK/index.html')">Kitaplık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc.html')">Ana Başlık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Defining-Handlers.html')">Üst Başlık</button>
-          </div>
-        </div>
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Merged-Signals.html')">Sonraki</button>
-          <div class="dropdown-content">24.4.5. İşleyici Çalışmadan İkinci Bir Sinyalin Alınması</div>
-        </div>
-      </div>
-    </header>
-    <section class="mainpage">
-      <div class="crumbs">
-        <p>  </p>
-      </div>
-      <section class="sect1" id="glibc-Signals-in-Handler">
-        <div class="titlepage">
-          <div>
-            <div>
-              <h2 class="title" style="clear: both">24.4.4. İşleyici Çalışırken Sinyal Alınması</h2>
-            </div>
-          </div>
-        </div>
-        <p>
-    <span id="idm137370" class="indexterm"></span>
-    Sinyal işleyici işlev çalışırken başka bir sinyal alındığında ne olacak?
-   </p>
-        <p>
-    Belli bir sinyal için işleyici işlev çağrıldığında işleyici işlemlerini bitirene kadar sinyal özdevinimli olarak engellenir. Bu, aynı iki sinyal peşpeşe alınırsa, biri için işlem tamamlanana kadar diğeri engellenecek demektir. (Bu türden birden fazla sinyal geldiğinde bunlara da izin vermek istenirse, <a href="glibc-Process-Signal-Mask.html#glibc-fn-sigprocmask"><strong class="function"><code>sigprocmask</code></strong></a> kullanarak sinyalin engellenmemesi sağlanabilir; bkz, <a class="xref" href="glibc-Process-Signal-Mask.html" title="24.7.3. Sürecin Sinyal Maskesi">Sürecin Sinyal Maskesi</a>.)
-   </p>
-        <p>
-    Bununla birlikte, işleyici işlev başka çeşit bir sinyal ile hala durdurulabilir durumdadır. Bundan kaçınmak için, <a href="glibc-Advanced-Signal-Handling.html#glibc-fn-sigaction"><strong class="function"><code>sigaction</code></strong></a> ile kullanılan veri yapısının <code class="code">sa_mask</code> üyesinde işleyici çalışırken hangi sinyallerin engelleneği belirtilebilir. Bunlar işleyicinin çağrılmasına sebep olan sinyale ek olarak belirtilir ve diğer sinyaller normal olarak süreç tarafından engellenir. Bkz. <a class="xref" href="glibc-Blocking-for-Handler.html" title="24.7.5. İşleyici Çalışırken Sinyallerin Engellenmesi">İşleyici Çalışırken Sinyallerin Engellenmesi</a>.
-   </p>
-        <p>
-    İşleyici işini bitirdiğinde engellenen sinyaller işleyicinin çalıştırılmadan önceki durumlarına döner. Bu durumda, işleyici işlev içinde <a href="glibc-Process-Signal-Mask.html#glibc-fn-sigprocmask"><strong class="function"><code>sigprocmask</code></strong></a> kullanılması sadece işleyicinin çalışması sırasında gelen sinyalleri etkiler, işleyici işlev döndükten sonra gelen sinyalleri etkilemez.
-   </p>
-        <div class="admon note">
-          <h3 class="admon-title">Taşınabilirlik Bilgisi</h3>
-          <div class="admon-contents">
-            <p>
-     Yazılımın System V Unix üzerinde gerektiği gibi çalışması isteniyorsa ve eşzamansız bir sinyal alınacağı umuluyorsa, bu sinyalin işleyicisini oluşturmak için daima <a href="glibc-Advanced-Signal-Handling.html#glibc-fn-sigaction"><strong class="function"><code>sigaction</code></strong></a> kullanılmalıdır. Bu sistem üzerinde <a href="glibc-Basic-Signal-Handling.html#glibc-fn-signal"><strong class="function"><code>signal</code></strong></a> ile oluşturulan bir işleyici ile sinyalin yakalanması özdevinimli olarak sinyal eyleminin varsayılan eyleme yani <a href="glibc-Basic-Signal-Handling.html#glibc-vr-SIG_DFL"><strong class="varname"><code>SIG_DFL</code></strong></a>'ye ayarlanmasına sebep olur. Böyle bir işleyici her çalıştığında kendini tekrar kurmalıdır. Bu uygulama, rahatsız edici olsa da, işleyici çalışırken sinyaller işleme alınamadığında da çalışır. Şöyle ki, hemen ardından başka bir sinyal gelebilir ve işleyici kendini daha kurmadan sinyal alınabilir. Bu durumda ikinci sinyal varsayılan eylem ile karşılanacak ve süreç sonlanabilecektir.
-    </p>
-          </div>
-        </div>
-      </section>
-      <footer>
-        <div align="center" class="footer">
-          <small>Bir <a href="http://belgeler.org.tr/">Linux Kitaplığı</a> Sayfası</small>
-        </div>
-      </footer>
-    </section>
-  </body>
-</html>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:33+03:00" /><title>Eylemci Çalışırken Sinyal Alınması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Defining-Handlers.html" title="Sinyal Yakalayıcıların Tanımlanması" /><link rel="previous" href="../glibc/glibc-Longjmp-in-Handler.html" title="Eylemci İşlevlerde Denetimin Aktarımı" /><link rel="next" href="../glibc/glibc-Merged-Signals.html" title="Eylemci Çalışmadan İkinci Bir Sinyalin Alınması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Eylemci Çalışırken Sinyal Alınması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Longjmp-in-Handler.html">Önceki</a> </td><th width="60%" align="center">Sinyal Yakalayıcıların Tanımlanması</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Merged-Signals.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Signals-in-Handler" id="glibc-Signals-in-Handler"></a>Eylemci Çalışırken Sinyal Alınması</div><dl><dd><div class="para">
+<a class="indexterm" name="idx2671" id="idx2671"></a>
+Sinyal yakalama işlevi çalışırken başka bir sinyal alındığıda ne olacak?
+    </div><div class="para">
+Belli bir sinyal için eylemci işlev çağrıldığında eylemci işlemlerini bitirene kadar sinyal özdevinimli olarak engellenir. Bu, aynı iki sinyal peşpeşe alınırsa, biri için işlem tamamlanana kadar diğeri engellenecek demektir. (Bu türden birden fazla sinyal geldiğinde bunlara da izin vermek isterseniz, <b><tt>sigprocmask</tt></b> kullanarak sinyalin engellenmemesini sağlayabilirsiniz; bkz. <a href="../glibc/glibc-Process-Signal-Mask.html" class="xref" title="Sürecin Sinyal Maskesi">Sürecin Sinyal Maskesi</a>.)
+    </div><div class="para">
+Bununla birlikte, eylemci işleviniz başka çeşit bir sinyal ile hala durdurulabilir durumdadır. Bundan kaçınmak için, <b><tt>sigaction</tt></b> ile kullanılan veri yapısının <b><tt>sa_mask</tt></b> üyesinde eylemci çalışırken hangi sinyallerin engelleneğini belirtebilirsiniz. Bunlar eylemcinin çağrılmasına sebep olan sinyale ek olarak belirtilir ve diğer sinyaller normal olarak süreç tarafından engellenir. Bkz. <a href="../glibc/glibc-Blocking-for-Handler.html" class="xref" title="Eylemci Çalışırken Sinyallerin Engellenmesi">Eylemci Çalışırken Sinyallerin Engellenmesi</a>.
+    </div><div class="para">
+Eylemci işini bitirdiğinde engellenen sinyaller eylemcinin çalıştırılmadan önceki durumlarına dönerler. Bu durumda, eylemci işlev içinde <b><tt>sigprocmask</tt></b> kullanılması sadece eylemcinin çalışması sırasında gelen sinyalleri etkiler, eylemci işlev döndükten sonra gelen sinyalleri etkilemez.
+    </div>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Taşınabilirlik Bilgisi</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Yazılımınızın System V Unix üzerinde gerektiği gibi çalışmasını istiyorsanız ve eşzamansız bir sinyal alacağınızı umuyorsanız, bu sinyalin eylemcisini oluşturmak için daima <b><tt>sigaction</tt></b> kullanın. Bu sistem üzerinde <b><tt>signal</tt></b> ile oluşturulan bir eylemci ile sinyalin yakalanması özdevinimli olarak sinyal eyleminin öntanımlı eyleme yani <b><tt>SIG_DFL</tt></b>'a ayarlanmasına sebep olur. Böyle bir eylemci her çalıştığında kendini tekrar kurmalıdır. Bu uygulama, rahatsız edici olsa da, eylemci çalışırken sinyaller işleme alınamadığında da çalışır. Şöyle ki, hemen ardından başka bir sinyal gelebilir ve eylemci kendini daha kurmadan sinyal alınabilir. Bu durumda ikinci sinyal öntanımlı eylem ile karşılanacak ve süreç sonlanabilecektir.</div></td></tr></table></div>
+    </dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Longjmp-in-Handler.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Defining-Handlers.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Merged-Signals.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Eylemci İşlevlerde Denetimin Aktarımı </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Eylemci Çalışmadan İkinci Bir Sinyalin Alınması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

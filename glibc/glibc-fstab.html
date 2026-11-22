@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:55+03:00" /><title>fstab</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Mount-Information.html" title="Bağlama Bilgileri" /><link rel="previous" href="../glibc/glibc-Mount-Information.html" title="Bağlama Bilgileri" /><link rel="next" href="../glibc/glibc-mtab.html" title="mtab" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">fstab</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Mount-Information.html">Önceki</a> </td><th width="60%" align="center">Bağlama Bilgileri</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-mtab.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="glibc-fstab" id="glibc-fstab"></a><tt>fstab</tt></div><dl><dd><div class="para">
+Dosya içeriğinin kütüphane içindeki gösterimi olan <b><tt>struct
+fstab</tt></b> yapısı <tt>fstab.h</tt> dosyasında tanımlıdır.
+     </div>
+<a class="indexterm" name="idx3212" id="idx3212"></a>
+<a name="glibc-struct-fstab" id="glibc-struct-fstab"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct <b><tt>fstab</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+Bu yapı <b><tt>getfsent</tt></b>, <b><tt>getfsspec</tt></b> ve <b><tt>getfsfile</tt></b> işlevlerinde kullanılır.
+   </div><dl><dt><span class="glossterm">
+   <tt>char *fs_spec</tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Dosya sistemi olarak bağlanacak aygıtı belirtir. Normalde bu, bir sabit disk bölümü gibi bir özel aygıt ismidir, fakat az ya da çok soysal bir dizge de olabilir. <span><i>NFS</i></span> için bir makine adı ile bir dizin isminin birleşimi olabilir.
+        </div><div class="para">
+Eleman <b><tt>const</tt></b> olarak bildirilmemiş olsa bile içeriği değiştirilmemelidir. Bunun eski bir ISO C işlevi olmasıyla <b><tt>const</tt></b>'un yokluğu tarihsel sebeplere dayanır. Aynı durum yapının diğer dizge elemanları için de geçerlidir.
+   </div></dd><dt><span class="glossterm">
+   <tt>char *<b><tt>fs_file</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Yerel sistem üzerindeki bağlama noktasını belirtir. Yani bu dosya sistemindeki bir dosyaya erişilmek istendiğinde bu dizge dosyaya bir önek olur.
+   </div></dd><dt><span class="glossterm">
+   <tt>char *<b><tt>fs_vfstype</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Dosya sisteminin türü. Çekirdek açısından anlamlı bir dizge olmalıdır.
+   </div></dd><dt><span class="glossterm">
+   <tt>char *<b><tt>fs_mntops</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Bu dizge <b><tt>mount</tt></b> çağrısı ile çekirdeğe aktarılan seçenekleri içerir. Tekrar belirtelim ki, bu çekirdek açısından anlamlı herhangi bir dizge olabilir.  Diğerlerinden virgülle ayrılmış birden fazla seçenek belirtilebilir. Her seçenek bir isim ile isteğe bağlı ve <b><tt>=</tt></b> karakteri ile tanınan değer alanından oluşur.
+        </div><div class="para">
+Eğer bu elemanın içeriğinin işlenmesi gerekirse bu ideal olarak <b><tt>getsubopt</tt></b> işlevi kullanılarak yapılır; bkz. <a href="../glibc/glibc-Suboptions.html" class="xref" title="Alt Seçeneklerin Çözümlenmesi">Alt Seçeneklerin Çözümlenmesi</a>.
+   </div></dd><dt><span class="glossterm">
+   <tt>const char *<b><tt>fs_type</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Bu üyenin ismi yanlış seçilmiştir. Bu eleman bağlı dosya sistemi ile ilgili kipleri içeren bir dizgedir (büyük ihtimalle <b><tt>fs_mntops</tt></b> içindekiler). <b><tt>fstab</tt></b> olası değerleri açıklayan beş makro tanımlar:
+        </div><div class="variablelist"><dl><dt><span class="term"><b><tt>FSTAB_RW</tt></b></span></dt><dd class="varlist"><div class="para">
+Dosya sistemi oku/yaz erişimli bağlanır.
+           </div></dd><dt><span class="term"><b><tt>FSTAB_RQ</tt></b></span></dt><dd class="varlist"><div class="para">
+Dosya sistemi oku/yaz erişimli bağlanır ama yazma erişimi kotalarla kısıtlanmıştır.
+           </div></dd><dt><span class="term"><b><tt>FSTAB_RO</tt></b></span></dt><dd class="varlist"><div class="para">
+Dosya sistemi salt okunur bağlanır
+           </div></dd><dt><span class="term"><b><tt>FSTAB_SW</tt></b></span></dt><dd class="varlist"><div class="para">
+Bu gerçek bir dosya sistemini göstermez, bir takas aygıtıdır.
+           </div></dd><dt><span class="term"><b><tt>FSTAB_XX</tt></b></span></dt><dd class="varlist"><div class="para">
+Bu girdinin tamamı <b><tt>fstab</tt></b> dosyasında yoksayılır.
+           </div></dd></dl></div>
+         <div class="para">
+Bu değerlerin hepsi dizge olduğundan eşitlik sınaması <b><tt>strcmp</tt></b> kullanılarak yapılmalıdır. Şüphesiz göstericilerin karşılaştırılması daima başarısız olacaktır.
+   </div></dd><dt><span class="glossterm">
+   <tt>int <b><tt>fs_freq</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Bu eleman gün cinsinden dökümleme sıklığını belirler.
+   </div></dd><dt><span class="glossterm">
+   <tt>int <b><tt>fs_passno</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Paralel dökümlemede geçiş sayısıdır. Unix sistemlerinde kullanılan <b><tt>dump</tt></b> uygulaması ile yakından ilgilidir.
+   </div></dd></dl>
+   <div class="para">
+<tt>fstab</tt> dosyasının içeriğinin tamamının okunması amacıyla GNU C kütüphanesi birbiriyle uyumlu çalışan üç işlev içerir.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx3213" id="idx3213"></a>
+<a name="glibc-setfsent" id="glibc-setfsent"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>setfsent</tt></b></tt></td><td valign="top"><pre class="paramdef">(void)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev dosya konumlayıcıyı <tt>fstab</tt> dosyasının başlangıcına hizalar. Bu işlem ya dosyayı açarak ya da konumlayıcıyı sıfırlayarak yapılır.
+     </div><div class="para">
+Dosya tanıtıcı kütüphanenin dahili değeri olduğundan bu işlev evresel değildir.
+     </div><div class="para">
+İşlev başarılı olduğunda sıfırdan farklı bir değerle döner. Bu durumda dosyadaki girdileri okumak için <b><tt>getfs*</tt></b> işlevleri kullanılabilir.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx3214" id="idx3214"></a>
+<a name="glibc-endfsent" id="glibc-endfsent"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>endfsent</tt></b></tt></td><td valign="top"><pre class="paramdef">(void)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev evvelce yapılmış <b><tt>setfsent</tt></b> (doğrudan ya da dolaylı <b><tt>getfsent</tt></b>) çağrılarıyla edinilen tüm özkaynakları serbest bırakır.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx3215" id="idx3215"></a>
+<a name="glibc-getfsent" id="glibc-getfsent"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct fstab *<b><tt>getfsent</tt></b></tt></td><td valign="top"><pre class="paramdef">(void)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev <tt>fstab</tt> dosyasındaki sonraki girdi ile döner. Bu işleve yapılan çağrı yazılımın başından itibaren <tt>fstab</tt> dosyasıyla çalışmak için yapılan ilk çağrıysa ya da bu çağrıdan önceki son çağrı <b><tt>endfsent</tt></b> ise dosya açılacaktır.
+     </div><div class="para">
+İşlev <b><tt>struct fstab</tt></b> türünde bir değişkene gösterici ile döner. Bu değişken tüm evrelerce paylaşılmasına rağmen işlev evresel değildir. Bir hata oluşmuşsa işlev bir boş gösterici döndürür.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx3216" id="idx3216"></a>
+<a name="glibc-getfsspec" id="glibc-getfsspec"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct fstab *<b><tt>getfsspec</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *<i><tt>isim</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<tt>fstab</tt> dosyasından, <b><tt>fs_spec</tt></b> elemanındaki dizgenin <i><tt>isim</tt></i> ile gösterilen dizgeyle aynı olduğu sonraki girdiyi döndürür. Normalde her özel aygıt için sadece bir girdi olduğundan bu işlevin aynı argümanla yapılan her çağrısı daima aynı girdiyi döndürür. Bu işleve yapılan çağrı yazılımın başından itibaren <tt>fstab</tt> dosyasıyla çalışmak için yapılan ilk çağrıysa ya da bu çağrıdan önceki son çağrı <b><tt>endfsent</tt></b> ise dosya açılacaktır.
+     </div><div class="para">
+İşlev <b><tt>struct fstab</tt></b> türünde bir değişkene gösterici ile döner. Bu değişken tüm evrelerce paylaşılmasına rağmen işlev evresel değildir. Bir hata oluşmuşsa işlev bir boş gösterici döndürür.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx3217" id="idx3217"></a>
+<a name="glibc-getfsfile" id="glibc-getfsfile"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct fstab *<b><tt>getfsfile</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *<i><tt>isim</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<tt>fstab</tt> dosyasından, <b><tt>fs_file</tt></b> elemanındaki dizgenin <i><tt>isim</tt></i> ile gösterilen dizgeyle aynı olduğu sonraki girdiyi döndürür. Normalde her bağlama noktası için sadece bir girdi olduğundan bu işlevin aynı argümanla yapılan her çağrısı daima aynı girdiyi döndürür. Bu işleve yapılan çağrı yazılımın başından itibaren <tt>fstab</tt> dosyasıyla çalışmak için yapılan ilk çağrıysa ya da bu çağrıdan önceki son çağrı <b><tt>endfsent</tt></b> ise dosya açılacaktır.
+     </div><div class="para">
+İşlev <b><tt>struct fstab</tt></b> türünde bir değişkene gösterici ile döner. Bu değişken tüm evrelerce paylaşılmasına rağmen işlev evresel değildir. Bir hata oluşmuşsa işlev bir boş gösterici döndürür.
+        </div></dd></dl><div style="padding:5px"></div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Mount-Information.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Mount-Information.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-mtab.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Bağlama Bilgileri </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> mtab</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

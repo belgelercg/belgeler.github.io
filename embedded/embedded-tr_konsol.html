@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:31+03:00" /><title>Konsolda Türkçe Desteği</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../embedded/embedded-turkce_nasil.html" title="Türkçe Nasıl?" /><link rel="previous" href="../embedded/embedded-tr_locale.html" title="Yerel (Locale) Desteği" /><link rel="next" href="../embedded/embedded-tr_xwindow.html" title="X Window System Türkçe Desteği" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Konsolda Türkçe Desteği</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../embedded/embedded-tr_locale.html">Önceki</a> </td><th width="60%" align="center">Türkçe Nasıl?</th><td width="20%" align="right"> <a accesskey="n" href="../embedded/embedded-tr_xwindow.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="embedded-tr_konsol" id="embedded-tr_konsol"></a>Konsolda Türkçe Desteği</div><dl><dd><div class="para">
+Konsolda Türkçe yazıtiplerinin görüntülenmesi ve Türkçe klavye kullanımı için bir miktar uğraşmamız gerekiyor. Bu işlemi yapabilmek için standart bir yöntem mevcut değil. Mümkün olduğu kadar hızlı bir şekilde Türkçe desteğini verebilmek için işlemlerimize başlayalım.
+  </div><div class="para">
+Öncelikle Türkçe klavye ayarlamalarından bahsedelim. Bunun için Linux yüklü sisteminizden <tt>trq.kmap.gz</tt> dosyasını kopyalamanız gerekiyor. Bu dosya genellikle <tt>/usr/share/keymaps/i386/qwerty</tt> dizini altında bulunur. Dosyayı buradan alıp SBC üzerinde <tt>/usr/share/keymaps</tt> adında bir dizin yaratıp buraya atalım <i>(i386 .. gibi alt dizinleri de yaratmamıza gerek yok)</i>. Test için başka bir dizin içerisine, bu sıkıştırılmış <tt>trq.kmap.gz</tt> dosyasını açarak dosyanın içeriğine bir metin düzenleyici ile bakın. Eğer <tt>include euro</tt> gibi satırlar varsa bu durumda <tt>include</tt> edilen bu dosyaları da taşımamız gerekiyor. Bendeki sistemde <i>euro</i>, <i>linux-keys-bare</i> ve <i> linux-with-alt-and-altgr</i> için <tt>include</tt> tanımları mevcut. Bu nedenle aşağıdaki dosyaları Linux yüklü sistemimdeki <tt>/usr/share/keymaps/include</tt> dizini altından kopyalayıp SBC üzerindeki <tt>/usr/share/keymaps</tt> dizini altına atıyorum.
+  </div>
+<div class="para"><pre class="literallayout">
+    /usr/share/keymaps/include/euro.inc.gz
+    /usr/share/keymaps/include/linux-keys-bare.inc.gz
+    /usr/share/keymaps/include/linux-with-alt-and-altgr.inc.gz
+</pre></div>
+  <div class="para">
+Eğer bu belgedeki örnek üzerinden gidiyor ve dosya sistemi olarak <i>minix</i> seçmiş iseniz <tt>linux-with-alt-and-altgr.inc.gz</tt> dosyasını kopyalarken <i>File name too long</i> şeklinde bir hata almış olmalısınız <tt>:)</tt> Bu hata mesajını almanız normaldir çünkü minix dosya sisteminde bir dosya ismi maksimum 30 karakter uzunluğunda olabilir. Bu tamamen dosya sisteminde kaynaklanan bir sıkıntıdır. Eğer minix yerine <i>ext2</i> kullanıyor olsaydık böyle bir sorunumuz kalmayacaktı.
+  </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Aslında ilk geliştirilen minix dosya sisteminde dosya ismi uzunluğu maksimum 14 karakterdir. Burada bahsedilen minix versiyon 2'dir ve standart haline gelmiştir. Versiyon 2 bir takım iyileştirmeler içermektedir ve dosya adlarının 30 karaktere çıkması bunların başında gelmektedir.
+  </div></td></tr></table></div><div class="para">
+Şimdi ne yapacağız? Elbette bu sorunun üstesinden gelmek için pek çok farklı yöntem mevcut. Ancak biz <tt>trq.kmap.gz</tt> dosyası içerisinden include satırını ve dosya ismini değiştirmek yerine sadece uzun olan dosyayı açarak <i>.gz</i> uzantısından kurtaracağız. Bu sayede dosya ismi 28 karaktere inecek ve <tt>linux-with-alt-and-altgr.inc</tt> şeklini alacaktır. Klavye kodlarını yükleyen programımız dosyanın hem sıkıştırılmış hem de açık haline baktığı için sorun olmayacaktır. Dosyayı önce Linux yüklü sisteminizde <b><tt>gunzip</tt></b> ile açtıktan sonra disket, ağ veya seri port üzerinden SBC'ye transfer edebilirsiniz.
+  </div><div class="para">
+Gerekli klavye dosyalarını attıktan sonra şimdi bunları sisteme yükleyebilmek için gerekli olan <b><tt>loadkeys</tt></b> uygulamasını SBC sistemimiz üzerine taşıyalım. Bunun için öncelikle Linux yüklü sistemimizde aşağıdaki komutla uygulamanın ihtiyaç duyduğu kütüphaneleri öğrenelim:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>laptop:~/docbook/embedded$ </tt><b><tt>ldd /bin/loadkeys</tt></b>
+      libcfont.so.0 =&gt; /lib/libcfont.so.0 (0x4001b000)
+      libctutils.so.0 =&gt; /lib/libctutils.so.0 (0x40020000)
+      libconsole.so.0 =&gt; /lib/libconsole.so.0 (0x40025000)
+      libc.so.6 =&gt; /lib/libc.so.6 (0x40035000)
+      /lib/ld-linux.so.2 =&gt; /lib/ld-linux.so.2 (0x40000000)
+</pre></div></div>
+  <div class="para">
+Buradaki <tt>libcfont.so.0</tt>, <tt>libctutils.so.0</tt> ve <tt>libconsole.so.0</tt> kütüphaneleri SBC sistemimiz üzerinde henüz mevcut değil ve bu nedenle onlarında taşınması gerekiyor. Gerekli dosyaları taşıdıktan ve <b><tt>loadkeys</tt></b> uygulamasının çalıştırma yetkisine sahip olduğundan emin olduktan sonra klavyemiz için gerekli kodların aşağıdaki komutla yüklenmesini sağlayabiliriz:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>/ # </tt><b><tt>loadkeys /usr/share/keymaps/trq.kmap.gz</tt></b>
+Loading /usr/share/keymaps/trq.kmap.gz
+</pre></div></div>
+  <div class="para">
+Artık klavyemiz hazır.
+  </div><div class="para">
+Klavye ile işimiz bittikten sonra sırada Türkçe konsol yazıtipini ayarlamak var. Ayrıntıya girmeden doğrudan nasıl yapacağınızı anlatmaya çalışacağım, ancak her zaman olduğu gibi kullandığımız uygulamaların kılavuz sayfalarına <i>(manual)</i> vakit buldukça bakmanızda fayda var.
+  </div><div class="para">
+Öncelikle gerekli font dosyalarını SBC üzerine aktaralım. Bunun için öncelikle SBC üzerinde <tt>/usr/share/consolefonts</tt> ve <tt>/usr/share/consoletrans</tt> dizinlerini oluşturmalıyız. Ardından Linux sisteminizdeki <tt>/usr/share/consoletrans/iso09.acm.gz</tt> ve <tt>/usr/share/consolefonts/iso9-16.psf.gz</tt> dosyalarını SBC üzerindeki aynı dizinlere kopyalayınız.
+  </div><div class="para">
+Yazıtiplerini sisteme taşıdıktan sonra <b><tt>consolechars</tt></b> uygulamasını da Linux yüklü sistemimizden taşımalıyız. İhtiyaç duyulan kütüphaneleri kontrol edip uygulamayı SBC üzerindeki <tt>/bin</tt> dizini altına kopyalamalı ve çalıştırma hakları yoksa vermeliyiz. Şimdi Alt - F1 ile girilen birinci sanal konsolda çalışıyorsanız Türkçe fontları görebilmek için aşağıdaki komutları girmelisiniz:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>/ # </tt><b><tt>consolechars -f iso9-16</tt></b>
+<tt>/ # </tt><b><tt>consolechars --tty=/dev/tty1 -f iso9-16 -m iso09</tt></b>
+<tt>/ # </tt><b><tt>echo -en "\033(K" &gt; /dev/tty1</tt></b>
+<tt>/ # </tt><b><tt>echo -en "\017" &gt; /dev/tty1</tt></b>
+</pre></div></div>
+  <div class="para">
+Şimdi içerisinde bolca Türkçe karakterler olan bir dosyayı ağ, disket veya seri port üzerinden SBC üzerine aktarıp <b><tt>cat dosya_adı</tt></b> komutuyla karakterlerin ekranda düzgün olarak görünüp görünmediğini test edin. Eğer bir problem varsa işlem adımlarını tekrarlayın (özellikle yukarıdaki komutları dikkatlice yazmayı deneyin).
+  </div><div class="para">
+Buraya kadar ki adımları sorunsuz bir şekilde atlattı iseniz şimdi de her sistem açılışında otomatik olarak Türkçe ayarlamalarının yapılmasını sağlayalım. Dikkat ederseniz yazıtipi ayarlamalarını sanal konsolların sadece biri için yaptık. Sistemimizdeki ilk dört konsol için Türkçe yazıtipi ayarlamalarının yapılmasını istiyorsak <tt>/etc/config</tt> dosyamızın sonuna aşağıdaki gibi bir satır ekleyelim:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+TR_KONSOL="tty1 tty2 tty3 tty4"
+</pre></div></div>
+  <div class="para">
+Ardından <tt>/etc/init.d/rcS</tt> kabuk programımızın sonuna aşağıdaki satırları ekleyelim:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+echo "Klavye ve fontlar ayarlanıyor"
+loadkeys /usr/share/keymaps/trq.kmap.gz
+
+consolechars -f iso9-16
+
+for tty in ${TR_KONSOL}
+do
+    consolechars --tty=/dev/$tty -f iso9-16 -m iso09
+    echo -en "\033(K" &gt; /dev/$tty
+    echo -en "\017" &gt; /dev/$tty
+done
+</pre></div></div>
+  <div class="para">
+Bu sayede her açılışta ilk dört konsol için gerekli font ayarlamaları da yapılmış olacaktır. Bu sayıyı artırmak veya azaltmak isterseniz tek yapmanız gereken <tt>/etc/config</tt> dosyanızdaki <tt>TR_KONSOL</tt> değişkeninin değerine ilgili <tt>tty</tt> adlarını eklemek veya çıkarmak olacaktır.
+  </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Konsolda Türkçe problemi burada anlattıklarımızla çözülüyor olmasına rağmen aynı şeyi BusyBox içerisinden çıkan programlar için söylemek o kadar kolay değil. Busybox ile birlikte gelen kabuk olan <b><tt>ash</tt></b> ve gene Busybox içinden çıkan <b><tt>vi</tt></b> editörü ile Türkçe konusunda başarılı olamadım. Ancak Linux yüklü bir sistemden kopyaladığım <b><tt>bash</tt></b> kabuğu ve <b><tt>vi</tt></b> metin düzenleyici ile Türkçe karakterleri görüp yazabildim. Eğer aynı işi BusyBox içerisindeki araçlarla yapabilir ve eposta ile beni de bilgilendirirseniz çok sevinirim.
+  </div></td></tr></table></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../embedded/embedded-tr_locale.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../embedded/embedded-turkce_nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../embedded/embedded-tr_xwindow.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Yerel (Locale) Desteği </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> X Window System Türkçe Desteği</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

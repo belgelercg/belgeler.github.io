@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:26:30+03:00" /><title>Diğer Genelleme Seçenekleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Globbing.html" title="Genelleme" /><link rel="previous" href="../glibc/glibc-Flags-for-Globbing.html" title="Genelleme Seçenekleri" /><link rel="next" href="../glibc/glibc-Regular-Expressions.html" title="Düzenli İfade Eşleştirme" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Diğer Genelleme Seçenekleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Flags-for-Globbing.html">Önceki</a> </td><th width="60%" align="center">Genelleme</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Regular-Expressions.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-More-Flags-for-Globbing" id="glibc-More-Flags-for-Globbing"></a>Diğer Genelleme Seçenekleri</div><dl><dd><div class="para">
+Önceki bölümde açıklanan seçeneklerin yanında <b><tt>glob</tt></b> işlevinin GNU gerçeklemesinde geçerli başka seçenekler de vardır. Bu seçenekler <tt>glob.h</tt> başlık dosyasında tanımlanmıştır.  Bu seçeneklerin bazıları günümüzdeki kabuk gerçeklenimlerinde kullanılan işlevselliği sağlar.
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>GLOB_PERIOD</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>.</tt></b> (nokta) karakteri özel karakter olarak ele alınır. Bu durumda özel kalıp karakteri olarak eşleştirilmez. <a href="../glibc/glibc-Wildcard-Matching.html" class="xref" title="Dosya İsmi Kalıpları">Dosya İsmi Kalıpları</a> bölümündeki <b><tt>FNM_PERIOD</tt></b> seçeneğine de bakınız.
+       </div></dd><dt><span class="term"><tt>GLOB_MAGCHAR</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>GLOB_MAGCHAR</tt></b> seçeneği <b><tt>glob</tt></b> işlevinin <i><tt>seçenekler</tt></i> parametresinde kullanmak için değildir.  <b><tt>glob</tt></b> işlevi bu seçeneği, eğer kalıp, özel kalıp karakterleri içeriyorsa sonucun bu yolla elde edileceğini belirtmek için <b><tt>glob_t</tt></b> yapısının <i><tt>gl_flags</tt></i> üyesinde kullanır.
+       </div></dd><dt><span class="term"><tt>GLOB_ALTDIRFUNC</tt></span></dt><dd class="varlist"><div class="para">
+Bu seçenek etkinse, <b><tt>glob</tt></b> gerçeklemesi dosya sistemine erişmek için kütüphanedeki işlevleri değil, kullanıcı tarafından <i><tt>dizi-gst</tt></i> ile gösterilen yapı içinde belirtilen işlevleri kullanır. Dizinlere erişim için kullanılan işlevler <a href="../glibc/glibc-Accessing-Directories.html" class="xref" title="Dizinlere Erişim">Dizinlere Erişim</a> ve <a href="../glibc/glibc-Reading-Attributes.html" class="xref" title="Bir Dosyanın Özniteliklerinin Okunması">Bir Dosyanın Özniteliklerinin Okunması</a> bölümlerinde açıklanmıştır.
+       </div></dd><dt><span class="term"><tt>GLOB_BRACE</tt></span></dt><dd class="varlist"><div class="para">
+Bu seçenek etkinse kaşlı ayraçlar özel olarak ele alınır. Bu durumda kaşlı ayraçların doğru gruplanması gerekir. Yani kaşlı ayraçlar çiftler halinde olmalıdır. İç içe gruplamalar yapılabilir. Böylece bir gruplama bir diğerini tanımlamakta kullanılabilir. Bir kaşlı ayraç ifadesi, başka bir kaşlı ayraç ifadesinin içinde tanımlanmışsa onun dışına çıkmaması gerektiğine dikkat etmelisiniz.
+       </div><div class="para">
+Bir kaşlı ayraç grubundaki dizgeler, virgüllerle ayrılarak ayrı ifadeler haline getirilebilir. Bu durumda virgüllerin bu amaçla kullanıldıkları ve dizgelerin virgül içermedikleri varsayılır. Virgül kullanılarak ayrılan ifadeler aynı seviyede olmalıdır. Alt ifadeler kaşlı ayraç içine alınmışsa bunların içindeki virgüller eşleştirilmez.  Kaşlı ayraçlı alt gruplarda daha derin seviyeleri elde etmede kullanılır. Bir kullanım örneği:
+       </div>
+<div class="para"><div align="right"><pre class="screen">glob ("{foo/{,bar,biz},baz}", GLOB_BRACE, NULL, &amp;result)
+</pre></div></div><div class="para">
+Eğer hataları gözönüne almazsak, şuna eşdeğerdir:
+       </div>
+<div class="para"><div align="right"><pre class="screen">
+glob ("foo/", GLOB_BRACE, NULL, result)
+glob ("foo/bar", GLOB_BRACE|GLOB_APPEND, NULL, &amp;result)
+glob ("foo/biz", GLOB_BRACE|GLOB_APPEND, NULL, &amp;result)
+glob ("baz", GLOB_BRACE|GLOB_APPEND, NULL, &amp;result)
+</pre></div></div></dd><dt><span class="term"><tt>GLOB_NOMAGIC</tt></span></dt><dd class="varlist"><div class="para">
+Eğer kalıp herhangi bir özel kalıp karakteri içermiyorsa (doğrudan dosya ismi verilmişse), bu isimde bir dosya yoksa bile bu kalıp dizgesi döndürülür.
+       </div></dd><dt><span class="term"><tt>GLOB_TILDE</tt></span></dt><dd class="varlist"><div class="para">
+Bu seçenek etkinse ve kalıp yaklaşık işareti (<b><tt>~</tt></b>) ile başlıyorsa, bu karakter özel olarak ele alınır. Bu durumda yaklaşık işaretinin bir kullanıcının ev dizinini gösterdiği varsayılır.
+       </div><div class="para">
+Eğer <b><tt>~</tt></b> kalıptaki tek karakterse ya da onu bir <b><tt>/</tt></b> (bölü çizgisi) izliyorsa, bu kalıp sürecin sahibinin ev dizini ile eşleştirilir. Bilgi, <b><tt>getlogin</tt></b> ve <b><tt>getpwnam</tt></b> işlevleri kullanılarak sistem veritabanlarından okunur. Örneğin, ev dizini <tt>/home/bart</tt> olan  <b><tt>bart</tt></b> kullanıcısı için çağrı şöyle olurdu:
+       </div>
+<div class="para"><div align="right"><pre class="screen">
+glob ("~/bin/*", GLOB_TILDE, NULL, &amp;result)
+</pre></div></div><div class="para">
+Bu çağrıdan <tt>/home/bart/bin</tt> döner. Burada başka bir kullanıcının ev dizini de belirtilebilirdi. Bunun için yaklaşık işaretinden sonra kullanıcının ismini belirtmek yeterlidir. <b><tt>homer</tt></b>'in <tt>bin</tt> dizinini almak istersek:
+       </div>
+<div class="para"><div align="right"><pre class="screen">
+glob ("~homer/bin/*", GLOB_TILDE, NULL, &amp;result)
+</pre></div></div><div class="para">
+Eğer kullanıcı ismi geçersizse ya da ev dizini bir nedenle saptanamamışsa kalıba dokunulmaksızın kalıp dizgesi sonuç olarak döndürülür. Son örnekte, <b><tt>homer</tt></b> isminde bir kullanıcı yoksa işlev <tt>~homer</tt> dizinini aramaz ve sonuç olarak <b><tt>"~homer/bin/*"</tt></b> dizgesini döndürür.
+       </div><div class="para">
+Bu işlevsellik C kabuklarında <b><tt>nonomatch</tt></b> seçeneğinin etkin olduğu duruma eşdeğerdir.
+       </div></dd><dt><span class="term"><tt>GLOB_TILDE_CHECK</tt></span></dt><dd class="varlist"><div class="para">
+Bu seçenek belirtilmişse <b><tt>glob</tt></b> işlevi <b><tt>GLOB_TILDE</tt></b> seçeneği verilmiş gibi davranır. Tek fark, belirtilen kullanıcı yoksa ya da bir ev dizini saptanamamışsa kalıp dizgesi döndürülmez ve işlem bir hata ile sonuçlanır.
+       </div><div class="para">
+Bu işlevsellik C kabuklarında <b><tt>nonomatch</tt></b> seçeneğinin etkin olmadığı duruma eşdeğerdir.
+       </div></dd><dt><span class="term"><tt>GLOB_ONLYDIR</tt></span></dt><dd class="varlist"><div class="para">
+Bu seçenek belirtilmişse, bu, çağrıcının sadece kalıpla eşleşen dizinle ilgilendiğine dair bir <i>ipucu</i> olarak değerlendirilir. Eğer dosya hakkında saptanan bilgi onun bir dizin olmadığını belirtiyorsa bunlar reddedilir ama bunların türünü saptamak için ek bir çalışma yapılmaz. Yani çağrıcı hala bir süzme çalışması yapabilir.
+       </div><div class="para">
+Bu işlevsellik sadece GNU <b><tt>glob</tt></b> gerçeklemesi ile kullanılabilir. Aslında dahili kullanım için düşünülmüşse de kullanıcı için de yararlı olabileceğinden burada belgelenmiştir.
+       </div></dd></dl></div><div class="para">
+<b><tt>glob</tt></b> çağrısı çoğu durumda döndürdüğü sonucu saklamak için özkaynak ayırır. <b><tt>glob</tt></b> işlevi hep aynı <b><tt>glob_t</tt></b> nesnesi ile çağrılsa bile her çağrıda özkaynaklar önce serbest bırakılıp sonra tekrar ayrıldığından bir kaçak oluşmaz. Fakat bu işlem her çağrıda hep aynı süre içinde olmaz.
+    </div><a name="glibc-globfree" id="glibc-globfree"></a>
+<a class="indexterm" name="idx746" id="idx746"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>globfree</tt></b></tt></td><td valign="top"><pre class="paramdef">(glob_t *<i><tt>dizi-gst</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>globfree</tt></b> işlevi önceki <b><tt>glob</tt></b> çağrılarında <i><tt>dizi-gst</tt></i> ile gösterilen nesne için ayrılan yeri serbest bırakır. Bu <b><tt>glob_t</tt></b> türündeki nesne artık kullanılmayacaksa bu işlev çağrılarak bu alan serbest bırakılmalıdır.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-globfree64" id="glibc-globfree64"></a>
+<a class="indexterm" name="idx747" id="idx747"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>globfree64</tt></b></tt></td><td valign="top"><pre class="paramdef">(glob64_t *<i><tt>dizi-gst</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev <b><tt>globfree</tt></b> işlevinin benzeridir, farklı olarak <b><tt>glob64</tt></b> işlevi ile ayrılan bir <b><tt>glob64_t</tt></b> nesnesini serbest bırakmak için kullanılır.
+</div></dd></dl><div style="padding:5px"></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Flags-for-Globbing.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Globbing.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Regular-Expressions.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Genelleme Seçenekleri </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Düzenli İfade Eşleştirme</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:26:43+03:00" /><title>Yığınak Akımları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Other-Kinds-of-Streams.html" title="Diğer Akım Çeşitleri" /><link rel="previous" href="../glibc/glibc-String-Streams.html" title="Dizge Akımları" /><link rel="next" href="../glibc/glibc-Custom-Streams.html" title="Kendi Özel Akımlarınızı Oluşturun" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Yığınak Akımları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-String-Streams.html">Önceki</a> </td><th width="60%" align="center">Diğer Akım Çeşitleri</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Custom-Streams.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Obstack-Streams" id="glibc-Obstack-Streams"></a>Yığınak Akımları</div><dl><dd><div class="para">
+
+Bir çıkış akımı açabilir ve verisini bir yığınağa koyabilirsiniz. Bkz. <a href="../glibc/glibc-Obstacks.html" class="xref" title="Yığınaklar (Obstacks)">Yığınaklar (Obstacks)</a>.
+    </div><a name="glibc-open_obstack_stream" id="glibc-open_obstack_stream"></a>
+<a class="indexterm" name="idx1014" id="idx1014"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>FILE *<b><tt>open_obstack_stream</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev <i><tt>yığınak</tt></i> yığınağına veri yazmak için bir akım açar. Bu yığınakta bir nesne başlatır ve onu veri yazıldıkça büyütür (bkz. <a href="../glibc/glibc-Obstacks.html#glibc-Growing-Objects" class="xref" title="Büyüyen Nesneler">Büyüyen Nesneler</a>).
+    </div><div class="para">
+Bu akım üzerinde yapılan bir <b><tt>fflush</tt></b> çağrısı nesnenin o anki boyunu yazılmış olan veriye eşitler. Bir <b><tt>fflush</tt></b> çağrısından sonra nesneyi geçici olarak inceleyebilirsiniz.
+    </div><div class="para">
+Bir yığınak akımının dosya konumunu <b><tt>fseek</tt></b> veya <b><tt>fseeko</tt></b> (<a href="../glibc/glibc-File-Positioning.html" class="xref" title="Dosyalarda Konumlama">Dosyalarda Konumlama</a>) işlevlerini kullanarak değiştirebilirsiniz. Dosya konumunun yazılmış olan verinin sonrasına taşınması arada kalan boşlukların sıfırlarla doldurulmasına sebep olur.
+    </div><div class="para">
+Nesneyi kalıcı yapmak için yığınağı <b><tt>fflush</tt></b> ile güncelleyin ve <b><tt>obstack_finish</tt></b> ile nesneyi bitirip adresini alın. Bunun ardından akıma yazma işlemleri yığınakta yeni bir nesne başlatır ve sonraki <b><tt>fflush</tt></b> ve <b><tt>obstack_finish</tt></b> çağrılarına kadar bu nesne kullanılır.
+    </div><div class="para">
+Fakat ne uzunlukta bir nesne kullanıldığını nasıl bulacaksınız? Nesne uzunluğunu <b><tt>obstack_object_size</tt></b> (<a href="../glibc/glibc-Obstacks.html#glibc-Status-of-an-Obstack" class="xref" title="Bir Yığınağın Durumu">Bir Yığınağın Durumu</a>) çağrısı ile alabileceğiniz gibi nesneyi aşağıdaki gibi boş karakterle sonlandırabilirsiniz:
+    </div>
+<div class="para"><div align="right"><pre class="screen">obstack_1grow (<i><tt>yığınak</tt></i>, 0);
+</pre></div></div><div class="para">
+Hangi yöntemi kullanırsanız kullanın, bunu <b><tt>obstack_finish</tt></b> çağrısından <b><tt>önce</tt></b> yapmalısınız (isterseniz ikisini de yapabilirsiniz).
+      </div></dd></dl><div style="padding:5px"></div>
+    <div class="para">
+Örnekte <b><tt>obstack_finish</tt></b> işlevinin kullanımı görülmektedir:
+    </div><div class="para"><div align="right"><pre class="screen">
+char *
+ileti_dizgesi_yap (const char *a, int b)
+{
+  FILE *akim = open_obstack_stream (&amp;ileti_yigini);
+  output_task (akim);
+  fprintf (akim, ": ");
+  fprintf (akim, a, b);
+  fprintf (akim, "\n");
+  fclose (akim);
+  obstack_1grow (&amp;ileti_yigini, 0);
+  return obstack_finish (&amp;ileti_yigini);
+}
+</pre></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-String-Streams.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Other-Kinds-of-Streams.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Custom-Streams.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Dizge Akımları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Kendi Özel Akımlarınızı Oluşturun</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,202 +1,88 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="tr" xml:lang="tr">
-  <head>
-    <title>13.11. Eşzamansız G/Ç</title>
-    <meta name="generator" content="DocBook XSL Stylesheets V-special (derived from DocBook XSL v1.79.1 for Turkish Linux Documentation Project by Nilgün Belma Bugüner - nilgun (at) tlbp.org.tr)" />
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="/style/nav.css" />
-    <link rel="icon" type="image/png" href="/images/belgeler-logo.png" />
-    <meta name="robots" content="index, follow" />
-  </head>
-  <body>
-    <header>
-      <div class="navbar">
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Synchronizing-I-O.html')">Önceki</button>
-          <div class="dropdown-content">13.10. G/Ç İşlemlerinin Eşzamanlanması</div>
-        </div>
-        <div style="width:34%" class="dropdown">
-          <button class="dropbtn">Yukarı</button>
-          <div class="dropdown-content">
-            <button type="button" class="dropbtn" onclick="window.location.assign('/index.html')">Baş Sayfa</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('/KiTAPLIK/index.html')">Kitaplık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc.html')">Ana Başlık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Low-Level-I-O.html')">Üst Başlık</button>
-          </div>
-        </div>
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Asynchronous-Reads-Writes.html')">Sonraki</button>
-          <div class="dropdown-content">13.11.1. Eşzamansız Okuma ve Yazma İşlemleri</div>
-        </div>
-      </div>
-    </header>
-    <section class="mainpage">
-      <div class="crumbs">
-        <p>  </p>
-      </div>
-      <section class="chapter" id="glibc-Asynchronous-I-O">
-        <div class="titlepage">
-          <div>
-            <div>
-              <h2 class="title">13.11. Eşzamansız G/Ç</h2>
-            </div>
-          </div>
-        </div>
-        <div class="preliminary">
-          <div class="titlepage">
-            <div>
-              <div>
-                <h2 class="title">Ön Bilgi</h2>
-              </div>
-            </div>
-          </div>
-          <p>
-    POSIX.1b standardı G/Ç işlemlerinde beklemelerden kaynaklanan zaman kaybını en aza indiren yeni bir G/Ç işlemleri kümesi tanımlar. Yeni işlevler bir yazılımın birden fazla G/Ç işlemini ilklendirmesini ve G/Ç işlemlerini bir arada (paralel) gerçekleştirdikten hemen sonra yazılımın normal çalışmasına dönmesini mümkün kılar. Bu işlevsellik varsa <code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/unistd.h;hb=HEAD" target="_top">unistd.h</a></code> dosyasında <a href="glibc-Asynchronous-I-O.html#glibc-vr-POSIX_ASYNCHRONOUS_IO"><strong class="varname"><code>_POSIX_ASYNCHRONOUS_IO</code></strong></a> simgesi tanımlıdır.
-   </p>
-          <p>
-    Bu işlevler, gerçek zamanlı işlevler içeren <code class="filename">librt</code>  kütüphanesinin bir parçasıdır. Aslında <code class="filename">libc</code> kodunun parçası değildir. Bu işlevlerin gerçeklenmesi çekirdekteki destek (varsa) kullanılarak ya da kullanıcı seviyesinde evrelere tabanlanmış bir gerçekleme kullanılarak yapılabilir. Son durumda uygulamaları <code class="filename">librt</code> kütüphanesinden başka <code class="filename">libpthread</code> evre kütüphanesi ile de ilintilemek gerekir.
-   </p>
-        </div>
-        <div class="toc">
-          <div class="toc-title">İçindekiler</div>
-          <dl class="toc">
-            <dt>13.11.1. <a href="glibc-Asynchronous-Reads-Writes.html">Eşzamansız Okuma ve Yazma İşlemleri</a></dt>
-            <dt>13.11.2. <a href="glibc-Status-of-AIO-Operations.html">Eşzamansız G/Ç İşlemlerinin Durumu</a>  -  Eşzamansız G/Ç işlemlerinin durumunu öğrenilmesi</dt>
-            <dt>13.11.3. <a href="glibc-Synchronizing-AIO-Operations.html">Eşzamansız G/Ç İşlemlerinin Eşzamanlanması</a>  -  İstikrarlı duruma geçme.</dt>
-            <dt>13.11.4. <a href="glibc-Cancel-AIO-Operations.html">Eşzamansız G/Ç İşlemlerinin İptal Edilmesi</a></dt>
-            <dt>13.11.5. <a href="glibc-Configuration-of-AIO.html">Eşzamansız G/Ç İşlemlerinin Yapılandırılması</a>  -  Eşzamansız G/Ç işlemleri nasıl en iyilenir</dt>
-          </dl>
-        </div>
-        <p>
-   Tüm eşzamansız G/Ç işlemleri önceden açılmış dosyalar üzerinde yapılır. Bir dosya üzerinde seçimlik olarak çok sayıda işlem yapılıyor olabilir. Eşzamansız G/Ç işlemleri <a href="glibc-Asynchronous-I-O.html#glibc-tp-aiocb"><strong class="type"><code>struct aiocb</code></strong></a> ("AIO control block" kısaltmasıdır) isimli bir veri yapısı kullanılarak denetlenir. <a href="glibc-Asynchronous-I-O.html#glibc-tp-aiocb"><strong class="type"><code>struct aiocb</code></strong></a> yapısı <code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=rt/aio.h;hb=HEAD" target="_top">aio.h</a></code> başlık dosyasında tanımlıdır.
-   <span id="idm114822" class="indexterm"></span>.
-  </p>
-        <div class="csynopsis"><div class="cstype">  veri türü</div>
-   <span id="glibc-tp-aiocb" class="indexterm"></span>
-   <span id="glibc-cp-aiocb" class="indexterm"></span>
-   <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=rt/aio.h;hb=HEAD" target="_top">aio.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">struct </code><strong><code class="function">aiocb</code></strong></td><td style="vertical-align: text-top;"></td></tr></table></div>
-   
-   <p>
-    POSIX.1b standardı <code class="code">struct aiocb</code> yapısının en azından aşağıdaki listede açıklanan üyelere sahip olmasını zorunlu kılar. Gerçekleme tarafından kullanılan daha fazla eleman olabilir, ancak bu elemanlara bağımlılık taşınabilir olmayacağından bu kesinlikle önerilmez.
-   </p>
-   <div class="glosslist"><dl><dt><span class="glossterm">
-      <code class="type">int </code><strong class="structfield"><code>aio_fildes</code></strong>
-     </span></dt><dd class="glossdef"><p>
-       Bu eleman işlem için kullanılan dosya tanıtıcıyı içerir. Tanıtıcı geçerli olmalıdır, aksi takdirde işlem başarısız olur.
-      </p><p>
-       Dosyanın üzerinde açıldığı aygıt konumlama işlemlerine izin vermelidir. Örneğin, <a href="glibc-File-Position-Primitive.html#glibc-fn-lseek"><strong class="function"><code>lseek</code></strong></a> çağrılarının hataya yol açtığı uçbirim benzeri aygıtlar üzerinde eşzamansız G/Ç işlemleri yapılması mümkün değildir.
-      </p></dd><dt><span class="glossterm">
-      <code class="type">off_t </code><strong class="structfield"><code>aio_offset</code></strong>
-     </span></dt><dd class="glossdef"><p>
-       Dosyada işlem (girdi ya da çıktı) yapılacak dosya konumunu belirtir. İşlem keyfi sırada yapıldığından ve bir dosya tanıtıcı üzerinde birden fazla işlem başlatıldığından bunun dosya tanıtıcısının geçerli okuma/yazma konumu olduğundan bahsedilemez.
-      </p></dd><dt><span class="glossterm">
-      <code class="type">volatile void *</code><strong class="structfield"><code>aio_buf</code></strong>
-     </span></dt><dd class="glossdef"><p>
-       Verinin yazıldığı ya da okunan verinin saklandığı tampona göstericidir.
-      </p></dd><dt><span class="glossterm">
-      <code class="type">size_t </code><strong class="structfield"><code>aio_nbytes</code></strong>
-     </span></dt><dd class="glossdef"><p>
-       <strong class="structfield"><code>aio_buf</code></strong> ile gösterilen tamponun uzunluğudur.
-      </p></dd><dt><span class="glossterm">
-      <code class="type">int </code><strong class="structfield"><code>aio_reqprio</code></strong>
-     </span></dt><dd class="glossdef"><p>
-       <span id="glibc-vr-POSIX_ASYNCHRONOUS_IO" class="indexterm"></span>
-       <span id="glibc-vr-POSIX_PRIORITY_SCHEDULING" class="indexterm"></span>
-       Eğer platform <a href="glibc-Sysconf.html#glibc-vr-POSIX_PRIORITIZED_IO"><strong class="varname"><code>_POSIX_PRIORITIZED_IO</code></strong></a> ve <a href="glibc-Asynchronous-I-O.html#glibc-vr-POSIX_PRIORITY_SCHEDULING"><strong class="varname"><code>_POSIX_PRIORITY_SCHEDULING</code></strong></a> ile tanımlanmışsa, eşzamansız G/Ç istekleri geçerli zamanlama önceliğine göre işlenir. Bu üye eşzamansız G/Ç işlemini daha düşük önceliğe ayarlamakta kullanılabilir.
-      </p></dd><dt><span class="glossterm">
-      <code class="type">struct sigevent </code><strong class="structfield"><code>aio_sigevent</code></strong>
-     </span></dt><dd class="glossdef"><p><span class="notfoot"></span>
-       <span id="glibc-tp-sigevent" class="indexterm"></span>
-       <span id="glibc-vr-SIGEV_NONE" class="indexterm"></span>
-       <span id="glibc-vr-SIGEV_SIGNAL" class="indexterm"></span>
-       <span id="glibc-vr-SIGEV_THREAD" class="indexterm"></span>
-       Çağıran sürecin işlem sonlandığında nasıl uyarılacağını belirtir. <code class="code">aio_sigevent.sigev_notify</code> elemanının değeri <code class="code">SIGEV_NONE</code> ise uyarı gönderilmez. <code class="code">SIGEV_SIGNAL</code> ise <code class="code">aio_sigevent.sigev_signo</code> tarafından saptanan sinyal gönderilir. Aksi takdirde, <code class="code">aio_sigevent.sigev_notify</code> elemanının değeri <code class="code">SIGEV_THREAD</code> olmalıdır. Bu durumda, <code class="code">aio_sigevent.sigev_notify_function</code> tarafından gösterilen işlev çalıştırılarak başlatılan bir evre oluşturulur. <a id="idm114899" href="#ftn.idm114899" class="footnote"><sup class="footnote">[79]</sup></a>
-      </p></dd><dt><span class="glossterm">
-      <code class="type">int </code><strong class="structfield"><code>aio_lio_opcode</code></strong>
-     </span></dt><dd class="glossdef"><p>
-       Bu eleman sadece <a href="glibc-Asynchronous-Reads-Writes.html#glibc-fn-lio_listio"><strong class="function"><code>lio_listio</code></strong></a> ve <a href="glibc-Asynchronous-Reads-Writes.html#glibc-fn-lio_listio64"><strong class="function"><code>lio_listio64</code></strong></a> işlevleri tarafından kullanılır. Bu işlevler bir kerede birden fazla keyfi işlemin başlatılmasını mümkün kıldığından ve her işlem bir girdi ya da bir çıktı (ya da hiçbir şey) olabildiğinden, bilgi denetim yapısında (<a href="glibc-Asynchronous-I-O.html#glibc-tp-aiocb"><strong class="type"><code>struct aiocb</code></strong></a>) saklanmalıdır. Olası değerler şunlardır:
-      </p><div class="csynopsis"><div class="cstype">      sabit</div>
-       <span id="glibc-vr-LIO_READ" class="indexterm"></span>
-       <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=rt/aio.h;hb=HEAD" target="_top">aio.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><strong><code class="function">LIO_READ</code></strong></td><td style="vertical-align: text-top;"></td></tr></table></div>
-       
-       <p>
-        Okuma işlemi başlatır. Okuma <strong class="structfield"><code>aio_offset</code></strong> konumundan başlar ve okunan ilk <strong class="structfield"><code>aio_nbytes</code></strong> bayt <strong class="structfield"><code>aio_buf</code></strong> ile gösterilen tamponda saklanır.
-       </p>
-      </div><div class="csynopsis"><div class="cstype">      sabit</div>
-       <span id="glibc-vr-LIO_WRITE" class="indexterm"></span>
-       <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=rt/aio.h;hb=HEAD" target="_top">aio.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><strong><code class="function">LIO_WRITE</code></strong></td><td style="vertical-align: text-top;"></td></tr></table></div>
-       
-       <p>
-        Yazma işlemi başlatır. <strong class="structfield"><code>aio_buf</code></strong>'tan başlayan  <strong class="structfield"><code>aio_nbytes</code></strong> bayt, dosyaya <strong class="structfield"><code>aio_offset</code></strong> konumdan itibaren yazılır.
-       </p>
-      </div><div class="csynopsis"><div class="cstype">      sabit</div>
-       <span id="glibc-vr-LIO_NOP" class="indexterm"></span>
-       <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=rt/aio.h;hb=HEAD" target="_top">aio.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><strong><code class="function">LIO_NOP</code></strong></td><td style="vertical-align: text-top;"></td></tr></table></div>
-       
-       <p>
-        Hiçbir şey yapılmaz. Bu değer, <a href="glibc-Asynchronous-I-O.html#glibc-tp-aiocb"><strong class="type"><code>struct aiocb</code></strong></a> dizisi delikler içerdiğinde kimi zaman kullanışlı olur; örneğin, dizinin tamamında elde edilememiş bazı değerlerle <a href="glibc-Asynchronous-Reads-Writes.html#glibc-fn-lio_listio"><strong class="function"><code>lio_listio</code></strong></a> çağrısı yapmak.
-       </p>
-      </div></dd></dl></div>
-   <p>
-    Kaynak dosyası <code class="code">_FILE_OFFSET_BITS == 64</code> ile derlenmişse 32 bitlik sistemlerde bu tür aslında <a href="glibc-Asynchronous-I-O.html#glibc-tp-aiocb64"><strong class="type"><code>struct aiocb64</code></strong></a> yapısına karşılıktır. Yani 32 ve 64 bitlik arayüzler yer değiştirir.
-   </p>
-  </div>
-        <p>
-   Büyük Dosya Sisteminde tanımlı eşzamansız G/Ç işlevleri ile kullanmak amacıyla tanımlanmış benzer bir veri türü vardır. Bu yapının üyelerinin türleri daha geniştir. Bunun dışında her iki yapının üyelerinin isimleri aynıdır.
-  </p>
-        <div class="csynopsis"><div class="cstype">  veri türü</div>
-   <span id="glibc-tp-aiocb64" class="indexterm"></span>
-   <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=rt/aio.h;hb=HEAD" target="_top">aio.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">struct </code><strong><code class="function">aiocb64</code></strong></td><td style="vertical-align: text-top;"></td></tr></table></div>
-   
-   <div class="glosslist"><dl><dt><span class="glossterm">
-      <code class="type">int </code><strong class="structfield"><code>aio_fildes</code></strong>
-     </span></dt><dd class="glossdef"><p>
-       Bu eleman işlem için kullanılan dosya tanıtıcıyı içerir. Tanıtıcı geçerli olmalıdır, aksi takdirde işlem başarısız olur.
-      </p><p>
-       Dosyanın üzerinde açıldığı aygıt konumlama işlemlerine izin vermelidir. Örneğin, <a href="glibc-File-Position-Primitive.html#glibc-fn-lseek"><strong class="function"><code>lseek</code></strong></a> çağrılarının hataya yol açtığı uçbirim benzeri aygıtlar üzerinde eşzamansız G/Ç işlemleri yapılması mümkün değildir.
-      </p></dd><dt><span class="glossterm">
-      <code class="type">off64_t </code><strong class="structfield"><code>aio_offset</code></strong>
-     </span></dt><dd class="glossdef"><p>
-       Dosyada işlem (girdi ya da çıktı) yapılacak dosya konumunu belirtir. İşlem keyfi sırada yapıldığından ve bir dosya tanıtıcı üzerinde birden fazla işlem başlatıldığından bunun dosya tanıtıcısının geçerli okuma/yazma konumu olduğundan bahsedilemez.
-      </p></dd><dt><span class="glossterm">
-      <code class="type">volatile void *</code><strong class="structfield"><code>aio_buf</code></strong>
-     </span></dt><dd class="glossdef"><p>
-       Verinin yazıldığı ya da okunan verinin saklandığı tampona göstericidir.
-      </p></dd><dt><span class="glossterm">
-      <code class="type">size_t </code><strong class="structfield"><code>aio_nbytes</code></strong>
-     </span></dt><dd class="glossdef"><p>
-       <strong class="structfield"><code>aio_buf</code></strong> ile gösterilen tamponun uzunluğudur.
-      </p></dd><dt><span class="glossterm">
-      <code class="type">int </code><strong class="structfield"><code>aio_reqprio</code></strong>
-     </span></dt><dd class="glossdef"><p>
-       Eğer platform <a href="glibc-Sysconf.html#glibc-vr-POSIX_PRIORITIZED_IO"><strong class="varname"><code>_POSIX_PRIORITIZED_IO</code></strong></a> ve <a href="glibc-Asynchronous-I-O.html#glibc-vr-POSIX_PRIORITY_SCHEDULING"><strong class="varname"><code>_POSIX_PRIORITY_SCHEDULING</code></strong></a> ile tanımlanmışsa, eşzamansız G/Ç istekleri geçerli zamanlama önceliğine göre işlenir. Bu üye eşzamansız G/Ç işlemini daha düşük önceliğe ayarlamakta kullanılabilir.
-      </p></dd><dt><span class="glossterm">
-      <code class="type">struct sigevent </code><strong class="structfield"><code>aio_sigevent</code></strong>
-     </span></dt><dd class="glossdef"><p>
-       Çağıran sürecin işlem sonlandığında nasıl uyarılacağını belirtir. <code class="code">aio_sigevent.sigev_notify</code> elemanının değeri <code class="code">SIGEV_NONE</code> ise uyarı gönderilmez. <code class="code">SIGEV_SIGNAL</code> ise <code class="code">aio_sigevent.sigev_signo</code> tarafından saptanan sinyal gönderilir. Aksi takdirde, <code class="code">aio_sigevent.sigev_notify</code> elemanının değeri <code class="code">SIGEV_THREAD</code> olmalıdır. Bu durumda, <code class="code">aio_sigevent.sigev_notify_function</code> tarafından gösterilen işlev çalıştırılarak başlatılan bir evre oluşturulur.
-      </p></dd><dt><span class="glossterm">
-      <code class="type">int </code><strong class="structfield"><code>aio_lio_opcode</code></strong>
-     </span></dt><dd class="glossdef"><p>
-       Bu eleman sadece <a href="glibc-Asynchronous-Reads-Writes.html#glibc-fn-lio_listio"><strong class="function"><code>lio_listio</code></strong></a> ve <a href="glibc-Asynchronous-Reads-Writes.html#glibc-fn-lio_listio64"><strong class="function"><code>lio_listio64</code></strong></a> işlevleri tarafından kullanılır. Bu işlevler bir kerede birden fazla keyfi işlemin başlatılmasını mümkün kıldığından ve her işlem bir girdi ya da bir çıktı (ya da hiçbir şey) olabildiğinden, bilgi denetim yapısında (<a href="glibc-Asynchronous-I-O.html#glibc-tp-aiocb"><strong class="type"><code>struct aiocb</code></strong></a>) saklanmalıdır. Olası değerler şunlardır:
-      </p></dd></dl></div>
-   <p>
-    Kaynak dosyası <code class="code">_FILE_OFFSET_BITS == 64</code> ile derlenmişse 32 bitlik sistemlerde  <a href="glibc-Asynchronous-I-O.html#glibc-tp-aiocb"><strong class="type"><code>struct aiocb</code></strong></a> aslında <a href="glibc-Asynchronous-I-O.html#glibc-tp-aiocb64"><strong class="type"><code>struct aiocb64</code></strong></a> yapısına karşılıktır. Yani 32 ve 64 bitlik arayüzler yer değiştirir.
-   </p>
-  </div>
-        <div class="footnotes">
-          <br />
-          <hr class="footnote-hr" />
-          <div id="ftn.idm114899" class="footnote">
-            <p><a href="#idm114899" class="para"><sup class="para">[79] </sup></a>Ç.N.: <code class="code">struct sigevent</code> hakkında ayrıntılı bilgi <tt><b>sigevent</b>(7)</tt> kılavuz sayfasında bulunabilir.</p>
-          </div>
-        </div>
-      </section>
-      <footer>
-        <div align="center" class="footer">
-          <small>Bir <a href="http://belgeler.org.tr/">Linux Kitaplığı</a> Sayfası</small>
-        </div>
-      </footer>
-    </section>
-  </body>
-</html>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:26:46+03:00" /><title>Eşzamansız G/Ç</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Low-Level-I-O.html" title="XIII. Oylum - Düşük Seviyeli Girdi ve Çıktı" /><link rel="previous" href="../glibc/glibc-Synchronizing-I-O.html" title="G/Ç İşlemlerinin Eşzamanlanması" /><link rel="next" href="../glibc/glibc-Asynchronous-Reads-Writes.html" title="Eşzamansız Okuma ve Yazma İşlemleri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Eşzamansız G/Ç</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Synchronizing-I-O.html">Önceki</a> </td><th width="60%" align="center">XIII. Oylum - Düşük Seviyeli Girdi ve Çıktı</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Asynchronous-Reads-Writes.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="glibc-Asynchronous-I-O" id="glibc-Asynchronous-I-O"></a>Eşzamansız G/Ç</div></div></div><div class="toc"><div class="formaltitle"><b>İçindekiler</b></div><dl><dt>1. <a href="../glibc/glibc-Asynchronous-Reads-Writes.html">Eşzamansız Okuma ve Yazma İşlemleri</a></dt><dt>2. <a href="../glibc/glibc-Status-of-AIO-Operations.html">Eşzamansız G/Ç İşlemlerinin Durumu</a>  -  Eşzamansız G/Ç işlemlerinin durumunu öğrenilmesi</dt><dt>3. <a href="../glibc/glibc-Synchronizing-AIO-Operations.html">Eşzamansız G/Ç İşlemlerinin Eşzamanlanması</a>  -  İstikrarlı duruma geçme.</dt><dt>4. <a href="../glibc/glibc-Cancel-AIO-Operations.html">Eşzamansız G/Ç İşlemlerinin İptal Edilmesi</a></dt><dt>5. <a href="../glibc/glibc-Configuration-of-AIO.html">Eşzamansız G/Ç İşlemlerinin Yapılandırılması</a>  -  Eşzamansız G/Ç işlemleri nasıl eniyilenir</dt></dl></div><dl><dd><div class="para">
+POSIX.1b standardı G/Ç işlemlerinde beklemelerden kaynaklanan zaman kaybını en aza indiren yeni bir G/Ç işlemleri kümesi tanımlar. Yeni işlevler bir yazılımın birden fazla G/Ç işlemini ilklendirmesini ve G/Ç işlemlerini birarada (paralel) gerçekleştirdikten hemen sonra yazılımın normal çalışmasına dönmesini mümkün kılar. Bu işlevsellik varsa <b><tt>unistd.h</tt></b> dosyasında <b><tt>_POSIX_ASYNCHRONOUS_IO</tt></b> sembolü tanımlıdır.
+   </div><div class="para">
+Bu işlevler, gerçek zamanlı işlevler içeren <b><tt>librt</tt></b> isimli kütüphanenin bir parçasıdır. Aslında <b><tt>libc</tt></b> kodunun parçası değildir. Bu işlevlerin gerçeklenmesi çekirdekteki destek (varsa) kullanılarak ya da kullanıcı seviyesinde evrelere tabanlanmış bir gerçekleme kullanılarak yapılabilir. Son durumda uygulamaları <b><tt>librt</tt></b> kütüphanesinden başka <b><tt>libpthread</tt></b> evre kütüphanesi ile de ilintilemek gerekir.
+   </div><div class="para">
+Tüm eşzamansız G/Ç işlemleri önceden açılmış dosyalar üzerinde yapılır. Bir dosya üzerinde keyfi manada çok sayıda işlem yapılıyor olabilir. Eşzamansız G/Ç işlemleri <b><tt>struct aiocb</tt></b> isimli ("AIO control block" kısaltması) bir veri yapısı kullanılarak denetlenir. <b><tt>struct aiocb</tt></b> yapısı <tt>aio.h</tt> başlık dosyasında tanımlıdır.
+   </div><a name="glibc-aiocb" id="glibc-aiocb"></a>
+<a class="indexterm" name="idx1116" id="idx1116"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct <b><tt>aiocb</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+POSIX.1b standardı <b><tt>struct aiocb</tt></b> yapısının en azından aşağıdaki listede açıklanan üyelere sahip olmasını zorunlu kılar. Gerçekleme tarafından kullanılan daha fazla eleman olabilir, ancak bu elemanlara bağımlılık taşınabilir olmayacağından buna şiddetle karşı çıkılır.
+   </div><dl><dt><span class="glossterm">
+   <tt>int <b><tt>aio_fildes</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Bu eleman işlem için kullanılan dosya tanıtıcıyı içerir. Geçerli bir tanıtıcı olmalıdır, aksi takdirde işlem başarısız olur.
+      </div><div class="para">
+Dosya üzerinde açılan aygıt konumlama işlemlerine izin vermelidir. Örneğin, <b><tt>lseek</tt></b> çağrılarının hataya yolaçtığı uçbirim benzeri aygıtlar üzerinde eşzamansız G/Ç işlemleri yapılması mümkün değildir.
+   </div></dd><dt><span class="glossterm">
+   <tt>off_t <b><tt>aio_offset</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Dosyada işlem (girdi ya da çıktı) yapılacak dosya konumunu belirtir. İşlem keyfi sırada yapıldığından ve bir dosya tanıtıcı üzerinde birden fazla işlem başlatıldığından bunun dosya tanıtıcısının o anki okuma/yazma konumu olduğundan bahsedilemez.
+   </div></dd><dt><span class="glossterm">
+   <tt>volatile void *<b><tt>aio_buf</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Verinin yazıldığı ya da okunan verinin saklandığı tampona göstericidir.
+   </div></dd><dt><span class="glossterm">
+   <tt>size_t <b><tt>aio_nbytes</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para"><b><tt>aio_buf</tt></b> ile gösterilen tamponun uzunluğudur.
+   </div></dd><dt><span class="glossterm">
+   <tt>int <b><tt>aio_reqprio</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">Eğer platform <b><tt>_POSIX_PRIORITIZED_IO</tt></b> ve <b><tt>_POSIX_PRIORITY_SCHEDULING</tt></b> ile tanımlanmışsa, eşzamansız G/Ç istekleri o anki zamanlama önceliğine göre işlenir. <b><tt>aio_reqprio</tt></b> elemanı eşzamansız G/Ç işlemini daha düşük önceliğe ayarlamakta kullanılabilir.
+   </div></dd><dt><span class="glossterm">
+   <tt>struct sigevent <b><tt>aio_sigevent</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">Çağıran sürecin işlem sonlandığında nasıl uyarılacağını belirtir. <b><tt>sigev_notify</tt></b> elemanının değeri <b><tt>SIGEV_NONE</tt></b> ise uyarı gönderilmez. <b><tt>SIGEV_SIGNAL</tt></b> ise <b><tt>sigev_signo</tt></b> tarafından saptanan sinyal gönderilir. Aksi takdirde, <b><tt>sigev_notify</tt></b> elemanının değeri <b><tt>SIGEV_THREAD</tt></b> olmalıdır. Bu durumda, <b><tt>sigev_notify_function</tt></b> tarafından gösterilen işlev çalıştırılarak  başlatılan bir evre oluşturulur.
+   </div></dd><dt><span class="glossterm">
+   <tt>int <b><tt>aio_lio_opcode</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Bu eleman sadece <b><tt>lio_listio</tt></b> ve <b><tt>lio_listio64</tt></b> işlevleri tarafından kullanılır. Bu işlevler bir kerede birden fazla keyfi işlemin başlatılmasını mümkün kıldığından ve her işlem bir girdi ya da bir çıktı (ya da hiçbir şey) olabildiğinden, bilgi denetim bloğunda saklanmalıdır. Olası değerler şunlardır:
+      </div><div class="variablelist"><dl><dt><span class="term"><tt>LIO_READ</tt></span></dt><dd class="varlist"><div class="para">
+Bir okuma işlemi başlatır. Okuma <b><tt>aio_offset</tt></b>'deki konumdan başlar ve okunan ilk <b><tt>aio_nbytes</tt></b> bayt <b><tt>aio_buf</tt></b> ile gösterilen tamponda saklanır.
+         </div></dd><dt><span class="term"><tt>LIO_WRITE</tt></span></dt><dd class="varlist"><div class="para">
+Bir yazma işlemi başlatır. <b><tt>aio_buf</tt></b>'dan başlayan  <b><tt>aio_nbytes</tt></b> bayt, dosyaya <b><tt>aio_offset</tt></b> konumdan itibaren yazılır.
+         </div></dd><dt><span class="term"><tt>LIO_NOP</tt></span></dt><dd class="varlist"><div class="para">
+Hiçbir şey yapılmaz. Bu değer <b><tt>struct aiocb</tt></b> dizisi delikler içerdiğinde kimi zaman kullanışlı olur; örneğin, dizinin tamamında elde edilememiş bazı değerlerle <b><tt>lio_listio</tt></b> çağrısı yapmak.
+         </div></dd></dl></div>
+       </dd></dl>
+     <div class="para">
+Kaynak dosyası <b><tt>_FILE_OFFSET_BITS == 64</tt></b> ile derlenmişse 32 bitlik sistemlerde bu tür aslında <b><tt>struct aiocb64</tt></b> yapısına karşılıktır. Yani 32 bitlik arayüz 64 bitlik olanıyla değiştirilir.
+</div></dd></dl><div style="padding:5px"></div><div class="para">
+LFS'de tanımlı eşzamansız G/Ç işlevleri ile kullanmak amacıyla tanımlanmış benzer bir veri türü vardır. Bu yapının üyelerinin türleri daha geniş veri türleridir. Bunun dışında her iki yapının üyelerinin isimleri aynıdır.
+   </div><a name="glibc-aiocb64" id="glibc-aiocb64"></a>
+<a class="indexterm" name="idx1117" id="idx1117"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct <b><tt>aiocb64</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd>
+   <dl><dt><span class="glossterm">
+   <tt>int <b><tt>aio_fildes</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Bu eleman işlem için kullanılan dosya tanıtıcıyı içerir. Geçerli bir tanıtıcı olmalıdır, aksi takdirde işlem başarısız olur.
+      </div><div class="para">
+Dosya üzerinde açılan aygıt konumlama işlemlerine izin vermelidir. Örneğin, <b><tt>lseek</tt></b> çağrılarının hataya yolaçtığı uçbirim benzeri aygıtlar üzerinde eşzamansız G/Ç işlemleri yapılması mümkün değildir.
+   </div></dd><dt><span class="glossterm">
+   <tt>off64_t <b><tt>aio_offset</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Dosyada işlem (girdi ya da çıktı) yapılacak dosya konumunu belirtir. İşlem keyfi sırada yapıldığından ve bir dosya tanıtıcı üzerinde birden fazla işlem başlatıldığından bunun dosya tanıtıcısının o anki okuma/yazma konumu olduğundan bahsedilemez.
+   </div></dd><dt><span class="glossterm">
+   <tt>volatile void *<b><tt>aio_buf</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Verinin yazıldığı ya da okunan verinin saklandığı tampona göstericidir.
+   </div></dd><dt><span class="glossterm">
+   <tt>size_t <b><tt>aio_nbytes</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para"><b><tt>aio_buf</tt></b> ile gösterilen tamponun uzunluğudur.
+   </div></dd><dt><span class="glossterm">
+   <tt>int <b><tt>aio_reqprio</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+<b><tt>_POSIX_PRIORITIZED_IO</tt></b> ve <b><tt>_POSIX_PRIORITY_SCHEDULING</tt></b> ile tanımlanmışsa, eşzamansız G/Ç istekleri o anki zamanlama önceliğine göre işlenir. <b><tt>aio_reqprio</tt></b> elemanı eşzamansız G/Ç işlemini daha düşük önceliğe ayarlamakta kullanılabilir.
+   </div></dd><dt><span class="glossterm">
+   <tt>struct sigevent <b><tt>aio_sigevent</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Çağıran sürecin işlem sonlandığında nasıl uyarılacağını belirtir. <b><tt>sigev_notify</tt></b> elemanının değeri <b><tt>SIGEV_NONE</tt></b> ise uyarı gönderilmez. <b><tt>SIGEV_SIGNAL</tt></b> ise <b><tt>sigev_signo</tt></b> tarafından saptanan sinyal gönderilir. Aksi takdirde, <b><tt>sigev_notify</tt></b> elemanının değeri <b><tt>SIGEV_THREAD</tt></b> olmalıdır. Bu durumda, <b><tt>sigev_notify_function</tt></b> tarafından gösterilen işlev çalıştırılarak  başlatılan bir evre oluşturulur.
+   </div></dd><dt><span class="glossterm">
+    <tt>int <b><tt>aio_lio_opcode</tt></b></tt>
+    </span></dt><dd class="halfpara"><div class="para">
+Bu eleman sadece <b><tt>lio_listio</tt></b> ve <b><tt>lio_listio64</tt></b> işlevleri tarafından kullanılır. Bu işlevler bir kerede birden fazla keyfi işlemin başlatılmasını mümkün kıldığından ve her işlem bir girdi ya da bir çıktı (ya da hiçbir şey) olabildiğinden, bilgi denetim bloğunda saklanmalıdır.  Olası değerlerin açıklamaları için <b><tt>struct aiocb</tt></b> yapısında bu üyenin açıklamasına bakınız.
+      </div></dd></dl>
+</dd></dl><div style="padding:5px"></div><div class="para">
+Kaynak dosyası <b><tt>_FILE_OFFSET_BITS == 64</tt></b> ile derlenmişse 32 bitlik sistemlerde bu türe <b><tt>struct aiocb</tt></b> ismiyle erişilir. Yani 32 bitlik arayüz 64 bitlik olanıyla değiştirilir.
+   </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Synchronizing-I-O.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Low-Level-I-O.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Asynchronous-Reads-Writes.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">G/Ç İşlemlerinin Eşzamanlanması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Eşzamansız Okuma ve Yazma İşlemleri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

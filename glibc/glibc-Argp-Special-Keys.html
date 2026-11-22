@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2006-09-29T19:17:43+03:00" /><title>Argp Çözümleyici İşlevleri için Özel Anahtarlar</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Argp-Parser-Functions.html" title="Argp Çözümleyici İşlevleri" /><link rel="previous" href="../glibc/glibc-Argp-Parser-Functions.html" title="Argp Çözümleyici İşlevleri" /><link rel="next" href="../glibc/glibc-Argp-Helper-Functions.html" title="Argp Çözümleyicilere Yardımcı İşlevler" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Argp Çözümleyici İşlevleri için Özel Anahtarlar</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Argp-Parser-Functions.html">Önceki</a> </td><th width="60%" align="center">Argp Çözümleyici İşlevleri</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Argp-Helper-Functions.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="glibc-Argp-Special-Keys" id="glibc-Argp-Special-Keys"></a>Argp Çözümleyici İşlevleri için Özel Anahtarlar</div><dl><dd><div class="para">
+Kullanıcı seçeneklerine karşılık olan anahtar değerlerine ek olarak argp çözümleyici işlevlerinin <i><tt>anahtar</tt></i> argümanında bazı özel değerler de kullanılabilir. Aşağıdaki örnekte <i><tt>argüman</tt></i> ve <i><tt>durum</tt></i>, çözümleyici işlevin argümanlarını ifade eder. Bkz. <a href="../glibc/glibc-Argp-Parser-Functions.html" class="xref" title="Argp Çözümleyici İşlevleri"> Argp Çözümleyici İşlevleri</a>.
+     </div><div class="variablelist"><dl><dt><span class="term"><tt>ARGP_KEY_ARG</tt></span></dt><dd class="varlist"><div class="para">
+Seçeneği olmayan bir komut satırı argümanını belirtmek için <i><tt>argüman</tt></i> bu değere bir gösterici olur.
+        </div><div class="para">
+Çok sayıda argp çözümleyicinin bulunmasından dolayı çok sayıda çözümleyici işlev varsa, belli bir argümanın hangisi tarafından çözümleneceğini bilmek mümkün olmaz. Bu durumda sıfır ya da <b><tt>ARGP_ERR_UNKNOWN</tt></b> dışında bir hata döndürünceye kadar herbiri çağrılır; yine de bir argüman elde edilememişse, <b><tt>argp_parse</tt></b> işlevi başka bir argüman çözümlemesi yapmaksızın başarılı olarak döner.
+        </div><div class="para">
+Bu anahtar için bir çözümleyici işlev başarılı olmuşsa, bu kaydedilir ve <b><tt>ARGP_KEY_NO_ARGS</tt></b> durumu kullanılmaz. Ancak, bir çözümleyici işlev bir argümanı işlerken, <i><tt>durum</tt></i> argümanının <b><tt>next</tt></b> alanını azaltıyorsa, seçenek işlenmemiş varsayılacaktır; bu durumda hala bir seçenek içinde argümanı değiştirme ve onu tekrar işleme sokma imkanı olacaktır.
+        </div></dd><dt><span class="term"><tt>ARGP_KEY_ARGS</tt></span></dt><dd class="varlist"><div class="para">
+Bir çözümleyici işlev, <b><tt>ARGP_KEY_ARG</tt></b> için <b><tt>ARGP_ERR_UNKNOWN</tt></b> hatası ile dönerse, bu anahtarla benzer anlama sahip ama kalan tüm argümanlar üzerinde etkili olan  <b><tt>ARGP_KEY_ARGS</tt></b> anahtarı ile çağrı hemen yinelenir. <i><tt>argüman</tt></i> 0'dır ve argüman vektörünün ucu <tt><i>durum</i>-&gt;argv + <i>durum</i>-&gt;next</tt> ile bulunur. Bu anahtar için işlev başarılı ise ve <i><tt>durum</tt></i><tt>-&gt;next</tt> değişmemişse, kalan tüm argümanlar tüketilmiş varsayılır. Aksi takdirde, <i><tt>durum</tt></i><tt>-&gt;next</tt> ile belirtilen miktar kullanılmış olanların sayısına ayarlanır. Örnekte farklı argümannlar için her iki durum da kullanılmıştır:
+        </div>
+<div class="para" align="right"><pre class="screen">…
+  case ARGP_KEY_ARG:
+    if (<i><tt>durum</tt></i>-&gt;arg_num == 0)
+      /* İlk argüman */
+      ilk_arg = <i><tt>arguman</tt></i>;
+    else
+      /* Sonra çözümlenecek.  */
+      return ARGP_KEY_UNKNOWN;
+    break;
+  case ARGP_KEY_ARGS:
+    kalan_argumanlar = <i><tt>durum</tt></i>-&gt;argv + <i><tt>durum</tt></i>-&gt;next;
+    kalan_arg_sayisi = <i><tt>durum</tt></i>-&gt;argc - <i><tt>durum</tt></i>-&gt;next;
+    break;
+</pre></div>
+      </dd><dt><span class="term"><tt>ARGP_KEY_END</tt></span></dt><dd class="varlist"><div class="para">
+Bu anahtar başka komut satırı kalmadığını belirtir. Çözümleyici işlevler farklı bir sırada (önce <b><tt>children</tt></b>) çağrılır. Bu, her çözümleyici işlevin çağrıcısı için kendi durumunu temizleme imkanı verir.
+        </div></dd><dt><span class="term"><tt>ARGP_KEY_NO_ARGS</tt></span></dt><dd class="varlist"><div class="para">
+Seçeneği olmayan argümanların yokluğunda bazı özel işlemler ortaktır. Bundan dolayı, eğer çözümleyici işlevde seçeneği olmayan argümanları başarıyla işleme yeteneği yoksa bu işlevler bu anahtarla çağrılır. Bu çağrı, önceden çözümlenmiş argümanlar üzerinde daha genel doğrulama sınamalarının yapılabilmesi için <b><tt>ARGP_KEY_END</tt></b>'li bir çağrıdan önce yapılır.
+        </div></dd><dt><span class="term"><tt>ARGP_KEY_INIT</tt></span></dt><dd class="varlist"><div class="para">
+Herhangi bir çözümleme yapılmadan önce kullanılır. Bunun ardından, <i><tt>durum</tt></i> yapısının <b><tt>child_input</tt></b> alanının her elemanının değeri, çocuk çözümleyiciler çağrılırken <b><tt>input</tt></b> üyesini ilklendirmek üzere herbirinin durumuna kopyalanır.
+        </div></dd><dt><span class="term"><tt>ARGP_KEY_SUCCESS</tt></span></dt><dd class="varlist"><div class="para">
+Bazı argümanlar kalsa bile, istenen çözümleme başarıyla tamamlandığında kullanılır.
+        </div></dd><dt><span class="term"><tt>ARGP_KEY_ERROR</tt></span></dt><dd class="varlist"><div class="para">
+Bir hata oluştuğunda ya da çözümleme tamamlandığında kullanılır. Bu takdirde <b><tt>ARGP_KEY_SUCCESS</tt></b> anahtarlı bir çağrı asla yapılmamalıdır.
+        </div></dd><dt><span class="term"><tt>ARGP_KEY_FINI</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>ARGP_KEY_SUCCESS</tt></b> ve <b><tt>ARGP_KEY_ERROR</tt></b> anahtarlı çağrılardan bile sonra kullanılan son anahtar. <b><tt>ARGP_KEY_INIT</tt></b> anahtarlı bir çağrı ile ilklendirilen özkaynaklar bu anahtar kullanılarak yapılan bir çağrı ile serbest bırakılır. Bu sırada, bir başarılı çözümleme sonrası çağrıcıya döndürülen özkaynaklar ayrılmış olarak kalır. Bu durumda, bu özkaynaklar <b><tt>ARGP_KEY_ERROR</tt></b> durumuyla serbest bırakılabilir.
+        </div></dd></dl></div><div class="para">
+Tüm durumlarda, <b><tt>ARGP_KEY_INIT</tt></b> anahtarı çözümleyici işlev tarafından görülen ilk anahtar; <b><tt>ARGP_KEY_INIT</tt></b> için çözümleyiciden bir hata döndürülmedikçe, <b><tt>ARGP_KEY_FINI</tt></b> ise son anahtardır. Diğer anahtarlar aşağıdaki sıralamalarla görünürler. <i><tt>sçn-anh</tt></i> keyfi bir seçenek anahtarını ifade eder:
+     </div><div class="variablelist"><dl><dt><span class="term"><i><tt>sçn-anh</tt></i>… <b><tt>ARGP_KEY_NO_ARGS ARGP_KEY_END ARGP_KEY_SUCCESS</tt></b></span></dt><dd class="varlist"><div class="para">
+Çözümlenen argümanlar seçeneği olmayan argümanları içermiyorsa bu sıralama kullanılır.
+        </div></dd><dt><span class="term"><tt>( <i><tt>sçn-anh</tt></i> | <b><tt>ARGP_KEY_ARG</tt></b> )…</tt> <b><tt>ARGP_KEY_END ARGP_KEY_SUCCESS</tt></b></span></dt><dd class="varlist"><div class="para">
+Seçeneği olamayan argümanları işleme yeteneğine sahip işlev(ler) varsa bu sıralama kullanılır. Çok sayıda argp çözümleyici birlikte kullanılıyorsa çok sayıda çözümleyici işlev olabilir.
+        </div></dd><dt><span class="term"><tt>( <i><tt>sçn-anh</tt></i> | <b><tt>ARGP_KEY_ARG</tt></b> )…</tt> <b><tt>ARGP_KEY_SUCCESS</tt></b></span></dt><dd class="varlist"><div class="para">
+Seçeneği olmayan argümanlardan bilinmeyenler varsa bu sıralama kullanılır.
+        </div><div class="para">
+Çözümleyici işlevlerin hepsi bir argüman için <b><tt>ARGP_KEY_UNKNOWN</tt></b> ile döndüğünde, eğer  <i><tt>arg_indisi</tt></i> bir boş gösterici ise çözümleme bu argümanda durdurulur.  Aksi takdirde bir hata oluşur.
+        </div></dd></dl></div><div class="para">
+Tüm durumlarda, <b><tt>argp_parse</tt></b>'a aktarılan boş gösterici olmayan bir <i><tt>arg_indisi</tt></i> için çözümlenmemiş ilk komut satırı argümanı bu gösterici ile döndürülür.
+     </div><div class="para">
+Gerek argp tarafından gerekse bir hata değeri döndüren bir çözümleyici işlev nedeniyle bir hata değeri dönmüşse, her çözümleyici <b><tt>ARGP_KEY_ERROR</tt></b> ile çağrılır. Son çağrı olan <b><tt>ARGP_KEY_FINI</tt></b> anahtarlı çağrı dışında bir çağrı yapılmaz.
+     </div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Argp-Parser-Functions.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Argp-Parser-Functions.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Argp-Helper-Functions.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Argp Çözümleyici İşlevleri </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Argp Çözümleyicilere Yardımcı İşlevler</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

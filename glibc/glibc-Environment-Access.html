@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:39+03:00" /><title>Ortama Erişim</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Environment-Variables.html" title="Ortam Değişkenleri" /><link rel="previous" href="../glibc/glibc-Environment-Variables.html" title="Ortam Değişkenleri" /><link rel="next" href="../glibc/glibc-Standard-Environment.html" title="Standart Ortam Değişkenleri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Ortama Erişim</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Environment-Variables.html">Önceki</a> </td><th width="60%" align="center">Ortam Değişkenleri</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Standard-Environment.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Environment-Access" id="glibc-Environment-Access"></a>Ortama Erişim</div><dl><dd><div class="para">
+<a class="indexterm" name="idx2791" id="idx2791"></a>
+<a class="indexterm" name="idx2792" id="idx2792"></a>
+Bir ortam değişkeninin değerine <b><tt>getenv</tt></b> işlevi ile erişebilirsiniz. Bu işlev <tt>stdlib.h</tt> başlık dosyasında bildirilmiştir. Bu bölümdeki işlevlerin hepsini çok evreli yazılımlarda güvenle kullanabilirsiniz. Ortamın böyle rasgele değişmesi hatalara yol açmaz.
+<a class="indexterm" name="idx2793" id="idx2793"></a>
+   </div>
+<a class="indexterm" name="idx2794" id="idx2794"></a>
+<a name="glibc-getenv" id="glibc-getenv"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>char *<b><tt>getenv</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *<i><tt>isim</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev <i><tt>isim</tt></i> ile ismi belirtilen ortam değişkeninin değeri olan dizgeyi döndürür. Bu dizgeyi değiştirmemelisiniz. GNU kütüphanesinin kullanılmadığı bazı Unix sistemlerinde <b><tt>getenv</tt></b> çağrısının sonraki çağrıları bu değerin üzerine yazar (ama başka bir kütüphane işlevi bunu yapmaz). Eğer <i><tt>isim</tt></i> isimli bir ortam değişkeni yoksa, işlev bir boş gösterici ile döner.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2795" id="idx2795"></a>
+<a name="glibc-putenv" id="glibc-putenv"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>putenv</tt></b></tt></td><td valign="top"><pre class="paramdef">(char *<i><tt>dizge</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>putenv</tt></b> işlevi ortam değişkenlerini tanımlamak ya da kaldırmak için kullanılır. Ortamda bir değişken tanımlamak için <i><tt>dizge</tt></i>,  <i><tt>isim</tt></i><tt>=</tt><i><tt>değer</tt></i> biçiminde verilmelidir. Aksi takdirde  <i><tt>dizge</tt></i>, mevcut bir ortam değişkeninin ismi olarak yorumlanıp, bu değişken ortamdan kaldırılır.
+    </div><div class="para">
+<b><tt>setenv</tt></b> işlevinden farkı, <i><tt>dizge</tt></i> parametresi olarak belirtilen dizgenin ortama konulmasıdır. Eğer <b><tt>putenv</tt></b> çağrısından sonra kullanıcı değişkenin değerini değiştirmezse bu dizge ortamda aynen böyle görünecektir. Ayrıca, <i><tt>dizge</tt></i> olarak belirtilen isim, değişken ortamdan kaldırıldığında da yazılımın etki alanı içinde varlığını sürdüren bir özdevinimli değişkenin ismi olmamalıdır. Aynısı normal olarak, daha sonra serbest bırakılan özdevimli ayrılmış değişkenler için de geçerlidir.
+    </div><div class="para">
+Bu işlev genişletilmiş Unix arayüzünün bir parçasıdır. Eski SVID kütüphanelerinde de kullanılabildiğinden bunu sağlamak için yazılım içinde herhangi bir başlık dosyasından önce <i><tt>_XOPEN_SOURCE</tt></i> veya <i><tt>_SVID_SOURCE</tt></i> tanımlamalısınız.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2796" id="idx2796"></a>
+<a name="glibc-setenv" id="glibc-setenv"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>setenv</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *<i><tt>isim</tt></i>,
+ const char *<i><tt>değer</tt></i>,
+ int         <i><tt>değiştir</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>setenv</tt></b> işlevi ortama yeni bir tanım eklemek için kullanılabilir. <i><tt>isim</tt></i> isimli girdi  <i><tt>isim</tt></i><tt>=</tt><i><tt>değer</tt></i> değeri ile değiştirilir. Bunun, <i><tt>değer</tt></i> bir boş dizge olarak verildiğinde de böyle olacağını unutmayın. Bunu yapmak için yeni dizge oluşturulur ve <i><tt>isim</tt></i> ve <i><tt>değer</tt></i> dizgelerine kopyalanır. <i><tt>değer</tt></i> dizgesi olarak boş gösterici kuraldışıdır (boş dizge, boş gösterici değildir). Ortam zaten <i><tt>isim</tt></i> isimli bir değişken içeriyorsa bu durumda ne yapılacağı <i><tt>değiştir</tt></i> ile belirtilir. <i><tt>değiştir</tt></i> değeri sıfırsa hiçbir şey yapılmaz. Aksi takdirde eski girdi yenisi ile değiştirilir.
+    </div><div class="para">
+Bir girdiyi ortamdan bu işlev ile kaldıramayacağınızı lütfen unutmayın.
+    </div><div class="para">
+Bu işlev bir zamanlar BSD kütüphanesinin bir parçasıyken şimdi Unix standardının da parçasıdır.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2797" id="idx2797"></a>
+<a name="glibc-unsetenv" id="glibc-unsetenv"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>unsetenv</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *<i><tt>isim</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlevi kullanarak bir değişkeni ortamdan tamamen kaldırabilirsiniz. Eğer ortamda ismi <i><tt>isim</tt></i> olan bir ortam değişkeni varsa, bu girdi ortamdan tamamen kaldırılır. Bu işlevin çağrısı, <b><tt>putenv</tt></b> işlevinin <i><tt>değer</tt></i> argümanına boş dizge belirtilerek çağrılmasına eşdeğerdir.
+    </div><div class="para">
+<i><tt>isim</tt></i> bir boş gösterici ise, bir boş dizge ise ya da dizge bir <b><tt>=</tt></b> karakeri içeriyorsa işlev <b><tt>-1</tt></b> ile döner. Çağrı başarılı olduğunda <b><tt>0</tt></b> döner.
+    </div><div class="para">
+Bu işlev bir zamanlar BSD kütüphanesinin bir parçasıyken şimdi Unix standardının da parçasıdır. Ne var ki, BSD sürümü bir değer döndürmüyordu.
+       </div><div class="para">
+Ortamda değişiklik yapan bir işlev daha vardır. Bu işlevin POSIX.9 [Fortran 77 ile bağlantılı POSIX] içinde olduğundan ve onun POSIX.1'e dahi edilmesi gerektiğinden bahsedilir. Fakat bu şimdiye kadar olmadı. Ama biz bu işlevi bir GNU oluşumu olarak, standart Fortran ortamlarına uyumlu yazılım geliştirilebilmesini sağlamak için bulunduruyoruz.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2798" id="idx2798"></a>
+<a name="glibc-clearenv" id="glibc-clearenv"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>clearenv</tt></b></tt></td><td valign="top"><pre class="paramdef">(void)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>clearenv</tt></b> işlevi ortamdan tüm girdileri kaldırır. <b><tt>putenv</tt></b> ve <b><tt>setenv</tt></b> çağrılarıyla ortama tekrar yeni girdiler eklenebilir.
+    </div><div class="para">
+İşlev başarılı olursa <b><tt>0</tt></b> ile döner. Aksi takdirde sıfırdan farklı bir değer ile döner.
+       </div><div class="para">
+Ortama değişken eklemek için ortam nesnelerinin bellibaşlı gösterimleri ile doğrudan çalışabilirsiniz (örneğin, çalıştıracağınız başka bir yazılımla haberleşmek için; bkz. <a href="../glibc/glibc-Executing-a-File.html" class="xref" title="Bir Dosyanın Çalıştırılması">Bir Dosyanın Çalıştırılması</a>).
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2799" id="idx2799"></a>
+<a name="glibc-environ" id="glibc-environ"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>char **<b><tt>environ</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">değişken</div></div></div><dl><dd><div class="para">
+Ortamı bir dizge dizisi olarak içerir. Her dizge <i><tt>isim</tt></i><tt>=</tt><i><tt>değer</tt></i> biçimindedir. Dizgelerin ortmda göründüğü sıra önemsizdir, fakat aynı isim birden fazla görünmez. Dizinin son elemanı bir boş göstericidir.
+    </div><div class="para">
+Bu değişken <tt>unistd.h</tt> başlık dosyasında bildirilmiştir.
+    </div><div class="para">
+Sadece bir ortam değişkeninin değeri ile ilgileniyosanız <b><tt>getenv</tt></b> işlevini kullanın.
+</div></dd></dl><div style="padding:5px"></div><div class="para">
+Unix sistemleri ve GNU sisteminde <b><tt>environ</tt></b> değişkenin değeri <b><tt>main</tt></b> işlevinde üçüncü bir argüman olarak belirtilebilir. Bkz. <a href="../glibc/glibc-Program-Arguments.html" class="xref" title="Yazılım Argümanları">Yazılım Argümanları</a>.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Environment-Variables.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Environment-Variables.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Standard-Environment.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Ortam Değişkenleri </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Standart Ortam Değişkenleri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

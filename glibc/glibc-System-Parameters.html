@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:56+03:00" /><title>Sistem Parametreleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-System-Management.html" title="XXX. Oylum - Sistem Yönetimi" /><link rel="previous" href="../glibc/glibc-Mount-Unmount-Remount.html" title="Bağlama, Ayırma, Yeniden Bağlama" /><link rel="next" href="../glibc/glibc-System-Configuration.html" title="XXXI. Oylum - Sistem Yapılandırma Parametreleri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Sistem Parametreleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Mount-Unmount-Remount.html">Önceki</a> </td><th width="60%" align="center">XXX. Oylum - Sistem Yönetimi</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-System-Configuration.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="glibc-System-Parameters" id="glibc-System-Parameters"></a>Sistem Parametreleri</div></div></div><dl><dd><div class="para">
+Bu bölümde çeşitli sistem parametrelerinin okunması ve belirtilmesi için kullanılan <b><tt>sysctl</tt></b> işlevinden bahsedilecektir.
+   </div><div class="para">
+Bu kısımdaki semboller <tt>sysctl.h</tt> dosyasında bildirilmiştir.
+   </div>
+<a class="indexterm" name="idx3228" id="idx3228"></a>
+<a name="glibc-sysctl" id="glibc-sysctl"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>sysctl</tt></b></tt></td><td valign="top"><pre class="paramdef">(int    *<i><tt>isimler</tt></i>,
+ int     <i><tt>isim_uzunluğu</tt></i>,
+ void   *<i><tt>eski_değer</tt></i>,
+ size_t *<i><tt>eski_değer_uzn</tt></i>,
+ void   *<i><tt>yeni_değer</tt></i>,
+ size_t  <i><tt>yeni_değer_uzn</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+   </div><div class="para">
+<b><tt>sysctl</tt></b> işlevi belirtilen sistem parametresini ya okur ya da belirler. Bu parametreler o kadar çoktur ki, burada hepsinin listelenmesi pratik olmayacaktır. Fakat bazı örnekler verilebilir:
+   </div><ul type="disc" class="itemizedlist"><li>ağ alan adları
+     </li><li>sayfalama parametreleri
+     </li><li>Ağ adres çözümleme protokolü (ARP) zaman aşımı
+     </li><li>açılabilecek dosyalarını azami sayısı
+     </li><li>kök dosya sistemi aygıtı
+     </li><li>çekirdeğin derleme zamanı
+     </li></ul>
+   <div class="para">
+Kullanılabilir parametrelerin tamamı çekirdek yapılandırmasına bağlıdır ve sistem çalışırken yüklenebilir modüllerin yüklenmesi ve kaldırılması ile kısmi olarak değiştirilebilir.
+   </div><div class="para">
+<b><tt>sysctl</tt></b> ile ilgili sistem parametreleri bir hiyerarşik dosya sistemindeki gibi bir hiyerarşik yapıda düzenlenmiştir. Belli bir parametreyi belirtmek için, bir dosyanın dosya yolu ile belirtilmesine benzer şekilde parametreyi yapı üzerinde bir yol ile belirtebilirsiniz. Yolu oluşuran her eleman bir tamsayı ile belirtilir ve bu tamsayıların her biri için <tt>sysctl.h</tt> dosyasında bir makro tanımlanmıştır. <i><tt>isimler</tt></i> bir tamsayılar dizisi şeklinde bir yol belirtir. Yolu oluşturan her bir eleman sırasıyla dizideki bir elemandır. <i><tt>isim_uzunluğu</tt></i> ile dizideki bu elemanların sayısı belirtilir.
+   </div><div class="para">
+Örneğin, tüm sayfalama parametreleri için yolun ilk elemanı <b><tt>CTL_VM</tt></b> değeridir. Serbest sayfa eşikleri için yolun ikinci elemanı <b><tt>VM_FREEPG</tt></b> değeridir. Bu durumda serbest sayfa eşiklerini almak için <i><tt>isimler</tt></i> dizisini <b><tt>CTL_VM</tt></b> ve <b><tt>VM_FREEPG</tt></b> elemanlarını içeren bir dizi olarak belirtip, <i><tt>isim_uzunluğu</tt></i> = 2 yapılır.
+   </div><div class="para">
+Bir parametre değerinin biçimi parametreye bağlıdır. Kimi zaman bir tamsayı, kimi zaman bir ASCII dizge, kimi zaman özenle oluşturulmuş bir yapıdır. Yukarıdaki örnekte görüldüğü gibi serbest sayfa eşiklerinin kullanıldığı durumda parametre değeri çeşitli tamsayılar içeren bir yapıdır.
+   </div><div class="para">
+Her durumda, dönen parametrenin değerinin adresi için <i><tt>eski_değer</tt></i> argümanını kullanabilir ve bu tamponun boyutunu <i><tt>*eski_değer_uzn</tt></i> ile belirtebilirsiniz. <i><tt>*eski_değer_uzn</tt></i> çift görevlidir, çünkü ayrıca dönen değerin gerçek uzunluğu da burada döndürülür.
+   </div><div class="para">
+Eğer parametre değerinin dönmesini istemiyorsanız <i><tt>eski_değer</tt></i> için boş gösterici belirtebilirsiniz.
+   </div><div class="para">
+Bir parametreye değer atamak isterseniz yeni değerin adresini ve uzunluğu <i><tt>yeni_değer</tt></i> ve <i><tt>yeni_değer_uzn</tt></i> ile belirtin. Bunu istemiyorsanız <i><tt>yeni_değer</tt></i> için boş göserici belirtin.
+   </div><div class="para">
+Bir parametrenin o anki değerini okuyup yeni bir değer atamak için aynı <b><tt>sysctl</tt></b> çağrısını kullanabilirsiniz.
+   </div><div class="para">
+Her sistem parametresi için bir dosyanın izinlerine benzeyen erişim izinleri vardır ve bunlar bir paramatrenin okunması ve değiştirilmesi ile ilgili izinlerdir. Amaca uygun olarak her parametrenin sahibinin süper kullanıcı ve grubunun 0 olduğu kabul edilir. Böylece bu etkin kullanıcı ya da grup kimliğine sahip süreçler sistem parametrelerinde daha yüksek erişim iznine sahip olur. Dosyalardaki durumun tersine süper kullanıcı bütün sistem parametrelerinde tam yetkili değildir, çünkü bazı parametre değerleri asla değiştirilemeyecek biçimce tasarlanmıştır.
+   </div><div class="para">
+<b><tt>sysctl</tt></b> başarılı olursa sıfır ile döner. Aksi takdirde <b><tt>-1</tt></b> ile döner ve <b><tt>errno</tt></b> değişkenine hata durumu atanır. Tüm sistem çağrılarına uygulanan hata durumlarına ek olarak aşağıdaki <b><tt>errno</tt></b> kodları olası diğer hataları belirtir:
+   </div><div class="variablelist"><dl><dt><span class="term"><b><tt>EPERM</tt></b></span></dt><dd class="varlist"><div class="para">
+Sürecin, sistem parametresinin yolu üzerindeki elemanlardan birine erişim yetkisi yok ya da sistem parametresinin kendisine istenen yolla (okuma ya da yazma) erişim izni yok
+      </div></dd><dt><span class="term"><b><tt>ENOTDIR</tt></b></span></dt><dd class="varlist"><div class="para">
+<i><tt>isim</tt></i>'in karşılığı olan bir sistem parametresi yok
+      </div></dd><dt><span class="term"><b><tt>EFAULT</tt></b></span></dt><dd class="varlist"><div class="para">
+<i><tt>eski_değer</tt></i> bir boş gösterici değil ama <i><tt>eski_değer_uzn</tt></i> sıfır belirtilmiş, dolayısyla değer döndürecek yer yok
+      </div></dd><dt><span class="term"><b><tt>EINVAL</tt></b></span></dt><dd class="varlist">
+        <ul type="disc" class="itemizedlist"><li>
+Sürecin belirttiği değer parametre için uygun değil
+        </li><li>
+Sistem parametresinin dönüş değeri için ayrılan yer yetersiz
+        </li></ul>
+      </dd><dt><span class="term"><b><tt>ENOMEM</tt></b></span></dt><dd class="varlist"><div class="para">
+Bu değer sistem parametresini dönüş değeri için ayrılan yerin çok küçük olması durumunda <b><tt>EINVAL</tt></b> hata durumundan daha doğru bir hata durumu belirtir.
+      </div></dd></dl></div>
+    </dd></dl><div style="padding:5px"></div><div class="para">
+Linux çekirdekli ve <tt>proc</tt> dosya sistemli bir sisteminiz varsa çoğu sistem parametresine <tt>proc</tt> dosya sisteminin <tt>sys</tt> dizinindeki dosyaları okuyarak ya da onlara yazarak erişebilirsiniz. <tt>sys</tt> dizini, parametre yapısıyla aynı hiyerarşiye sahiptir. Örneğin serbest sayfa eşiklerini göstermek için komut satırında şu komutu verin:
+</div><div class="para"><div align="right"><pre class="screen"># <b><tt>cat /proc/sys/vm/freepages</tt></b>
+</pre></div></div><div class="para">
+Bazı sistem parametrelerini okumak veya belirtmek için kullanılan biraz daha geleneksel ve daha geniş kullanım alanı bulan ama pek genel amaçlı olmayan bazı GNU C kütüphanesi işlevleri:
+   </div><ul type="disc" class="itemizedlist"><li><b><tt>getdomainname</tt></b>, <b><tt>setdomainname</tt></b></li><li><b><tt>gethostname</tt></b>, <b><tt>sethostname</tt></b> (bkz. <a href="../glibc/glibc-Host-Identification.html" class="xref" title="Konak İsimlendirmesi">Konak İsimlendirmesi</a>.)
+   </li><li><b><tt>uname</tt></b> (bksz <a href="../glibc/glibc-Platform-Type.html" class="xref" title="Platform Türü İsimlendirmesi">Platform Türü İsimlendirmesi</a>.)
+   </li><li><b><tt>bdflush</tt></b></li></ul></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Mount-Unmount-Remount.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-System-Management.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-System-Configuration.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Bağlama, Ayırma, Yeniden Bağlama </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> XXXI. Oylum - Sistem Yapılandırma Parametreleri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:25:50+03:00" /><title>Modüller Üzerine Daha Fazla Bilgi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../uygulamalar/python-tutorial_moduller.html" title="Modüller" /><link rel="previous" href="../uygulamalar/python-tutorial_moduller.html" title="Modüller" /><link rel="next" href="../uygulamalar/python-tutorial_moduller-std.html" title="Standart Modüller" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Modüller Üzerine Daha Fazla Bilgi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../uygulamalar/python-tutorial_moduller.html">Önceki</a> </td><th width="60%" align="center">Modüller</th><td width="20%" align="right"> <a accesskey="n" href="../uygulamalar/python-tutorial_moduller-std.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="python-tutorial_moduller-daha" id="python-tutorial_moduller-daha"></a>Modüller Üzerine Daha Fazla Bilgi</div><dl><dd><div class="para">
+        İşlev tanımlarının yanısıra modül içinde çalıştırılabilir ifadeler de
+        olabilir. Bu ifadeler modülün ilk kullanıma hazırlanması için
+        kullanılabilirler ve sadece modülün ilk yüklenişinde çalışırlar.
+        <sup>[<a name="id87" href="#ftn.id87" id="id87">87</a>]</sup>
+      </div><div class="para">
+        Her modülün o modül içindeki bütün işlevler tarafından global simge
+        tablosu olarak kullanılan kendi simge tablosu vardır. Bu özellik
+        sayesinde modülü yazan kişi rahatlıkla modül içnde global değişkenler
+        kullanabilir. Modülü kullanan diğer kişilerin global değişkenleri ile
+        isim çakışması olmaz. Modül içindeki global değişkenlere de
+        <tt>modulAdi.degiskenAdi</tt> şeklinde ulaşmak ve istenirse
+        bunları değiştirmek mümkündür.
+      </div><div class="para">
+        Modüller diğer modülleri yükleyebilirler. Bütün <tt>import</tt>
+        ifadelerinin modülün (ya da betiğin) başına konması gelenektendir; ancak
+        şart değildir. Yüklenen modüller kendilerini yükleyen modülün global simge
+        tablosuna ekleniriler.
+      </div><div class="para">
+        <tt>import</tt> deyiminin bir modüldeki isimleri doğrudan
+        yükleyen modülün simge tablosuna ekleyen kullanım şekli var. Örnek:
+</div><div class="para"><div align="right"><pre class="screen">
+&gt;&gt;&gt; from fibo import fib, fib2
+&gt;&gt;&gt; fib(500)
+1 1 2 3 5 8 13 21 34 55 89 144 233 377
+</pre></div></div><div class="para">
+        Bu kullanım şeklinde yüklemenin yapıldığı modül adı yerel simge tablosuna
+        eklenmez (yani örnekteki fibo tanımlı değildir).
+      </div><div class="para">
+        Bir modülde tanımlanmış bütün isimleri de yüklemek şu şekilde mümkündür:
+</div><div class="para"><div align="right"><pre class="screen">
+&gt;&gt;&gt; from fibo import *
+&gt;&gt;&gt; fib(500)
+1 1 2 3 5 8 13 21 34 55 89 144 233 377
+</pre></div></div><div class="para">
+        Bu altçizgi ( <tt>_</tt> ) ile başlayanlar dışındaki bütün
+        isimleri yükler.
+      </div> <div class="head3"><a name="id1" id="id1"></a>Modül Arama Yolu</div><dl><dd><div class="para">
+          <tt>spam</tt> isimli bir modül yüklenmek istendiğinde
+          yorumlayıcı önce çalıştırıldığı dizinde ve sonra
+          <tt>PYTHONPATH</tt> ortam değişkenince tanımlanan dizinler
+          içinde <tt>spam.py</tt> isimli bir dosya arar.
+          <tt>PYTHONPATH</tt> dizin isimlerinden oluşan bir listedir
+          (PATH gibi). Aranan dosya bulunmazsa arama, kuruluma bağlı başka bir
+          yolda da aranabilir. Genelde bu <tt>/usr/local/lib/python</tt>
+          dizinidir.
+        </div><div class="para">
+          Aslında modüller <tt>sys.path</tt> değişkeninde bulunan dizin
+          listesinde aranırlar. Bu değişken değerini betiğin alıştırıldığı dizin,
+          <tt>PYTHONPATH</tt> ve kuruluma bağlı diğer dizinlerden alır.
+          <tt>sys.path</tt> değişkeni sayesinde Python programları modül
+          arama yolunu değiştirebilirler.
+        </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>"Derlenmiş" Python Dosyaları</div><dl><dd><div class="para">
+          Derlenmiş Python dosyaları programların çalışmaya başlaması için
+          gereken süreyi kısaltırlar. Örneğin <tt>spam.py</tt> adlı
+          dosyanın bulunduğu dizinde <tt>spam.pyc</tt> adlı bir dosya
+          varsa bu modul, <tt>spam</tt> modülünün ikilik derlenmiş
+          halidir. <tt>spam.py</tt> dosyasının son değiştirilme
+          tarihi <tt>spam.pyc</tt> dosyasının içinde de kayıtlıdır ve
+          bu tarihler aynı değil ise <tt>.pyc</tt> dosyası dikkate
+          alınmaz.
+        </div><div class="para">
+          <tt>spam.pyc</tt> dosyasının oluşması için bir şey yapmanız
+          gerekmez. <tt>spam.py</tt> her ne zaman başarılı olarak
+          derlenirse programın derlenmiş hali <tt>spam.pyc</tt>
+          dosyasına kaydedilir. Bunun yapılamaması bir hata değildir; herhangi
+          bir nedenle <tt>.pyc</tt> dosyası tam olarak yazılamazsa
+          geçersiz sayılır ve dikkate alınmaz. <tt>.pyc</tt>
+          dosyalarının içeriği platformdan bağımsızdır. Bu sayede bir Python
+          modülü dizini farklı mimarideki makineler tarafından paylaşılabilir.
+        </div><div class="para">
+          Uzmanlar için birkaç ip ucu:
+        </div>
+          <ul type="disc" class="itemizedlist"><li><div class="para">
+                Python yorumlayıcısı <tt>-O</tt> parametresi ile
+                çalıştırıldığında eniyileştirilmiş (optimized) kod üretilir
+                ve <tt>.pyo</tt> uzantılı dosyalarda saklanır.
+                Eniyileştircinin (optimizer) şu anda pek bir yararı olmuyor;
+                sadece <tt>assert</tt> deyimlerini siliyor.
+                <tt>-O</tt> parametresi kullanıldığında tüm ikilik
+                kod eniyileştirilir, <tt>.pyc</tt> dosyaları göz ardı
+                edilir ve <tt>.py</tt> dosyaları eniyileştirilmiş
+                ikilik kod olarak derlenir.
+              </div></li><li><div class="para">
+                Yorumlayıcıya iki tane <tt>-O</tt> parametresi
+                (<tt>-OO</tt>) vermek derleyicinin bazı ender durumlarda
+                doğru çalışmayan programlara neden olan eniyileştirmeler yapmasına
+                neden olur. Şu anda sadece <tt>__doc__</tt> dizgeleri
+                silinerek daha küçük <tt>.pyo</tt> dosyaları üretilmektedir.
+                Bazı programların çalışması bunların varlığına bağımlı olabileceğinden
+                bu parametreyi kullanırken dikkatli olun.
+              </div></li><li><div class="para">
+                Bir program <tt>.pyc</tt> ya da <tt>.pyo</tt>
+                dosyasından okunduğunda <tt>.py</tt> dosyasından okunan
+                halinden daha hızlı çalışmaz; sadece yüklenme süresi kısalır.
+              </div></li><li><div class="para">
+                Bir betik komut satırından ismi verilerek çalıştırıldığında bunun
+                ikilik kodu asla bir <tt>.pyc</tt> ya da
+                <tt>.pyo</tt> dosyasına yazılmaz. Bu yüzden betiğin başlama
+                süresini kısaltmak için bunun bir kısmı bir modüle aktarılarak ve bu
+                modülü yükleyen küçük bir başlatıcı betik kullanılarak kısaltılabilir.
+                Komut satırından bir <tt>.pyc</tt> ya da <tt>.pyo</tt>
+                dosyası da ismi verilerek doğrudan çalıştırılabilir.
+              </div></li><li><div class="para">
+                <tt>spam.py</tt> dosyası olmadan da <tt>spam.pyc</tt>
+                (ya da <tt>-O</tt> kullanıldığında <tt>spam.pyo</tt>)
+                dosyası kullanılabilir. Bunlar bir Python kodu kütüphanesinin
+                tersine mühendisliği zorlaştıran şekilde dağıtılmasında
+                kullanılabilir.
+              </div></li><li><div class="para">
+                <tt>compileall</tt> modülü bir dizindeki bütün dosyalar
+                için <tt>spam.pyc</tt> (ya da <tt>-O</tt>
+                kullanıldığında <tt>spam.pyo</tt>) dosyaları yaratabilir.
+              </div></li></ul>
+        </dd></dl><div class="footnotes"><br /><hr width="100" align="left" /><div class="footnote"><div class="para"><sup>[<a name="ftn.id87" href="#id87" id="ftn.id87">87</a>] </sup>
+            Aslında işlev tanımları da `çalıştırılan' ifadelerdir; işlev adını
+            modülün global simge tablosuna eklerler.
+          </div></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../uygulamalar/python-tutorial_moduller.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../uygulamalar/python-tutorial_moduller.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../uygulamalar/python-tutorial_moduller-std.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Modüller </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Standart Modüller</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

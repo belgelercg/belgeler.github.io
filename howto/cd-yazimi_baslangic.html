@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:13+03:00" /><title>Başlangıç</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/cd-yazimi.html" title="Linux'da CD Yazımı" /><link rel="previous" href="../howto/cd-yazimi_gerekenler.html" title="Gerekli Yazılımlar" /><link rel="next" href="../howto/cd-yazimi_veriler.html" title="Veri CD'lerinin Yazılması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Başlangıç</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/cd-yazimi_gerekenler.html">Önceki</a> </td><th width="60%" align="center">Linux'da CD Yazımı</th><td width="20%" align="right"> <a accesskey="n" href="../howto/cd-yazimi_veriler.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="cd-yazimi_baslangic" id="cd-yazimi_baslangic"></a>Başlangıç</div><dl><dd><div class="para">
+Bilgisayarınıza takılı olan CD-yazarınıza onun SCSI Bus numarası ile
+erişeceğimiz için, öncelikle bu numarayı öğrenmemiz gerekmektedir.
+`<b><tt>cdrecord</tt></b> <tt>-scanbus</tt>' komutunu
+makinenizde - root hakları ile - çalıştırdığınızda, aşağıdaki gibi
+bir çıktı ile karşılaşmalısınız:
+    </div><div class="para"><div align="right"><pre class="screen">
+<tt>[root@isildur iso]#</tt> <b><tt>cdrecord -scanbus</tt></b>
+Cdrecord 1.10 (i686-pc-linux-gnu) Copyright (C) 1995-2001 Jörg Schilling
+Linux sg driver version: 3.1.22
+Using libscg version 'schily-0.5'
+scsibus0:
+        0,0,0     0) *
+        0,1,0     1) *
+        0,2,0     2) *
+        0,3,0     3) *
+        0,4,0     4) 'PLEXTOR ' 'CD-R   PX-W1210S' '1.04' Removable CD-ROM
+        0,5,0     5) *
+        0,6,0     6) 'QUANTUM ' 'QM39100TD-SW    ' 'N1B0' Disk
+        0,7,0     7) *
+</pre></div></div><div class="para">
+Bu çıktıda 0 numarali SCSI bus üzerindeki 4 numaralı PLEXTOR isimli
+cihazın bizim CD-yazar olarak kullanabileceğimiz bir aygıt olduğu
+açıkça görülebilmektedir. Çıktıda cihazımıza karşılık gelen
+<tt>0,4,0</tt> numarasını unutmayacağız. Eğer CD-yazarınız
+yukarda vermiş olduğumuz adreste çalıştığı rapor edilmiş olan CD-yazarlar
+arasında varsa, çekirdek sürümünüz yeterince yüksek ise, yazıcınızın
+- herhangi bir yolla - kesinlikle çalışır vaziyette bilgisayarınıza
+takılı olduğundan eminseniz ama yine de
+`<b><tt>cdrecord</tt></b> <tt>-scanbus</tt>' çıktısında
+görünmüyorsa, cihazınızı Linux'a tanıtmak için yapmanız gereken bir kaç
+basit işlem vardır. Bunun için CD-Writing-HOWTO'dan faydalanabilirsiniz.
+Talep gelirse, bu belgenin ileri sürümlerinde bu konudan da bahsetmeyi
+düşünüyoruz, fakat şimdilik kendi başınasınız :(
+    </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/caution.png" /></td><th class="admon">Dikkat</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Muhtemelen biçok kişinin bildiği gibi, CD-yazar yazma işlemini
+gerçekleştirirken disk ya da diğer bir kaynaktan kesintisiz gelen
+veriyi kullanır. CD yazdığınız esnada bilgisayarınızda yaptığınız
+işlemlerin veri akışını kesintiye uğratmaması gerekmektedir.
+      </div><div class="para">
+Kısa bir süreliğine dahi veri akışı kesilirse, CD yazma işlemi
+kesilir, CD'niz ve vaktiniz de boşa harcanmış olur. Internet'te
+gezmek ya da müzik dinlemek için kullandığınız ve disk üzerinde
+fazla işlem yapmayan programlardan ziyade, dosya kopyalamak ya da
+silmek CD yazma süreci için büyük tehlike arz etmektedir.
+      </div><div class="para">
+Diskinizden 250, 300 Mb'lık bir dosya siler ya da çok hızlı bir
+kaynaktan (mesela kendi diskinizin bir başka parçasından ya da
+yerel ağınızdaki ftp sunucusundan) diskinize büyük bir dosya
+kopyalarsanız, muhtemelen CD yazıcıya yazacağı veri yeterli
+hızda temin edilemeyecek ve CD'niz yanacaktır.
+      </div><div class="para">
+CD yazmak gibi narin bir işlem esnasında koşulları fazla zorlamamak,
+başarı için yeterli olacaktır. Ayrıca, CD'ye yazma işlemini gerçekleştiren
+lazerin, kendini yeniden konumlandırıp yazma işlemine kaldığı
+yerden devam edemeyeceğinden dolayı sarsıntı ve fiziksel şokların
+yaşanması muhtemel platformlar üzerinde yazma işlemi başarısız olabilir.
+      </div></td></tr></table></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/cd-yazimi_gerekenler.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/cd-yazimi.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/cd-yazimi_veriler.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Gerekli Yazılımlar </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Veri CD'lerinin Yazılması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:56+03:00" /><title>Bağlama, Ayırma, Yeniden Bağlama</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Filesystem-Handling.html" title="Dosya Sistemleri ile Çalışma" /><link rel="previous" href="../glibc/glibc-mtab.html" title="mtab" /><link rel="next" href="../glibc/glibc-System-Parameters.html" title="Sistem Parametreleri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Bağlama, Ayırma, Yeniden Bağlama</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-mtab.html">Önceki</a> </td><th width="60%" align="center">Dosya Sistemleri ile Çalışma</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-System-Parameters.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Mount-Unmount-Remount" id="glibc-Mount-Unmount-Remount"></a>Bağlama, Ayırma, Yeniden Bağlama</div><dl><dd><div class="para">
+Bu bölümde dosya sistemlerinin bağlanması, ayrılması ve yeniden bağlanması ile ilgili işlevlerden bahsedilecektir.
+    </div><div class="para">
+Bir dosya sistemini sadece sistem yöneticisi bağlayabilir, ayırabilir veya yeniden bağlayabilir.
+    </div><div class="para">
+Bu işlevler <tt>fstab</tt> ve <tt>mtab</tt> dosyalarına erişmezler. Bunu ayrıca kendiniz sağlamalısınız. Bkz. <a href="../glibc/glibc-Mount-Information.html" class="xref" title="Bağlama Bilgileri">Bağlama Bilgileri</a>.
+    </div><div class="para">
+Bu bölümdeki semboller <tt>sys/mount.h</tt> dosyasında bildirilmiştir.
+    </div>
+<a class="indexterm" name="idx3225" id="idx3225"></a>
+<a name="glibc-mount" id="glibc-mount"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>mount</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char       *<i><tt>özel_dosya</tt></i>,
+ const char       *<i><tt>dizin</tt></i>,
+ const char       *<i><tt>dstürü</tt></i>,
+ unsigned long int <i><tt>seçenekler</tt></i>,
+ const void       *<i><tt>veri</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>mount</tt></b> işlevi bir dosya sistemini bağlamak ya da bağlı bir dosya sistemini yeniden bağlamak için kullanılır. İki işlem açıkça farklıdır ve doğal olmayan bir şekilde aynı işlevin içinde birbirine katıştırılmıştır. Aşağıda açıklanacağı gibi <b><tt>MS_REMOUNT</tt></b> seçeneği ile işlevin sıfırdan bağlama mı yoksa yeniden bağlama mı yapacağı saptanır.
+    </div><div class="para">
+İşlev dosya sistemini bağlamak amacıyla kullanıldığında, dosya sistemini içeren blok aygıtı <i><tt>özel_dosya</tt></i> isimli aygıt özel dosyası ile, bağlanacağı nokta ise <i><tt>dizin</tt></i> ile belirtilir. Bu durumda <i><tt>dizin</tt></i> dizinindeki herşey dosya sistemi sistemden ayrılana kadar erişilebilir olmayacak, onların yerine bağlanan dosya sisteminin kök dizininin içeriği erişilebilir olacaktır.
+    </div><div class="para">
+Bir olağandışılık olarak, eğer dosya sistemi türü bir aygıta ait değilse ("proc" gibi), <b><tt>mount</tt></b> dosya sistemini hemen görür ve <i><tt>özel_dosya</tt></i>'yı yoksayarak <i><tt>dizin</tt></i> dizinine onu bağlar.
+    </div><div class="para">
+İşlev dosya sistemini yeniden bağlamak amacıyla kullanıldığında, <i><tt>dizin</tt></i> dosya sisteminin bağlı olduğu yeri belirtir ve <i><tt>özel_dosya</tt></i> yoksayılır. Bir dosya sistemini yeniden bağlamanın amacı, evvelce bağlanırken kullanılan seçenekleri değiştirmektir. Bu işlem dosya sistemini önce ayırıp sonra tekrar bağlamak anlamında yapılmaz.
+    </div><div class="para">
+Sıfırdan bağlama amaçlı kullanımda dosya sisteminin türü <i><tt>dstürü</tt></i> argümanı ile belirtilir. Bu tür, çekirdeğin dosya sistemine erişirken kullanacağı dosya sistemi sürücüsünün ismi olarak belirtilir. Kabul edilen değerler sistemden sistem değişir. Linux çekirdekli ve <b><tt>proc</tt></b> dosya sistemli bir sistemde olası dosya sistemi türleri <tt>/proc/filesystems</tt> dosyasında listelenir (komut satırına <b><tt>cat /proc/filesystems</tt></b> yazarak bu listeyi görebilirsiniz). Linux çekirdeğinde <b><tt>mount</tt></b> ile bağlanabilen dosya sistemi türlerinin isimleri, çekirdeğin yapılandırılması sırasında yüklenebilir modül olarak belirtilen dosya sistemi sürücüsü olan modüllerin isimleridir. <i><tt>dstürü</tt></i> olarak belitilebilecek çok bilinen bir örnek <b><tt>ext2</tt></b>'dir.
+    </div><div class="para">
+Yeniden bağlama amaçlı kullanımda <i><tt>dstürü</tt></i> argümanı yoksayılır.
+    </div><div class="para">
+<i><tt>seçenekler</tt></i> ile dosya sistemi ayrılana ya da yeniden bağlanana kadar geçerli olacak çeşitli seçenekler belirtilir. Her seçenek dosya sistemine özgüdür, bazı seçenekleri birçok dosya sistemi kabul etse de bu hepsi için geçerli değildir. Bazı dosya sistemlerinde bu seçeneklerden bazıları (ama asla <b><tt>MS_RDONLY</tt></b> değil) <b><tt>ioctl</tt></b> ile dosya erişimi sırasında değiştirilebilir.
+    </div><div class="para">
+<i><tt>seçenekler</tt></i> bir bit dizgesidir. Bit alanları aşağıdaki maske  ve maske değerli makrolar kullanılarak tanımlanmıştır:
+    </div><div class="variablelist"><dl><dt><span class="term"><b><tt>MS_MGC_MASK</tt></b></span></dt><dd class="varlist"><div class="para">
+Bu çokbitli alan sihirli bir sayı içerir. Eğer <b><tt>MS_MGC_VAL</tt></b> değerini içermiyorsa, <b><tt>mount</tt></b> aşağıdaki tüm bitlerin sıfır olduğunu ve <i><tt>veri</tt></i> argümanının ise içerdiği değerlere bakılmaksızın bir boş dizge olduğunu varsayar.
+       </div></dd><dt><span class="term"><b><tt>MS_REMOUNT</tt></b></span></dt><dd class="varlist"><div class="para">
+Bu bit dosya sisteminin yeniden bağlanacağını belirtir. Yokluğu sıfırdan bağlama yapılacak anlamındadır.
+       </div></dd><dt><span class="term"><b><tt>MS_RDONLY</tt></b></span></dt><dd class="varlist"><div class="para">
+Bu bit bağlanan dosya sisteminde yazma işlemlerine izin verilmediğini belirtir ve <b><tt>ioctl</tt></b> tarafından bitin durumu değiştirilemez. Bu seçenek hemen tüm dosya sistemlerinde vardır.
+       </div></dd><dt><span class="term"><b><tt>S_IMMUTABLE</tt></b></span></dt><dd class="varlist"><div class="para">
+Bu bit bağlanan dosya sisteminde yazma işlemlerine izin verilmediğini belirtir. Fakat uygun olarak yetkilendirilmiş bir  <b><tt>ioctl</tt></b> çağrısı bu bitin durumunu değiştirebilir. Bu seçenek görece diğerlerinden daha yeni olduğundan bir çok dosya sisteminde bulunmayabilir.
+       </div></dd><dt><span class="term"><b><tt>S_APPEND</tt></b></span></dt><dd class="varlist"><div class="para">
+Bu bit bağlanan dosya sisteminde yazma işlemlerine sadece dosyaların sonuna ekleme yapılacaksa izin verildiğini belirtir. Bazı dosya sistemlerinde uygun olarak yetkilendirilmiş bir  <b><tt>ioctl</tt></b> çağrısı bu bitin durumunu değiştirebilir. Bu seçenek görece diğerlerinden daha yeni olduğundan bir çok dosya sisteminde bulunmayabilir.
+       </div></dd><dt><span class="term"><b><tt>MS_NOSUID</tt></b></span></dt><dd class="varlist"><div class="para">
+Bu bit bağlanan dosya sisteminde dosyaların Setuid and Setgid yetkilerinin yoksayılacağını belirtir.
+       </div></dd><dt><span class="term"><b><tt>MS_NOEXEC</tt></b></span></dt><dd class="varlist"><div class="para">
+Bu bit bağlanan dosya sisteminde dosyaların çalıştırılamayacağını belirtir.
+       </div></dd><dt><span class="term"><b><tt>MS_NODEV</tt></b></span></dt><dd class="varlist"><div class="para">
+Bu bit bağlanan dosya sisteminde aygıtlara özel dosyaların erişilebilir olmayacağını belirtir.
+       </div></dd><dt><span class="term"><b><tt>MS_SYNCHRONOUS</tt></b></span></dt><dd class="varlist"><div class="para">
+Bu bit bağlanan dosya sisteminde dosyalara yapılan tüm yazma işlemlerinin eşzamanlanacağını belirtir. Yani veri her yazma işleminde sonradan dosyaya yazılmak üzere bir tamponda saklanmaz doğrudan dosyaya yazılır.
+       </div></dd><dt><span class="term"><b><tt>MS_MANDLOCK</tt></b></span></dt><dd class="varlist"><div class="para">
+Bu bit bağlanan dosya sisteminde dosyalarda zorlayıcı kilitlere izin verildiğini belirtir.
+       </div></dd><dt><span class="term"><b><tt>MS_NOATIME</tt></b></span></dt><dd class="varlist"><div class="para">
+Bu bit bağlanan dosya sisteminde dosyaların erişim zamanlarının dosyalara erişildiğinde güncellenmeyeceğini belirtir.
+       </div></dd><dt><span class="term"><b><tt>MS_NODIRATIME</tt></b></span></dt><dd class="varlist"><div class="para">
+Bu bit bağlanan dosya sisteminde dizinlerin erişim zamanlarının dizinlere erişildiğinde güncellenmeyeceğini belirtir.
+       </div></dd></dl></div>
+     <div class="para">
+Yukarıdaki bit maskelerinin kapsamında olmayan bütün bitler sıfır olmalıdır; aksi takdirde sonuçları tanımsızdır.
+    </div><div class="para">
+<i><tt>veri</tt></i>'nin anlamlandırılması dosya sistemi türüne bağlıdır ve tamamen çekirdekteki dosya sistemi sürücüsü tarafından değerlendirilir.
+    </div><div class="para">
+Örnek:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+#include &lt;sys/mount.h&gt;
+
+mount("/dev/hdb", "/cdrom", MS_MGC_VAL | MS_RDONLY | MS_NOSUID, "");
+
+mount("/dev/hda2", "/mnt", MS_MGC_VAL | MS_REMOUNT, "");
+</pre></div></div><div class="para">
+<b><tt>mount</tt></b> işlevinin ilgili argümanları teamülen <b><tt>fstab</tt></b> tablosuna kaydedilir. Bkz. <a href="../glibc/glibc-Mount-Information.html" class="xref" title="Bağlama Bilgileri">Bağlama Bilgileri</a>.
+    </div><div class="para">
+İşlev başarılı olduğunda sıfırla döner. Aksi takdirde <b><tt>-1</tt></b> döner ve <b><tt>errno</tt></b> değişkenine hata durumu atanır. <b><tt>errno</tt></b> değerleri dosya sistemine bağımlıdır, fakat burada ortak bir listeye yer verilmiştir:
+    </div><div class="variablelist"><dl><dt><span class="term"><b><tt>EPERM</tt></b></span></dt><dd class="varlist"><div class="para">
+Süreç sistem yöneticisne ait değil
+       </div></dd><dt><span class="term"><b><tt>ENODEV</tt></b></span></dt><dd class="varlist"><div class="para">
+<i><tt>dstürü</tt></i> dosya sistemi türünü çekirdek bilmiyor
+       </div></dd><dt><span class="term"><b><tt>ENOTBLK</tt></b></span></dt><dd class="varlist"><div class="para">
+<i><tt>dev</tt></i> dosyası bir blok aygıtına özel dosya değil
+       </div></dd><dt><span class="term"><b><tt>EBUSY</tt></b></span></dt><dd class="varlist">
+         <ul type="disc" class="itemizedlist"><li>Aygıt zaten bağlı
+         </li><li>
+Bağlama noktası meşgul (Yani ya bu dizin bazı süreçlerin çalışma dizini ya da onun üzerinde de bir dosya sistemi hala bağlı)
+         </li><li>
+Yeniden salt-okunur bağlama istendi ama yazma amacıyla açılmış dosyalar var
+         </li></ul>
+       </dd><dt><span class="term"><b><tt>EINVAL</tt></b></span></dt><dd class="varlist">
+         <ul type="disc" class="itemizedlist"><li>
+Yeniden bağlama istendi ama belirtilen bağlama noktasında bağlı bir dosya sistemi yok
+         </li><li>
+Belirtilen dosya sistemi geçersiz süperblok içeriyor.
+         </li></ul>
+       </dd><dt><span class="term"><b><tt>EACCES</tt></b></span></dt><dd class="varlist">
+         <ul type="disc" class="itemizedlist"><li>
+Dosya sistemi kalıtsal olarak salt-okunur (aygıt üzerindeki donanımsal bir anahtar nedeniyle olabilir) ve süreç onu oku/yaz olarak bağlamaya çalıştı (<b><tt>MS_RDONLY</tt></b> biti sıfır olarak belirtilerek)
+         </li><li><i><tt>özel_dosya</tt></i> ya da <i><tt>dizin</tt></i> dosya erişim izinleri nedeniyle erişilebilir değil
+         </li><li><i><tt>özel_dosya</tt></i> erişilebilir değil, çünkü üzerinde bulunduğu dosya sistemi <b><tt>MS_NODEV</tt></b> seçeneği ile bağlı
+         </li></ul>
+       </dd><dt><span class="term"><b><tt>EM_FILE</tt></b></span></dt><dd class="varlist"><div class="para">
+İsimsiz (dummy) aygıtlar tablosu dolu. <b><tt>mount</tt></b>, bir aygıtla bağlanamayacak bir dosya sistemini bağlamaya çalışırsa bir dummy aygıt oluşturmak ister.
+       </div></dd></dl></div>
+</dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx3226" id="idx3226"></a>
+<a name="glibc-umount2" id="glibc-umount2"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>umount2</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *<i><tt>dosya</tt></i>,
+ int         <i><tt>seçenekler</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>umount2</tt></b> bağlı bir dosya sistemini sistemden ayırır.
+    </div><div class="para">
+Ayrılacak dosya istemini <i><tt>dosya</tt></i> argümanında bir aygıta özel dosya olarak belirtebileceğiniz gibi bağlama noktası olarak da belirtebilirsiniz. Etkisi aynıdır.
+    </div><div class="para">
+<i><tt>seçenekler</tt></i> aşağıdaki maske makrosu ile tek bitlik bir alan olarak belirtilir:
+    </div><div class="variablelist"><dl><dt><span class="term"><b><tt>MNT_FORCE</tt></b></span></dt><dd class="varlist"><div class="para">
+Bu bit bağlı dosya sisteminin meşgul olması durumnda bile ayrılacağını belirtir (önce meşgul değil durumuna getirilir). Bu bitin yokluğunda meşgul bir dosya sistemi ayrılmaz ve işlev <b><tt>errno</tt></b> = <b><tt>EBUSY</tt></b> ile başarısız olur. Bu bitin sağladığı zorlamayı bazı sistemler desteklemeyebilir, bazılarında ise meşgul olmama durumu olmayabilir. Yani bu bitin davranışı dosya sistemine bağlıdır.
+       </div></dd></dl></div>
+     <div class="para">
+<i><tt>seçenekler</tt></i> ile belirtilen diğer tüm bitler sıfır olmalıdır; aksi takdirde sonuçları tanımsızdır.
+    </div><div class="para">
+Örnek:
+    </div><div class="para"><div align="right"><pre class="screen">
+#include sys/mount.h
+
+umount2("/mnt", MNT_FORCE);
+
+umount2("/dev/hdd1", 0);
+
+          </pre></div></div><div class="para">
+Dosya sistemi ayrıldıktan sonra bağlama noktası olan dizinin içeriğindeki dosyalara erişilebilir.
+    </div><div class="para">
+Dosya sisteminin ayrılması bağlamında <b><tt>umount2</tt></b> dosya sistemin eşzamanlar. Yani açık dosyalara tamponlar boşaltılır.
+    </div><div class="para">
+Ayırma işlemi başarılı olmuşsa işlev sıfırla döner. Aksi takdirde  <b><tt>-1</tt></b> ile döner ve <b><tt>errno</tt></b> değişkenine hata durumu atanır:
+    </div><div class="variablelist"><dl><dt><span class="term"><b><tt>EPERM</tt></b></span></dt><dd class="varlist"><div class="para">
+Süreç sistem yöneticisine ait değil
+       </div></dd><dt><span class="term"><b><tt>EBUSY</tt></b></span></dt><dd class="varlist"><div class="para">
+Dosya sistemi meğgul olduğundan ayrılamıyor. Yani dosya sistemindeki bir dizin ya bir sürecin çalışma dizini ya da süreçlerden biri bir dosya açmış. Bazı dosya sistemlerinde bu hata durumu <b><tt>MNT_FORCE</tt></b> seçeneği ile aşılabilir.
+       </div></dd><dt><span class="term"><b><tt>EINVAL</tt></b></span></dt><dd class="varlist"><div class="para">
+<i><tt>dosya</tt></i> aslında bir dosya ama ayrılmak istenen dosya sistemine ait ne bir bağlama noktası ne de aygıta özel bir dosya
+       </div></dd></dl></div>
+     <div class="para">
+Bu işlev dosya sistemlerinin tamamında kullanılabilir değildir.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx3227" id="idx3227"></a>
+<a name="glibc-umount" id="glibc-umount"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>umount</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *<i><tt>dosya</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev <b><tt>umount2</tt></b> işlevinde <i><tt>seçenekler</tt></i> argümanının sıfır olması durumunda aynı işlevselliğe sahiptir. <b><tt>umount2</tt></b>'den daha geniş kullanım alanına sahip olmakla birlikte bir dosya sisteminin ne olursa olsun ayrılmasını sağlayan <b><tt>umount2</tt></b>'nin dosya sistemince desteklenmesi durumunda kullanılması önerilmemektedir.
+    </div></dd></dl><div style="padding:5px"></div>
+  </dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-mtab.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Filesystem-Handling.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-System-Parameters.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">mtab </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Sistem Parametreleri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

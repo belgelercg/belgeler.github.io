@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:52+03:00" /><title>XPG Kullanıcı Hesapları Veritabanı İşlevleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-User-Accounting-Database.html" title="Kullanıcı Hesapları Veritabanı" /><link rel="previous" href="../glibc/glibc-Manipulating-the-Database.html" title="Kullanıcı Hesapları Veritabanına Erişim" /><link rel="next" href="../glibc/glibc-Logging-In-and-Out.html" title="Oturum Açma ve Kapatma" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">XPG Kullanıcı Hesapları Veritabanı İşlevleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Manipulating-the-Database.html">Önceki</a> </td><th width="60%" align="center">Kullanıcı Hesapları Veritabanı</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Logging-In-and-Out.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-XPG-Functions" id="glibc-XPG-Functions"></a>XPG Kullanıcı Hesapları Veritabanı İşlevleri</div><dl><dd><div class="para">
+Bu işlevler X/Open Taşınabilirlik Rehberinde açıklanmış ve <tt>utmpx.h</tt> başlık dosyasında bildirilmiştir.
+<a class="indexterm" name="idx3113" id="idx3113"></a>
+       </div>
+<a class="indexterm" name="idx3114" id="idx3114"></a>
+<a name="glibc-struct-utmpx" id="glibc-struct-utmpx"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct <b><tt>utmpx</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+<b><tt>utmpx</tt></b> veri yapısı en azından şu üyeleri içerir:
+    </div><dl><dt><span class="glossterm">
+    <tt>short int <b><tt>ut_type</tt></b></tt>
+    </span></dt><dd class="halfpara"><div class="para">
+Oturum açma türünü belirtir; <b><tt>EMPTY</tt></b>, <b><tt>RUN_LVL</tt></b>, <b><tt>BOOT_TIME</tt></b>, <b><tt>OLD_TIME</tt></b>, <b><tt>NEW_TIME</tt></b>, <b><tt>INIT_PROCESS</tt></b>, <b><tt>LOGIN_PROCESS</tt></b>, <b><tt>USER_PROCESS</tt></b> veya <b><tt>DEAD_PROCESS</tt></b> sabitlerinden biri olabilir.
+    </div></dd><dt><span class="glossterm">
+    <tt>pid_t <b><tt>ut_pid</tt></b></tt>
+    </span></dt><dd class="halfpara"><div class="para">Oturum açan sürecin süreç kimliği numarası.
+    </div></dd><dt><span class="glossterm">
+    <tt>char <b><tt>ut_line</tt></b>[]</tt>
+    </span></dt><dd class="halfpara"><div class="para">
+Uçbirimin aygıt ismi (<b><tt>/dev/</tt></b> olmaksızın).
+    </div></dd><dt><span class="glossterm">
+    <tt>char <b><tt>ut_id</tt></b>[]</tt>
+    </span></dt><dd class="halfpara"><div class="para">Sürecin inittab kimliği.
+    </div></dd><dt><span class="glossterm">
+    <tt>char <b><tt>ut_user</tt></b>[]</tt>
+    </span></dt><dd class="halfpara"><div class="para">Kullanıcının oturum açma ismi.
+    </div></dd><dt><span class="glossterm">
+    <tt>struct timeval <b><tt>ut_tv</tt></b></tt>
+    </span></dt><dd class="halfpara"><div class="para">
+Girdinin yapıldığı zaman. <b><tt>OLD_TIME</tt></b> türündeki girdiler için sistem zamanı değişmeden önceki zaman, <b><tt>NEW_TIME</tt></b> türündeki girdiler için ise sistem zamanı değiştikten sonraki zamandır.
+    </div></dd></dl><div class="para">
+GNU sisteminde, <b><tt>struct utmpx</tt></b> yapısı <b><tt>struct utmp</tt></b> yapısına bir durum dışında eşdeğerdir: <tt>utmpx.h</tt> başlık dosyasının içerilmesi <b><tt>struct exit_status</tt></b> bildirimini görünür yapmaz.
+    </div><div class="para">
+Aşağıdaki makrolar <b><tt>utmpx</tt></b> yapısının <b><tt>ut_type</tt></b> üyesinde kullanılabilecek değerler olarak tanımlanmıştır. Değerler tamsayı sabitlerdir ve GNU sisteminin <tt>utmp.h</tt> başlık dosyasındaki tanımlarla aynıdır.
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>EMPTY</tt></span></dt><dd class="varlist"><div class="para">
+<a class="indexterm" name="idx3115" id="idx3115"></a>
+Bu makro girdinin hiçbir geçerli kullanıcı hesabı bilgisi içermediğini belirtir.
+       </div></dd><dt><span class="term"><tt>RUN_LVL</tt></span></dt><dd class="varlist"><div class="para">
+<a class="indexterm" name="idx3116" id="idx3116"></a>
+Bu makro sistem çalışma seviyesi ile ilgilidir.
+       </div></dd><dt><span class="term"><tt>BOOT_TIME</tt></span></dt><dd class="varlist"><div class="para">
+<a class="indexterm" name="idx3117" id="idx3117"></a>
+Bu makro sistemin açıldığı zaman ile ilgilidir.
+       </div></dd><dt><span class="term"><tt>OLD_TIME</tt></span></dt><dd class="varlist"><div class="para">
+<a class="indexterm" name="idx3118" id="idx3118"></a>
+Bu makro sistem saatinin değiştiği zaman ile ilgilidir.
+       </div></dd><dt><span class="term"><tt>NEW_TIME</tt></span></dt><dd class="varlist"><div class="para">
+<a class="indexterm" name="idx3119" id="idx3119"></a>
+Bu makro sistem değiştikten sonraki zaman ile ilgilidir.
+       </div></dd><dt><span class="term"><tt>INIT_PROCESS</tt></span></dt><dd class="varlist"><div class="para">
+<a class="indexterm" name="idx3120" id="idx3120"></a>
+Bu makro init süreci ile çatallanan bir süreç ile ilgilidir.
+       </div></dd><dt><span class="term"><tt>LOGIN_PROCESS</tt></span></dt><dd class="varlist"><div class="para">
+<a class="indexterm" name="idx3121" id="idx3121"></a>
+Bu makro kullanıcının oturum açarken kullandığı ilk süreç ile ilgilidir.
+       </div></dd><dt><span class="term"><tt>USER_PROCESS</tt></span></dt><dd class="varlist"><div class="para">
+<a class="indexterm" name="idx3122" id="idx3122"></a>
+Bir kullanıcı süreci ile ilgilidir.
+       </div></dd><dt><span class="term"><tt>DEAD_PROCESS</tt></span></dt><dd class="varlist"><div class="para">
+<a class="indexterm" name="idx3123" id="idx3123"></a>
+Sonlandırılmış bir süreç ile ilgilidir.
+       </div></dd></dl></div>
+     <div class="para">
+<b><tt>ut_line</tt></b>, <b><tt>ut_id</tt></b> ve <b><tt>ut_user</tt></b> dizilerinin boyutları <b><tt>sizeof</tt></b> işleci kullanılarak bulunabilir.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx3124" id="idx3124"></a>
+<a name="glibc-setutxent" id="glibc-setutxent"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>setutxent</tt></b></tt></td><td valign="top"><pre class="paramdef">(void)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev <b><tt>setutent</tt></b> işlevinin benzeridir.  GNU sisteminde <b><tt>setutent</tt></b> için bir takma addır.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx3125" id="idx3125"></a>
+<a name="glibc-getutxent" id="glibc-getutxent"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct utmpx *<b><tt>getutxent</tt></b></tt></td><td valign="top"><pre class="paramdef">(void)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev <b><tt>getutent</tt></b> işlevinin bir benzeridir, ancak, <b><tt>struct utmp</tt></b> yerine <b><tt>struct utmpx</tt></b> türünde bir gösterici ile döner. GNU sisteminde <b><tt>getutent</tt></b> için bir takma addır.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx3126" id="idx3126"></a>
+<a name="glibc-endutxent" id="glibc-endutxent"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>endutent</tt></b></tt></td><td valign="top"><pre class="paramdef">(void)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev<b><tt>endutent</tt></b> işlevinin bir benzeridir.  GNU sisteminde <b><tt>endutent</tt></b> için bir takma addır.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx3127" id="idx3127"></a>
+<a name="glibc-getutxid" id="glibc-getutxid"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct utmpx *<b><tt>getutxid</tt></b></tt></td><td valign="top"><pre class="paramdef">(const struct utmpx *<i><tt>id</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev <b><tt>getutid</tt></b> işlevinin bir benzeridir, ancak, <b><tt>struct utmp</tt></b> yerine <b><tt>struct utmpx</tt></b> türünde bir gösterici ile döner. GNU sisteminde <b><tt>getutid</tt></b> için bir takma addır.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx3128" id="idx3128"></a>
+<a name="glibc-getutxline" id="glibc-getutxline"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct utmpx *<b><tt>getutxline</tt></b></tt></td><td valign="top"><pre class="paramdef">(const struct utmpx *<i><tt>satır</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev <b><tt>getutid</tt></b> işlevinin bir benzeridir, ancak, <b><tt>struct utmp</tt></b> yerine <b><tt>struct utmpx</tt></b> türünde bir gösterici ile döner. GNU sisteminde <b><tt>getutid</tt></b> için bir takma addır.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx3129" id="idx3129"></a>
+<a name="glibc-pututxline" id="glibc-pututxline"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct utmpx *<b><tt>pututxline</tt></b></tt></td><td valign="top"><pre class="paramdef">(const struct utmpx *<i><tt>utmp</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev <b><tt>pututline</tt></b> işlevinin bir benzeridir, ancak, <b><tt>struct utmp</tt></b> yerine <b><tt>struct utmpx</tt></b> türünde bir gösterici ile döner. GNU sisteminde <b><tt>pututline</tt></b> için bir takma addır.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx3130" id="idx3130"></a>
+<a name="glibc-utmpxname" id="glibc-utmpxname"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>utmpxname</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *<i><tt>dosya</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev <b><tt>utmpname</tt></b> işlevinin bir benzeridir.  GNU sisteminde <b><tt>utmpname</tt></b> için bir takma addır.
+       </div><div class="para">
+Bir geleneksel <b><tt>struct utmp</tt></b> yapısı ile bir XPG <b><tt>struct utmpx</tt></b> yapısı arasında aşağıdaki işlevlere dönüşüm yapabilirsiniz. GNU sisteminde bu iki yapı aynı olduğundan bu işlevler sadece  birer kopyadır.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx3131" id="idx3131"></a>
+<a name="glibc-getutmp" id="glibc-getutmp"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>getutmp</tt></b></tt></td><td valign="top"><pre class="paramdef">(const struct utmpx *<i><tt>utmpx</tt></i>,
+ struct utmp        *<i><tt>utmp</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>getutmp</tt></b> işlevi yapılar mümkün olduğunca uyumlu olacak şekilde  <i><tt>utmpx</tt></i> yapısından <i><tt>utmp</tt></i> yapısına kopyalama yapar.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx3132" id="idx3132"></a>
+<a name="glibc-getutmpx" id="glibc-getutmpx"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>getutmpx</tt></b></tt></td><td valign="top"><pre class="paramdef">(const struct utmp *<i><tt>utmp</tt></i>,
+ struct utmpx      *<i><tt>utmpx</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>getutmpx</tt></b> işlevi yapılar mümkün olduğunca uyumlu olacak şekilde  <i><tt>utmp</tt></i> yapısından <i><tt>utmpx</tt></i> yapısına kopyalama yapar.
+    </div></dd></dl><div style="padding:5px"></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Manipulating-the-Database.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-User-Accounting-Database.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Logging-In-and-Out.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Kullanıcı Hesapları Veritabanına Erişim </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Oturum Açma ve Kapatma</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:35+03:00" /><title>pause Sorunları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Waiting-for-a-Signal.html" title="Sinyalin Beklenmesi" /><link rel="previous" href="../glibc/glibc-Using-Pause.html" title="pause Kullanımı" /><link rel="next" href="../glibc/glibc-Sigsuspend.html" title="sigsuspend Kullanımı" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">pause Sorunları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Using-Pause.html">Önceki</a> </td><th width="60%" align="center">Sinyalin Beklenmesi</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Sigsuspend.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Pause-Problems" id="glibc-Pause-Problems"></a><tt>pause</tt> Sorunları</div><dl><dd><div class="para">
+<b><tt>pause</tt></b> basitleştirmesi, yazılımın sihirli bir şekilde çökmesine sebep olan bir sürü zamanlama hatasını gizleyebilir.
+    </div><div class="para">
+Eğer herşeyi yazılımınız yapıyorsa, yani kendi sinyal eylemcilerini kullanıyor ve yazılım <b><tt>pause</tt></b> çağırmaktan başka birşey yapmıyorsa <b><tt>pause</tt></b> kullanmak güvenilirdir. Her sinyal alınışında sinyal eylemci bir sonraki işi yapar ve döner, böylece yazılımın ana döngüsü tekrar bir <b><tt>pause</tt></b> çağrısı yapabilir.
+    </div><div class="para">
+Birden fazla sinyalin işlenmesi için <b><tt>pause</tt></b> kullanarak beklemek ve sonra çalışmayı sürdürmek mümkün olmayabilir. Sinyal eylemci çalışmaya başladığında bir değişken ile bunu belirliyorsanız <b><tt>pause</tt></b> kullanmak artık güvenilir olmaz; örnek:
+    </div>
+<div class="para"><div align="right"><pre class="screen">/* <b><tt>usr_interrupt</tt></b>'a sinyal eylemci değer atıyor.  */
+if (!usr_interrupt)
+  pause ();
+
+/* Sinyal geldikten sonra yapılacaklar.  */
+…
+</pre></div></div><div class="para">
+Bu bir yazılım hatasıdır: sinyal, <i><tt>usr_interrupt</tt></i>'a bakıldıktan sonra ve <b><tt>pause</tt></b> çağrılmadan önce gelmelidir. Eğer böyle bir sinyal gelmezse, süreç bu kod parçasını bir kez daha asla çalıştırmayacaktır.
+    </div><div class="para">
+<b><tt>pause</tt></b> kullanmak yerine döngü içinde beklemeyi <b><tt>sleep</tt></b> kullanarak sınırlayabilirsiniz. <b><tt>sleep</tt></b> hakkında daha ayrıntılı bilgiyi <a href="../glibc/glibc-Sleeping.html" class="xref" title="Uyku">Uyku</a> bölümünde bulabilirsiniz. Bu durumda kod şöyle olurdu:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+/* <b><tt>usr_interrupt</tt></b>'a sinyal eylemci değer atıyor.  */
+while (!usr_interrupt)
+  sleep (1);
+
+/* Sinyal geldikten sonra yapılacaklar.  */
+…
+</pre></div></div><div class="para">
+Bazı amaçlar için bu yeterli olur. Ama biraz daha karmaşık olmakla beraber belli bir sinyal eylemcisinin çalıştırılmasını <b><tt>sigsuspend</tt></b> kullanarak sağlayabilirsiniz.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Using-Pause.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Waiting-for-a-Signal.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Sigsuspend.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">pause Kullanımı </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> sigsuspend Kullanımı</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

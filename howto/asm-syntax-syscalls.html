@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:01+03:00" /><title>Sistem Çağrıları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/asm-syntax.html" title="Linux ile Sembolik Makina Dili Kullanımı" /><link rel="previous" href="../howto/asm-syntax-diff.html" title="Intel ve AT&amp;T Sözdizimi" /><link rel="next" href="../howto/asm-syntax-cmdline-args.html" title="Komut Satırı Argümanları" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Sistem Çağrıları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/asm-syntax-diff.html">Önceki</a> </td><th width="60%" align="center">Linux ile Sembolik Makina Dili Kullanımı</th><td width="20%" align="right"> <a accesskey="n" href="../howto/asm-syntax-cmdline-args.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="asm-syntax-syscalls" id="asm-syntax-syscalls"></a>Sistem Çağrıları</div><dl><dd><div class="para">
+Bu bölümde linux sistem çağrılarının sembolik makina dilinde kullanımını kısaca anlatılacaktır. Sistem çağrıları, <tt>/usr/man/man2</tt> dizini altında bulunan kılavuz dosyalarındaki bütün işlevleri içerir. Ayrıca <tt>/usr/include/sys/syscall.h</tt> başlık dosyasında da listelenmişlerdir. Bu işlevlerin büyük bir listesi <a class="ulink" href="http://www.linuxassembly.org/syscall.html" target="_top">http://www.linuxassembly.org/syscall.html</a> adresinde bulunabilir. Bu işlevler Linux <b><tt>int $0x80</tt></b> ile de çalıştırılabilir.
+    </div> <div class="head3"><a name="id1" id="id1"></a>Altıdan Az Argüman Alan Sistem Çağrıları</div><dl><dd><div class="para">
+Tüm sistem çağrıları için sistem çağrı numarası <b><tt>%eax</tt></b> içine atılır. Altıdan az argüman alan sistem çağrıları için argümanlar sırasıyla <b><tt>%ebx</tt></b>, <b><tt>%ecx</tt></b>, <b><tt>%edx</tt></b>, <b><tt>%esi</tt></b>, <b><tt>%edi</tt></b> yazmaçlarına atılır. Sistem çağrısından dönen değer <b><tt>%eax</tt></b> içerisinde saklanır.
+      </div><div class="para">
+Sistem çağrı numarasına <tt>/usr/include/sys/syscall.h</tt> başlık dosyasından bakılabilir. Macrolar <b><tt>SYS_<i>sistem_çağrısının_adı</i></tt></b> şeklinde ifade edilir , örneğin <tt>SYS_exit</tt>, <tt>SYS_close</tt>, vb.
+      </div><dl class="example"><dt class="example"><a class="example" name="idxmp66" id="idxmp66"></a><b>Örnek 9.1. Hello world</b></dt><dd class="example"><div class="para"><div align="right"><pre class="screen">
+/* write.s */
+
+.data
+  hello:
+  .string "hello world\n"
+.text
+  .globl _start
+_start:
+  movl $SYS_write,%eax  // SYS_write = 4
+  movl $STDOUT,%ebx     // fd = fileno(stdio)
+  movl $hello,%ecx      // buf = str
+  movl $12,%edx         // count = 0x6
+  int  $0x80
+
+  movl $SYS_exit
+</pre></div></div></dd></dl><div class="para">
+<b><tt>write</tt></b>(2) man sayfasına göre, <b><tt>write</tt></b> işlevi
+      </div><div class="para"><pre class="literallayout">
+    ssize_t <b><tt>write</tt></b>(int <i><tt>fd</tt></i>, const void *<i><tt>buf</tt></i>, size_t <i><tt>count</tt></i>)
+</pre></div><div class="para">şeklinde belirtilir.
+      </div><div class="para">
+Bundan dolayı <i><tt>fd</tt></i> <b><tt>%ebx</tt></b> içerisine, <i><tt>buf</tt></i> <b><tt>%ecx</tt></b> çerisine, <i><tt>buf</tt></i> <b><tt>%edx</tt></b> içerisine ve <tt>SYS_write</tt> da <b><tt>%eax</tt></b> içerisine atılır. Bu işlem sistem çağrısının çalıştırılması için bir <tt>int $0x80</tt> yönergesi tarafından takip edilir. Sistem çağrısından geri dönen değer <b><tt>%eax</tt></b> içerisinde saklanır.
+      </div><div class="para">
+Aynı işlem beş argümandan az argümanı bulunan sistem çağrılarına uygulanabilir. Sadece kullanılmayan yazmaçlara dokunmayın. <b><tt>open</tt></b> veya <b><tt>fcntl</tt></b> gibi isteğe bağlı fazladan argüman bulunduran sistem çağrıları kendileri atama yaparlar.
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Beşten Fazla Argüman Alan Sistem Çağrıları</div><dl><dd><div class="para">
+Argüman sayısı beşten fazla olan sistem çağrılarında da yine sistem çağrı numarası <b><tt>%eax</tt></b> içerisine saklanır fakat argümalar bellekte tutulur ve ilk argümanı gösteren bir gösterici <b><tt>%ebx</tt></b>'e atılır.
+      </div><div class="para">
+Eğer yığıtı kullanıyorsanız parametreler yığıtın içerisine geriye doğru <b><tt>push</tt></b> edilmelidir, örneğin son parametreden ilkine doğru. Daha sonra yığıt gösterici <b><tt>%ebx</tt></b> taban yazmacı içerisine kopyalanmalıdır. Aksi taktirde parametreleri ayrılmış bir bellek alanına kopyalayın ve ilk parametrenin adresini <b><tt>%ebx</tt></b> içerisine koyun.
+      </div><dl class="example"><dt class="example"><a class="example" name="idxmp67" id="idxmp67"></a><b>Örnek 9.2. sistem çağrısı mmap</b></dt><dd class="example"><div class="para"><div align="right"><pre class="screen">
+/* mmap.s */
+
+.data
+  fd:
+    .long 0
+  fdlen:
+    .long 0
+  mappedptr:
+    .long 0
+
+.text
+.globl _start
+_start:
+  subl $24,%esp
+
+// open(file, O_RDONLY);
+  movl $SYS_open,%eax
+  movl 32(%esp),%ebx     // argv[1], %esp+8+24 de
+  xorl %ecx,%ecx         // %ecx'i O_RDONLY, yani 0 yap
+  int  $0x80
+
+  test %eax,%eax         // dönen değer &lt; 0 ise çık
+  js   exit
+
+  movl %eax,fd           // fd'i sakla
+
+// lseek(fd,0,SEEK_END);
+  movl %eax,%ebx
+  xorl %ecx,%ecx         // göreli bellek konumunu sıfır yap
+  movl $SEEK_END,%edx
+  movl $SYS_lseek,%eax
+  int   $0x80
+
+  movl %eax,fdlen        // dosya uzunluğunu sakla
+
+  xorl %edx,%edx
+
+// mmap(NULL,fdlen,PROT_READ,MAP_SHARED,fd,0);
+  movl %edx,(%esp)
+  movl %eax,4(%esp)
+  movl $PROT_READ,8(%esp)
+  movl $MAP_SHARED,12(%esp)
+  movl fd,%eax
+  movl %eax,16(%esp)
+  movl %edx,20(%esp)
+
+  movl $SYS_mmap,%eax
+  movl %esp,%ebx
+  int  $0x80
+
+  movl %eax,mappedptr    // göstericiyi sakla
+
+// write(STDOUT, mappedptr, fdlen);
+  movl $STDOUT,%ebx
+  movl %eax,%ecx
+  movl fdlen,%edx
+  movl $SYS_write,%eax
+  int  $0x80
+
+// munmap(mappedptr, fdlen);
+  movl mappedptr,%ebx
+  movl fdlen,%ecx
+  movl $SYS_munmap,%eax
+  int  $0x80
+
+// close(fd);
+  movl fd,%ebx           // dosya tanımlayıcıyı yükle
+  movl $SYS_close,%eax
+  int  $0x80
+exit:
+// exit(0);
+  movl $SYS_exit,%eax
+  xorl %ebx,%ebx
+  int  $0x80
+
+  ret
+</pre></div></div></dd></dl><dl class="example"><dt class="example"><a class="example" name="idxmp68" id="idxmp68"></a><b>Örnek 9.3. mmap()'i C içerisinde kullanmak</b></dt><dd class="example"><div class="para"><div align="right"><pre class="screen">
+#include &lt;sys/types.h&gt;
+#include &lt;sys/stat.h&gt;
+#include &lt;sys/mman.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;unistd.h&gt;
+
+#define STDOUT 1
+
+void
+main(void)
+{
+  char file[] = "mmap.s";
+  char *mappedptr;
+  int fd, filelen;
+
+  fd = fopen(file, O_RDONLY);
+  filelen = lseek(fd, 0, SEEK_END);
+  mappedptr = mmap(NULL, filelen, PROT_READ, MAP_SHARED, fd, 0);
+  write(STDOUT, mappedptr, filelen);
+  munmap(mappedptr, filelen);
+  close(fd);
+}
+</pre></div></div></dd></dl><div class="para">
+mmap() parametrelerinin bellekte dizilişleri:
+</div><div class="informaltable"><table cellpadding="3" cellspacing="1" style=";background:#999999;" border="0"><colgroup><col /><col /><col /><col /><col /><col /></colgroup><thead><tr style="background:#eeeedd;"><th align="center"><b><tt>%esp</tt></b></th><th align="center"><b><tt>%esp+4</tt></b></th><th align="center"><b><tt>%esp+8</tt></b></th><th align="center"><b><tt>%esp+12</tt></b></th><th align="center"><b><tt>%esp+16</tt></b></th><th align="center"><b><tt>%esp+20</tt></b></th></tr></thead><tbody><tr style="background:#ffffee;"><td><tt>00000000</tt></td><td><tt>filelen</tt></td><td><tt>00000001</tt></td><td><tt>00000001</tt></td><td><tt>fd</tt></td><td><tt>00000000</tt></td></tr></tbody></table></div><div class="para">ASM Karşılığı:</div><div class="para"><div align="right"><pre class="screen">
+<tt>$</tt> <b><tt>cat mmap.s</tt></b>
+.include "defines.h"
+.data
+  file:
+    .string "mmap.s"
+  fd:
+    .long 0
+  filelen:
+    .long 0
+  mappedptr:
+    .long 0
+.globl main
+main:
+  push %ebp
+  movl %esp,%ebp
+  subl $24,%esp
+
+// open($file, $O_RDONLY);
+  movl $fd,%ebx          // fd kaydediliyor
+  movl %eax,(%ebx)
+
+// lseek($fd,0,$SEEK_END);
+  movl $filelen,%ebx     // dosya uzunluğu kaydediliyor
+  movl %eax,(%ebx)
+
+  xorl %edx,%edx
+
+// mmap(NULL,$filelen,PROT_READ,MAP_SHARED,$fd,0);
+  movl %edx,(%esp)
+  movl %eax,4(%esp)      // dosya uzunluğu hala %eax içerisinde
+  movl $PROT_READ,8(%esp)
+  movl $MAP_SHARED,12(%esp)
+  movl $fd,%ebx          // dosya tanımlayıcısı yükleniyor
+  movl (%ebx),%eax
+  movl %eax,16(%esp)
+  movl %edx,20(%esp)
+  movl $SYS_mmap,%eax
+  movl %esp,%ebx
+  int  $0x80
+
+  movl $mappedptr,%ebx   // ptr kaydediliyor
+  movl %eax,(%ebx)
+
+// write($stdout, $mappedptr, $filelen);
+// munmap($mappedptr, $filelen);
+// close($fd);
+
+  movl %ebp,%esp
+  popl %ebp
+
+  ret
+<tt>$</tt>
+</pre></div></div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Yukarıdaki kaynak kodu <a href="../howto/asm-syntax-syscalls.html#asm-syntax-exp-mmap" class="xref" title="Örnek 9.2. sistem çağrısı mmap">Örnek 9.2</a> örneğindeki kaynak kodundan farklıdır. Yukarıda bulunan kaynak kodu diğer sistem çağrılarını, bu bölümün konusu olmadıkları için, göstermemektedir. Yukarıdaki kod sadece <tt>mmap.s</tt> dosyasını açar, oysa <a href="../howto/asm-syntax-syscalls.html#asm-syntax-exp-mmap" class="xref" title="Örnek 9.2. sistem çağrısı mmap">Örnek 9.2</a> kaynak kodu komut satırı parametrelerini okumaktadır. <b><tt>mmap</tt></b>  örneği dosya uzunluğunu okumak için de <b><tt>lseek</tt></b>'i kullanmaktadır.
+</div></td></tr></table></div></dd></dl> <div class="head3"><a name="id3" id="id3"></a>Soket Sistem Çağrıları</div><dl><dd><div class="para">
+Soket sistem çağrıları, <b><tt>%eax</tt></b> içerisine giden, sadece bir sistem çağrı numarası kullanır: <b><tt>SYS_socketcall</tt></b>. Soket işlevleri <tt>/usr/include/linux/net.h</tt> başlık dosyası içerisinde bulunan ve <b><tt>%ebx</tt></b>'e kaydedilen bir altişlev numarası yolu ile tanımlanır. Sistem çağrı argümanını gösteren bir gösterici <b><tt>%ecx</tt></b> içerisinde saklanır. Soket sistem çağrıları da <tt>int $0x80</tt> çağırılarak çalıştırılabilir.
+      </div><div class="para"><div align="right"><pre class="screen">
+/* socket.s */
+
+.text
+.globl _start
+_start:
+ sub $12,%esp
+
+// socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
+  movl $AF_INET,(%esp)
+  movl $SOCK_STREAM,4(%esp)
+  movl $IPPROTO_TCP,8(%esp)
+
+  movl $SYS_socketcall,%eax
+  movl $SYS_socketcall_socket,%ebx
+  movl %esp,%ecx
+  int  $0x80
+
+  movl $SYS_exit,%eax
+  xorl %ebx,%ebx
+  int  $0x80
+  ret
+</pre></div></div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/asm-syntax-diff.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/asm-syntax.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/asm-syntax-cmdline-args.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Intel ve AT&amp;T Sözdizimi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Komut Satırı Argümanları</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:32+03:00" /><title>Clamav Antivirus</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/antispam.html" title="Posta Sunucuları için Spam Önleme Araçları" /><link rel="previous" href="../howto/antispam-dcc.html" title="DCC (Distributed Checksum Clearinghouse)" /><link rel="next" href="../howto/antispam-refs.html" title="A. Kaynakça" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Clamav Antivirus</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/antispam-dcc.html">Önceki</a> </td><th width="60%" align="center">Posta Sunucuları için Spam Önleme Araçları</th><td width="20%" align="right"> <a accesskey="n" href="../howto/antispam-refs.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="antispam-clamav" id="antispam-clamav"></a>Clamav Antivirus</div><dl><dd><div class="para">
+Clamav unix dünyası için tasarlanmış bir antivirüs yazılımıdır. Kolay kullanımı ve esnek yapısı sebebiyle çok tercih edilmektedir. Özdevimli virus veritabanı güncelleme özelliğine sahiptir. Otuzbinden fazla virus tanıyabilir. Birçok posta sunucusu ile bütünleşik çalışabilir. Özelliklerine kısaca bir göz atalım:
+  </div><ul type="disc" class="itemizedlist"><li>
+GNU GPL lisansına sahiptir.
+  </li><li>
+POSIX Uyumludur.
+  </li><li>
+Erişim Tarama (Access Scaning) özelliğine sahiptir. (Yanlızca Linux ve Free BSD)
+  </li><li>
+Arşiv dosyalarını ve sıkışmış dosyaları tarayabilir.(Zip, rar, tar, gzip, bzip2, Ms OLE2, MS Cabinet Files, MS CHM, MS SZDD)
+  </li><li>
+Güçlü bir ileti tarayıcıya sahiptir.
+  </li><li>
+Güncellemesi kolaydır.
+  </li></ul><div class="para">
+Kuruluma gelince her zamanki gibi apt-get yöntemi ile kurmayı deneyebiliriz.
+  </div>
+<div class="para"><div align="right"><pre class="screen">apt-get install clamav</pre></div></div>
+  <div class="para">
+ya da rpm paketlerini temin edebiliriz. Bunun için <a class="ulink" href="http://www.clamav.net/binary.html" target="_top">http://www.clamav.net/binary.html</a> adresinden linux sürümümüz için uygun olan paketleri indirip kurulum yapabiliriz. Benim sistemim Fedora Core 2 olduğu için ben fc2 paketlerini <a class="ulink" href="http://atrpms.net/dist/fc2/clamav/" target="_top">http://atrpms.net/dist/fc2/clamav/</a> adresinden indirip kurdum.
+  </div>
+<div class="para"><div align="right"><pre class="screen">rpm -ivh clamav-devel-0.83-5.rhfc2.at.i386.rpm
+rpm -ivh clamav-0.83-5.rhfc2.at.i386.rpm
+</pre></div></div>
+  <div class="para">
+ya da herzamanki gibi <tt>tar.gz</tt> dosyasını indirip kaynak koddan derleyebiliriz. Derlemeden önce eğer Clamav'ı sisteme ilk kez kuruyorsak, sistemde <tt>clamav</tt> kullanıcısı ve grubunu oluşturmamız gerekir.
+  </div>
+<div class="para"><div align="right"><pre class="screen">groupadd clamav
+useradd -g clamav -s /bin/false -c “Clamav Antivirus” clamav
+</pre></div></div>
+  <div class="para">
+ve de tar dosyasını açarak kuruluma devam edelim.
+  </div>
+<div class="para"><div align="right"><pre class="screen">tar -zxvf clamav-0.83.tar.gz
+cd clamav-0.83
+./configure --prefix=/usr --sysconfdir=/etc --enable-milter
+</pre></div></div>
+  <div class="para">
+<b><tt>--sysconfdir=/etc</tt></b> seçeneği yapılandırma dosyasının <tt>/etc</tt> altında oluşmasını sağlarken, <b><tt>--enable-milter</tt></b> seçeneği iletileri virus taramasından geçirmek için gerekli süzücünün derlenmesini sağlar. Artık derlemeye geçebiliriz.
+  </div>
+<div class="para"><div align="right"><pre class="screen">make
+su -c "make install"
+</pre></div></div>
+  <div class="para">
+Buraya kadar geldiysek paket sorunsuz kurulmuş demektir. Şimdi <b><tt>clamav</tt></b>'ı kullanmaya başlayabiliriz. <b><tt>clamav</tt></b> iki farklı kipte çalışabilir. Birincisi hizmet kipidir. Diğer hizmetleri çalıştırdığımız gibi <b><tt>clamav</tt></b>'ı da çalıştırabiliriz.
+  </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>/etc/init.d/clamav start</tt></b>
+Starting clamd: [ OK ]
+Starting freshclam: [ OK ]
+</pre></div></div>
+  <div class="para">
+<b><tt>clamav</tt></b> hizmetinin çalışabilir dosyası <tt>/usr/sbin/clamd</tt>'dir. Hizmeti başlattığınızda antivirus veritabanını güncel tutmak için görevli olan <b><tt>freshclam</tt></b> hizmeti de başlatılır. Hizmetle ilgili tüm ayarlar <tt>/etc/clamd.conf</tt> dosyasında tutulur. <b><tt>freshclam</tt></b> hizmetinin ayarları bu dosyaya dahil değildir. <b><tt>freshclam</tt></b> ayarları <tt>/etc/freshclam.conf</tt> dosyasında tutulur. Peki dosyalarımızı virus taramasından geçirmek için ne yapmalıyız? Bunun içinde iki seçeneğe sahibiz. Birincisi <b><tt>clamd</tt></b> hizmetine bağlı olarak çalışan <b><tt>clamdscan</tt></b> bir diğeri ise hizmetten bağımsız olarak çalışabilen <b><tt>clamscan</tt></b>'dir. <b><tt>clamdscan</tt></b> ile tarama yapmak için
+  </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>clamdscan /home --remove -v --stdout</tt></b></pre></div></div>
+  <div class="para">
+Yukarıdaki örnekte <b><tt>clamdscan</tt></b> komutu ile <tt>/home</tt> dizinini virus taramasından geçiriyoruz. Unutmamalıyız ki, <b><tt>clamd</tt></b> hizmeti çalışmıyorsa bu komutu kullanamayız.
+  </div><div class="para">
+Kullanılan seçeneklere gelince,
+  </div><div class="para">
+<b><tt>-–remove</tt></b> seçeneği bir dosyada virus bulunursa o dosyayının silinmesini sağlar. Bu seçenek tehlikelidir, kullanırken çok dikkat edilmelidir. Bu seçeneğe benzer olarak
+  </div><div class="para">
+<b><tt>--move=/dizin</tt></b> seçeneği de kullanılabilir. Virüslü dosyaları <tt>/dizin</tt> ile belirtilen dizine kopyalar. Bir anlamda ticari antiviruslerdeki karantina seçeneği gibidir. Dikkat edilirse Clean (Temizleme) gibi bir seçenek bulunmamaktadır. <i>Clamav antivirus taradığı dosyaların ve iletilerin virüslerini temizleyemez</i>. Sadece viruslü dosyaları silebilir ve taşıyabilir. Viruslü iletilerin ise teslim edilmesini ve gönderilmesini engeller.
+  </div><div class="para">
+Diğer seçeneklerden,
+  </div><div class="para">
+<b><tt>--stdout</tt></b> işlem sonucunun standart çıktının görüntülenmesini sağlarken <b><tt>-v</tt></b> çıktının daha ayrıntılı olmasını sağlar.
+  </div><div class="para">
+Diğer komutumuz olan <b><tt>clamscan</tt></b> ise <b><tt>clamd</tt></b> hizmetine gerek duymaz. Hatta bu hizmet çalışırken bu komutu kullanmaya kalkarsanız muhtemelen <i>virus veritabanı açılamadı</i> gibi bir hata iletisi ile karşılaşabilirsiniz. Bu yüzden bu komutu kullanmadan önce <i><b><tt>clamd</tt></b> hizmetini durdurun</i>. <b><tt>clamscan</tt></b> komutunun sçenekleri <b><tt>clamdscan</tt></b> komutununkileden daha fazladır. Şimdi bunlara kısaca bir göz atalım.
+  </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>clamscan /home -r --bell -i</tt></b>
+/home/ayhan/eicar: Eicar-Test-Signature FOUND
+/home/eicar: Eicar-Test-Signature FOUND
+/home/hakan/eicar: Eicar-Test-Signature FOUND
+</pre></div></div>
+  <div class="para">
+Bir önceki örnekte olduğu gibi yine <tt>/home</tt> dizinini antivirus taramasından geçiriyoruz. Burada kullandığımız <b><tt>-r</tt></b> (recursive) seçeneği <tt>/home</tt> dizini altındaki tüm altdizinler ve dosyaların taranmasını sağlar. <b><tt>--bell</tt></b> seçeneği virus bulunduğunda ses çıkarılmasını sağlar. <b><tt>-i</tt></b> seçeneği ise sadece virus bulunan dosyaların yolunu belirtir. <b><tt>remove</tt></b> ve <b><tt>move</tt></b> seçenekleri <b><tt>clamdscan</tt></b> komutundaki gibidir. <b><tt>clamscan</tt></b> daha bir çok seçeneğe sahiptir. Bu seçenekler yardımıyla virus taramalarınızı sınırlayabirsiniz. Örneğin dosya türlerine ya da büyüklüklerine göre tarama yapabilir belli dosyaları bu taramalardan çıkarabilirsiniz. Daha fazla bilgi için <b><tt>clamscan</tt></b> kılavuz sayfasına bakın.
+  </div> <div class="head3"><a name="id1" id="id1"></a>Clamav Veritabanının Güncellenmesi</div><dl><dd><div class="para">
+Her antivirus yazılımı gibi <b><tt>clamav</tt></b>'ın veritabanının da güncellenmesi gerekir. Güncelleme gerçekten çok kolaydır. Yukarıda bahsettiğimiz gibi güncellemeden sorumlu olan <b><tt>freshclam</tt></b> hizmeti <b><tt>clamd</tt></b>'ye bağlı olarak başlatılır. <b><tt>freshclam</tt></b> hizmeti her saat başı internetten güncelleme yapılıp yapılmadığına bakar. Eğer güncellemeyi komut satırından kendiniz yapmak istiyorsanız,
+  </div>
+<div class="para"><div align="right"><pre class="screen">freshclam -v</pre></div></div>
+  <div class="para">
+komutunu kullanmanız gerekir. Güncelleme ile ilgili tüm ayarlar <tt>/etc/freshcam.conf</tt> dosyasında tutulur.
+  </div>
+<div class="para"><pre class="literallayout">DatabaseDirectory /var/lib/clamav</pre></div>
+  <div class="para">
+Bu satır veritabanı dosyasını yolunu belirtir. Veritabanı yolunu değiitirmek için bu satırı kullanmalıyız.
+  </div>
+<div class="para"><pre class="literallayout"># Number of database checks per day.
+# Default: 12 (every two hours)
+Checks 24
+</pre></div>
+  <div class="para">
+Veritabanını güncellemesinin bir günde kaç defa deneneceğini bu satırlardan değiştirebiliriz. Öntanımlı olarak günde 24 kez deneme yapılır.
+  </div>
+<div class="para"><pre class="literallayout"># Proxy settings
+# Default: disabled
+#HTTPProxyServer myproxy.com
+#HTTPProxyPort 1234
+#HTTPProxyUsername myusername
+#HTTPProxyPassword mypass
+</pre></div>
+  <div class="para">
+Eğer bir vekil sunucu arkasından internete çıkıyorsak, vekil ayarlarını bu satırları kullanarak etkin duruma getirebiliriz. Öntanımlı olarak vekil sunucu ayarları etkin değildir.
+  </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>On-Access Scan Özelliği</div><dl><dd><div class="para">
+Clamav’a Erişim Tarama (Access Scan) özelliği kazandırabilmek için daha önce adı Clamuko olan şimdi ise Dazuko olan çekirdek modülünü kullanmamız gerekir. Bu çekirdek modülünü kurduktan sonra dosyalarımız virüslere karşı zdevimli olarak korunmaya başlar. Dazuko bir anlamda ticari antiviruslerdeki özdevimli koruma işlevininin Clamav'la birlikte yerine getirilmesini sağlar. Modülün kurulumu ve çekirdeğe dahil edilmesi ile ilgili bilgiyi <a class="ulink" href="http://www.dazuko.org/" target="_top">http://www.dazuko.org/</a> adresinden temin edebilirsiniz.
+  </div><div class="para">
+Modül kurulduktan sonra <tt>/etc/clamd.conf</tt> dosyasına aşağıdaki satırları eklemelisiniz. Daha sonra <b><tt>clamd</tt></b> hizmetini yeniden başlatabilirsiniz. Aşağıda <tt>ClamukoIncludePath /</tt> değeri erişimin bu dizin için geçerli olduğunu belirtir. <tt>ClamukoExcludePath</tt> ile de bu özelliğin etkin olmadığı dizinleri belirtebiliriz. Örnek vermek gerekirse ekinde virüs taşıyan bir ileti aldınız bir iletiyi <tt>/</tt> dizini altında herhangi bir yere kaydetmeye kalkarsanız, <b><tt>clamav</tt></b> bu eki hemen siler. Fakat viruslü eki <b><tt>/temp</tt></b> dizini altına kaydetmeniz mümkün olabilir. Çünkü bu dizin için bu özellik devre dışı olduğu için <b><tt>clamav</tt></b> kopyalama işini dikkate almaz, böylece eki kaydedebilirsiniz.
+  </div>
+<div class="para"><pre class="literallayout">ClamukoScanOnAccess
+ClamukoIncludePath /
+ClamukoExcludePath /proc
+ClamukoExcludePath /temp
+</pre></div>
+  <div class="para">
+Daha ayrıntılı bilgileri <a class="ulink" href="http://www.clamav.net/" target="_top">http://www.clamav.net/</a> adresinden temin edebilirsiniz.
+  </div></dd></dl> <div class="head3"><a name="id3" id="id3"></a>Clamav-Milter(Clamav-Mail-Filter)</div><dl><dd><div class="para">
+Clamav ativirus yazılımının belki de en çok kullanılan özelliklerinden birisidir. Clamav bir çok posta sunucusu ile bütünleşik olarak çalışabilir. Biz Clamav'ı Sendmail'le birlikte çalışmaya ayarlayacağız. İnternette Clamav'ın Qmail ve Postfix ile nasıl bütünleştirileceğini anlatan birçok kaynak mevcuttur. Eğer girişte anlattığımız kurulum yöntemlerinden birini takip etmişseniz Clamav'la birlikte <b><tt>clamav-milter</tt></b>'da sisteminizde kurulu demektir. İlk olarak <tt>/etc/mail/sendmail.mc</tt> dosyasına aşağıdaki satırları ekleyelim.
+  </div>
+<div class="para"><pre class="literallayout">INPUT_MAIL_FILTER(clamav-milter,S=local:/var/run/clamav/clamav.sock, F=, T=S:4m;R:4m)dnl
+define(confINPUT_MAIL_FILTERS, clamav-milter)
+</pre></div>
+  <div class="para">
+Daha sonra <tt>sendmail.mc</tt> dosyasını <b><tt>rebuild</tt></b> yapalım ve uçbirimden
+  </div>
+<div class="para"><div align="right"><pre class="screen">clamav-milter -lo /var/run/clamav/clamav.sock</pre></div></div>
+  <div class="para">
+komutuyla <b><tt>clamav-milter</tt></b>'i çalıştıralım. Şimdi <b><tt>sendmail</tt></b>'i yeniden başlatalım.
+  </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>/etc/init.d/sendmail restart</tt></b>
+Shutting down sendmail: [ OK ]
+Shutting down sm-client: [ OK ]
+Starting sendmail: [ OK ]
+Starting sm-client: [ OK ]
+</pre></div></div>
+  <div class="para">
+evet artık <b><tt>clamav</tt></b>, <b><tt>sendmail</tt></b> ile birlikte çalışıyor.
+  </div></dd></dl> <div class="head3"><a name="id4" id="id4"></a>Clamav’ın Sınanması</div><dl><dd><div class="para">
+Bir antivirus yazılımını sınamak için en iyi yöntem elimizde bir virüs olmasıdır. <a class="ulink" href="http://www.eicar.org/anti_virus_test_file.htm" target="_top">http://www.eicar.org/anti_virus_test_file.htm</a> adresinden virus olmasa da bizim işimizi görecek olan, tüm antivirüs yazılımlarının tanıdığı küçük dizgeyi temin edebilirsiniz. Sayfanın ortalarına doğru aşağıdaki garip dizgeyi göreceksiniz.
+  </div>
+<div class="para"><pre class="literallayout">X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*</pre></div>
+  <div class="para">
+Bu dizgeyi <tt>eicar.txt</tt> adı ile bir metin dosyasına kaydedin. Artık viruslü dosyamız hazır. İlk olarak sınamayı komut satırından yapabiliriz. Bunun için <tt>eicar.txt</tt> dosyasını <tt>/home</tt> dizini altına kaydedin ve aşağıdaki komutu kullanın:
+  </div>
+<div class="para"><div align="right"><pre class="screen"><b><tt>clamscan /home -r --bell -i</tt></b>
+/home/eicar: Eicar-Test-Signature FOUND
+</pre></div></div>
+  <div class="para">
+Çıktı yukarıdaki gibi ise sorun yok demektir. Clamav-milter'i denemek için de kurulu olduğu sunucudan bir ileti göndermeye çalışın. Bu iletinin ekine de <tt>eicar.txt</tt> dosyasını ekleyin. Eğer doğru olarak çalışıyorsa iletinin virus taşıdığını ve iletinin gönderilemeyeceğini belirten bir ileti almanız gerekir. Clamav iletiyi gönderdiğiniz kişiye de bir uyarı iletisini özdevimli olarak yollar. Clamav iletilerin başlık bilgisini de değiştirir. 
+  </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/antispam-dcc.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/antispam.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/antispam-refs.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">DCC (Distributed Checksum Clearinghouse) </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> A. Kaynakça</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

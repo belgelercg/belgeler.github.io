@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:54+03:00" /><title>Kullanıcı ve Grup Veritabanı Örneği</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Users-and-Groups.html" title="XXIX. Oylum - Kullanıcılar ve Gruplar" /><link rel="previous" href="../glibc/glibc-Scanning-All-Groups.html" title="Grup Listesinin Taranması" /><link rel="next" href="../glibc/glibc-Netgroup-Database.html" title="Ağ Grubu Veritabanı" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Kullanıcı ve Grup Veritabanı Örneği</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Scanning-All-Groups.html">Önceki</a> </td><th width="60%" align="center">XXIX. Oylum - Kullanıcılar ve Gruplar</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Netgroup-Database.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="glibc-Database-Example" id="glibc-Database-Example"></a>Kullanıcı ve Grup Veritabanı Örneği</div></div></div><dl><dd><div class="para">
+Burada veritabanları ile çalışan işlevlerin kullanımını gösteren örnek bir yazılıma yer verilmiştir. Bu yazılım, kendisini çalıştıran kullanıcı hakkında bazı bilgiler basar.
+   </div>
+<div class="para"><div align="right"><pre class="screen">#include &lt;grp.h&gt;
+#include &lt;pwd.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;stdlib.h&gt;
+
+int
+main (void)
+{
+  uid_t me;
+  struct passwd *my_passwd;
+  struct group *my_group;
+  char **members;
+
+  /* Kullanıcı kimliği hakkında bilgi alalım. */
+  me = getuid ();
+  my_passwd = getpwuid (me);
+  if (!my_passwd)
+    {
+      printf ("%d kullanıcı kimlikli bir kullanıcı bulunamadı.\n", (int) me);
+      exit (EXIT_FAILURE);
+    }
+
+  /* Bilgileri basalım. */
+  printf ("Ben %s.\n", my_passwd-&gt;pw_gecos);
+  printf ("Oturum açma ismim %s.\n", my_passwd-&gt;pw_name);
+  printf ("Kullanıcı kimliğim %d.\n", (int) (my_passwd-&gt;pw_uid));
+  printf ("Ev dizinim %s.\n", my_passwd-&gt;pw_dir);
+  printf ("Öntanımlı kabuğum %s.\n", my_passwd-&gt;pw_shell);
+
+  /* Öntanımlı grup kimliği hakkında bilgi alalım */
+  my_group = getgrgid (my_passwd-&gt;pw_gid);
+  if (!my_group)
+    {
+      printf ("%d grup kimlikli bir grup bulunamadı.\n",
+              (int) my_passwd-&gt;pw_gid);
+      exit (EXIT_FAILURE);
+    }
+
+  /* Bilgileri basalım. */
+  printf ("Öntanımlı grubum %s (%d).\n",
+          my_group-&gt;gr_name, (int) (my_passwd-&gt;pw_gid));
+  printf ("Üyesi olduğum gruplar:\n");
+  members = my_group-&gt;gr_mem;
+  while (*members)
+    {
+      printf ("  %s\n", *(members));
+      members++;
+    }
+
+  return EXIT_SUCCESS;
+}
+</pre></div></div><div class="para">
+Bu yazılımın çıktısı şöyle olurdu:
+   </div>
+<div class="para"><div align="right"><pre class="screen">
+Ben NBB.
+Oturum açma ismim nilgun.
+Kullanıcı kimliğim 502.
+Ev dizinim /home/nilgun.
+Öntanımlı kabuğum /bin/bash.
+Öntanımlı grubum belgeler (526).
+Üyesi olduğum gruplar:
+  nilgun
+</pre></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Scanning-All-Groups.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Users-and-Groups.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Netgroup-Database.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Grup Listesinin Taranması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Ağ Grubu Veritabanı</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

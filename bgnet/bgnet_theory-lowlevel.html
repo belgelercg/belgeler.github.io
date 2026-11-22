@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:23+03:00" /><title>Düşük Seviye Duyarsızlığı ve Ağ Teorisi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../bgnet/bgnet_theory.html" title="Soket Nedir?" /><link rel="previous" href="../bgnet/bgnet_theory-twotypes.html" title="Internet Soketlerinin İki türü" /><link rel="next" href="../bgnet/bgnet_structs.html" title="struct'lar ve Veri İle Uğraşmak" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Düşük Seviye Duyarsızlığı ve Ağ Teorisi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../bgnet/bgnet_theory-twotypes.html">Önceki</a> </td><th width="60%" align="center">Soket Nedir?</th><td width="20%" align="right"> <a accesskey="n" href="../bgnet/bgnet_structs.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="bgnet_theory-lowlevel" id="bgnet_theory-lowlevel"></a>Düşük Seviye Duyarsızlığı ve Ağ Teorisi</div><dl><dd><div class="para">
+        Protokol katmanlarından bahsettiğime göre artık ağların nasıl çalıştığına
+        dair gerçekleri öğrenmenin ve <tt>SOCK_DGRAM</tt> paketlerinin
+        nasıl oluşturulduğuna dair örnekler vermenin zamanı geldi. Pratik olarak
+        bu bölümü atlayabilirsiniz, ancak burayı okursanız iyi bir temel bilgiye
+        sahip olursunuz.
+      </div>
+        <div class="figure"><div class="formaltitle"><b><a name="bgnet_figure1" id="bgnet_figure1"></a>Şekil 2.1. Veri Paketlemesi (data encapsulation)</b></div><span class="inlinemediaobject"><img src="images/dataencap.gif" class="imagedata" align="middle" alt="" /></span></div>
+      <div class="para">
+        Hey çocuklar, Veri Paketleme konusunu öğrenme zamanı! Bu çok çok önemli.
+        O kadar önemli o kadar önemli ki burada yani Chico Eyaletinde ağ
+        teknolojilerine dair bir kurs alırsanız bu konu ile mutlaka
+        karşılaşırsınız <tt>;-)</tt>. Temelde konu şu: bir paket doğar,
+        sonra bu paket önce muhatap olduğu ilk protokol tarafından (mesela TFTP
+        protokolü) ile bir başlık (ve ender olarak da olsa bir dipnot ile)
+        kullanılarak paketlenir (kapsüle konur), ardından tüm bu yığın
+        (TFTP başlığı da dahil) bir sonraki protokolün (örn. UDP) kurallarına
+        göre paketlenir, sonra IP ve en sonundaki en alt katman olan donanım
+        katmanındaki fiziksel protokol ile (örn. Ethernet) paketlenir.
+      </div><div class="para">
+        Başka bir bilgisayar bu paketlenmiş paketi aldığında önce donanım Ethernet
+        başlığını çıkarır, ardından işletim sistemi çekirdeği IP ve UDP başlıklarını
+        alır ve ardından da TFTP programı TFTP başlığını alır ve içindeki veriye
+        erişir.
+      </div><div class="para">
+        Artık şu kötü üne sahip Katmanlı Ağ Modeli (Layered Network Model)
+        kavramından bahsedebilirim. Bu ağ modeli diğer modellere pek çok
+        üstünlüğü bulunan bir ağ işlevselliğinden bahseder. Mesela yazdığınız
+        soket programının tek bir harfini bile değiştirmenize gerek kalmadan
+        bu programı farklı fiziksel donanımlar üzerinde çalıştırabilirsiniz
+        (seri, thin Ethernet, AUI, her ne ise) çünkü düşük seviyedeki programlar
+        sizin yerinize ayrıntıları hallederler. Ağ donanımının fiziksel detayları
+        ve topolojisi soket programcısını ilgilendirmez.
+      </div><div class="para">
+        Daha fazla laf kalabalığı yapmadan bu müthiş modelin katmanlarını liste
+        olarak vereyim, ağ ile ilgili sınava girerseniz işe yarayabilir:
+      </div>
+        <ul type="disc" class="itemizedlist"><li>Uygulama</li><li>Sunum</li><li>Oturum</li><li>Taşıma</li><li>Ağ</li><li>Veri Bağlantısı</li><li>Fiziksel</li></ul>
+      <div class="para">
+        Fiziksel katman donanımla ilgilidir (seri, Ethernet, vs.). Uygulama
+        katmanı fiziksel katmandan alabildiğine uzaktır -- kullanıcılar ağ ile bu
+        katmanda temas kurar.
+      </div><div class="para">
+        Açıkçası bu model o kadar geneldir ki eğer isterseniz bu modeli arabanıza
+        bile uygulayabilirsiniz. Unix ile daha uyumlu bir katmanlı model şöyle
+        yazılabilir:
+      </div>
+        <ul type="disc" class="itemizedlist"><li><div class="para">
+            Uygulama Katmanı (<i>telnet, ftp, etc.</i>)
+          </div></li><li><div class="para">
+            Konaktan Konağa Taşıma Katmanı (<i>TCP, UDP</i>)
+          </div></li><li><div class="para">
+            Internet Katmanı (<i>IP ve yönlendirme</i>)
+          </div></li><li><div class="para">
+            Ağa Erişim Katmanı (<i>Ethernet, ATM ya da her ne ise</i>)
+          </div></li></ul>
+      <div class="para">
+        Bu aşamada söz konusu katmanların veri paketlenmesinin hangi aşamalarına
+        karşılık geldiğini görebiliyor olmalısınız.
+      </div><div class="para">
+        Tek bir paketi oluşturmak için ne kadar çok iş yapılması gerektiğini
+        gördünüz mü! Aman allahım! Üstelik paket başlık bilgilerini de
+        <b><tt>cat</tt></b> komutunu kullanarak elle girmeniz gerekiyor!
+        Şaka şaka! Tek yapmanız gereken eğer veri akış soketi kullanıyorsanız
+        <tt>send()</tt> ile veriyi göndermek. Eğer veri paketi soketi
+        kullanıyorsanız bu sefer de yapılması gereken paketi uygun şekilde
+        paketleyip <tt>sendto()</tt> işlevini kullanarak bunu yollamak.
+        Çekirdek sizin için Taşıma katmanını ve Internet katmanını kurar,
+        donanımınız da Ağa Erişim Katmanını halleder. Ah, modern teknoloji.
+      </div><div class="para">
+        Ağ teorisi ile ilgili kısa dersimiz burada sona eriyor. Ah evet tabii ki
+        yönlendirmeyle ilgili söylemem gereken şeyler vardı: unutun! Bundan
+        bahsetmeyeceğim. Yönlendirici (router) IP başlığını çeker yönlendirme
+        tablosuna bakar, seçim yapar, vs. vs. vs. Eğer gerçekten meraklı iseniz
+        <a class="ulink" href="http://www.rfc-editor.org/rfc/rfc791.txt" target="_top">IP RFC</a> belgesine bakın. Bunu
+        öğrenmezsiniz ölmezsiniz.
+      </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../bgnet/bgnet_theory-twotypes.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../bgnet/bgnet_theory.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../bgnet/bgnet_structs.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Internet Soketlerinin İki türü </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> struct'lar ve Veri İle Uğraşmak</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

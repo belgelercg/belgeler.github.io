@@ -1,71 +1,16 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="tr" xml:lang="tr">
-  <head>
-    <title>5.2. Dizi ve Dizge Uzlaşımları</title>
-    <meta name="generator" content="DocBook XSL Stylesheets V-special (derived from DocBook XSL v1.79.1 for Turkish Linux Documentation Project by Nilgün Belma Bugüner - nilgun (at) tlbp.org.tr)" />
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="/style/nav.css" />
-    <link rel="icon" type="image/png" href="/images/belgeler-logo.png" />
-    <meta name="robots" content="index, follow" />
-  </head>
-  <body>
-    <header>
-      <div class="navbar">
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Representation-of-Strings.html')">Önceki</button>
-          <div class="dropdown-content">5.1. Dizgelerle İlgili Kavramlar</div>
-        </div>
-        <div style="width:34%" class="dropdown">
-          <button class="dropbtn">Yukarı</button>
-          <div class="dropdown-content">
-            <button type="button" class="dropbtn" onclick="window.location.assign('/index.html')">Baş Sayfa</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('/KiTAPLIK/index.html')">Kitaplık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc.html')">Ana Başlık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc-String-and-Array-Utilities.html')">Üst Başlık</button>
-          </div>
-        </div>
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-String-Length.html')">Sonraki</button>
-          <div class="dropdown-content">5.3. Dizge Uzunluğu</div>
-        </div>
-      </div>
-    </header>
-    <section class="mainpage">
-      <div class="crumbs">
-        <p>  </p>
-      </div>
-      <section class="chapter" id="glibc-String-Array-Conventions">
-        <div class="titlepage">
-          <div>
-            <div>
-              <h2 class="title">5.2. Dizi ve Dizge Uzlaşımları</h2>
-            </div>
-          </div>
-        </div>
-        <p>
-   Bu kısımda hem sıradan diziler veya bellek dilimleri üzerinde çalışan işlevler hem de tek baytlı karakter dizileri ve geniş dizgelere özgü işlevler açıklanmıştır.
-  </p>
-        <p>
-   Bellek dilimleri üzerinde işlem yapan işlevlerin isimleri <code class="code">mem</code> ve  <code class="code">wmem</code> ile başlar (<a href="glibc-Copying-Strings-and-Arrays.html#glibc-fn-memcpy"><strong class="function"><code>memcpy</code></strong></a> ve <a href="glibc-Copying-Strings-and-Arrays.html#glibc-fn-wmemcpy"><strong class="function"><code>wmemcpy</code></strong></a> gibi) ve üzerinde çalışacağı bellek diliminin boyutunu (sırasıyla bayt ve geniş karakter sayısı olarak) belirleyen bir bağımsız değişken alır. Bu işlevlerin dizi bağımsız değişkenleri ve dönüş değerleri <code class="type">void *</code> veya <code class="type">wchar_t *</code> türündendir. İsimleri <code class="code">mem</code> ile başlayan işlevler ile kullanılan dizi elemanları birer bayttan oluştuğundan bu işlevlere her çeşit gösterici aktarılabileceği gibi, <em class="parameter"><code>size</code></em> (boyut) bağımsız değişkeninin değeri hesaplanırken <strong class="operator"><code>sizeof</code></strong> işleci kullanılabilir. İsimleri  <code class="code">wmem</code>  ile başlayan işlevlerin bağımsız değişkenleri ise <code class="type">wchar_t *</code> türünde olmalıdır. Bu işlevler yalnızca bu türden diziler için kullanışlıdır.
-  </p>
-        <p>
-   Özellikle dizgeler ve geniş dizgelerle çalışan işlevlerin isimleri ise sırasıyla <code class="code">str</code> ve <code class="code">wcs</code> ile başlar (<a href="glibc-Copying-Strings-and-Arrays.html#glibc-fn-strcpy"><strong class="function"><code>strcpy</code></strong></a> ve <a href="glibc-Copying-Strings-and-Arrays.html#glibc-fn-wcscpy"><strong class="function"><code>wcscpy</code></strong></a> gibi) ve bir uzunluk bağımsız değişkeni almak yerine dizgeyi sonlandıran "boş bayt"a veya "boş geniş karakter"e bakar. (Bu işlevlerin bazıları bir azami uzunluk değeri alır ve ayrıca "boş bayt"la veya "boş geniş karakter"le vaktinden önce sonlandırma olup olmadığını da sınar.) Bu işlevlerin dizi bağımsız değişkenleri ve dönüş değerleri <code class="type">char *</code> ve <code class="type">wchar_t *</code> türünde olmalı ve dizi elemanları sırasıyla "baytlar"dan veya "geniş karakterler"den oluşmalıdır.
-  </p>
-        <p>
-   Çoğu durumda bir işlevin hem <code class="code">mem</code> hem de <code class="code">str</code>/<code class="code">wcs</code> sürümleri vardır. Duruma bağlı olarak her birinin kullanılması gerekebilir. Bir yazılım dizileri veya bellek dilimlerini değiştiriyorsa daima <code class="code">mem</code> işlevleri kullanılmalıdır. Diğer taraftan, dizgeler üzerinde işlem yaparken dizgenin uzunluğu bilinmiyorsa, <code class="code">str</code>/<code class="code">wcs</code> işlevlerini kullanmak daha uygun olur. Boyutları bilinen geniş karakter dizilerinde <code class="code">wmem</code> işlevleri kullanılmalıdır.
-  </p>
-        <p>
-   <span id="idm90920" class="indexterm"></span>
-   <span id="idm90922" class="indexterm"></span>
-   Bellek ve dizge işlevlerinin bazıları bağımsız değişken olarak tek karakter alır. İşlevdeki bağımsız değişken <code class="type">int</code> türünde bildirildiğinde, <code class="type">char</code> türünden bir değer bağımsız değişken olarak kullanıldığında özdevinimli olarak <code class="type">int</code> türünden bir değere dönüştürülür. Geniş karakter işlevleri için de benzer bir durum sözkonusudur; tek geniş karakter için bağımsız değişken <a href="glibc-Extended-Char-Intro.html#glibc-tp-wchar_t"><strong class="type"><code>wchar_t</code></strong></a> değil <code class="type">wint_t</code> türündedir. Ancak birçok gerçekleme <a href="glibc-Extended-Char-Intro.html#glibc-tp-wchar_t"><strong class="type"><code>wchar_t</code></strong></a> türü yeterince geniş olduğundan özdevinimli dönüşüme gerek duymaz. ISO C standardı belli türün seçilmesini gerektirmediğinden <code class="type">wint_t</code> türü kullanılmıştır.
-  </p>
-      </section>
-      <footer>
-        <div align="center" class="footer">
-          <small>Bir <a href="http://belgeler.org.tr/">Linux Kitaplığı</a> Sayfası</small>
-        </div>
-      </footer>
-    </section>
-  </body>
-</html>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:26:18+03:00" /><title>Dizi ve Dizge Teamülleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-String-and-Array-Utilities.html" title="V. Oylum - Diziler ve Dizgeler" /><link rel="previous" href="../glibc/glibc-Representation-of-Strings.html" title="Dizgelerle İlgili Kavramlar" /><link rel="next" href="../glibc/glibc-String-Length.html" title="Dizge Uzunluğu" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Dizi ve Dizge Teamülleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Representation-of-Strings.html">Önceki</a> </td><th width="60%" align="center">V. Oylum - Diziler ve Dizgeler</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-String-Length.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="glibc-String-Array-Conventions" id="glibc-String-Array-Conventions"></a>Dizi ve Dizge Teamülleri</div></div></div><dl><dd><div class="para">
+Bu kısımda diziler veya bellek blokları üzerinde çalışan işlevlerle normal karakterlerin ve geniş karakterlerin özellikle boş karakter sonlandırmalı dizileriyle çalışan işlevler açıklanmıştır.
+    </div><div class="para">
+Bellek blokları ile çalışan işlevlerin isimleri <b><tt>mem</tt></b> ve  <b><tt>wmem</tt></b> ile başlar ve üzerinde çalışacakları bellek blokunun boyutunu (sırasıyla bayt ve geniş karakter sayısı olarak) belirten bir argüman alırlar. Bu işlevlerin dizi argümanları ve dönüş değerleri <b><tt>void *</tt></b> veya <b><tt>wchar_t</tt></b> türündendir. <b><tt>mem</tt></b> ile başlayan işlev isimlerine sahip işlevler için dizi elemanlarına konu olan baytlardır ve bu işlevlere her çeşit gösterici aktarabileceğiniz gibi, boyut argümanının değerini hesaplarken <b><tt>sizeof</tt></b> işlecini kullanabilirsiniz. <b><tt>wmem</tt></b> işlevlerinin parametreleri <b><tt>wchar_t *</tt></b> türünde olmalıdır. Bu işlevlerde bu tür haricinde bir gösterici kullanamazsınız.
+    </div><div class="para">
+Özellikle normal dizgeler ve geniş karakterli dizgelerle çalışan işlevlerin isimleri sırasıyla <b><tt>str</tt></b> ve <b><tt>wcs</tt></b>  ile başlar (<b><tt>strcpy</tt></b> ve <b><tt>wcscpy</tt></b> gibi) ve bir uzunluk argümanı almak yerine dizgeyi sonlandıran boş karaktere bakarlar. (Bu işlevlerin bazıları bir en büyük uzunluk değeri alırlar ve ayrıca bir boş karakterle vaktinden önce sonlandırma olup olmadığını sınarlar.) Bu işlevlerin dizi argümanları ve dönüş değerleri <b><tt>char *</tt></b> ve <b><tt>wchar_t *</tt></b> türünde olmalı ve dizi elemanları sırasıyla normal karakterlerden veya geniş karakterlerden oluşmalıdır.
+    </div><div class="para">
+Birçok durumda bir işlevin hem <b><tt>mem</tt></b> hem de <b><tt>str</tt></b>/<b><tt>wcs</tt></b> sürümleri vardır. Duruma bağlı olarak herbirinin kullanılması gerekebilir. Yazılımınız dizileri veya bellek bloklarını değiştiriyorsa daima <b><tt>mem</tt></b> işlevlerini kullanmalısınız. Diğer taraftan, boş karakter sonlandırmalı dizgelerde değişiklik yapacağınız zaman da, dizgenin uzunluğunu biliyor olmadıkça, <b><tt>str</tt></b>/<b><tt>wcs</tt></b> işlevlerini kullanmak daha uygun olur. Bilinen boyutlarla geniş karakter dizilerinde <b><tt>wmem</tt></b> işlevleri kullanılmalıdır.
+    </div><div class="para">
+<a class="indexterm" name="idx457" id="idx457"></a>
+<a class="indexterm" name="idx458" id="idx458"></a>
+Bellek ve dizge işlevlerinin bazıları argüman olarak tek karakter alır. İşlevdeki parametre <b><tt>int</tt></b> türüyle bildirildiğinden, <b><tt>char</tt></b> türünden bir değer parametre olarak kullanıldığında özdevinimli olarak <b><tt>int</tt></b> türünden bir değere terfi ettirilir. Geniş karakterli dizge işlevleri için de benzer bir durum sözkonusudur; tek geniş karakter için parametre <b><tt>wchar_t</tt></b> değil <b><tt>wint_t</tt></b> türündedir. Ancak bir çok gerçekleme <b><tt>wchar_t</tt></b> türü yeterince geniş olduğundan özdevinimli terfiye gerek duymaz. ISO C standardı belli türün seçilmesini gerektirmediğinden <b><tt>wint_t</tt></b> türü kullanılmıştır.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Representation-of-Strings.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-String-and-Array-Utilities.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-String-Length.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Dizgelerle İlgili Kavramlar </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Dizge Uzunluğu</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:28:59+03:00" /><title>Örnek İlklendirme Dosyası</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../bashref/bashref_rl.initfiles.html" title="Readline İlklendirme Dosyası" /><link rel="previous" href="../bashref/bashref_rl.initfiles-conditionals.html" title="Koşullu İlklendirme Yapıları" /><link rel="next" href="../bashref/bashref_rl.commands.html" title="Kısayollar için Readline Komutları" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Örnek İlklendirme Dosyası</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../bashref/bashref_rl.initfiles-conditionals.html">Önceki</a> </td><th width="60%" align="center">Readline İlklendirme Dosyası</th><td width="20%" align="right"> <a accesskey="n" href="../bashref/bashref_rl.commands.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="bashref_rl.initfiles-sample" id="bashref_rl.initfiles-sample"></a>Örnek İlklendirme Dosyası</div><dl><dd><div class="para">
+Buradaki <tt>inputrc</tt> dosyası örneği
+tuş kısayolları, değişken atamaları ve koşullu sözdizimlerini
+örneklerle açıklamaktadır.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+# Bu dosya Gnu Readline Kütüphanesini kullanan uygulamalar için
+# satır girdi düzenlemesi davranışlarını kontrol eder.
+# Bu uygulamalar FTP, Bash ve Gdb'dir.
+#
+# inputrc dosyasını C-x C-r ile yeniden okutabilirsiniz.
+# '#' ile başlayan satırlar açıklamadır.
+#
+# Önce, sistem genelinde etkin olacak kısayollar ve değişken atamaları
+# /etc/inputrc dosyası ile dosya içeriğine dahil edilir.
+<b><tt>$include /etc/inputrc</tt></b>
+
+#
+# Çeşitli kısayollar emacs kipinde atanır
+<b><tt>set editing-mode emacs</tt></b>
+
+<b><tt>$if mode=emacs</tt></b>
+
+<b><tt>Meta-Control-h: backward-kill-word</tt></b>    İşlev isminden sonraki metin yoksayılır
+
+#
+# Sayısal tuştakımı kipinde ok tuşları
+#
+#"\M-OD":        backward-char
+#"\M-OC":        forward-char
+#"\M-OA":        previous-history
+#"\M-OB":        next-history
+#
+# ANSI kipinde ok tuşları
+#
+<b><tt>"\M-[D":        backward-char</tt></b>
+<b><tt>"\M-[C":        forward-char</tt></b>
+<b><tt>"\M-[A":        previous-history</tt></b>
+<b><tt>"\M-[B":        next-history</tt></b>
+#
+# 8 bit sayısal tuştakımı kipinde ok tuşları
+#
+#"\M-\C-OD":       backward-char
+#"\M-\C-OC":       forward-char
+#"\M-\C-OA":       previous-history
+#"\M-\C-OB":       next-history
+#
+# 8 bit ANSI kipinde ok tuşları
+#
+#"\M-\C-[D":       backward-char
+#"\M-\C-[C":       forward-char
+#"\M-\C-[A":       previous-history
+#"\M-\C-[B":       next-history
+<b><tt>C-q: quoted-insert</tt></b>
+
+<b><tt>$endif</tt></b>
+# Eski tarz bir kısayol.  Bunun öntanımlı olması umulur.
+<b><tt>TAB: complete</tt></b>
+
+# Kabuk etkileşimini kolaylaştıran makrolar
+<b><tt>$if Bash</tt></b>
+# yolu düzenle
+<b><tt>"\C-xp": "PATH=${PATH}\e\C-e\C-a\ef\C-f"</tt></b>
+# tırnak içine almak için hazırla --
+# ardarda iki çift tırnak yazar
+# ve bir karakter geri gider
+<b><tt>"\C-x\"": "\"\"\C-b"</tt></b>
+# bir tersbölü girer
+# (tuş dizilerindeki tersbölü öncelemelerini ve makroları test etmek için)
+<b><tt>"\C-x\\": "\\"</tt></b>
+# Şimdiki ya da önceki sözcüğü tırnak içine alır
+<b><tt>"\C-xq": "\eb\"\ef\""</tt></b>
+# Satırı tazeler
+<b><tt>"\C-xr": redraw-current-line</tt></b>
+# Satırdaki değişkeni düzenler
+<b><tt>"\M-\C-v": "\C-a\C-k$\C-y\M-\C-e\C-a\C-y="</tt></b>
+<b><tt>$endif</tt></b>
+
+# varsa bir görünür çan kullanılır
+<b><tt>set bell-style visible</tt></b>
+
+# okurken karakterlerden 8. biti ayırmaz
+<b><tt>set input-meta on</tt></b>
+
+# iso-* karakterlerin girilmesine izin verir
+<b><tt>set convert-meta off</tt></b>
+
+# karakterleri meta önekli karakterler olarak değil
+# sekizinci bitleri doğrudan 1 yapılmış olarak gösterir
+<b><tt>set output-meta on</tt></b>
+
+# bir sözcüğün tamamlanabilmesi için 150 den fazla olasılık varsa
+# kullanıcıya onları görmek isteyip istemediğini sor
+<b><tt>set completion-query-items 150</tt></b>
+
+# FTP için
+<b><tt>$if Ftp</tt></b>
+<b><tt>"\C-xg": "get \M-?"</tt></b>
+<b><tt>"\C-xt": "put \M-?"</tt></b>
+<b><tt>"\M-.": yank-last-arg</tt></b>
+<b><tt>$endif</tt></b>
+</pre></div></div>
+    </dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../bashref/bashref_rl.initfiles-conditionals.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../bashref/bashref_rl.initfiles.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../bashref/bashref_rl.commands.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Koşullu İlklendirme Yapıları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Kısayollar için Readline Komutları</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

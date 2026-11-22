@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:28:59+03:00" /><title>Koşullu İlklendirme Yapıları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../bashref/bashref_rl.initfiles.html" title="Readline İlklendirme Dosyası" /><link rel="previous" href="../bashref/bashref_rl.initfiles-syntax.html" title="Readline İlklendirme Dosyasının Sözdizimi" /><link rel="next" href="../bashref/bashref_rl.initfiles-sample.html" title="Örnek İlklendirme Dosyası" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Koşullu İlklendirme Yapıları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../bashref/bashref_rl.initfiles-syntax.html">Önceki</a> </td><th width="60%" align="center">Readline İlklendirme Dosyası</th><td width="20%" align="right"> <a accesskey="n" href="../bashref/bashref_rl.initfiles-sample.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="bashref_rl.initfiles-conditionals" id="bashref_rl.initfiles-conditionals"></a>Koşullu İlklendirme Yapıları</div><dl><dd><div class="para">
+Readline, C önişlemcisinin koşullu derleme özelliklerine benzer testlerin
+sonucu olarak uygulanacak tuş kısayolları ve değişken atamalarına izin
+veren bir araç sağlar. Kullanılan dört çözümleyici yönerge vardır.
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>$if</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>$if</tt></b> yapısı, Readline kullanan uygulamalar,
+kullanılan uçbirim ve düzenleme kipi üzerine tabanlanmış kısayollar
+yapılmasına izin verir. Test metni satır sonuna kadar uzar; onu
+izole etmek için bir karaker gerekmez.
+     </div><dl><dt><span class="glossterm"><tt>mode</tt></span></dt><dd class="halfpara"><div class="para">
+<b><tt>$if</tt></b> yönergesinin <tt>mode=</tt>
+sınaması Readline'ın <tt>emacs</tt> kipinde mi yoksa
+<tt>vi</tt> kipinde mi olduğunu test etmekte kullanılır.
+Bu, <b><tt>set</tt></b> <tt>tuşeşlemi</tt>
+komutu ile birlikte kullanılabilir, örneğin, Readline sadece
+<tt>emacs</tt> kipinde başlatıldığında kısayolların
+<tt>emacs-standard</tt> ve <tt>emacs-ctlx</tt>
+tuşeşlemlerine ayarlanması gibi.
+       </div></dd><dt><span class="glossterm"><tt>term</tt></span></dt><dd class="halfpara"><div class="para">
+<tt>term=</tt> sınaması uçbirime özel tuş
+kısayollarını içermekte, belki de tuş dizilerinin çıktısını
+uçbirimin işlev tuşlarına göre bağlamakta kullanılabilir.
+<tt>=</tt> işaretinin sağındaki sözcük hem
+uçbirimin tam adı hem de ilk <tt>-</tt>' den
+önceki parçasında test edilir. Bu, örneğin <tt>sun</tt>
+sözcüğünün hem <tt>sun</tt> hem de
+<tt>sun-cmd</tt> ile eşleşmesine izin verir.
+       </div></dd><dt><span class="glossterm"><tt>uygulama</tt></span></dt><dd class="halfpara"><div class="para">
+<tt>uygulama</tt> sınaması uygulamaya özel ayarların
+içerilmesinde kullanılır. Readline kütüphanesini kullanan
+her program <i>uygulama ismi</i>'ni belirler ve
+bir kısmi değer için test yapabilirsiniz. Bu, tuş dizilerini
+belli bir program için kullanışlı olan işlevlere bağlamakta
+kullanılmalıdır. Örneğin, aşağıdaki komut Bash'da o anki ya da
+önceki sözcüğü tırnak içine alan bir tuş dizisi ekler:
+       </div>
+<div class="para"><div align="right"><pre class="screen">
+<b><tt>$if Bash</tt></b>
+# Şimdiki ya da önceki sözcüğü tırnak içine al
+<b><tt>"\C-xq": "\eb\"\ef\""
+$endif</tt></b>
+</pre></div></div>
+                </dd></dl></dd><dt><span class="term"><tt>$endif</tt></span></dt><dd class="varlist"><div class="para">
+Bu yönerge yukardaki örnekte de görüldüğü gibi bir
+<b><tt>$if</tt></b> yönergesini sonlandırmak için kullanılır.
+          </div></dd><dt><span class="term"><tt>$else</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>$if</tt></b> yönergesi başarısız olduğunda
+bu yönerge altındaki komutlar çalıştırılır.
+          </div></dd><dt><span class="term"><tt>$include</tt></span></dt><dd class="varlist"><div class="para">
+Bu yönerge argüman olarak tek bir dosyaismi alır ve komutları ve
+tuş kısayollarını dosyadan okur. Örneğin aşağıdaki yönerge
+<tt>/etc/inputrc</tt> dosyasını okur:
+          </div>
+<div class="para"><div align="right"><pre class="screen">$include /etc/inputrc</pre></div></div>
+          </dd></dl></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../bashref/bashref_rl.initfiles-syntax.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../bashref/bashref_rl.initfiles.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../bashref/bashref_rl.initfiles-sample.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Readline İlklendirme Dosyasının Sözdizimi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Örnek İlklendirme Dosyası</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

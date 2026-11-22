@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:30+03:00" /><title>Telnet Sunucu Kurulumu</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../embedded/embedded-ag_ayarlari.html" title="Ağ Ayarları" /><link rel="previous" href="../embedded/embedded-ftp.html" title="FTP Sunucu Kurulumu" /><link rel="next" href="../embedded/embedded-seri_portlar.html" title="Seri Portların Kullanımı" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Telnet Sunucu Kurulumu</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../embedded/embedded-ftp.html">Önceki</a> </td><th width="60%" align="center">Ağ Ayarları</th><td width="20%" align="right"> <a accesskey="n" href="../embedded/embedded-seri_portlar.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="embedded-telnet" id="embedded-telnet"></a>Telnet Sunucu Kurulumu</div><dl><dd><div class="para">
+Bir önceki bölümde anlatılan FTP sunucu kurulumuna benzer şekilde şimdi de <b><tt>telnet</tt></b> servisini sisteme kuralım. FTP'ye oranla bu kurulumumuz daha basit olacak çünkü uygulamayı yeniden derlemeye ihtiyacımız yok.
+  </div><div class="para">
+<b><tt>telnet</tt></b> servisi için temelde <b><tt>in.telnetd</tt></b> ve <b><tt>/usr/lib/telnetlogin</tt></b> uygulamasının kurulumu yeterlidir. Hemen gerekli kütüphanelerin bizde olup olmadığına bakalım:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>laptop:~$ </tt><b><tt>ldd /usr/sbin/in.telnetd</tt></b>
+        libutil.so.1 =&gt; /lib/libutil.so.1 (0x4001b000)
+        libc.so.6 =&gt; /lib/libc.so.6 (0x4001f000)
+        /lib/ld-linux.so.2 =&gt; /lib/ld-linux.so.2 (0x40000000)
+</pre></div></div>
+  <div class="para">
+Buradaki çıktıda yer alan <tt>libutil.so.1</tt> kütüphanesi SBC sistemimizde mevcut değil. Bu durumda taşımamız gereken dosyalar arasına bunu da ekliyoruz. FTP servisimiz çalıştığına göre hemen FTP kullanarak dosyaları SBC üzerine aktaralım:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>laptop:~$ </tt><b><tt>ncftp -u root 192.168.0.155</tt></b>
+NcFTP 3.1.3 (Mar 27, 2002) by Mike Gleason (ncftp@ncftp.com).
+Connecting to 192.168.0.155...
+embed FTP server (Version 6.5/OpenBSD, linux port 0.3.3) ready.
+Logging in...
+Password requested by 192.168.0.155 for user "root".
+
+    Password required for root.
+
+Password:
+User root logged in.
+Logged in to 192.168.0.155.
+ncftp /root &gt; <b><tt>cd /usr/sbin</tt></b>
+ncftp /usr/sbin &gt; <b><tt>put /usr/sbin/in.telnetd</tt></b>
+/usr/sbin/in.telnetd:                                   31.73 kB  993.88 kB/s
+ncftp /usr/sbin &gt; <b><tt>cd /usr/lib</tt></b>
+ncftp /usr/lib &gt; <b><tt>put /usr/lib/telnetlogin</tt></b>
+/usr/lib/telnetlogin:                                    5.60 kB  147.83 kB/s
+ncftp /usr/lib &gt; <b><tt>cd /lib</tt></b>
+ncftp /lib &gt; <b><tt>put /lib/libutil.so.1</tt></b>
+/lib/libutil.so.1:                                       7.25 kB  193.60 kB/s
+ncftp /lib &gt;
+</pre></div></div>
+  <div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+FTP üzerinden gönderdiğiniz dosyaların izinleri kaybolabilir. Çalıştırılabilir dosyalar FTP ile gönderildiklerinde bu özelliklerini kaybedeceklerdir. Bu nedenle SBC sisteminde <b><tt>chmod</tt></b> komutu ile gerekli erişim hakları verilmelidir. Bu örnek için gerekli komut <b><tt>chmod 755 /usr/sbin/in.telnetd /usr/lib/telnetlogin</tt></b> şeklindedir.
+  </div></td></tr></table></div><div class="para">
+Her şey hazır olduğuna göre Linux yüklü bilgisayarımızdan SBC üzerindeki <b><tt>telnet</tt></b> servisini test edelim:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>laptop:~$ </tt><b><tt>telnet 192.168.0.155</tt></b>
+Trying 192.168.0.155...
+Connected to 192.168.0.155.
+Escape character is '^]'.
+
+Linux 2.4.20 (embed) (ttyp1)
+
+
+embed login: <b><tt>ali</tt></b>
+Password:
+
+
+BusyBox v0.60.5 (2003.05.29-21:02+0000) Built-in shell (ash)
+Enter 'help' for a list of built-in commands.
+
+<tt>~ $ </tt>
+</pre></div></div>
+  <div class="para">
+İçerdeyiz :) <b><tt>telnet</tt></b> servisimiz düzgün bir şekilde çalışıyor.
+  </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/caution.png" /></td><th class="admon">Dikkat</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+FTP ve telnet servislerini bu şekilde ayarladıktan sonra <tt>/etc/init.d/rcS</tt> dosyası içerisinde <b><tt>inetd</tt></b> uygulamasının her sistem açılışında başlatılması için
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+/usr/sbin/inetd
+</pre></div></div>
+  <div class="para">
+satırı eklenmelidir (sonunda &amp; yok).
+  </div></td></tr></table></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../embedded/embedded-ftp.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../embedded/embedded-ag_ayarlari.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../embedded/embedded-seri_portlar.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">FTP Sunucu Kurulumu </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Seri Portların Kullanımı</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

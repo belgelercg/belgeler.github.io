@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:30+03:00" /><title>Sistem Kullanıcıları ve Gruplar</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../embedded/embedded.html" title="Gömülü Sistemler İçin Linux Dağıtımı Geliştirme" /><link rel="previous" href="../embedded/embedded-init.html" title="Açılış Ayarları" /><link rel="next" href="../embedded/embedded-ag_ayarlari.html" title="Ağ Ayarları" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Sistem Kullanıcıları ve Gruplar</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../embedded/embedded-init.html">Önceki</a> </td><th width="60%" align="center">Gömülü Sistemler İçin Linux Dağıtımı Geliştirme</th><td width="20%" align="right"> <a accesskey="n" href="../embedded/embedded-ag_ayarlari.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="embedded-kullanicilar_ve_gruplar" id="embedded-kullanicilar_ve_gruplar"></a>Sistem Kullanıcıları ve Gruplar</div></div></div><dl><dd><div class="para">
+Bu aşamada artık tek başına açılabilir bir sistemimiz olduğuna göre, elimizdeki sistemi daha ayrıntılı bir şekilde yapılandırmak için ayarlamalara başlayabiliriz. İşe sistemdeki kullanıcı ve grupların yapılandırılması, sisteme girişlerin düzenlenmesinden başlayalım.
+  </div><div class="para">
+Sistemdeki ana kullanıcı olan <tt>root</tt> için gerekli ayarları elle yapmak durumundayız. Bunun için <b><tt>vi /etc/passwd</tt></b> komutuyla açtığımız dosyaya aşağıdaki satırı girelim:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+root::0:0:root:/root:/bin/sh
+</pre></div></div>
+  <div class="para">
+Dosyayı kaydedip çıktıktan sonra <b><tt>vi /etc/group</tt></b> komutu ile <tt>root</tt> kullanıcısının gurubunu aşağıdaki gibi oluşturalım:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+root:x:0:
+</pre></div></div>
+  <div class="para">
+Artık root kullanıcısı sisteme eklenmiş durumdadır. Ancak programların kullanıcı kimliklerinden (uid) kullanıcı isimlerine dönüşüm yapabilmeleri için sistemde <tt>libnss_files</tt> kütüphanesi kurulu olmalıdır. Bunun için Linux yüklü bilgisayarınızdan <tt>/lib/libnss_files.so.2</tt> dosyasını disket ile SBC üzerindeki <tt>/lib</tt> dizini altına taşımalısınız. Ardından <b><tt>vi /etc/nsswitch.conf</tt></b> komutuyla örnekteki gibi bir ayar dosyası oluşturmanız gereklidir:
+  </div><dl class="example"><dt class="example"><a class="example" name="idxmp5" id="idxmp5"></a><b>Örnek 5.1. <tt>/etc/nsswitch.conf</tt></b></dt><dd class="example"><div class="para"><div align="right"><pre class="screen">
+passwd: files
+group: files
+shadow: files
+
+publickey: files
+
+hosts: files dns
+networks: files
+
+protocols: db files
+services: db files
+ethers: db files
+rpc: db files
+
+netgroup: db files
+</pre></div></div></dd></dl><div class="para">
+Sisteme kullanıcı veya grup ekleme çıkarma işlemlerini <b><tt>adduser</tt></b>, <b><tt>deluser</tt></b>, <b><tt>addgroup</tt></b>, <b><tt>delgroup</tt></b> uygulamaları ile yapabilirsiniz (!). Ancak bu yazının hazırlandığı zamanki son <b><tt>tinylogin</tt></b> sürümü olan <tt>1.4</tt>'te bahsedilen uygulamaların davranışı sizin onlardan beklediğiniz yönde değil. <b><tt>tinylogin</tt></b> bu anlamda ağabeyi <b><tt>busybox</tt></b> kadar yetenekli değil. Bu yüzden kullanıcı ve grupları <tt>/etc/group</tt> ve <tt>/etc/passwd</tt> dosyalarını düzenleyerek eklemenizi öneriyorum. Örnek olarak <tt>ali</tt> kullanıcısını <tt>users</tt> gurubuna dahil olacak şekilde eklemek için öncelikle <tt>/etc/group</tt> dosyasına <tt>users</tt> grubuna ait bir kayıt ekleyelim, <b><tt>echo "users:x:100:" &gt;&gt; /etc/group</tt></b> ve ardından <tt>/etc/passwd</tt> dosyasına aşağıdaki kaydı girelim, <b><tt>vi /etc/passwd</tt></b>
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+ali::1000:100:Ali Hemenkavrar:/home/ali:/bin/sh
+</pre></div></div>
+  <div class="para">
+Şimdi <tt>ali</tt> kullanıcısının parolasını değiştirelim:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>/etc # </tt><b><tt>passwd ali</tt></b>
+Changing password for ali
+Enter the new password (minimum of 5, maximum of 8 characters)
+Please use a combination of upper and lower case letters and numbers
+Enter new password:
+Re-enter new password:
+Password changed.
+<tt>/etc # </tt>
+</pre></div></div>
+  <div class="para">
+Şimdi isterseniz daha önce <b><tt>getty</tt></b> ile ilişkilendirdiğiniz 3. sanal konsoldan bu kullanıcı ile sisteme giriş yapabilirsiniz. Bunun için <b><tt>Alt - F3</tt></b> ile 3. konsola geçelim:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>(none) login: </tt><b><tt>ali</tt></b>
+Password:
+
+BusyBox v0.60.5 (2003.05.29-21:02+0000) Built-in shell (ash)
+Enter 'help' for a list of built-in commands.
+
+<tt>~ $ </tt><b><tt>id</tt></b>
+uid=1000(ali) gid=100(users)
+<tt>~ $ </tt>
+</pre></div></div>
+  <div class="para">
+Burada dikkatinizi çekti ise, sistem ismi <i>(none)</i> olarak gözükmektedir. Sisteme verdiğiniz ismin burada gözükmesi için neler yapılması gerektiğine <a href="../embedded/embedded-ag_ayarlari.html" class="xref" title="Ağ Ayarları">Ağ Ayarları</a> bölümünden bakabilirsiniz.
+  </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../embedded/embedded-init.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../embedded/embedded.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../embedded/embedded-ag_ayarlari.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Açılış Ayarları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Ağ Ayarları</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:44+03:00" /><title>Koşul Değişkenleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-POSIX-Threads.html" title="POSIX Evreleri" /><link rel="previous" href="../glibc/glibc-Mutexes.html" title="Muteksler" /><link rel="next" href="../glibc/glibc-POSIX-Semaphores.html" title="POSIX Semaforları" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Koşul Değişkenleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Mutexes.html">Önceki</a> </td><th width="60%" align="center">POSIX Evreleri</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-POSIX-Semaphores.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Condition-Variables" id="glibc-Condition-Variables"></a>Koşul Değişkenleri</div><dl><dd><div class="para">
+Bir koşul ("koşul değişkeni" yerine), evrelerin işletilmeyi paylaşılan veride bir karara varıncaya kadar askıya almasına olanak veren bir eşzamanlama aracıdır.  Koşullar üzerindeki temel işlemler: koşula sinyal göndermek (Karar doğru çıkınca) ve başka bir evre koşula sinyal gönderene kadar evrenin işletilmesini askıya alarak koşul için beklemek.
+   </div><div class="para">
+Yarış koşulundan (race condition) kaçınmak için bir koşul değişkeni herzaman bir muteks ile ilişkilendirilmelidir. Öyle ki yarış koşulunda bir evre bir koşul değişkeni için beklemeye hazırlanırken başka bir evre ilk evre tam beklemeye başlayacakken koşula sinyal gönderir.
+   </div>
+<a class="indexterm" name="idx2930" id="idx2930"></a>
+<a name="glibc-pthread_cond_init" id="glibc-pthread_cond_init"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pthread_cond_init</tt></b></tt></td><td valign="top"><pre class="paramdef">(pthread_cond_t           *<i><tt>koşul</tt></i>,
+ pthread_condattr_t *<i><tt>koşul_özelliği</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_cond_init</tt></b> işlevi <i><tt>koşul</tt></i> koşul değişkenini, <i><tt>koşul_özelliği</tt></i> içinde belirtilen koşul özelliklerini kullanarak ya da eğer <i><tt>koşul_özelliği</tt></i> <b><tt>NULL</tt></b> ise öntanımlı özellikleri kullanarak hazırlar. LinuxThreads gerçeklemesi koşullar için özellikleri desteklemez, bu yüzden <i><tt>koşul_özelliği</tt></i> parametresi dikkate alınmaz.
+   </div><div class="para">
+<b><tt>pthread_cond_t</tt></b> türündeki değişkenler de <b><tt>PTHREAD_COND_INITIALIZER</tt></b> sabitini kullanarak durağan olarak hazırlanabilirler.
+   </div><div class="para">
+Bu işlev her zaman 0 döndürür.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2931" id="idx2931"></a>
+<a name="glibc-pthread_cond_signal" id="glibc-pthread_cond_signal"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pthread_cond_signal</tt></b></tt></td><td valign="top"><pre class="paramdef">(pthread_cond_t *<i><tt>koşul</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_cond_signal</tt></b> işlevi <i><tt>koşul</tt></i> koşul değişkeni için bekleyen evrelerden birini yeniden başlatır. Eğer hiçbir evre <i><tt>koşul</tt></i> için beklemiyorsa, bir şey olmaz. Eğer <i><tt>koşul</tt></i> için birçok evre bekliyorsa, araların biri yeniden başlatılır.
+   </div><div class="para">
+Bu işlev her zaman 0 döndürür.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2932" id="idx2932"></a>
+<a name="glibc-pthread_cond_broadcast" id="glibc-pthread_cond_broadcast"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pthread_cond_broadcast</tt></b></tt></td><td valign="top"><pre class="paramdef">(pthread_cond_t *<i><tt>koşul</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_cond_broadcast</tt></b> işlevi <i><tt>koşul</tt></i> koşul değişkeni için bekleyen bütün evreleri yeniden başlatır. <i><tt>koşul</tt></i> için bekleyen hiç evre yoksa birşey olmaz.
+   </div><div class="para">
+Bu işlev her zaman 0 döndürür.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2933" id="idx2933"></a>
+<a name="glibc-pthread_cond_wait" id="glibc-pthread_cond_wait"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pthread_cond_wait</tt></b></tt></td><td valign="top"><pre class="paramdef">(pthread_cond_t  *<i><tt>koşul</tt></i>,
+ pthread_mutex_t *<i><tt>muteks</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_cond_wait</tt></b> işlevi <i><tt>muteks</tt></i>'in kilidini atomik olarak açar (<b><tt>pthread_unlock_mutex</tt></b> gibi) ve <i><tt>koşul</tt></i> koşul değişkeninin sinyal alması için bekler. Evre işletimi askıya alınır ve koşul değişkeni sinyal alana kadar işlemci zamanı harcamaz.
+<b><tt>pthread_cond_wait</tt></b> girişinde, <i><tt>muteks</tt></i> çağıran evre tarafından kilitlenmelidir.
+Çağıran evreye geri dönmeden önce, <b><tt>pthread_cond_wait</tt></b>  <i><tt>muteks</tt></i>'i tekrar elde eder (<b><tt>pthread_lock_mutex</tt></b> gibi).
+   </div><div class="para">
+Muteks kilidini açmak ve koşul değişkeni üzerine askıya almak atomik olarak gerçekleşir.
+Bu nedenle, eğer bütün evreler koşula sinyal göndermeden önce hep muteksi elde etseler,
+bu evrenin muteksi kilitlemesiyle koşul değişkeni için bekleyeceği zaman aralığında koşula sinyal gönderilemeyeceğini temin eder.
+   </div><div class="para">
+Bu işlev her zaman 0 döndürür.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2934" id="idx2934"></a>
+<a name="glibc-pthread_cond_timedwait" id="glibc-pthread_cond_timedwait"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pthread_cond_timedwait</tt></b></tt></td><td valign="top"><pre class="paramdef">(pthread_cond_t        *<i><tt>koşul</tt></i>,
+ pthread_mutex_t       *<i><tt>muteks</tt></i>,
+ const struct timespec *<i><tt>mutlak_zaman</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_cond_timedwait</tt></b> işlevi <i><tt>muteks</tt></i> kilidini atomik olarak açar ve <b><tt>pthread_cond_wait</tt></b>'in yaptığı gibi <i><tt>koşul</tt></i> için bekler, fakat aynı zamanda bekleme süresini sınırlar.
+Eğer <i><tt>koşul</tt></i> <i><tt>mutlak_zaman</tt></i> süresinden önce sinyal almadıysa, <i><tt>muteks</tt></i> muteksi tekrar elde edilir ve <b><tt>pthread_cond_timedwait</tt></b> <b><tt>ETIMEDOUT</tt></b> hata kodunu döndürür. Bekleme de bir sinyal ile kesilebilir; bu durumda <b><tt>pthread_cond_timedwait</tt></b> işlevi <b><tt>EINTR</tt></b> döndürür.
+   </div><div class="para">
+<i><tt>mutlak_zaman</tt></i> parametresi, <b><tt>time</tt></b> ve <b><tt>gettimeofday</tt></b> ile aynı kökende kesin bir süre belirler:
+<i><tt>mutlak_zaman</tt></i> için 0 değeri 00:00:00 GMT, January 1, 1970 anlamına gelir.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2935" id="idx2935"></a>
+<a name="glibc-pthread_cond_destroy" id="glibc-pthread_cond_destroy"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pthread_cond_destroy</tt></b></tt></td><td valign="top"><pre class="paramdef">(pthread_cond_t *<i><tt>koşul</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_cond_destroy</tt></b> işlevi <i><tt>koşul</tt></i> koşul değişkenini sahip olabileceği kaynakları serbest bırakarak yok eder. Eğer herhangi bir evre koşul değişkeni için bekliyorsa, <b><tt>pthread_cond_destroy</tt></b>
+<i><tt>koşul</tt></i> koşulunu değiştirmeden bırakır ve <b><tt>EBUSY</tt></b> döndürür. Aksi takdirde 0 döndürür ve <i><tt>koşul</tt></i> tekrar hazırlanana kadar kullanılmamalıdır.
+   </div><div class="para">
+LinuxThreads gerçeklemesinde, koşul değişkenleriyle hiçbir kaynak ilişkilendirilmemiştir, bu yüzden <b><tt>pthread_cond_destroy</tt></b> aslında hiçbir şey yapmaz.
+   </div></dd></dl><div style="padding:5px"></div><div class="para">
+<b><tt>pthread_cond_wait</tt></b> ve <b><tt>pthread_cond_timedwait</tt></b> iptal noktalarıdır. Eğer bir evre bu işlevlerden biri tarafından askıya alındığında iptal edildiyse, evre çalışmaya geri döner, <i><tt>muteks</tt></i> ile belirtilen muteksi tekrar kilitler ve son olarak iptali işletir. Sonuç olarak, temizlik işleyicileri <i><tt>muteks</tt></i>'in çağrıldığında kilitli olduğuna emin olurlar.
+   </div><div class="para">
+Bir sinyal işleyicisinden koşul değişken işlevlerinin çağrılması güvenli değildir. Özellikle, bir sinyal işleyicisinden <b><tt>pthread_cond_signal</tt></b> veya <b><tt>pthread_cond_broadcast</tt></b> çağırmak çağıran evreyi kısır döngüye sokabilir.
+   </div><div class="para">
+<i><tt>mut</tt></i> muteksi tarafından korunan, paylaşılan iki <i><tt>x</tt></i> ve <i><tt>y</tt></i> değişkeni ve ne zaman <i><tt>x</tt></i> <i><tt>y</tt></i>'den büyük olsa sinyal alan bir <i><tt>cond</tt></i> koşul değişkeni düşünün.
+   </div>
+<div class="para"><div align="right"><pre class="screen">
+int x,y;
+pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
+</pre></div></div>
+   <div class="para">
+<i><tt>x</tt></i> <i><tt>y</tt></i>'den büyük olana kadar beklemek aşağıdaki gibi yapılır:
+   </div>
+<div class="para"><div align="right"><pre class="screen">
+pthread_mutex_lock(&amp;mut);
+while (x &lt;= y) {
+        pthread_cond_wait(&amp;cond, &amp;mut);
+}
+/* x ve y üzerinde işle*/
+pthread_mutex_unlock(&amp;mut);
+</pre></div></div>
+   <div class="para">
+<i><tt>x</tt></i>'in <i><tt>y</tt></i>'den büyük olmasına neden olabilecek <i><tt>x</tt></i> ve <i><tt>y</tt></i> üzerindeki değişiklikler gerektiğinde koşula sinyal göndermeli:
+   </div>
+<div class="para"><div align="right"><pre class="screen">
+pthread_mutex_lock(&amp;mut);
+/*  x ve y'yi değiştir*/
+if (x &gt; y) pthread_cond_broadcast(&amp;cond);
+pthread_mutex_unlock(&amp;mut);
+</pre></div></div>
+   <div class="para">
+Eğer en çok bir evrenin uyanması gerektiği kanıtlanabilirse (örneğin, <i><tt>x</tt></i> ve <i><tt>y</tt></i> üzerinden haberleşen sadece iki evre varsa),
+<b><tt>pthread_cond_signal</tt></b> işlevi <b><tt>pthread_cond_broadcast</tt></b>'in daha verimli bir alternatifi olarak kullanılabilir. Şüpheliyseniz <b><tt>pthread_cond_broadcast</tt></b> kullanın.
+   </div><div class="para">
+<i><tt>x</tt></i>'in <i><tt>y</tt></i>'den büyük oluncaya kadar 5 saniye beklenmesi için:
+   </div>
+<div class="para"><div align="right"><pre class="screen">
+struct timeval now;
+struct timespec timeout;
+int retcode;
+
+pthread_mutex_lock(&amp;mut);
+gettimeofday(&amp;now);
+timeout.tv_sec = now.tv_sec + 5;
+timeout.tv_nsec = now.tv_usec * 1000;
+retcode = 0;
+while (x &lt;= y &amp;&amp; retcode != ETIMEDOUT) {
+        retcode = pthread_cond_timedwait(&amp;cond, &amp;mut, &amp;timeout);
+}
+if (retcode == ETIMEDOUT) {
+        /* zaman aşımı oluştu */
+} else {
+        /* x ve y üzerinde işlem yap*/
+}
+pthread_mutex_unlock(&amp;mut);
+</pre></div></div>
+   <div class="para">
+Koşul özellikleri,<b><tt>pthread_cond_init</tt></b> işlevinin ikinci argümanı olarak koşul özellik nesnesi geçirilerek, koşul oluşturulması esnasında belirtilebilir. <b><tt>NULL</tt></b> geçirmek, bütün özellikleri öntanımlı değer verilmiş bir koşul özellik nesnesi geçirmekle eşdeğerdir.
+   </div><div class="para">
+LinuxThreads gerçeklemesi koşullar için hiçbir özellik desteklememektedir. Koşul özellikleriyle ilgili işlevler sadece POSIX standardıyla uyum için içerilmektedir.
+   </div>
+<a class="indexterm" name="idx2936" id="idx2936"></a>
+<a class="indexterm" name="idx2937" id="idx2937"></a>
+<a name="glibc-pthread_condattr_init" id="glibc-pthread_condattr_init"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pthread_condattr_init</tt></b></tt></td><td valign="top"><pre class="paramdef">(pthread_condattr_t *<i><tt>öznitelik</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><a name="glibc-pthread_condattr_destroy" id="glibc-pthread_condattr_destroy"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pthread_condattr_destroy</tt></b></tt></td><td valign="top"><pre class="paramdef">(pthread_condattr_t *<i><tt>öznitelik</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_condattr_init</tt></b> işlevi <i><tt>öznitelik</tt></i> koşul özellik nesnesini hazırlar ve özelliklerini öntanımlı değerlerle doldurur. <b><tt>pthread_condattr_destroy</tt></b> işlevi ise <i><tt>öznitelik</tt></i> koşul özellik nesnesini yok eder.
+   </div><div class="para">
+Her iki işlev de LinuxThreads gerçeklemesinde bir şey yapmaz.
+   </div><div class="para">
+<b><tt>pthread_condattr_init</tt></b> ve <b><tt>pthread_condattr_destroy</tt></b> herzaman 0 döndürr.
+      </div></dd></dl><div style="padding:5px"></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Mutexes.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-POSIX-Threads.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-POSIX-Semaphores.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Muteksler </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> POSIX Semaforları</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

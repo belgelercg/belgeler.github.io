@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:31+03:00" /><title>Linux Açılış Süreci</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../embedded/embedded.html" title="Gömülü Sistemler İçin Linux Dağıtımı Geliştirme" /><link rel="previous" href="../embedded/embedded-seri_konsol.html" title="Seri Konsol" /><link rel="next" href="../embedded/embedded-initrd.html" title="Initial Ramdisk (Initrd)" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Linux Açılış Süreci</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../embedded/embedded-seri_konsol.html">Önceki</a> </td><th width="60%" align="center">Gömülü Sistemler İçin Linux Dağıtımı Geliştirme</th><td width="20%" align="right"> <a accesskey="n" href="../embedded/embedded-initrd.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="embedded-linux_init" id="embedded-linux_init"></a>Linux Açılış Süreci</div></div></div><dl><dd><div class="para">
+Bu bölüm doğrudan gömülü sistemlerde Linux kullanımıyla ilgili olmasa da, sisteme daha fazla hakim olabilmek, Linux açılışında sırasıyla neler olup bittiğini öğrenmek ve de en önemlisi bir sonraki bölümde anlatılacak olan <i>Initial Ramdisk</i> kullanımını daha iyi açıklayabilmek amacıyla belgeye eklenmiştir. Özellikle <b><tt>initrd</tt></b> kullanacak iseniz hangi işlemi nerede yapmanız gerektiğini, bunun sistem açılışını hangi aşamalarda nasıl etkileyeceğini bilmeniz gereklidir, aksi takdirde işler içinden çıkılmaz bir hal alacaktır.
+  </div><div class="para">
+Şimdi bilgisayarınıza elektrik verildiği andan itibaren neler olduğuna sırasıyla bakalım. Bu bölümde SBC sistemimizi değil, normal bir masaüstü bilgisayarı örnek alalım. SBC'ler genelde daha özel BIOS ve donanımlara sahip olduğundan ekranda göreceğiniz mesajlar farklı olacaktır.
+  </div><div class="para">
+Bilgisayarınızın açma butonuna bastınız, anakartınıza elektrik gelmeye başladı. Bakalım neler olacak.
+  </div><div class="variablelist"><dl><dt><span class="term">Anakart BIOS'u, ekran kartının BIOS'unu tetikler</span></dt><dd class="varlist"><div class="para">
+Bilgisayarınıza elektrik verildiğinde anakartınız üzerindeki BIOS uygulaması çalışmaya başlar ve o da ilk iş olarak ekran kartınızın BIOS'unu çalışması için tetikler. Ekran kartı BIOS'u çalışır ve kendini ilklendirir. Çoğu ekran kartı markası ve modeliyle ilgili ekrana bir şeyler yazar. Bu nedenle dikkat ederseniz ilk açılışta daha anakartın BIOS bilgilerinin gösterildiği ekran gelmeden, öncelikle ekran kartıyla ilgili bilgiler görüntülenir.
+  </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/tip.png" /></td><th class="admon">İpucu</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Bilgisayarınızı yeniden başlattığınızda <i>(soft reset)</i> ekran kartı BIOS'u ilklendirme işlemlerini yeniden yapmaz, daha doğrusu anakart tarafından bu amaçla tetiklenmez.
+  </div></td></tr></table></div>
+<div class="para"><div align="right"><pre class="screen">
+ATI Technologies Inc Radeon Mobility M6 LW
+32768 kB
+
+VGA/VBE BIOS, Version 2.2
+....
+</pre></div></div>
+  <div class="para">
+ve ekran temizlenir.
+  </div></dd><dt><span class="term">Anakartınızın BIOS'u kendini ilklendirir</span></dt><dd class="varlist"><div class="para">
+Bu aşamada anakart BIOS'u çalışarak donanımların varlığından haberdar olur. Bellek, disket sürücü vb. gibi aygıtları test eder. Ekrana aşağıdakine benzer mesajlar çıkarır:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+Memory Test: 131072K OK
+Award Plug and Play BIOS Extension v1.0A
+Copyright (C) 1998, Award Software, Inc.
+Press DEL to enter SETUP
+</pre></div></div>
+  <div class="para">
+ve ekran temizlenir.
+  </div></dd><dt><span class="term">SCSI Controller BIOS'u tetiklenir</span></dt><dd class="varlist"><div class="para">
+Sisteminizde bir SCSI kartı var ise SCSI veriyoluyla ilgili ilklendirmeleri yapar ve aşağıdakine benzer mesajlar çıkarır:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+Adaptec AHA-2940 Ultra/Ultra W BIOS v 1.23
+(C) 1996 Adaptec, Inc. All Rights Reserved.
+&gt;&gt;&gt; Press  for SCSISelect(TM)
+    SCSI ID:LUNNUMBER #:# 0:0 - MICROP  3243-19 1128RQAV - Drive C: (80h)
+</pre></div></div>
+  <div class="para">
+ve ekran temizlenir.
+  </div></dd><dt><span class="term">Donanım Özet Bilgisi</span></dt><dd class="varlist"><div class="para">
+Bu aşamada BIOS'unuz donanımınız hakkındaki bilgileri özetler (BIOS'tan yapılacak ayarlarla bu ekranların çıkması engellenmiş olabilir veya anakartınızın BIOS'u bu türden bir bilgi sunmayabilir).
+  </div>
+<div class="para"><pre class="literallayout">
+                            Award Software, Inc.
+ +------------------+------------------------+--------------------+---------+
+ | CPU Type         | Cyrix M II/IBM 6x86MX  | Base Memory        |    640K |
+ | Co-Processor     | Installed              | Extended Memory    | 130048K |
+ | CPU Clock        | 233                    | Cache Memory       |   1024K |
+ +==================+========================+====================+=========+
+ | Diskette Drive A | 1.44M, 3.5 in.         | Display Type       | EGA/VGA |
+ | Diskette Drive B | None                   | Serial Port(s)     | 3F8 2F8 |
+ | Pri. Master Disk | None                   | Parallel Port(s)   | 278     |
+ | Pri. Slave Disk  | None                   | Bank 0/1 DRAM Type | None    |
+ | Sec. Master Disk | None                   | Bank 2/3 DRAM Type | EDO     |
+ | Sec. Slave Disk  | None                   | Bank 4/5 DRAM Type | EDO     |
+ +------------------+------------------------+--------------------+---------+
+</pre></div>
+  <div class="para">
+Ardından eğer varsa önyükleme sektörü virüslerine karşı BIOS'taki virüs kontrol kodu çalıştırılır ve önyükleme sektörü bilgisinin değişip değişmediği test edilir:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+!!!! Trend ChipAwayVirus On Guard !!!! Now Detecting Boot Sector Type Virus...
+ChipAwayVirus BIOS Version 1.62
+Verifying DMI Pool Data.....
+</pre></div></div>
+  <div class="para">
+ve ekran temizlenir.
+  </div></dd><dt><span class="term">LILO çalışır</span></dt><dd class="varlist"><div class="para">
+Ardından önyükleme için kullandığınız ortamın Ana Önyükleme Kaydı (MBR) okunur. Lilo kullandığınızı varsayarsak LILO içerisinden yapılacak ayarlamalarla değiştirilebilir olmasına karşın temelde ekrana <tt>LILO</tt> mesajı çıkartılır. Bu mesajdaki her bir karakterin aslında özel bir anlamı vardır. Bazen LILO yerine LI veya LIL deyip takılı kaldığını görebilirsiniz.
+  </div><div class="para">
+İlk "L" karakteri, <b><tt>lilo</tt></b>'nun kendini daha rahat hissedeceği <tt>0x0009A000</tt> adresine taşıması sonrasında ekrana çıkartılır.
+  </div><div class="para">
+"I" karakteri önyükleyici kodunun ikinci aşamasına geçilmeden hemen önce çıkartılır.
+  </div><div class="para">
+<b><tt>lilo</tt></b>'nun ikincil önyükleyici kodu ikinci "L" karakterini ekrana çıkartır, çekirdeğin bölümlerini gösteren tanımlayıcıları <tt>0x0009d200</tt> adresine yükler ve son olarak işlem bitince ekrana "O" karakterini çıkartır.
+  </div><div class="para">
+Ardından yapılan <b><tt>lilo</tt></b> ayarlamalarına göre değişebilecek bir <tt>boot</tt> komut istemi gelir. Burada  birazdan yükleyecek olduğumuz Linux çekirdeğine parametre aktarabiliriz (örneğin kök dosya sisteminin ne olacağı).
+  </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Eğer <b><tt>lilo</tt></b> kullanılmıyorsa ve önyükleyici kodu Linux çekirdeğinin başını gösteriyorsa <tt>linux/arch/i386/boot/bootsect.S</tt> <i>Loading...</i> mesajını ekrana çıkartır.
+  </div></td></tr></table></div></dd><dt><span class="term">Linux çekirdeği çalışır</span></dt><dd class="varlist"><div class="para">
+<tt>/linux/arch/i386/boot/setup.S</tt> kod parçası işlemciyi gerçek kipten 32 bit korumalı kipe geçirir. Sıkıştırılmış çekirdek <i>(bzImage)</i> açılır ve <tt>0x00100000</tt> adresine yüklenir. <tt>linux/arch/i386/head.S</tt> ve <tt> linux/arch/i386/boot/compressed/misc.c</tt> kodları sıkıştırılmış çekirdeği açma işlemlerini tamamlar ve işlemcinin yazmaçlarını <i>(register)</i> ayarlar. Bu aşamalarda aşağıdaki satır ekrana bastırılır:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+Uncompressing Linux... Ok. Booting kernel.
+</pre></div></div>
+  <div class="para">
+Intel x86 mimarisine özgü <tt>setup.S</tt> görevini tamamladıktan sonra <tt>0x00100000</tt> adresine atlama <i>(jump)</i> yapar ve genel Linux kodunun çalışmasını sağlar:
+  </div><div class="variablelist"><dl><dt><span class="term">İşlemci, konsol ve bellek ilklendirmeleri</span></dt><dd class="varlist"><div class="para">
+Kesmelerin tanımlandığı <tt>linux/init/main.c</tt>'de <tt>start_kernel(void) </tt> çalışmaya başlar. Ardından <tt>linux/kernel/module.c</tt> konsol ve PCI veriyolu için gerekli sürücüleri yükler. Bu noktadan itibaren çekirdek mesajları bellekte saklanmaya başlar, bu mesajlara <tt>/bin/dmesg</tt> ile bakılabilir. Mesajların kalıcı olarak saklanabilmesi için çoğu zaman sistem tarafından <tt>/var/log</tt> dizini altında ayrıca bir dosyada kaydedilir. Sonra aşağıdaki satır <tt>linux/init/version.c</tt> tarafından ekrana çıkartılır:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+Linux version 2.4.20 (root@laptop) (gcc version 2.95.4 20011002 ¬
+(Debian prerelease)) #16
+Cts May 3 19:06:51 EEST 2003
+</pre></div></div>
+    <div class="para">
+Ardından <tt>console_init(..)</tt> işlevi tarafından aşağıda mesaj ekrana çıkartılır:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+Console: colour VGA+ 80x25
+</pre></div></div>
+    <div class="para">
+Bu işlevden hemen sonra <tt>calibrate_delay()</tt> işlevi çalışır ve aşağıdaki  mesaj ekrana çıkartılır:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+Calibrating delay loop... 2392.06 BogoMIPS
+</pre></div></div>
+    <div class="para">
+Sonra <tt>mem_init()</tt> işlevi çalışır ve işlem bitince aşağıdaki mesajı verir:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+Memory: 257316k/262116k available (900k kernel code, 4412k reserved, ¬
+410k data, 64k init, 0k highmem)
+</pre></div></div>
+    <div class="para">
+Ardından önbellek alanları düzenlenir ve işlemci türü test edilir, işlemcinin kabiliyetleri tespit edilir.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+Dentry cache hash table entries: 32768 (order: 6, 262144 bytes)
+Inode cache hash table entries: 16384 (order: 5, 131072 bytes)
+Mount-cache hash table entries: 4096 (order: 3, 32768 bytes)
+Buffer-cache hash table entries: 16384 (order: 4, 65536 bytes)
+Page-cache hash table entries: 65536 (order: 6, 262144 bytes)
+CPU: L1 I cache: 0K, L1 D cache: 8K
+CPU: L2 cache: 512K
+Intel machine check architecture supported.
+Intel machine check reporting enabled on CPU#0.
+CPU:     After generic, caps: bfebf9ff 00000000 00000000 00000000
+CPU:             Common caps: bfebf9ff 00000000 00000000 00000000
+CPU: Intel Mobile Intel(R) Pentium(R) 4 - M CPU 1.80GHz stepping 07
+Enabling fast FPU save and restore... done.
+Enabling unmasked SIMD FPU exception support... done.
+Checking 'hlt' instruction... OK.
+POSIX conformance testing by UNIFIX
+</pre></div></div>
+    </dd><dt><span class="term">PCI veriyolu ilklendirmeleri</span></dt><dd class="varlist"><div class="para">
+<tt>mpci_init()</tt> işlevi <tt>linux/arch/i386/kernel/bios32.c</tt> aşağıdaki mesajları çıkartır:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+PCI: PCI BIOS revision 2.10 entry at 0xf0e40, last bus=2
+PCI: Using configuration type 1
+</pre></div></div>
+    <div class="para">
+Hemen ardından <tt>pci_init()</tt> işlevi çalışarak PCI veriyolunu test etmeye başlar, alttaki mesajı çıkartır:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+PCI: Probing PCI hardware
+</pre></div></div>
+    </dd><dt><span class="term">Ağ ilklendirmeleri</span></dt><dd class="varlist"><div class="para">
+<tt>socket_init()</tt> işlevi ağ ile ilgili ilklendirmeleri yapar. <tt>linux/net/socket.c</tt> içerisinden aşağıdaki mesaj çıkartılır:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+Linux NET4.0 for Linux 2.4
+Based upon Swansea University Computer Society NET3.039
+</pre></div></div>
+    </dd><dt><span class="term">İlk süreç başlatılır (0): Kernel Idle Thread</span></dt><dd class="varlist"><div class="para">
+Bu noktada <tt>init()</tt> işlevi tarafından <tt>mkswapd_setup()</tt> çağırılır ve aşağıdaki mesaj çıkartılır <i>(Linux çekirdeği tamamen aktif olduktan sonra çağırılan <tt>/sbin/init</tt> ile karıştırmayın)</i>
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+Starting kswapd
+</pre></div></div>
+    </dd><dt><span class="term">Aygıt sürücülerine ilişkin ilklendirmeler</span></dt><dd class="varlist"><div class="para">
+Çekirdek kodu bu noktadan sonra desteklediği aygıtlar ve dosya sistemleri için ilklendirmeleri yapar, işlemlerini tamamlar ve ardından <b><tt>/sbin/init</tt></b> programını <tt>fork()</tt> ile çalıştırır.
+    </div><div class="para">
+Bu aşamalarda seri ve paralel portlar, karakter ve blok tabanlı erişim sağlanan aygıtlar, varsa SCSI veriyolu üzerindeki aygıtlar, ethernet kartı, farklı dosya sistemleri, PPP protokolü vb. tüm destekler ilklendirilir ve kullanıma hazır hale getirilir. Kullanılan donanım ve çekirdeğin özelliklerine göre çok farklı mesajlar ekrana çıkartılır, aşağıdaki örnek de bunlardan biridir:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+Serial driver version 5.05c (2001-07-08) with MANY_PORTS SHARE_IRQ ¬
+SERIAL_PCI enabled
+ttyS00 at 0x03f8 (irq = 4) is a 16550A
+ttyS01 at 0x02f8 (irq = 3) is a 16550A
+PCI: Found IRQ 11 for device 00:1f.6
+PCI: Sharing IRQ 11 with 00:1f.5
+PCI: Sharing IRQ 11 with 02:07.1
+Uniform Multi-Platform E-IDE driver Revision: 6.31
+ide: Assuming 33MHz system bus speed for PIO modes; override with ¬
+idebus=xx
+ICH3M: IDE controller on PCI bus 00 dev f9
+PCI: Found IRQ 9 for device 00:1f.1
+PCI: Sharing IRQ 9 with 02:07.2
+ICH3M: chipset revision 2
+ICH3M: not 100% native mode: will probe irqs later
+    ide0: BM-DMA at 0x8400-0x8407, BIOS settings: hda:DMA, hdb:pio
+    ide1: BM-DMA at 0x8408-0x840f, BIOS settings: hdc:DMA, hdd:pio
+hda: IC25N040ATCS04-0, ATA DISK drive
+hdc: TOSHIBA DVD-ROM SD-R2102, ATAPI CD/DVD-ROM drive
+ide0 at 0x1f0-0x1f7,0x3f6 on irq 14
+ide1 at 0x170-0x177,0x376 on irq 15
+blk: queue c027fde4, I/O limit 4095Mb (mask 0xffffffff)
+hda: 78140160 sectors (40008 MB) w/1768KiB Cache, CHS=4864/255/63, ¬
+UDMA(100)
+Partition check:
+ hda: hda1 hda2 hda3 hda4 &lt; hda5 hda6 &gt;
+Floppy drive(s): fd0 is 1.44M
+</pre></div></div>
+    <div class="para">
+İlklendirme işlemleri bittikten sonra kök dosya sistemi bağlanır ve <b><tt>/sbin/init</tt></b> programı çalıştırılır. Çekirdek son olarak aşağıdaki satırları ekrana çıkartarak açılış işlemini tamamlar. Bu aşamadan sonra <tt>dmesg</tt> ile gördüğünüz çekirdek mesajları artık <b><tt>/sbin/init</tt></b> tarafından gerçekleştirilen sistem açılışı, sonradan eklenen, çıkarılan çekirdek modülleri vb. hakkında olacaktır, yükleme işlemi çekirdek için tamamlanmıştır.
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+VFS: Mounted root (ext3 filesystem) readonly.
+Freeing unused kernel memory: 64k freed
+</pre></div></div>
+    </dd></dl></div></dd></dl></div><div class="para">
+Çekirdek içerisinden başlatılan <i>idle thread</i> (süreç numarası 0) tarafından çalıştırılan <b><tt>/sbin/init</tt></b> uygulaması daima sistemdeki 1 numaralı süreçtir. Geri kalan tüm süreçlerin anası durumundadır. Çalıştığında ekrana <i>INIT: version 2.76 booting</i> gibi bir mesaj çıkarır ve <tt>/etc/inittab</tt> dosyasını okuyarak gerekli işlemleri yapmaya başlar.
+  </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../embedded/embedded-seri_konsol.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../embedded/embedded.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../embedded/embedded-initrd.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Seri Konsol </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Initial Ramdisk (Initrd)</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

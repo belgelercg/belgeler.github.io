@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:24+03:00" /><title>socket() -- Al Şu Dosya Tanımlayıcıyı!</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../bgnet/bgnet_syscalls.html" title="Sistem Çağrıları veya Felaketleri" /><link rel="previous" href="../bgnet/bgnet_syscalls.html" title="Sistem Çağrıları veya Felaketleri" /><link rel="next" href="../bgnet/bgnet_syscalls-bind.html" title="bind() -- Hangi Port Üzerindeyim?" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">socket() -- Al Şu Dosya Tanımlayıcıyı!</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../bgnet/bgnet_syscalls.html">Önceki</a> </td><th width="60%" align="center">Sistem Çağrıları veya Felaketleri</th><td width="20%" align="right"> <a accesskey="n" href="../bgnet/bgnet_syscalls-bind.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="bgnet_syscalls-socket" id="bgnet_syscalls-socket"></a><tt>socket()</tt> -- Al Şu Dosya Tanımlayıcıyı!</div><dl><dd><div class="para">
+        Sanırım artık daha fazla erteleyemem -- <tt>socket()</tt>
+        sistem çağrısından bahsetmek zorundayım. İşte o işlev:
+      </div>
+<div class="para"><div align="right"><pre class="programlisting">
+#include &lt;sys/types.h&gt;
+#include &lt;sys/socket.h&gt;
+
+int socket(int domain, int type, int protocol); 
+</pre></div></div>
+      <div class="para">
+        Peki ya argümanlar? Önce, <i><tt>domain</tt></i> argümanına
+        <tt>AF_INET</tt> değeri verilmeli, tıpkı
+        <tt>struct sockaddr_in</tt> yapısında olduğu gibi. Sonra
+        <i><tt>type</tt></i> argümanı çekirdeğe ne tür bir soket
+        söz konusu olduğunu söyler: <tt>SOCK_STREAM</tt> veya
+        <tt>SOCK_DGRAM</tt>. Son olarak da
+        <i><tt>protocol</tt></i> argümanına "<tt>0</tt>"
+        değerini verelim ki <tt>socket()</tt>,
+        <i><tt>type</tt></i> değişkenine karşılık gelen uygun protokolü
+        seçebilsin. (Dikkat: Bahsettiğimden daha çok
+        <i><tt>domain</tt></i> ve <i><tt>type</tt></i> vardır.
+        Bkz. <tt>socket()</tt> man sayfası. Ayrıca
+        <i><tt>protocol</tt></i> değerini öğrenmenin "daha iyi" bir
+        yöntemi vardır. Bkz. <tt>getprotobyname()</tt> man
+        sayfası.)
+      </div><div class="para">
+        <tt>socket()</tt> işlevi size bir soket tanımlayıcı
+        döndürür ve artık siz bunu daha sonraki işlevlerinize parametre olarak
+        geçebilirsiniz. Eğer bir hata oluşursa işlev <tt>-1</tt>
+        değerini döndürür. Bu durumda <i><tt>errno</tt></i> isimli
+        global değişken hata kodunu tutar (bkz. <tt>perror()</tt>
+        man sayfası.)
+      </div><div class="para">
+        Bazı belgelerde mistik bir <tt>PF_INET</tt> ifadesi
+        görebilirsiniz, korkmayın. Normalde bu canavar günlük hayatta pek
+        karşınıza çıkmaz fakat gene de kendisinden biraz bahsedeyim. Uzun
+        zaman önce adres ailesinin (<tt>AF_INET</tt>'deki "AF"
+        "Address Family" manasındadır) pek çok protokolü destekleyebileceği
+        düşünülmüştü ( <tt>PF_INET</tt>'deki "PF" "Protocol Family"
+        manasındadır). Ancak böyle bir şey olmadı. Yani doğru olan,
+        <tt>AF_INET</tt> değerini <tt>struct sockaddr_in</tt>
+        yapısında kullanmanız ve <tt>PF_INET</tt>'i ise
+        <tt>socket()</tt> çağırırken kullanmanızdır. Ancak pratik
+        olarak <tt>AF_INET</tt>'i her yerde kullanabilirsiniz.
+        Bu işin üstadlarından W. Richard Stevens kitabında böyle yaptığı için
+        ben de burada böyle yapacağım.
+      </div><div class="para">
+        Peki tamam çok güzel de bu soket ne işe yarar? Tek başına bir işe yaramaz
+        tabii, lütfen okumaya devam edin ve diğer sistem çağrılarını öğrenin ki
+        taşlar yerine otursun.
+      </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../bgnet/bgnet_syscalls.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../bgnet/bgnet_syscalls.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../bgnet/bgnet_syscalls-bind.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Sistem Çağrıları veya Felaketleri </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> bind() -- Hangi Port Üzerindeyim?</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

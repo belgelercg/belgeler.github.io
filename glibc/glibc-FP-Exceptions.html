@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:16+03:00" /><title>Kayan Noktalı Sayı Olağandışılıkları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Floating-Point-Errors.html" title="Gerçek Sayı Hesaplamalarında Hatalar" /><link rel="previous" href="../glibc/glibc-Floating-Point-Errors.html" title="Gerçek Sayı Hesaplamalarında Hatalar" /><link rel="next" href="../glibc/glibc-Infinity-and-NaN.html" title="Sonsuzluk ve NaN" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Kayan Noktalı Sayı Olağandışılıkları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Floating-Point-Errors.html">Önceki</a> </td><th width="60%" align="center">Gerçek Sayı Hesaplamalarında Hatalar</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Infinity-and-NaN.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-FP-Exceptions" id="glibc-FP-Exceptions"></a>Kayan Noktalı Sayı Olağandışılıkları</div><dl><dd><div class="para">
+<a class="indexterm" name="idx2116" id="idx2116"></a>
+<a class="indexterm" name="idx2117" id="idx2117"></a>
+<a class="indexterm" name="idx2118" id="idx2118"></a>
+<a class="indexterm" name="idx2119" id="idx2119"></a>
+<a class="indexterm" name="idx2120" id="idx2120"></a>
+<a class="indexterm" name="idx2121" id="idx2121"></a>
+<a class="indexterm" name="idx2122" id="idx2122"></a>
+IEEE 754 standardı hesaplama sırasında oluşan beş tane <span class="wordasword"><i>olağandışılık</i></span> tanımlar. Her biri üstten taşma gibi belli başlı bir hataya karşılıktır.
+    </div><div class="para">
+Olağandışılıklar oluştuğunda (standardın dilinde, olağandışılıklar <span><i>ortaya çıktığında</i></span>) iki şeyden biri olur. Öntanımlı olarak olağandışılık basitçe kayan noktalı <span><i>durum sözcüğü</i></span>ne kaydedilir ve yazılım hiçbir şey olmamış gibi çalışmaya devam eder. İşlem olağandışılığa bağlı bir öntanımlı değer üretir (aşağıdaki tabloya bakınız). Yazılımınız durum sözcüğüne bakarak hangi olağandışılığın oluştuğunu saptar.
+    </div><div class="para">
+Bundan başka, olağandışılıklar için <span><i>kapanları</i></span> etkinleştirebilirsiniz. Bu durumda, bir olağandışılık ortaya çıktığında, yazılımınız <b><tt>SIGFPE</tt></b> sinyali alacaktır. Bu sinyalin öntanımlı eylemi yazılımın sonlanmasıdır. Sinyallerin etkilerinin nasıl değiştirildiği <a href="../glibc/glibc-Signal-Handling.html" class="xref" title="XXIV. Oylum - Sinyal İşleme">Sinyal İşleme</a> bölümünde anlatılmıştır.
+    </div><div class="para">
+<a class="indexterm" name="idx2123" id="idx2123"></a>
+System V matematik kütüphanesinde, kütüphane işlevleri içinde bu olağandışılıklardan bir oluştuğunda kullanıcı tanımlı <b><tt>matherr</tt></b> işlevi çağrılır. Ancak Unix98 standardı bu arayüzün kullanılmasını önermez. Bu işlevi geçmişe uyumluluk adına destekliyoruz, ama yeni yazılımlarda kullanmamanızı öneriyoruz.
+    </div><div class="para">
+IEEE 754 standardında tanımlanan olağandışılıklar:
+    </div><div class="variablelist"><dl><dt><span class="term">Geçersiz İşlem</span></dt><dd class="varlist"><div class="para">
+Belirtilen terimler uygulanacak işlem için geçersiz ise bu olağandışılık ortaya çıkar. Örnekler (IEEE 754, bölüm 7'ye bakın):
+       </div><ol class="orderedlist" start="ignore" type="1"><li><div class="listitem">
+Toplama ve çıkarma: <tt>oo - oo</tt>.  (ama <tt>oo + oo = oo</tt>).
+         </div></li><li><div class="listitem">
+Çarpma: <tt>0 * oo</tt>.
+         </div></li><li><div class="listitem">
+Bölme: <tt>0/0</tt> or <tt>oo/oo</tt>.
+         </div></li><li><div class="listitem">
+Kalan: <tt>y</tt> sıfır ya da <tt>x</tt> sonsuz olduğunda <tt>x REM y</tt>.
+         </div></li><li><div class="listitem">
+Karekök alma işleminde terim sıfırdan küçükse. Daha genel olarak kendi işlem sahası dışında işlem yapmaya zorlanan matematiksel işlevler bu olağandışılığı üretir.
+         </div></li><li><div class="listitem">
+Gerçek sayıların tamsayıya ya da ondalık dizgeye dönüştürülmesinde sayı hedef biçimde gösterilemiyorsa (üstten taşma, sonsuzluk ya da NaN sebebiyle).
+         </div></li><li><div class="listitem">
+Tanınamayan bir girdi dizgesinin dönüşümü.
+         </div></li><li><div class="listitem">
+İlişkisel işleçlerle (&lt; veya &gt;) yapılan karşılaştırmalarda, terimlerden birinin NaN olması. Bu işleçleri kullanmak yerine düzensiz karşılaştırma işlevlerini kullanarak bu olağandışılıktan kaçınabilirsiniz; bkz. <a href="../glibc/glibc-FP-Comparison-Functions.html" class="xref" title="Gerçek Sayı Karşılaştırma İşlevleri">Gerçek Sayı Karşılaştırma İşlevleri</a>.
+         </div></li></ol>
+       <div class="para">
+Olağandışılık yakalanmazsa işlemin sonucu NaN'dır.
+       </div></dd><dt><span class="term">Sıfırla Bölme</span></dt><dd class="varlist"><div class="para">
+Bu olağandışılık sıfırdan farklı bir sonlu sayı sıfırla bölündüğünde ortaya çıkar. Bir yakalama gerçekleşmezse sonuç terimlerin işaretine bağlı olarak ya <tt>+oo</tt> ya da <tt>-oo</tt>'dur.
+       </div></dd><dt><span class="term">Üstten Taşma</span></dt><dd class="varlist"><div class="para">
+Bu olağandışılık sonuç hedef hassasiyet biçiminde bir sonlu değer olarak gösterilemiyorsa ortaya çıkar. Bir yakalama gerçekleşmezse sonuç ara sonucun işaretine ve geçerli yuvarlama kipine bağlıdır (IEEE 754, bölüm 7.32e bakın):
+       </div><ol class="orderedlist" start="ignore" type="1"><li><div class="listitem">
+En yakın sayıya yuvarlama tüm üstten taşmaları ara sonucun işareti ile sonsuza taşır.
+         </div></li><li><div class="listitem">
+Sıfıra yuvarlama tüm üstten taşmaları ara sonucun işareti ile gösterilebilir en büyük sonlu sayıya taşır.
+         </div></li><li><div class="listitem">
+Eksi sonsuza yuvarlama pozitif üstten taşmaları gösterilebilir en büyük sonlu sayıya, negatif üstten taşmaları ise eksi sonsuza taşır.
+         </div></li><li><div class="listitem">
+Sonsuza yuvarlama negatif üstten taşmaları gösterilebilir en negatif sonlu sayıya, pozitif üstten taşmaları ise sonsuza taşır.
+         </div></li></ol><div class="para">
+Her üstten taşma olağandışılığı ayrıca kesin olmama olağandışılığının ortaya çıkmasına sebep olur.
+       </div></dd><dt><span class="term">Alttan Taşma</span></dt><dd class="varlist"><div class="para">
+Alttan taşma olağandışılığı bir ara sonuç tam olarak hesaplanmış olarak çok küçük olduğunda ya da hedefin hassasiyetine yuvarlama işleminin sonucu normalleştirilmiş olarak çok küçük olduğunda ortaya çıkar.
+       </div><div class="para">
+Alttan taşma olağandışılığı için bir kapan kurulmadığında, alttan taşma sadece küçücüklük ve doğruluk kaybı birlikte saptandığında sinyallenir (alttan taşma bayrağı üzerinden). Bir sinyal eylemci kurulu değilse, işlem bir belirsiz küçük değer ile ya da hedefin hassasiyeti tam doğru küçük sonucu tutamayacaksa sıfır ile devam eder.
+       </div></dd><dt><span class="term"><tt>Kesin Olmama</tt></span></dt><dd class="varlist"><div class="para">
+Bu olağandışılık eğer bir yuvarlanan sonuç kesin değilse (örneğin karekök iki hesaplanırken) ya da bir sonuç bir üstten taşma kapanı olmaksızın üstten taşarsa sinyallenir.
+       </div></dd></dl></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Floating-Point-Errors.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Floating-Point-Errors.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Infinity-and-NaN.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Gerçek Sayı Hesaplamalarında Hatalar </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Sonsuzluk ve NaN</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:23+03:00" /><title>IP Adresleri ve Bunlarla Uğraşma Yöntemleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../bgnet/bgnet_structs.html" title="struct'lar ve Veri İle Uğraşmak" /><link rel="previous" href="../bgnet/bgnet_structs-convert.html" title="Veri Türlerini Dönüştür!" /><link rel="next" href="../bgnet/bgnet_syscalls.html" title="Sistem Çağrıları veya Felaketleri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">IP Adresleri ve Bunlarla Uğraşma Yöntemleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../bgnet/bgnet_structs-convert.html">Önceki</a> </td><th width="60%" align="center">struct'lar ve Veri İle Uğraşmak</th><td width="20%" align="right"> <a accesskey="n" href="../bgnet/bgnet_syscalls.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="bgnet_structs-ipaddr" id="bgnet_structs-ipaddr"></a>IP Adresleri ve Bunlarla Uğraşma Yöntemleri</div><dl><dd><div class="para">
+        Şanslısınız çünkü IP adresleri ile uğraşmanızı sağlayacak bir grup
+        işlev vardır. Yani elle hesap kitap yapıp sonra da bunu bir
+        <tt>long</tt> içine <tt>&lt;&lt;</tt>
+        işleci ile tıkıştırmanıza gerek yok.
+      </div><div class="para">
+        Önce örneğin elinizde bir <tt>struct sockaddr_in ina</tt>
+        değişkeni ve bir de <tt>10.12.110.57</tt> şeklinde bir
+        IP adresi olduğunu var sayalım. Bu adresi bu değişken içine
+        yerleştirmek istiyorsunuz. Kullanmanız gereken işlev:
+        <tt>inet_addr()</tt>. Bu işlev bir IP adresini
+        yukarıdaki gibi sayılardan ve noktalardan oluşan bir biçemden alıp
+        <tt>unsigned long</tt> türünde bir sayıya çevirir. Bu tür
+        bir atama şu şekilde yapılabilir:
+      </div>
+<div class="para"><div align="right"><pre class="programlisting">
+ina.sin_addr.s_addr = inet_addr("10.12.110.57"); 
+</pre></div></div>
+      <div class="para">
+        Şuna dikkat edin: <tt>inet_addr()</tt> zaten döndürdüğü
+        değeri Ağ Bayt Sıralamasına göre dizilmiş olarak döndürür yani
+        <tt>htonl()</tt> işlevini burada çağırmanıza gerek yok.
+        Harika!
+      </div><div class="para">
+        Yukarıdaki kod parçası pek sağlam sayılmaz çünkü hiç hata denetimi yok.
+        Gördüğünüz gibi <tt>inet_addr()</tt> hatalı bir durumla
+        karşılaşınca <tt>-1</tt> değerini döndürür. İkili sayı
+        sistemini hatırladınız mı? <tt>(unsigned)-1</tt> tam da
+        şu IP adresine karşılık gelir: <tt>255.255.255.255</tt>!
+        Bu da yayın adresidir! Aman dikkat. Hata kontrolünü düzgün bir şekilde
+        yapmayı sakın ihmal etmeyin.
+      </div><div class="para">
+        Aslında <tt>inet_addr()</tt> yerine kullanabileceğiniz
+        daha güzel bir işlev var: <tt>inet_aton()</tt> ("aton"u,
+        "ascii to network" olarak okuyun):
+      </div>
+<div class="para"><div align="right"><pre class="programlisting">
+#include &lt;sys/socket.h&gt;
+#include &lt;netinet/in.h&gt;
+#include &lt;arpa/inet.h&gt;
+
+int inet_aton(const char *cp, struct in_addr *inp); 
+</pre></div></div>
+      <div class="para">
+        Bir örnek vermek gerekirse: bu işlev <tt>struct sockaddr_in</tt>
+        yapısını paketlerken (ilerledikçe bu örnek size daha da anlamlı
+        gelecek <a class="link" href="../bgnet/bgnet_syscalls-bind.html" title="bind() -- Hangi Port Üzerindeyim?"><tt>bind()</tt></a>
+        ve <a class="link" href="../bgnet/bgnet_syscalls-connect.html" title="connect()--Hey, sen!"><tt>connect()</tt></a>
+        kısımlarına kadar sabredin.)
+      </div>
+<div class="para"><div align="right"><pre class="programlisting">
+struct sockaddr_in my_addr;
+
+my_addr.sin_family = AF_INET;         // konak bayt sıralaması
+my_addr.sin_port = htons(MYPORT);     // short, ağ bayt sıralaması
+inet_aton("10.12.110.57", &amp;(my_addr.sin_addr));
+memset(&amp;(my_addr.sin_zero), '\0', 8); // geriye kalanı sıfırla 
+</pre></div></div>
+      <div class="para">
+        <tt>inet_aton()</tt>, diğer tüm soket-bağlantılı
+        işlevlerden farklı olarak, sorun çıkmazsa sıfırdan farklı bir değer,
+        sorun çıkarsa da sıfır değerini döndürür. Ve döndürülen adres
+        <i><tt>inp</tt></i> içinde yer alır.
+      </div><div class="para">
+        Maalesef her platform <tt>inet_aton()</tt> işlevini
+        kullanmamaktadır. Bu yüzden her ne kadar bu işlevi tercih etsek de
+        daha yaygın olması itibariyle örneklerde
+        <tt>inet_addr()</tt> kullanılacaktır.
+      </div><div class="para">
+        Artık IP adreslerini ikilik sisteme kolayca dönüştürebileceğinize
+        göre bunun tersini yapmaya ne dersiniz? Yani mesela elinizde zaten
+        bir <tt>struct in_addr</tt> yapısı varsa ve siz bunu alışık
+        olduğunuz sayılı noktalı IP adresi biçeminde basmak istiyorsanız?
+        Bu durumda kullanacağımız işlev: <tt>inet_ntoa()</tt>
+        ("ntoa"yı "network to ascii" olarak okuyun). Şu şekilde işinizi görür:
+      </div>
+<div class="para"><div align="right"><pre class="programlisting">
+printf("%s", inet_ntoa(ina.sin_addr)); 
+</pre></div></div>
+      <div class="para">
+        Bu IP adresini basacaktır. Dikkat edin: <tt>inet_ntoa()</tt>
+        argüman olarak <tt>struct in_addr</tt> alır <tt>long</tt>
+        almaz. Bir diğer önemli nokta da: Bu işlev bir <tt>char</tt>'a
+        işaret eden bir gösterge döndürür. Söz konusu gösterge
+        <tt>inet_ntoa()</tt> içinde statik olarak depolanan bir
+        karakter dizisine işaret eder ve <tt>inet_ntoa()</tt>
+        işlevini her çağırışınızda son işlem görmüş olan IP adresinin üzerine
+        yazılır. Örneğin:
+      </div>
+<div class="para"><div align="right"><pre class="programlisting">
+char *a1, *a2;
+.
+.
+a1 = inet_ntoa(ina1.sin_addr);  // burada 192.168.4.14 var
+a2 = inet_ntoa(ina2.sin_addr);  // burada 10.12.110.57 var
+printf("1. adres: %s\n",a1);
+printf("2. adres: %s\n",a2); 
+</pre></div></div>
+      <div class="para">şunu basar:</div>
+<div class="para"><div align="right"><pre class="programlisting">
+1. adres: 10.12.110.57
+2. adres: 10.12.110.57 
+</pre></div></div>
+      <div class="para">
+        Eğer birden fazla adresle iş yapıyorsanız ve bunları yukarıda olduğu
+        gibi kaybetmek istemiyorsanız o zaman <tt>strcpy()</tt>
+        gibi bir işlev kullanarak uygun bir yere kopyalamayı sakın ihmal
+        etmeyin.
+      </div><div class="para">
+        Bu konu ile söyleyeceklerim şimdilik bu kadar. Daha sonra
+        "whitehouse.gov" gibi bir karakter dizisini hangi yöntemlerle
+        karşılık gelen IP adresine çevirebileceğinizi göstereceğim
+        (bkz. <a href="../bgnet/bgnet_syscalls-dns.html" class="xref" title="DNS -- Sen &quot;whitehouse.gov&quot; de, ben de &quot;198.137.240.92&quot; diyeyim">DNS -- Sen "whitehouse.gov" de, ben de "198.137.240.92" diyeyim</a>).
+      </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../bgnet/bgnet_structs-convert.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../bgnet/bgnet_structs.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../bgnet/bgnet_syscalls.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Veri Türlerini Dönüştür! </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Sistem Çağrıları veya Felaketleri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

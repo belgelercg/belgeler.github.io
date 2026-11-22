@@ -1,89 +1,26 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="tr" xml:lang="tr">
-  <head>
-    <title>12.14.1. Biçimli Girdi Okumanın Temelleri</title>
-    <meta name="generator" content="DocBook XSL Stylesheets V-special (derived from DocBook XSL v1.79.1 for Turkish Linux Documentation Project by Nilgün Belma Bugüner - nilgun (at) tlbp.org.tr)" />
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="/style/nav.css" />
-    <link rel="icon" type="image/png" href="/images/belgeler-logo.png" />
-    <meta name="robots" content="index, follow" />
-  </head>
-  <body>
-    <header>
-      <div class="navbar">
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Formatted-Input.html')">Önceki</button>
-          <div class="dropdown-content">12.14. Biçimli Girdi</div>
-        </div>
-        <div style="width:34%" class="dropdown">
-          <button class="dropbtn">Yukarı</button>
-          <div class="dropdown-content">
-            <button type="button" class="dropbtn" onclick="window.location.assign('/index.html')">Baş Sayfa</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('/KiTAPLIK/index.html')">Kitaplık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc.html')">Ana Başlık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Formatted-Input.html')">Üst Başlık</button>
-          </div>
-        </div>
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Input-Conversion-Syntax.html')">Sonraki</button>
-          <div class="dropdown-content">12.14.2. Girdi Dönüşüm Sözdizimi</div>
-        </div>
-      </div>
-    </header>
-    <section class="mainpage">
-      <div class="crumbs">
-        <p>  </p>
-      </div>
-      <section class="sect1" id="glibc-Formatted-Input-Basics">
-        <div class="titlepage">
-          <div>
-            <div>
-              <h2 class="title" style="clear: both">12.14.1. Biçimli Girdi Okumanın Temelleri</h2>
-            </div>
-          </div>
-        </div>
-        <p>
-    <span id="idm108545" class="indexterm"></span>
-    <span id="idm108548" class="indexterm"></span>
-    <a href="glibc-Formatted-Input-Functions.html#glibc-fn-scanf"><strong class="function"><code>scanf</code></strong></a> çağrıları bağımsız değişkenleri bir kalıp dizgenin denetimi altında okumasından dolayı yüzeysel olarak <a href="glibc-Formatted-Output-Functions.html#glibc-fn-printf"><strong class="function"><code>printf</code></strong></a> çağrılarına benzer. Kalıp dizgesindeki dönüşüm belirtimlerinin sözdizimleri <a href="glibc-Formatted-Output-Functions.html#glibc-fn-printf"><strong class="function"><code>printf</code></strong></a> işlevininkilere çok benzese de, kalıp dizgesinin yorumlanması sabit alanlı biçimlemeden ziyade daha serbest biçimli ve basit kalıp eşleştirme yönündedir. Örneğin, çoğu <a href="glibc-Formatted-Input-Functions.html#glibc-fn-scanf"><strong class="function"><code>scanf</code></strong></a> dönüşümü dosyadaki boş alanları (boşluk, sekme, satırsonu) atlar ve çıktı dönüşümlerindekinin aksine sayısal girdi dönüşümleri için hassasiyet diye bir kavrama sahip değildir. Ekseriyetle, kalp dizgesindeki boşluk olmayan karakterlerin girdi akımındaki karakterlerle eşleşeceği umulur, ancak bir eşleşmenin bulunamaması akım üzerindeki bir girdi hatası ile karıştırılmaz.
-   </p>
-        <p>
-    <a href="glibc-Formatted-Input-Functions.html#glibc-fn-scanf"><strong class="function"><code>scanf</code></strong></a> ile <a href="glibc-Formatted-Output-Functions.html#glibc-fn-printf"><strong class="function"><code>printf</code></strong></a> arasındaki diğer bir farklı alan, <a href="glibc-Formatted-Input-Functions.html#glibc-fn-scanf"><strong class="function"><code>scanf</code></strong></a> işlevinin isteğe bağlı bağımsız değişkenlerinin doğrudan değer olarak değil göstericiler sağlayarak alındığını unutmamak gerektiğidir; okunan değerler göstericilerin gösterdiği nesnelerde saklanır. Deneyimli yazılımcılar bile kimi zaman bunu unutur, eğer yazılım <a href="glibc-Formatted-Input-Functions.html#glibc-fn-scanf"><strong class="function"><code>scanf</code></strong></a> ile ilgili olarak tuhaf hatalar veriyorsa bu özellik için çifte denetim yapılmalıdır.
-   </p>
-        <p>
-    Bir <em class="wordasword">eşleşme hatası</em> oluştuğunda, <a href="glibc-Formatted-Input-Functions.html#glibc-fn-scanf"><strong class="function"><code>scanf</code></strong></a> işlevi ilk eşleşmeyen karakteri akımdan okunacak sonraki karakter olarak bırakarak hemen döner. Normalde <a href="glibc-Formatted-Input-Functions.html#glibc-fn-scanf"><strong class="function"><code>scanf</code></strong></a> işlevinden dönen değer, atanmış değerlerin sayısıdır. Bu değere bakarak bir okunmamış karakter varsa eşleşme hatasının oluştuğu yer bulunabilir.
-   </p>
-        <div class="example">
-          <div class="example-title">Örnek: </div>
-          <div class="example-contents">
-            <p>
-     <a href="glibc-Formatted-Input-Functions.html#glibc-fn-scanf"><strong class="function"><code>scanf</code></strong></a> işlevi genellikle, tabloların içeriklerini okumak gibi şeyler için kullanılır. Örneğin, buradaki işlev <code class="type">double</code> türünde bir diziyi ilklendirmek için <a href="glibc-Formatted-Input-Functions.html#glibc-fn-scanf"><strong class="function"><code>scanf</code></strong></a> işlevini kullanmaktadır:
-    </p>
-            <pre class="screen">void
-readarray (double *array, int n)
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:26:39+03:00" /><title>Biçimli Girdi Okumanın Temelleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Formatted-Input.html" title="Biçimli Girdi" /><link rel="previous" href="../glibc/glibc-Formatted-Input.html" title="Biçimli Girdi" /><link rel="next" href="../glibc/glibc-Input-Conversion-Syntax.html" title="Girdi Dönüşüm Sözdizimi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Biçimli Girdi Okumanın Temelleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Formatted-Input.html">Önceki</a> </td><th width="60%" align="center">Biçimli Girdi</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Input-Conversion-Syntax.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Formatted-Input-Basics" id="glibc-Formatted-Input-Basics"></a>Biçimli Girdi Okumanın Temelleri</div><dl><dd><a class="indexterm" name="idx931" id="idx931"></a><a class="indexterm" name="idx932" id="idx932"></a><div class="para">
+<b><tt>scanf</tt></b> çağrıları argümanları bir şablon dizgenin denetimi altında okumasından dolayı yüzeysel olarak <b><tt>printf</tt></b> çağrılarına benzer. Şablon dizgedeki dönüşüm belirtimlerinin sözdizimleri <b><tt>printf</tt></b> işlevininkilere çok benzese de, şablonun yorumlanması sabit alanlı biçimlemeden ziyade daha bir serbest biçimli ve basit kalıp eşleştirme yönündedir. Örneğin, çoğu <b><tt>scanf</tt></b> dönüşümü dosyadaki boş alanları (boşluk, sekme, satırsonu) atlar ve çıktı dönüşümlerindekinin aksine sayısal girdi dönüşümleri için hassasiyet diye bir kavrama sahip değildir. Ekseriyetle, şablondaki boşluk olmayan karakterlerin girdi akımındaki karakterlerle eşleşeceği umulur, ancak bir eşleşmenin bulunamaması     akım üzerindeki bir girdi hatası ile karıştırılmaz.
+    </div><div class="para">
+<b><tt>scanf</tt></b> ile <b><tt>printf</tt></b> arasındaki diğer bir farklı alan, <b><tt>scanf</tt></b> işlevinin isteğe bağlı argümanlarının doğrudan değer olarak değil göstericiler sağlayarak alındığını unutmamanız gerektiğidir; okunan değerler göstericilerin gösterdiği nesnelerde saklanır. Deneyimli yazılımcılar bile kimi zaman bunu unutur, eğer yazılımınız <b><tt>scanf</tt></b> ile ilgili olarak tuhaf hatalar veriyorsa bu özelliği için çifte kontrol yapmalısınız.
+    </div><div class="para">
+Bir <span class="wordasword"><i>eşleşme hatası</i></span> oluştuğunda, <b><tt>scanf</tt></b> işlevi ilk eşleşmeyen karakteri akımdan okunacak sonraki karakter olarak bırakarak hemen döner. Normalde <b><tt>scanf</tt></b> işlevinden dönen değer atanmış değerlerin sayısıdır. Bu değere bakarak bir okunmamış karakter varsa eşleşme hatasının oluştuğu yeri bulabilirsiniz.
+    </div><div class="para">
+<b><tt>scanf</tt></b> işlevi genellikle, tabloların içeriklerini okumak gibi şeyler için kullanılır. Örneğin, buradaki işlev bir <b><tt>double</tt></b> dizisini ilklendirmek için <b><tt>scanf</tt></b> işlevini kullanmaktadır:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+void
+diziyioku (double *dizi, int n)
 {
   int i;
-  for (i=0; i&lt;n; i++)
-    if (scanf (" %lf", &amp;(array[i])) != 1)
+  for (i = 0; i &lt; n; i++)
+    if (scanf (" %lf", &amp;(dizi[i])) != 1)
       invalid_input_error ();
 }
-</pre>
-          </div>
-        </div>
-        <br class="example-break" />
-        <p>
-    Biçimli girdi işlevleri, biçimli çıktı işlevleri kadar sık kullanılmaz. Kısmen, düzgün olarak kullanmak biraz dikkat gerektirdiğindendir. Diğer bir sebep, bir eşleşme hatasından kurtulmanın zorluğudur.
-   </p>
-        <p>
-    Tek başına, sabit bir kalıpla eşleşmeyecek bir girdi okunmaya çalışılacaksa, <a href="glibc-Formatted-Input-Functions.html#glibc-fn-scanf"><strong class="function"><code>scanf</code></strong></a> kullanmaktansa, bir sözel tarayıcı üretmede Flex ya da bir çözümleyici üretmede Bison gibi bir araç kullanmak daha iyi olabilir. Bu araçlar hakkında bilgi almak için bkz. <a class="link" href="https://www.gnu.org/software/bison/manual/bison.html#Top" target="_top">Bison Kılavuzu</a> ve <a class="link" href="https://westes.github.io/flex/manual/index.html#Top" target="_top">Flex Kılavuzu</a>
-   </p>
-      </section>
-      <footer>
-        <div align="center" class="footer">
-          <small>Bir <a href="http://belgeler.org.tr/">Linux Kitaplığı</a> Sayfası</small>
-        </div>
-      </footer>
-    </section>
-  </body>
-</html>
+</pre></div></div><div class="para">
+Biçimli girdi işlevleri, biçimli çıktı işlevleri kadar sık kullanılmazlar. Kısmen, onları düzgün olarak kullanmak biraz dikkat gerektirdiğindendir. Diğer bir sebep, bir eşleşme hatasından kurtulmanın zorluğudur.
+    </div><div class="para">
+Bir tek başına, sabit bir kalıpla eşleşmeyecek bir girdiyi okumaya çalışacaksanız, <b><tt>scanf</tt></b> kullanmaktansa, bir sözel tarayıcı üretmede Flex ya da bir çözümleyici üretmede Bison gibi bir araç kullanmak sizin için daha iyi olabilir. Bu araçlar hakkında bilgi almak için Bison.info ve Flex.info'ya bakabilirsiniz.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Formatted-Input.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Formatted-Input.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Input-Conversion-Syntax.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Biçimli Girdi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Girdi Dönüşüm Sözdizimi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

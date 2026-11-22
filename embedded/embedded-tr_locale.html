@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:31+03:00" /><title>Yerel (Locale) Desteği</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../embedded/embedded-turkce_nasil.html" title="Türkçe Nasıl?" /><link rel="previous" href="../embedded/embedded-turkce_nasil.html" title="Türkçe Nasıl?" /><link rel="next" href="../embedded/embedded-tr_konsol.html" title="Konsolda Türkçe Desteği" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Yerel (Locale) Desteği</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../embedded/embedded-turkce_nasil.html">Önceki</a> </td><th width="60%" align="center">Türkçe Nasıl?</th><td width="20%" align="right"> <a accesskey="n" href="../embedded/embedded-tr_konsol.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="embedded-tr_locale" id="embedded-tr_locale"></a>Yerel <i>(Locale)</i> Desteği</div><dl><dd><div class="para">
+Programlarınızın Türkçe yerelinden haberdar olabilmesi için yapmamız gereken bir kaç işlem var. Ancak bu işlemlere geçmeden önce bir hatırlatma yapmak istiyorum. Eğer beklediğiniz etkiye ulaşmak için sisteme hangi dosyaları kopyalamanız gerektiğini bir türlü bulamıyorsanız, SBC sistemine <b><tt>strace</tt></b> uygulamasını kurmanızı şiddetle öneririm. <b><tt>strace</tt></b> çok küçük fakat inanılmaz işe yarayan bir uygulamadır. Programların hangi sistem komutlarını ve sinyallerini kullandıklarını gösterir. Peki doğru dosyayı bulmakta bize nasıl yardımcı olabilir? Hemen bir örnek verelim:
+  </div><dl class="example"><dt class="example"><a class="example" name="idxmp7" id="idxmp7"></a><b>Örnek 11.1. Strace kullanımı</b></dt><dd class="example"><div class="para"><div align="right"><pre class="screen">
+<tt>/ # </tt><b><tt>export LANG=tr_TR</tt></b>
+<tt>/ # </tt><b><tt>date</tt></b>
+Sat Jun  7 19:20:18 UTC 2003
+<tt>/ # </tt><b><tt>strace date</tt></b>
+...
+open("/usr/lib/locale/locale-archive", O_RDONLY|O_LARGEFILE) = -1 ENOENT ¬
+(No such file or directory)
+...
+</pre></div></div></dd></dl><div class="para">
+Ekranınız binlerce satırla dolabilir, ama o satırlar arasından yukarıdaki gibi bir tanesi çok işimize yarayacak. Görüldüğü gibi <b><tt>date</tt></b> programı çalışma esnasında <tt>/usr/lib/locale/locale-archive</tt> dosyasını okumaya çalışıyor ancak bizde öyle bir dosya olmadığı için okuyamıyor. Bu örneği benzeri uygulamalar için de sıkıştığımız zaman tekrar edebiliriz.
+  </div><div class="para">
+Yukarıdaki örnekte bizde eksik olduğunu gördüğümüz dosyaya gerçekten ihtiyaç vardır. Bu dosyayı Linux sistemimizden SBC üzerine, aynı yere aktarmalıyız: <tt>/usr/lib/locale/locale-archive</tt>
+  </div><div class="para">
+<tt>locale-archive</tt> dosyasını SBC üzerine aktardıktan sonra <b><tt>date</tt></b> komutumuzun çıktısına tekrar bakalım:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>/ # </tt><b><tt>date</tt></b>
+Cts Haz  7 19:26:59 UTC 2003
+</pre></div></div>
+  <div class="para">
+Gördüğünüz gibi gün ve ay isimleri Türkçe oldu.
+  </div><div class="para">
+Türkçe yerel ayarlamaları için yapmamız gereken en temel işlem, <tt>/usr/share/locale</tt> dizin yapısını SBC üzerinde oluşturmaktır. Bunun için aşağıdaki dosyaları SBC üzerine aktarmalıyız:
+  </div>
+<div class="para"><pre class="literallayout">
+    /usr/share/locale/locale.alias
+    /usr/share/locale/tr
+    /usr/share/locale/tr/LC_MESSAGES
+    /usr/share/locale/tr/LC_MESSAGES/libc6.mo
+</pre></div>
+  <div class="para">
+Son adım olarak karakter çevirimleri için aşağıdaki dosyalar da aynı dizinlerle SBC üzerine aktarılmalıdır:
+  </div>
+<div class="para"><pre class="literallayout">
+    /usr/lib/gconv/gconv-modules
+    /usr/lib/gconv/ISO8859-9.so
+</pre></div>
+  <div class="para">
+Dosyaların tamamı SBC üzerine aktarıldıktan sonra artık <tt>LANG</tt> değişkenimizin değerini <i>tr_TR</i> olarak atayabiliriz. Hemen bu işlemi yapıp yerellerin çalışıp çalışmadığını test edelim:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>/ # </tt><b><tt>export LANG=tr_TR</tt></b>
+<tt>/ # </tt><b><tt>ls /yokboylebirdosya</tt></b>
+ls: /yokboylebirdosya: Böyle bir dosya ya da dizin yok
+</pre></div></div>
+  <div class="para">
+Yaptığımız ayarlar işe yarıyor, <i>No such file or directory</i> mesajı yerine <tt>libc6.mo</tt> içerisinden alınan <i>Böyle bir dosya ya da dizin yok</i> mesajı görüntülenmektedir.
+  </div><div class="para">
+Her sistem açılışında yerel ayarlarının Türkçe olması için <tt>/etc/init.d/rcS</tt> içerisine
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+export LANG=tr_TR
+</pre></div></div>
+  <div class="para">
+satırını ekleyebiliriz.
+  </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../embedded/embedded-turkce_nasil.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../embedded/embedded-turkce_nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../embedded/embedded-tr_konsol.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Türkçe Nasıl? </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Konsolda Türkçe Desteği</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

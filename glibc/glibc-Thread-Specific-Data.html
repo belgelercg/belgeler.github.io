@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:44+03:00" /><title>Evreye Özgü Veri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-POSIX-Threads.html" title="POSIX Evreleri" /><link rel="previous" href="../glibc/glibc-POSIX-Semaphores.html" title="POSIX Semaforları" /><link rel="next" href="../glibc/glibc-Threads-and-Signal-Handling.html" title="Evreler ve Sinyal İşleme" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Evreye Özgü Veri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-POSIX-Semaphores.html">Önceki</a> </td><th width="60%" align="center">POSIX Evreleri</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Threads-and-Signal-Handling.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Thread-Specific-Data" id="glibc-Thread-Specific-Data"></a>Evreye Özgü Veri</div><dl><dd><div class="para">
+Yazılımlarda farklı evrelerde farklı değerlere sahip olan global veya statik değişkenlere sıklıkla ihtiyaç duyulur. Evreler bir bellek alanını paylaştıkları için, bu sıradan değişkenlerle başarılamamaktadır. Evreye özgü veri bu ihtiyaca POSIX evrelerinin cevabıdır.
+   </div><div class="para">
+Her evre bir özel bellek bloğunu, evreye özgü veri alanını veya kısaca EÖV alanını zapteder. Bu alan EÖV anahtarlarıyla indekslenir. EÖV alanı <b><tt>void *</tt></b> türündeki değerleri EÖV anahtarlarıyla ilişkilendirir. EÖV anahtarları bütün evreler için ortaktır, fakat verilen bir EÖV anahtarına ilişkin değer her evre içinde farklı olabilir.
+   </div><div class="para">
+Somut olarak belirtmek gerekirse, EÖV alanları <b><tt>void *</tt></b> göstericilerden oluşan diziler olarak gösterilebilirler, EÖV anahtarları bu diziler için birer tamsayı indisi ve EÖV anahtarının değeri de çağıran evre içindeki ilişkili dizi elemanının değeridir.
+   </div><div class="para">
+Bir evre oluşturulduğunda, onun EÖV alanı ilk başta bütün anahtarlarıyla <b><tt>NULL</tt></b> değerini ilişkilendirir.
+   </div>
+<a class="indexterm" name="idx2945" id="idx2945"></a>
+<a name="glibc-pthread_key_create" id="glibc-pthread_key_create"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pthread_key_create</tt></b></tt></td><td valign="top"><pre class="paramdef">((pthread_key_t *<i><tt>anahtar</tt></i>,
+ void         (*<i><tt>yıkıcı_işlev</tt></i>) (void *))</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_key_create</tt></b> yeni bir EÖV anahtarı ayırır. Anahtar <i><tt>anahtar</tt></i> ile gösterilen yerde saklanır. Belirli bir süre içinde ayrılabilecek anahtar sayısı <b><tt>PTHREAD_KEYS_MAX</tt></b> ile sınırlandırılmıştır. Döndürülen anahtarla ilişkilendirilmiş değer ilk başta <b><tt>NULL</tt></b>dur.
+   </div><div class="para">
+<i><tt>yıkıcı_işlev</tt></i> argümanı, eğer <b><tt>NULL</tt></b> değilse anahtarla ilişkili bir yıkıcı işlev belirtir. Bir evre <b><tt>pthread_exit</tt></b> ile veya iptal edilerek sonlandığında, evre içindeki anahtarla ilişkili değer üzerine <i><tt>yıkıcı_işlev</tt></i>  işlevi çağrılır. Eğer anahtar <b><tt>pthread_key_delete</tt></b> ile silindiyse veya bir değer <b><tt>pthread_setspecific</tt></b> ile değiştirildiyse <i><tt>yıkıcı_işlev</tt></i> çağrılmaz. Yıkıcı işlevin evre sonlandırılma esnasındaki çağrılma sırası belirtilmemiştir.
+   </div><div class="para">
+Yıkıcı işlev çağrılmadan önce, <b><tt>NULL</tt></b> değeri geçerli evre içindeki anahtar ile ilişkilendirilir. Bir yıkıcı işlev <b><tt>NULL</tt></b> olmayan değerleri bu veya başka bir anahtarla tekrar ilişkilendirebilir. Bununla ilgilenmek için, eğer bütün <b><tt>NULL</tt></b> olmayan değerler için bütün yıkıcılar çağrıldıktan sonra, hala <b><tt>NULL</tt></b> olmayan yıkıcılarla ilişkilendirilmiş bazı değerler varsa, süreç tekrarlanır. LinuxThreads gerçeklemesi <b><tt>PTHREAD_DESTRUCTOR_ITERATIONS</tt></b> tekrarlamadan sonra, <b><tt>NULL</tt></b> olmayan tanımlayıcılarla ilişkilendirilmiş değer kalsa bile, süreci durdurur. Diğer uygulamalar sonsuza kadar tekrarlayabilir.
+   </div><div class="para">
+<b><tt>pthread_key_create</tt></b> 0 döndürür, ancak <b><tt>PTHREAD_KEYS_MAX</tt></b> anahtar zaten ayrılmışsa başarısız olur ve <b><tt>EAGAIN</tt></b> döndürür.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2946" id="idx2946"></a>
+<a name="glibc-pthread_key_delete" id="glibc-pthread_key_delete"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pthread_key_delete</tt></b></tt></td><td valign="top"><pre class="paramdef">(pthread_key_t <i><tt>anahtar</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_key_delete</tt></b> bir EÖV anahtarını serbest bırakır. Geçerli süreçteki anahtarla <b><tt>NULL</tt></b> olmayan değerler ilişkilendirilmiş mi kontrol etmediği gibi, anahtarla ilişkili yıkıcı işlevi de çağırmaz.
+   </div><div class="para">
+Eğer <i><tt>anahtar</tt></i> diye bir anahtar yoksa, <b><tt>EINVAL</tt></b> döndürür. Aksi takdirde 0 döndürür.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2947" id="idx2947"></a>
+<a name="glibc-pthread_setspecific" id="glibc-pthread_setspecific"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pthread_setspecific</tt></b></tt></td><td valign="top"><pre class="paramdef">(pthread_key_t <i><tt>anahtar</tt></i>,
+ const void   *<i><tt>gösterici</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_setspecific</tt></b> çağıran süreçteki <i><tt>anahtar</tt></i> ile ilişkili değeri verilen <i><tt>gösterici</tt></i> değeri ile değiştirir.
+   </div><div class="para">
+Eğer <i><tt>anahtar</tt></i> diye bir anahtar yoksa, <b><tt>EINVAL</tt></b> döndürür. Aksi takdirde 0 döndürür.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2948" id="idx2948"></a>
+<a name="glibc-pthread_getspecific" id="glibc-pthread_getspecific"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void *<b><tt>pthread_getspecific</tt></b></tt></td><td valign="top"><pre class="paramdef">(pthread_key_t <i><tt>anahtar</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_getspecific</tt></b>  çağıran süreçteki <i><tt>anahtar</tt></i> ile ilişkili geçerli değeri döndürür.
+   </div><div class="para">
+Eğer <i><tt>anahtar</tt></i> diye bir anahtar yoksa, <b><tt>EINVAL</tt></b> döndürür. Aksi takdirde 0 döndürür.
+   </div></dd></dl><div style="padding:5px"></div>
+   <div class="para">
+Aşağıdaki kod parçası 100 karakterlik bir evreye özgü dizi ayırır. Evre çıkışında da otomatik geri alır:
+   </div>
+<div class="para"><div align="right"><pre class="screen">
+/* Evreye özgü tampon için anahtar */
+static pthread_key_t buffer_key;
+
+/* Anahtar bir kerelik hazırlanıyor */
+static pthread_once_t buffer_key_once = PTHREAD_ONCE_INIT;
+
+/* Evreye özgü tampon ayrılıyor */
+void buffer_alloc(void)
+{
+  pthread_once(&amp;buffer_key_once, buffer_key_alloc);
+  pthread_setspecific(buffer_key, malloc(100));
+}
+
+/* Evreye özgü tampon döndürülüyor */
+char * get_buffer(void)
+{
+  return (char *) pthread_getspecific(buffer_key);
+}
+
+/* Anahtarı ayır */
+static void buffer_key_alloc()
+{
+  pthread_key_create(&amp;buffer_key, buffer_destroy);
+}
+
+/* Evreye özgü tamponu serbest bırak */
+static void buffer_destroy(void * buf)
+{
+  free(buf);
+}
+</pre></div></div>
+     </dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-POSIX-Semaphores.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-POSIX-Threads.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Threads-and-Signal-Handling.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">POSIX Semaforları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Evreler ve Sinyal İşleme</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

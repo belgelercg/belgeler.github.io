@@ -1,105 +1,41 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="tr" xml:lang="tr">
-  <head>
-    <title>24.3.2. Gelişmiş Sinyal İşleme</title>
-    <meta name="generator" content="DocBook XSL Stylesheets V-special (derived from DocBook XSL v1.79.1 for Turkish Linux Documentation Project by Nilgün Belma Bugüner - nilgun (at) tlbp.org.tr)" />
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="/style/nav.css" />
-    <link rel="icon" type="image/png" href="/images/belgeler-logo.png" />
-    <meta name="robots" content="index, follow" />
-  </head>
-  <body>
-    <header>
-      <div class="navbar">
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Basic-Signal-Handling.html')">Önceki</button>
-          <div class="dropdown-content">24.3.1. Basit Sinyal İşleme</div>
-        </div>
-        <div style="width:34%" class="dropdown">
-          <button class="dropbtn">Yukarı</button>
-          <div class="dropdown-content">
-            <button type="button" class="dropbtn" onclick="window.location.assign('/index.html')">Baş Sayfa</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('/KiTAPLIK/index.html')">Kitaplık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc.html')">Ana Başlık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Signal-Actions.html')">Üst Başlık</button>
-          </div>
-        </div>
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Signal-and-Sigaction.html')">Sonraki</button>
-          <div class="dropdown-content">24.3.3. <code class="code">signal</code> ve <code class="code">sigaction</code> arasındaki etkileşim</div>
-        </div>
-      </div>
-    </header>
-    <section class="mainpage">
-      <div class="crumbs">
-        <p>  </p>
-      </div>
-      <section class="sect1" id="glibc-Advanced-Signal-Handling">
-        <div class="titlepage">
-          <div>
-            <div>
-              <h2 class="title" style="clear: both">24.3.2. Gelişmiş Sinyal İşleme</h2>
-            </div>
-          </div>
-        </div>
-        <p>
-    <span id="idm137051" class="indexterm"></span>
-    <span id="idm137054" class="indexterm"></span>
-    <a href="glibc-Advanced-Signal-Handling.html#glibc-fn-sigaction"><strong class="function"><code>sigaction</code></strong></a> işlevi <a href="glibc-Basic-Signal-Handling.html#glibc-fn-signal"><strong class="function"><code>signal</code></strong></a> işlevi ile aynı temel etkiye sahiptir: bir sinyalin süreç tarafından nasıl işleneceği belirtilir. Farklı olarak, sinyalin üretilmesi ve işleyicinin çağrılması ile ilgili çeşitli denetim seçenekleri belirtilebilir.
-   </p>
-        <p>
-    <a href="glibc-Advanced-Signal-Handling.html#glibc-fn-sigaction"><strong class="function"><code>sigaction</code></strong></a> işlevi <code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/signal.h;hb=HEAD" target="_top">signal.h</a></code> başlık dosyasında bildirilmiştir.
-   </p>
-        <div class="csynopsis"><div class="cstype">  veri türü</div>
-    <span id="glibc-tp-sigaction" class="indexterm"></span>
-    <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/signal.h;hb=HEAD" target="_top">signal.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">struct </code><strong><code class="function">sigaction</code></strong></td><td style="vertical-align: text-top;"></td></tr></table></div>
-    
-    <p>
-     <code class="code">struct sigaction</code> türündeki yapılar, <a href="glibc-Advanced-Signal-Handling.html#glibc-fn-sigaction"><strong class="function"><code>sigaction</code></strong></a> işlevinde belli bir sinyalin nasıl işleneceği hakkındaki bilgilerin belirtilmesi için kullanılır. Bu yapı en azından aşağıdaki üyeleri içerir:
-    </p>
-    <div class="glosslist"><dl><dt><span class="glossterm">
-       <code class="type">sighandler_t </code><strong class="structfield"><code>sa_handler</code></strong>
-      </span></dt><dd class="glossdef"><p>
-        <a href="glibc-Basic-Signal-Handling.html#glibc-fn-signal"><strong class="function"><code>signal</code></strong></a> işlevindeki <em class="parameter"><code>action</code></em> bağımsız değişkeninin yerine geçer. Değer olarak, <a href="glibc-Basic-Signal-Handling.html#glibc-vr-SIG_DFL"><strong class="varname"><code>SIG_DFL</code></strong></a>, <a href="glibc-Basic-Signal-Handling.html#glibc-vr-SIG_IGN"><strong class="varname"><code>SIG_IGN</code></strong></a> veya bir işlev göstericisi alır. Bkz, <a class="xref" href="glibc-Basic-Signal-Handling.html" title="24.3.1. Basit Sinyal İşleme">Basit Sinyal İşleme</a>.
-       </p></dd><dt><span class="glossterm">
-       <code class="type">sigset_t </code><strong class="structfield"><code>sa_mask</code></strong>
-      </span></dt><dd class="glossdef"><p>
-        İşleyici çalışırken engellenecek sinyalleri belirtmek içindir. Sinyallerin engellenmesi <a class="xref" href="glibc-Blocking-for-Handler.html" title="24.7.5. İşleyici Çalışırken Sinyallerin Engellenmesi">İşleyici Çalışırken Sinyallerin Engellenmesi</a> bölümünde anlatılmıştır. Alınan bir sinyal, işleyicisi başlatılmadan önce varsayılan olarak özdevinimli engellenir; bu, <code class="code">sa_mask</code>'ın değerine bakılmaksızın böyledir. Bir sinyalin işleyicisi nedeniyle engellenmemesi isteniyorsa işleyici içindeki kodun, sinyalin engellenmemesini sağlayacak şekilde yazılması gerekir.
-       </p></dd><dt><span class="glossterm">
-       <code class="type">int </code><strong class="structfield"><code>sa_flags</code></strong>
-      </span></dt><dd class="glossdef"><p>
-        Burada, sinyalin davranışını etkileyebilen çeşitli seçenekler belirtilebilir. Bunlar <a class="xref" href="glibc-Flags-for-Sigaction.html" title="24.3.5. sigaction Seçenekleri"><code class="code">sigaction</code> Seçenekleri</a> bölümünde daha ayrıntılı olarak açıklanmıştır.
-       </p></dd></dl></div>
-   </div>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-    <span id="glibc-fn-sigaction" class="indexterm"></span>
-    <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/signal.h;hb=HEAD" target="_top">signal.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">int </code><strong><code class="function">sigaction</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">int </code><strong><code class="parameter">signum</code></strong><strong><code>, </code></strong><code class="type">const struct sigaction *restrict </code><strong><code class="parameter">action</code></strong><strong><code>, </code></strong><code class="type">struct sigaction *restrict </code><strong><code class="parameter">old-action</code></strong><strong><code>)</code></strong></td></tr></table></div>
-    
-    <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-assafe">AS-Safe</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acsafe">AC-Safe</a>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:32+03:00" /><title>Gelişmiş Sinyal İşleme</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Signal-Actions.html" title="Sinyal Eylemlerinin Belirtilmesi" /><link rel="previous" href="../glibc/glibc-Basic-Signal-Handling.html" title="Basit Sinyal İşleme" /><link rel="next" href="../glibc/glibc-Signal-and-Sigaction.html" title="signal ve sigaction arasındaki etkileşim" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Gelişmiş Sinyal İşleme</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Basic-Signal-Handling.html">Önceki</a> </td><th width="60%" align="center">Sinyal Eylemlerinin Belirtilmesi</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Signal-and-Sigaction.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Advanced-Signal-Handling" id="glibc-Advanced-Signal-Handling"></a>Gelişmiş Sinyal İşleme</div><dl><dd><div class="para">
+<a class="indexterm" name="idx2659" id="idx2659"></a>
+<b><tt>sigaction</tt></b> işlevi <b><tt>signal</tt></b> işlevi ile aynı temel etkiye sahiptir: bir sinyalin süreç tarafından nasıl işleneceği belirtilir. Farklı olarak, sinyalin üretilmesi ve eylemcinin çağrılması ile ilgili çeşitli denetim seçenekleri belirtebilirsiniz.
+    </div><div class="para">
+<b><tt>sigaction</tt></b> işlevi <tt>signal.h</tt> başlık dosyasında bildirilmiştir.
+<a class="indexterm" name="idx2660" id="idx2660"></a>
     </div>
-    <p>
-     <em class="parameter"><code>action</code></em> bağımsız değişkeni ile <em class="parameter"><code>signum</code></em> sinyali için yeni bir eylem belirtilirken, <em class="parameter"><code>old-action</code></em> bağımsız değişkeni, bu simgeyle ilişkili önceki eylem hakkında bilgi döndürmek için kullanılır. (başka bir deyişle, <em class="parameter"><code>old-action</code></em> bağımsız değişkeni <a href="glibc-Basic-Signal-Handling.html#glibc-fn-signal"><strong class="function"><code>signal</code></strong></a> işlevinin dönüş değeri gibi kullanılmıştır. Bununla eski eylemin ne olduğuna bakılabilir ve istenirse bu eylem tekrar yerinde bırakılmak anlamında etkinleştirilebilir.)
-    </p>
-    <p>
-     Hem <em class="parameter"><code>action</code></em> hem de <em class="parameter"><code>old-action</code></em> birer boş gösterici olabilir. <em class="parameter"><code>old-action</code></em> boş gösterici ise, <em class="parameter"><code>signum</code></em> sinyali ile ilişkili eylem değişmez; bu, bir sinyalin işlenme şeklini değiştirilmeksizin o sinyalin işlenmesi ile ilgili bilgi edinilmesini olanaklı kılar.
-    </p>
-    <p>
-     <code class="code">sigaction</code> başarılı olduğunda sıfır ile aksi takdirde <code class="code">-1</code> ile döner. Aşağıdaki bu işlev ile ilişkili <a href="glibc-Checking-for-Errors.html#glibc-vr-errno"><strong class="varname"><code>errno</code></strong></a> değerleri bulunmaktadır:
-    </p>
-    <dl><dt><code class="code">EINVAL</code></dt><dd><p>
-      <em class="parameter"><code>signum</code></em> bağımsız değişkeni geçersiz; ya da <a href="glibc-Termination-Signals.html#glibc-vr-SIGKILL"><strong class="varname"><code>SIGKILL</code></strong></a> veya <a href="glibc-Job-Control-Signals.html#glibc-vr-SIGSTOP"><strong class="varname"><code>SIGSTOP</code></strong></a> sinyali yok sayılmaya ya da yakalanmaya çalışılıyor.
-     </p></dd></dl>
-   </div>
-      </section>
-      <footer>
-        <div align="center" class="footer">
-          <small>Bir <a href="http://belgeler.org.tr/">Linux Kitaplığı</a> Sayfası</small>
-        </div>
-      </footer>
-    </section>
-  </body>
-</html>
+<a class="indexterm" name="idx2661" id="idx2661"></a>
+<a name="glibc-struct-sigaction" id="glibc-struct-sigaction"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct <b><tt>sigaction</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+<b><tt>struct sigaction</tt></b> türündeki yapılar, <b><tt>sigaction</tt></b> işlevinde belli bir sinyalin nasıl işleneceği hakkındaki bilgilerin belirtilmesi için kullanılır. Bu yapı en azından aşağıdaki üyeleri içerir:
+    </div><dl><dt><span class="glossterm">
+    <tt>sighandler_t <b><tt>sa_handler</tt></b></tt>
+    </span></dt><dd class="halfpara"><div class="para">
+<b><tt>signal</tt></b> işlevindeki <i><tt>eylem</tt></i> argümanının yerine geçer. Değer olarak, <b><tt>SIG_DFL</tt></b>,
+<b><tt>SIG_IGN</tt></b> veya bir işlev göstericisi alır. Bkz. <a href="../glibc/glibc-Basic-Signal-Handling.html" class="xref" title="Basit Sinyal İşleme">Basit Sinyal İşleme</a>.
+    </div></dd><dt><span class="glossterm">
+    <tt>sigset_t <b><tt>sa_mask</tt></b></tt>
+    </span></dt><dd class="halfpara"><div class="para">
+Eylemci çalışırken engellenecek sinyalleri belirtmek içindir. Sinyallerin engellenmesi <a href="../glibc/glibc-Blocking-for-Handler.html" class="xref" title="Eylemci Çalışırken Sinyallerin Engellenmesi">Eylemci Çalışırken Sinyallerin Engellenmesi</a> bölümünde anlatılmıştır. Alınan bir sinyal, eylemcisi başlatılmadan önce öntanımlı olarak özdevinimli engellenir; bu,  <b><tt>sa_mask</tt></b>'ın değerine bakılmaksızın böyledir. Bir sinyalin eylemcisi nedeniyle engellenmemesini istiyorsanız eylemci içindeki kodu sinyalin engellenmemesini sağlayacak şekilde yazmalısınız.
+    </div></dd><dt><span class="glossterm">
+    <tt>int <b><tt>sa_flags</tt></b></tt>
+    </span></dt><dd class="halfpara"><div class="para">
+Burada, sinyalin davranışını etkileyebilen çeşitli seçenekler belirtilebilir. Bunlar <a href="../glibc/glibc-Flags-for-Sigaction.html" class="xref" title="sigaction Seçenekleri">sigaction Seçenekleri</a> bölümünde daha ayrıntılı olarak açıklanmıştır.
+    </div></dd></dl>
+</dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2662" id="idx2662"></a>
+<a name="glibc-sigaction" id="glibc-sigaction"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>sigaction</tt></b></tt></td><td valign="top"><pre class="paramdef">(int                              <i><tt>sinyalnum</tt></i>,
+ const struct sigaction *restrict <i><tt>eylem</tt></i>,
+ struct sigaction *restrict       <i><tt>eski-eylem</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<i><tt>eylem</tt></i> argümanı ile <i><tt>sinyalnum</tt></i> sinyali için yeni bir eylem belirtilirken, <i><tt>eski-eylem</tt></i> argümanı, bu sembolle ilişkili evvelki eylem hakkında bilgi döndürmek için kullanılır. (başka bir deyişle, <i><tt>eski-eylem</tt></i> argümanı <b><tt>signal</tt></b> işlevinin dönüş değeri gibi kullanılmıştır. Bununla eski eylemin ne olduğuna bakabilir ve isterseniz bu eylemi tekrar yerinde bırakmak anlamında etkinleştirebilirsiniz.)
+    </div><div class="para">
+Hem <i><tt>eylem</tt></i> hem de <i><tt>eski-eylem</tt></i> birer boş gösterici olabilir.  <i><tt>eski-eylem</tt></i> bir boş gösterici ise, <i><tt>sinyalnum</tt></i> sinyali ile ilişkili eylem değişmez; bu, bir sinyalin işlenme şeklini değiştirilmeksizin o sinyalin işlenmesi ile ilgili bilgi edinmenizi mümkün kılar.
+    </div><div class="para">
+<b><tt>sigaction</tt></b> başarılı olduğunda sıfır ile aksi takdirde <b><tt>-1</tt></b> ile döner. Aşağıdaki bu işlev ile ilişkili <b><tt>errno</tt></b> değerleri bulunmaktadır:
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>EINVAL</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>sinyalnum</tt></i> argümanı geçersiz; ya da <b><tt>SIGKILL</tt></b> veya <b><tt>SIGSTOP</tt></b> sinyali yoksayılmaya ya da yakalanmaya çalışılıyor.
+       </div></dd></dl></div>
+    </dd></dl><div style="padding:5px"></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Basic-Signal-Handling.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Signal-Actions.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Signal-and-Sigaction.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Basit Sinyal İşleme </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> signal ve sigaction arasındaki etkileşim</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

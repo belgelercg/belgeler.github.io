@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:07+03:00" /><title>Uçbirimsilerin Ayrılması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Pseudo-Terminals.html" title="Uçbirimsiler" /><link rel="previous" href="../glibc/glibc-Pseudo-Terminals.html" title="Uçbirimsiler" /><link rel="next" href="../glibc/glibc-Pseudo-Terminal-Pairs.html" title="Bir Uçbirimsi Çiftinin Açılması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Uçbirimsilerin Ayrılması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Pseudo-Terminals.html">Önceki</a> </td><th width="60%" align="center">Uçbirimsiler</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Pseudo-Terminal-Pairs.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Allocation" id="glibc-Allocation"></a>Uçbirimsilerin Ayrılması</div><dl><dd><div class="para">
+<a class="indexterm" name="idx1826" id="idx1826"></a>
+<a class="indexterm" name="idx1827" id="idx1827"></a>
+Bu bölümde bir uçbirim ayırmak için kullanılan işlevlerden sözedilecektir. Bu işlevler <tt>stdlib.h</tt> başlık dosyasında bildirilmiştir.
+    </div><a name="glibc-getpt" id="glibc-getpt"></a>
+<a class="indexterm" name="idx1828" id="idx1828"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>getpt</tt></b></tt></td><td valign="top"><pre class="paramdef">(void)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>getpt</tt></b> işlevi kullanılabilir ilk ana uçbirimsi için yeni bir dosya tanıtıcı ile döner. İşlevin normal dönüş değeri negatif olmayan bir tamsayı olarak dosya tanıtıcıdır. Bir hata oluşması durumunda -1 ile döner. Aşağıdaki <b><tt>errno</tt></b> hata durumları bu işlev için tanımlanmıştır:
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>ENOENT</tt></span></dt><dd class="varlist"><div class="para">
+Serbest bir ana uçbirimsi yok
+       </div></dd></dl></div>
+     <div class="para">
+Bu işlev bir GNU oluşumudur.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-grantpt" id="glibc-grantpt"></a>
+<a class="indexterm" name="idx1829" id="idx1829"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>grantpt</tt></b></tt></td><td valign="top"><pre class="paramdef">(int <i><tt>dosyatanıtıcı</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>grantpt</tt></b> işlevi <i><tt>dosyatanıtıcı</tt></i> dosya tanıtıcısı ile ilişkili ana uçbirimsi aygıtının diğer ucu olan yardımcı uçbirimsinin sahipliğini ve erişim izinlerini değiştirir. Sahiplik, işlevi çağıran sürecin gerçek kullanıcı kimliği olur (bkz. <a href="../glibc/glibc-Process-Persona.html" class="xref" title="Bir Sürecin Aidiyeti">Bir Sürecin Aidiyeti</a>). Erişim yetkileri ise sahibi tarafından yazılabilir/okunabilir ve sadece grubu tarafından okunabilir olarak ayarlanır.
+    </div><div class="para">
+Bazı sistemlerde bu işlev özel bir <b><tt>setuid</tt></b> root yazılım çağrılarak gerçeklenir (bkz. <a href="../glibc/glibc-How-Change-Persona.html" class="xref" title="Bir Sürecin Aidiyeti Nasıl Değiştirilir?">Bir Sürecin Aidiyeti Nasıl Değiştirilir?</a>). Dolayısıyla, <b><tt>SIGCHLD</tt></b> sinyali için bir sinyal eylemci oluşturulması bir <b><tt>grantpt</tt></b> çağrısı ile çelişebilir (bkz. <a href="../glibc/glibc-Job-Control-Signals.html" class="xref" title="İş Denetim Sinyalleri">İş Denetim Sinyalleri</a>).
+    </div><div class="para">
+İşlevin normal dönüş değeri sıfırdır. Bir hata oluşması durumunda -1 ile döner. Aşağıdaki <b><tt>errno</tt></b> hata durumları bu işlev için tanımlanmıştır:
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>EBADF</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>dosyatanıtıcı</tt></i> geçerli bir dosya tanıtıcı değil
+       </div></dd><dt><span class="term"><tt>EINVAL</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>dosyatanıtıcı</tt></i> bir ana uçbirimsi ile ilişkili değil
+       </div></dd><dt><span class="term"><tt>EACCES</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>dosyatanıtıcı</tt></i> ile ilişkili olan ana uçbirimsinin karşı ucu olan yardımcı uçbirimsiye erişilemiyor.
+       </div></dd></dl></div>
+</dd></dl><div style="padding:5px"></div><a name="glibc-unlockpt" id="glibc-unlockpt"></a>
+<a class="indexterm" name="idx1830" id="idx1830"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>unlockpt</tt></b></tt></td><td valign="top"><pre class="paramdef">(int <i><tt>dosyatanıtıcı</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>unlockpt</tt></b> işlevi <i><tt>dosyatanıtıcı</tt></i> dosya tanıtıcısı ile ilişkili ana uçbirimsi aygıtının diğer ucu olan yardımcı uçbirimsinin kilidini kaldırır. Bazı sistemlerde, yardımcı uçbirimsi sadece kilidi kaldırıldığında açılabilir, bu nedenle taşınabilir uygulamalar yardımcı uçbirimsiyi açarken daima bir <b><tt>unlockpt</tt></b> çağrısı yapmalıdır.
+    </div><div class="para">
+İşlevin normal dönüş değeri sıfırdır. Bir hata oluşması durumunda -1 ile döner. Aşağıdaki <b><tt>errno</tt></b> hata durumları bu işlev için tanımlanmıştır:
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>EBADF</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>dosyatanıtıcı</tt></i> geçerli bir dosya tanıtıcı değil
+       </div></dd><dt><span class="term"><tt>EINVAL</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>dosyatanıtıcı</tt></i> bir ana uçbirimsi ile ilişkili değil
+       </div></dd></dl></div>
+</dd></dl><div style="padding:5px"></div><a name="glibc-ptsname" id="glibc-ptsname"></a>
+<a class="indexterm" name="idx1831" id="idx1831"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>char *<b><tt>ptsname</tt></b></tt></td><td valign="top"><pre class="paramdef">(int <i><tt>dosyatanıtıcı</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<i><tt>dosyatanıtıcı</tt></i> dosya tanıtıcısı bir ana uçbirimsi aygıtı ile ilişkili ise, <b><tt>ptsname</tt></b> işlevi ilişkili yardımcı uçbirimsinin dosya ismini, boş karakter sonlandırmalı durağan ayrılmış bir dizgeye gösterici ile döndürür. Bu dizge daha sonraki <b><tt>ptsname</tt></b> çağrıları ile değişebilir.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-ptsname_r" id="glibc-ptsname_r"></a>
+<a class="indexterm" name="idx1832" id="idx1832"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>ptsname_r</tt></b></tt></td><td valign="top"><pre class="paramdef">(int    <i><tt>dosyatanıtıcı</tt></i>,
+ char  *<i><tt>tampon</tt></i>,
+ size_t <i><tt>uzunluk</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>ptsname_r</tt></b> işlevi <b><tt>ptsname</tt></b> işlevine benzemekle birlikte, sonucu kullanıcı tarafından belirtilen <i><tt>uzunluk</tt></i> uzunluktaki <i><tt>tampon</tt></i> içinde döndürmesi ile farklıdır.
+    </div><div class="para">
+Bu işlev bir GNU oluşumudur.
+</div></dd></dl><div style="padding:5px"></div>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Taşınabilirlik Bilgisi</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">System V^den türetilmiş sistemlerde, <b><tt>ptsname</tt></b> ve <b><tt>ptsname_r</tt></b> işlevleri akım temelli olabilir ve bu nedenle onları açtıktan sonra, kullanmadan önce bir uçbirimsi olarak davranmaları için ek işlemler gerekebilir.</div></td></tr></table></div>
+    <div class="para">
+Bu işlevlerin genel kullanım biçimi örnekte gösterilmiştir:
+    </div>
+<div class="para"><div align="right"><pre class="screen">int
+open_pty_pair (int *amaster, int *aslave)
+{
+  int master, slave;
+  char *name;
+
+  master = getpt ();
+  if (master &lt; 0)
+    return 0;
+
+  if (grantpt (master) &lt; 0 || unlockpt (master) &lt; 0)
+    goto close_master;
+  name = ptsname (master);
+  if (name == NULL)
+    goto close_master;
+
+  slave = open (name, O_RDWR);
+  if (slave == -1)
+    goto close_master;
+
+  if (isastream (slave))
+    {
+      if (ioctl (slave, I_PUSH, "ptem") &lt; 0
+          || ioctl (slave, I_PUSH, "ldterm") &lt; 0)
+        goto close_slave;
+    }
+
+  *amaster = master;
+  *aslave = slave;
+  return 1;
+
+close_slave:
+  close (slave);
+
+close_master:
+  close (master);
+  return 0;
+}
+</pre></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Pseudo-Terminals.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Pseudo-Terminals.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Pseudo-Terminal-Pairs.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Uçbirimsiler </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Bir Uçbirimsi Çiftinin Açılması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

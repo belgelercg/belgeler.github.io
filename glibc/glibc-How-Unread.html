@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:26:36+03:00" /><title>Okunmamış Nasıl Yapılır</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Unreading.html" title="Okunmamış Yapmak" /><link rel="previous" href="../glibc/glibc-Unreading-Idea.html" title="Okunmamış Yapmak Ne Demek" /><link rel="next" href="../glibc/glibc-Block-Input-Output.html" title="Blok Girişi ve Çıkışı" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Okunmamış Nasıl Yapılır</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Unreading-Idea.html">Önceki</a> </td><th width="60%" align="center">Okunmamış Yapmak</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Block-Input-Output.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-How-Unread" id="glibc-How-Unread"></a>Okunmamış Nasıl Yapılır</div><dl><dd><div class="para">
+Bir karakteri okumamış yapan işlev <b><tt>ungetc</tt></b>'dir, çünkü <b><tt>getc</tt></b> işlevinin tersini yapar.
+      </div><a name="glibc-ungetc" id="glibc-ungetc"></a>
+<a class="indexterm" name="idx873" id="idx873"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>ungetc</tt></b></tt></td><td valign="top"><pre class="paramdef">(int   <i><tt>c</tt></i>,
+ FILE *<i><tt>akım</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>ungetc</tt></b> işlevi, <i><tt>akım</tt></i> akımına sıradaki karakterden önce okunacak ilk girdi olarak <i><tt>c</tt></i> karakterini yerleştirir.
+        </div><div class="para">
+<i><tt>c</tt></i> karakteri olarak <b><tt>EOF</tt></b> verilirse işlev hiçbir işlem yapmaz ve <b><tt>EOF</tt></b> ile döner. Bu özelliğini kullanrak, <i><tt>c</tt></i> karakteri olarak <b><tt>getc</tt></b> işlevinin dönüş değerini vererek <b><tt>getc</tt></b>’den dönen değer üzerinde hata denetimi
+ yapmanız gerekmez.
+        </div><div class="para">
+Akıma gönderdiğiniz karakterin son okuduğunuz karakter olması gerekmez. Hatta <b><tt>ungetc</tt></b> kullanmak için akımdan son karakteri okumanız da gerekmez. Ancak bir akımdan hiçbir okuma yapmadan bir karakteri akıma geri itmenin de bir anlamı yoktur. GNU C kütüphanesi ikilik kipte açılmış dosyalar için de bu oluşum için destek verir, diğer sistemlerde bu yoktur.
+        </div><div class="para">
+GNU C kütüphanesi akıma sadece tek karakterin geri itilmesini destekler. Hiçbir okuma yapmadan işlevi peşpeşe iki defa kullanamazsınız. Diğer sistemlerde çok sayıda karakteri akıma geri itebilir ve akıma ittiğiniz karakterleri ters sırada okuyabilirsiniz; yani, son ittiğiniz karakteri ilk olarak okursunuz.
+        </div><div class="para">
+Karakterlerin akıma geri itilmesi dosyada bir değişiklik yapmaz, sadece dahili tampon etkilenir. Bir dosya konumlama işlevi (<b><tt>fseek</tt></b>, <b><tt>fseeko</tt></b> ve <b><tt>rewind</tt></b> işlevlerinden biri; bkz.
+ <a href="../glibc/glibc-File-Positioning.html" class="xref" title="Dosyalarda Konumlama">Dosyalarda Konumlama</a>) çağrılırsa geri itilmiş olarak bekleyen karakterler iptal edilir.
+        </div><div class="para">
+Okunmamış karakter olarak bir akıma itilen karakter dosya sonuna denk gelirse, akımın dosyasonu belirteci temizlenir, çünkü artık akımda okunacak bir karakter vardır. Karakteri okuduktan sonra tekrar dosyasonu saptanacaktır.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-ungetwc" id="glibc-ungetwc"></a>
+<a class="indexterm" name="idx874" id="idx874"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>wint_t <b><tt>ungetwc</tt></b></tt></td><td valign="top"><pre class="paramdef">(wint_t <i><tt>wc</tt></i>,
+ FILE  *<i><tt>akım</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>ungetwc</tt></b> işlevi <b><tt>ungetc</tt></b> işlevi ile bir geniş karakterle çalışması dışında tamamen aynıdır.
+        </div></dd></dl><div style="padding:5px"></div>
+      <div class="para">
+Aşağıdaki örnekte <b><tt>getc</tt></b> ve <b><tt>ungetc</tt></b>  işlevleri akımdaki boşluk karakterlerini ayıklamakta kullanılmıştır. İşlev rastladığı boşluk olmayan her karakteri akıma geri iter. Böylece akım daha sonra okunduğunda bu karakterler okunmamış olarak yeniden okunabilir.
+    </div><div class="para"><div align="right"><pre class="screen">
+#include &lt;stdio.h&gt;
+#include &lt;ctype.h&gt;
+
+void
+skip_whitespace (FILE *stream)
+{
+  int c;
+  do
+    /* EOF için bir sınama yapmaya gerek yoktur,
+       çünkü <b><tt>ungetc</tt></b> EOF'u yoksayar.  */
+    c = getc (stream);
+  while (isspace (c));
+  ungetc (c, stream);
+}
+</pre></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Unreading-Idea.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Unreading.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Block-Input-Output.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Okunmamış Yapmak Ne Demek </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Blok Girişi ve Çıkışı</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

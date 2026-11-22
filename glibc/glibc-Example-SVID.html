@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:29+03:00" /><title>SVID Bağlam Denetimi Örneği</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-System-V-contexts.html" title="Bütünsel Bağlam Denetimi" /><link rel="previous" href="../glibc/glibc-System-V-contexts.html" title="Bütünsel Bağlam Denetimi" /><link rel="next" href="../glibc/glibc-Signal-Handling.html" title="XXIV. Oylum - Sinyal İşleme" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">SVID Bağlam Denetimi Örneği</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-System-V-contexts.html">Önceki</a> </td><th width="60%" align="center">Bütünsel Bağlam Denetimi</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Signal-Handling.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Example-SVID" id="glibc-Example-SVID"></a>SVID Bağlam Denetimi Örneği</div><dl><dd><div class="para">
+Bağlam işleme işlevlerini kullanmanın en kolay yolu <b><tt>setjmp</tt></b> ve <b><tt>longjmp</tt></b> işlevlerinin yerine bunları kullanmaktır.Bağlamın çoğu platformda daha az sürprizle sonuçlanan daha fazla bilgi içermesine rağmen bu işlevlerin kullanımı daha masraflıdır (daha az taşınabilir olması cabası).
+   </div>
+<div class="para"><div align="right"><pre class="screen">int
+random_search (int n, int (*fp) (int, ucontext_t *))
+{
+  volatile int cnt = 0;
+  ucontext_t uc;
+
+  /* Geçerli bağlamı güvene alalım.  */
+  if (getcontext (&amp;uc) &lt; 0)
+    return -1;
+
+  /* Henüz n deneme yapmamışsak, tekrar deneyelim. */
+  if (cnt++ &lt; n)
+    /* İşlevi yeni bir rasgele sayı ve bağlamla çağıralım. */
+    if (fp (rand (), &amp;uc) != 0)
+      /* Aradığımızı bulduk.  */
+      return 1;
+
+  /* Bulamadık.  */
+  return 0;
+}
+</pre></div></div><div class="para">
+Bağlamların böyle bir yolla kullanımı olağandışılıkların elde edilme benzeşimini etkinleştirir. <i><tt>fp</tt></i> parametresi ile aktarılan arama işlevleri çok büyük, iç içe ve çağrıcıya aktarılan bir hata değeri ile işlevin bırakılması onu karmaşıklaştıracağından (veya en azından biraz daha kod gerekeceğinden), çok karmaşık olabilir. Bağlamı kullanarak arama işlevini tek bir adımda bırakmak ve ayrıca belirgin biçimde daha hızlı olabilen bir yan etkiyle aramanın yeniden başlatılmasına izin vermek mümkündür.
+   </div><div class="para">
+Geçici olarak farklı bir yürütme noktasına geçmek ve sonra yürütmenin durduğu yerden devam etmek gibi bazı şeylerin <b><tt>setjmp</tt></b> ve <b><tt>longjmp</tt></b> ile gerçeklenmesi daha zordur.
+   </div>
+<div class="para"><div align="right"><pre class="screen">#include &lt;signal.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;ucontext.h&gt;
+#include &lt;sys/time.h&gt;
+
+/* Buna sinyal eylemci atama yapacak. */
+static volatile int expired;
+
+/* Bağlamlar. */
+static ucontext_t uc[3];
+
+/* Biz belli sayıda geçiş yapacağız. */
+static int switches;
+
+
+/* Bu işi yapan işlev.  Sadece bir iskelet,
+   gerçek kod sonra yerleştirilecek. */
+static void
+f (int n)
+{
+  int m = 0;
+  while (1)
+    {
+      /* İşin yapıldığı yer. */
+      if (++m % 100 == 0)
+        {
+          putchar ('.');
+          fflush (stdout);
+        }
+
+      /* Değişkenin zaman aşımına uğrayıp uğramadığına
+         düzenli olarak bakmak lazım. */
+      if (expired)
+        {
+          /* Kodun daha fazla çalışmasını istemiyoruz. */
+          if (++switches == 20)
+            return;
+
+          printf ("\n%d. bağlamdan %d. bağlama geçiliyor\n", n, 3 - n);
+          expired = 0;
+          /* Diğer bağlama geçip şimdikini kaydedelim. */
+          swapcontext (&amp;uc[n], &amp;uc[3 - n]);
+        }
+    }
+}
+
+/* Sadece değişkene değer atayan bir sinyal eylemci bu. */
+void
+handler (int signal)
+{
+  expired = 1;
+}
+
+
+int
+main (void)
+{
+  struct sigaction sa;
+  struct itimerval it;
+  char st1[8192];
+  char st2[8192];
+
+  /* Zamanlayıcının kullanacağı veri yapılarını ilklendirelim. */
+  sa.sa_flags = SA_RESTART;
+  sigfillset (&amp;sa.sa_mask);
+  sa.sa_handler = handler;
+  it.it_interval.tv_sec = 0;
+  it.it_interval.tv_usec = 1;
+  it.it_value = it.it_interval;
+
+  /* Zamanlayıcıyı kuralım ve çalışacağımız bağlamı alalım. */
+  if (sigaction (SIGPROF, &amp;sa, NULL) &lt; 0
+      || setitimer (ITIMER_PROF, &amp;it, NULL) &lt; 0
+      || getcontext (&amp;uc[1]) == -1
+      || getcontext (&amp;uc[2]) == -1)
+    abort ();
+
+  /* Bağlamı, f işlevinin 1 parametresi ile çağrılmasına
+     sebep olan ayrı bir yığıt ile oluşturalım.
+     uc_link'in, işlev döndüğü anda yazılımın sonlanmasına
+     sebep olan ana bağlamı gösterdiğine dikkat edin. */
+  uc[1].uc_link = &amp;uc[0];
+  uc[1].uc_stack.ss_sp = st1;
+  uc[1].uc_stack.ss_size = sizeof st1;
+  makecontext (&amp;uc[1], (void (*) (void)) f, 1, 1);
+
+  /* Aynı ama f'ye parametre olarak 2 aktarılıyor. */
+  uc[2].uc_link = &amp;uc[0];
+  uc[2].uc_stack.ss_sp = st2;
+  uc[2].uc_stack.ss_size = sizeof st2;
+  makecontext (&amp;uc[2], (void (*) (void)) f, 1, 2);
+
+  /* İşbaşı! */
+  swapcontext (&amp;uc[0], &amp;uc[1]);
+  putchar ('\n');
+
+  return 0;
+}
+</pre></div></div><div class="para">
+Bu kod, bağlam işlevlerinin eş-yordamları veya çok evreli işbirliğini gerçekleştirmekte kullanılabilirliğine bir örnektir. Burada yapılan <b><tt>swapcontext</tt></b> kullanarak yürütmenin her seferinde farklı bir bağlamdan devam ettirilmesidir. Sinyal eylemci içinden ne <b><tt>setcontext</tt></b> ne de <b><tt>swapcontext</tt></b> çağrısı yapıldığından, bağlam değiştirme doğrudan sinyal eylemci tarafından yapılmamaktadır.
+Bunun yerine sinyal eylemci içinde bir değişkene değer atanıp, işlev içinden bu değişkene bakarak bu işlem gerçekleştirilmektedir. <b><tt>swapcontext</tt></b> geçerli bağlamı kaydettiğinden kod içinde farklı zamanlama noktaları olabilir. Yürütme daima kaldığı yerden devam edecektir.
+   </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-System-V-contexts.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-System-V-contexts.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Signal-Handling.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Bütünsel Bağlam Denetimi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> XXIV. Oylum - Sinyal İşleme</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

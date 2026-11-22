@@ -1,0 +1,513 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:26:19+03:00" /><title>Kopyalama ve Birleştirme</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-String-and-Array-Utilities.html" title="V. Oylum - Diziler ve Dizgeler" /><link rel="previous" href="../glibc/glibc-String-Length.html" title="Dizge Uzunluğu" /><link rel="next" href="../glibc/glibc-String-Array-Comparison.html" title="Dizi/Dizge Karşılaştırması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Kopyalama ve Birleştirme</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-String-Length.html">Önceki</a> </td><th width="60%" align="center">V. Oylum - Diziler ve Dizgeler</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-String-Array-Comparison.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="glibc-Copying-and-Concatenation" id="glibc-Copying-and-Concatenation"></a>Kopyalama ve Birleştirme</div></div></div><dl><dd><div class="para">
+Bu kısımda açıklanan işlevleri dizi ve dizgelerin içeriğini kopyalamakta veya bir dizinin içeriğini diğerine eklemekte kullanabilirsiniz. <b><tt>str</tt></b> ve <b><tt>mem</tt></b> işlevleri <tt>string.h</tt> başlık dosyasında, <b><tt>wstr</tt></b> ve <b><tt>wmem</tt></b> işlevleri ise <tt>wchar.h</tt> başlık dosyasında bildirilmiştir.
+<a class="indexterm" name="idx464" id="idx464"></a>
+<a class="indexterm" name="idx465" id="idx465"></a>
+<a class="indexterm" name="idx466" id="idx466"></a>
+<a class="indexterm" name="idx467" id="idx467"></a>
+<a class="indexterm" name="idx468" id="idx468"></a>
+Bu kısımdaki işlevlerin argümanlarının sırası hedef, kaynak şeklindedir ve işlevler daima hedef dizinin adresi ile dönerler.
+   </div><div class="para">
+Bu işlevlerin çoğu kaynak ve hedef dizilerinin birbirinin üstüne binmesi durumunda düzgün çalışmaz. Örneğin, kaynak dizisinin sonu, hedef dizisinin başlangıcını aşarsa, kaynak dizisinin başlangıcı, kendi sonunun üzerine yazılır ve bu durumda kaynak dizisini sonlandıran boş karakter kaybolur. Sonlandırıcı boş karakter olmadığından kopyalama işlemi tüm belleğin ayrılmasına kadar gidebilir.
+   </div><div class="para">
+Dizilerin kopyalanmasında birbirinin üzerine binmesi sorunu olan tüm işlevler bu  kılavuzda  açıkça belirtilmiştir. Bu kısımdaki işlevlere ek olarak  <b><tt>sprintf</tt></b> (<a href="../glibc/glibc-Formatted-Output-Functions.html" class="xref" title="Biçimli Çıktı İşlevleri">Biçimli Çıktı İşlevleri</a>) ve <b><tt>scanf</tt></b> (<a href="../glibc/glibc-Formatted-Input-Functions.html" class="xref" title="Biçimli Girdi İşlevleri">Biçimli Girdi İşlevleri</a>) gibi başka işlevler de vardır.
+   </div><a name="glibc-memcpy" id="glibc-memcpy"></a>
+<a class="indexterm" name="idx469" id="idx469"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void *<b><tt>memcpy</tt></b></tt></td><td valign="top"><pre class="paramdef">(void *restrict       <i><tt>hedef</tt></i>,
+ const void *restrict <i><tt>kaynak</tt></i>,
+ size_t               <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>memcpy</tt></b> işlevi <i><tt>boyut</tt></i> baytı <i><tt>kaynak</tt></i> adresinden başlayan nesneden <i><tt>hedef</tt></i> adresinden başlayan nesneye kopyalar. Bu işlevde <i><tt>kaynak</tt></i> dizisinin <i><tt>hedef</tt></i> dizisinin üzerine binmesi durumundaki davranışı tanımsızdır; üstüste binme olasılığı varsa <b><tt>memmove</tt></b> kullanın.
+      </div><div class="para">
+İşlev, <i><tt>hedef</tt></i>'in değeri ile döner.
+      </div><div class="para">
+Bu örnekte bir dizinin içeriğini kopyalamak için <b><tt>memcpy</tt></b> işlevinin nasıl kullanılacağı gösterilmiştir:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+struct foo *eskidizi, *yenidizi;
+int diziboyu;
+…
+memcpy (yeni, eski, diziboyu * sizeof (struct foo));
+</pre></div></div>
+</dd></dl><div style="padding:5px"></div><a name="glibc-wmemcpy" id="glibc-wmemcpy"></a>
+<a class="indexterm" name="idx470" id="idx470"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>wchar_t *<b><tt>wmemcpy</tt></b></tt></td><td valign="top"><pre class="paramdef">(wchar_t *restrict       <i><tt>hedef-geniş</tt></i>,
+ const wchar_t *restrict <i><tt>kaynak-geniş</tt></i>,
+ size_t                  <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>wmemcpy</tt></b> işlevi <i><tt>boyut</tt></i> geniş karakteri <i><tt>kaynak-geniş</tt></i> adresinden başlayan nesneden <i><tt>hedef-geniş</tt></i> adresinden başlayan nesneye kopyalar. Bu işlevde <i><tt>kaynak-geniş</tt></i> dizisinin <i><tt>hedef-geniş</tt></i> dizisinin üzerine binmesi durumundaki davranışı tanımsızdır; üstüste binme olasılığı varsa <b><tt>wmemmove</tt></b> kullanın.
+      </div><div class="para">
+Aşağıda <b><tt>wmemcpy</tt></b> işlevinin olası bir gerçeklemesi vardır. Başka olası eniyilemeleri de vardır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+wchar_t *
+wmemcpy (wchar_t *restrict hedefg, const wchar_t *restrict kaynakg,
+         size_t boyut)
+{
+  return (wchar_t *) memcpy (hedefg, kaynakg, boyut * sizeof (wchar_t));
+}
+</pre></div></div><div class="para">
+İşlev, <i><tt>hedef-geniş</tt></i>'in değeri ile döner.
+      </div><div class="para">
+Bu işlev ISO C90 standardının 1. düzeltmesinde tanımlanmıştır.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-mempcpy" id="glibc-mempcpy"></a>
+<a class="indexterm" name="idx471" id="idx471"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void *<b><tt>mempcpy</tt></b></tt></td><td valign="top"><pre class="paramdef">(void *restrict       <i><tt>hedef</tt></i>,
+ const void *restrict <i><tt>kaynak</tt></i>,
+ size_t               <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>mempcpy</tt></b> işlevi <b><tt>memcpy</tt></b> işlevi ile hemen hemen eşdeğerdir. İşlev, <i><tt>boyut</tt></i> baytı <i><tt>kaynak</tt></i> adresinden başlayan nesneden <i><tt>hedef</tt></i> adresine kopyalar. Fakat dönen değer <i><tt>hedef</tt></i>'in değeri değildir. <i><tt>hedef</tt></i> başlangıcından itibaren yazılan son baytı izleyen baytın adresi ile döner. Yani, dönen değer:
+      </div>
+<div class="para"><pre class="literallayout">
+  ((void *) ((char *) <i><tt>hedef</tt></i> + <i><tt>boyut</tt></i>))
+</pre></div>
+      <div class="para">
+Bu işlev çok sayıda nesnenin ardışık bellek konumlarına kopyalanması durumunda kullanışlıdır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+void *
+combine (void *o1, size_t s1, void *o2, size_t s2)
+{
+  void *result = malloc (s1 + s2);
+  if (result != NULL)
+    mempcpy (mempcpy (result, o1, s1), o2, s2);
+  return result;
+}
+</pre></div></div><div class="para">Bu işlev bir GNU oluşumudur.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-wmempcpy" id="glibc-wmempcpy"></a>
+<a class="indexterm" name="idx472" id="idx472"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>wchar_t *<b><tt>wmempcpy</tt></b></tt></td><td valign="top"><pre class="paramdef">(wchar_t *restrict       <i><tt>hedef-geniş</tt></i>,
+ const wchar_t *restrict <i><tt>kaynak-geniş</tt></i>,
+ size_t                  <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>wmempcpy</tt></b> işlevi <b><tt>wmemcpy</tt></b> işlevi ile hemen hemen eşdeğerdir. İşlev, <i><tt>boyut</tt></i> geniş karakteri <i><tt>kaynak-geniş</tt></i> adresinden başlayan nesneden <i><tt>hedef-geniş</tt></i> adresine kopyalar. Fakat dönen değer <i><tt>hedef-geniş</tt></i>'in değeri değildir. <i><tt>hedef-geniş</tt></i> başlangıcından itibaren yazılan son geniş karakteri izleyen geniş karakterin adresi ile döner. Yani, dönen değer:
+      </div>
+<div class="para"><pre class="literallayout">
+    <i><tt>hedef-geniş</tt></i> + <i><tt>boyut</tt></i>
+</pre></div>
+      <div class="para">
+Bu işlev çok sayıda nesnenin ardışık bellek konumlarına kopyalanması durumunda kullanışlıdır.
+      </div><div class="para">
+Aşağıda <b><tt>wmempcpy</tt></b> işlevinin olası bir gerçeklemesi vardır. Başka olası eniyilemeleri de vardır.
+   </div>
+<div class="para"><div align="right"><pre class="screen">
+wchar_t *
+wmempcpy (wchar_t *restrict hedefg, const wchar_t *restrict kaynakg,
+         size_t boyut)
+{
+  return (wchar_t *) mempcpy (hedefg, kaynakg, boyut * sizeof (wchar_t));
+}
+</pre></div></div><div class="para">Bu işlev bir GNU oluşumudur.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-memmove" id="glibc-memmove"></a>
+<a class="indexterm" name="idx473" id="idx473"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void *<b><tt>memmove</tt></b></tt></td><td valign="top"><pre class="paramdef">(void       *<i><tt>hedef</tt></i>,
+ const void *<i><tt>kaynak</tt></i>,
+ size_t      <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>memmove</tt></b> işlevi <i><tt>boyut</tt></i> baytı <i><tt>kaynak</tt></i>’tan <i><tt>hedef</tt></i>’e birbirlerinin üstüne binseler bile kopyalar. Üstüste binme durumunda, işlev, <i><tt>kaynak</tt></i> bloğundaki baytları <i><tt>hedef</tt></i> bloğuna dikkatle kopyalar.
+      </div><div class="para">
+İşlev, <i><tt>hedef</tt></i>'in değeri ile döner.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-wmemmove" id="glibc-wmemmove"></a>
+<a class="indexterm" name="idx474" id="idx474"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>wchar_t *<b><tt>wmemmove</tt></b></tt></td><td valign="top"><pre class="paramdef">(wchar         *<i><tt>hedef-geniş</tt></i>,
+ const wchar_t *<i><tt>kaynak-geniş</tt></i>,
+ size_t         <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>memmove</tt></b> işlevi <i><tt>boyut</tt></i> geniş karakteri <i><tt>kaynak-geniş</tt></i>’ten <i><tt>hedef-geniş</tt></i>’e birbirlerinin üstüne binseler bile kopyalar. Üstüste bime durumunda, işlev, <i><tt>kaynak-geniş</tt></i> bloğundaki geniş karakterleri <i><tt>hedef-geniş</tt></i> bloğuna dikkatle kopyalar.
+      </div><div class="para">
+İşlev, <i><tt>hedef-geniş</tt></i>'in değeri ile döner.
+      </div><div class="para">Bu işlev bir GNU oluşumudur.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-memccpy" id="glibc-memccpy"></a>
+<a class="indexterm" name="idx475" id="idx475"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void *<b><tt>memccpy</tt></b></tt></td><td valign="top"><pre class="paramdef">(void *restrict       <i><tt>hedef</tt></i>,
+ const void *restrict <i><tt>kaynak</tt></i>,
+ int                  <i><tt>c</tt></i>,
+ size_t               <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev <i><tt>boyut</tt></i> baytlık dizinin içindeki <i><tt>c</tt></i>  karakterine kadar olan kısmı <i><tt>kaynak</tt></i>’tan <i><tt>hedef</tt></i>’e kopyalar. Dönen değer, <i><tt>hedef</tt></i>’e kopyalanan kısmın <i><tt>c</tt></i> karakterini izleyen baytının adresidir, eğer  <i><tt>boyut</tt></i> bayt içinde <i><tt>c</tt></i> karakteri bulunamamışsa işlev boş gösterici ile döner.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-memset" id="glibc-memset"></a>
+<a class="indexterm" name="idx476" id="idx476"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void *<b><tt>memset</tt></b></tt></td><td valign="top"><pre class="paramdef">(void  *<i><tt>blok</tt></i>,
+ int    <i><tt>c</tt></i>,
+ size_t <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev, <i><tt>c</tt></i> değerini (<b><tt>unsigned char</tt></b> türüne dönüştürerek) <i><tt>blok</tt></i> adresinden başlayan nesnenin ilk <i><tt>boyut</tt></i> baytının her birine kopyalar ve <i><tt>blok</tt></i>’un değeri ile döner.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-wmemset" id="glibc-wmemset"></a>
+<a class="indexterm" name="idx477" id="idx477"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>wchar_t *<b><tt>wmemset</tt></b></tt></td><td valign="top"><pre class="paramdef">(wchar_t *<i><tt>blok</tt></i>,
+ wchar_t  <i><tt>wc</tt></i>,
+ size_t   <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev, <i><tt>wc</tt></i> değerini <i><tt>blok</tt></i> adresinden başlayan nesnenin ilk <i><tt>boyut</tt></i> geniş karakterinin her birine kopyalar ve <i><tt>blok</tt></i>’un değeri ile döner.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-strcpy" id="glibc-strcpy"></a>
+<a class="indexterm" name="idx478" id="idx478"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>char *<b><tt>strcpy</tt></b></tt></td><td valign="top"><pre class="paramdef">(char *restrict       <i><tt>hedef</tt></i>,
+ const char *restrict <i><tt>kaynak</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>strcpy</tt></b> işlevi <i><tt>kaynak</tt></i> dizgesini (sonlandırıcı boş karaktere kadar) <i><tt>hedef</tt></i> dizgesine kopyalar. Bu işlevde <i><tt>kaynak</tt></i> dizgesinin <i><tt>hedef</tt></i> dizgesinin üzerine binmesi durumundaki davranışı tanımsızdır. İşlev, <i><tt>hedef</tt></i>’in değeri ile döner.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-wcscpy" id="glibc-wcscpy"></a>
+<a class="indexterm" name="idx479" id="idx479"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>wchar_t *<b><tt>wcscpy</tt></b></tt></td><td valign="top"><pre class="paramdef">(wchar_t *restrict       <i><tt>hedef-geniş</tt></i>,
+ const wchar_t *restrict <i><tt>kaynak-geniş</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>wcscpy</tt></b> işlevi <i><tt>kaynak-geniş</tt></i> dizgesini (sonlandırıcı boş geniş karaktere kadar) <i><tt>hedef-geniş</tt></i> dizgesine kopyalar. Bu işlevde <i><tt>kaynak-geniş</tt></i> dizgesinin  <i><tt>hedef-geniş</tt></i> dizgesinin üzerine binmesi durumundaki davranışı tanımsızdır. İşlev, <i><tt>hedef-geniş</tt></i>’in değeri ile döner.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-strncpy" id="glibc-strncpy"></a>
+<a class="indexterm" name="idx480" id="idx480"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>char *<b><tt>strncpy</tt></b></tt></td><td valign="top"><pre class="paramdef">(char *restrict       <i><tt>hedef</tt></i>,
+ const char *restrict <i><tt>kaynak</tt></i>,
+ size_t               <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev <i><tt>boyut</tt></i> sayıda karakteri <i><tt>hedef</tt></i> dizgesine kopyalamak dışında <b><tt>strcpy</tt></b> işlevi gibidir.
+      </div><div class="para">
+<i><tt>kaynak</tt></i> dizgesinin uzunluğu <i><tt>boyut</tt></i> bayttan uzunsa işlev, ilk <i><tt>boyut</tt></i> karakteri kopyalar. Bu durumda <i><tt>hedef</tt></i> dizgesi boş karakteri içermez.
+      </div><div class="para">
+<i><tt>kaynak</tt></i> dizgesinin uzunluğu <i><tt>boyut</tt></i> bayttan kısaysa <i><tt>kaynak</tt></i> dizgesi ile boş karakterden sonraki <i><tt>boyut</tt></i> bayta kadar olan baytlar boş karakterlerle doldurularak <i><tt>hedef</tt></i> dizgesine kopyalanır. Bu işlev az kullanışlıdır ama ISO C standardında belirtilmiştir.
+      </div><div class="para">
+Üstüste binme durumunda <b><tt>strncpy</tt></b> işlevinin davranışı tanımsızdır.
+      </div><div class="para">
+<b><tt>strncpy</tt></b> işlevinin kullanımı <b><tt>strcpy</tt></b> işlevinin aksine <i><tt>hedef</tt></i> için ayrılan alanın dışına taşan yazma ile ilgili yazılım hatalarından kaçınmak için bir yöntem sunar. Ancak, yazılımı yavaşlatır, çünkü büyük ihtimalle nispeten küçük bir dizgenin, oldukça büyük bir alana kopyalanması sözkonusu olacak ve dizgeden artan boş alanın boş karakterlerle doldurulması için boşuna zaman harcanacaktır.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-wcsncpy" id="glibc-wcsncpy"></a>
+<a class="indexterm" name="idx481" id="idx481"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>wchar_t *<b><tt>wcsncpy</tt></b></tt></td><td valign="top"><pre class="paramdef">(wchar_t *restrict       <i><tt>hedef-geniş</tt></i>,
+ const wchar_t *restrict <i><tt>kaynak-geniş</tt></i>,
+ size_t                  <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev <i><tt>boyut</tt></i> sayıda geniş karakteri <i><tt>hedef-geniş</tt></i> dizgesine kopyalamak dışında <b><tt>wcscpy</tt></b> işlevi gibidir.
+      </div><div class="para">
+<i><tt>kaynak-geniş</tt></i> dizgesinin uzunluğu <i><tt>boyut</tt></i> geniş karakterden uzunsa işlev, ilk <i><tt>boyut</tt></i> geniş karakteri kopyalar. Bu durumda <i><tt>hedef-geniş</tt></i> dizgesi boş geniş karakteri içermez.
+      </div><div class="para">
+<i><tt>kaynak-geniş</tt></i> dizgesinin uzunluğu <i><tt>boyut</tt></i> geniş karakterden kısaysa <i><tt>kaynak-geniş</tt></i> dizgesi ile boş geniş karakterden sonraki <i><tt>boyut</tt></i> geniş karaktere kadar olan kısım boş geniş karakterlerle doldurularak <i><tt>hedef-geniş</tt></i> dizgesine kopyalanır. Bu işlev az kullanışlıdır ama ISO C standardında belirtilmiştir.
+      </div><div class="para">
+Üstüste binme durumunda <b><tt>wcsncpy</tt></b> işlevinin davranışı tanımsızdır.
+      </div><div class="para">
+<b><tt>wcsncpy</tt></b> işlevinin kullanımı <b><tt>wcscpy</tt></b> işlevinin aksine <i><tt>hedef-geniş</tt></i> için ayrılan alanın dışına taşan yazma ile ilgili yazılım hatalarından kaçınmak için bir yöntem sunar. Ancak, yazılımı yavaşlatır, çünkü büyük ihtimalle nispeten küçük bir dizgenin, oldukça büyük bir alana kopyalanması sözkonusu olacak ve dizgeden artan boş alanın boş geniş karakterlerle doldurulması için boşuna zaman harcanacaktır.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-strdup" id="glibc-strdup"></a>
+<a class="indexterm" name="idx482" id="idx482"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>char *<b><tt>strdup</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *<i><tt>s</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev boş karakter sonlandırmalı <i><tt>s</tt></i> dizgesini yeni bir bellek alanına kopyalar. Yeni dizge için yer ayırma işlemi <b><tt>malloc</tt></b> ile yapılır; bkz. <a href="../glibc/glibc-Unconstrained-Allocation.html" class="xref" title="Özgür Bellek Ayırma">Özgür Bellek Ayırma</a>. <b><tt>malloc</tt></b> yeni dizge için yer ayıramazsa işlev boş gösterici ile döner, aksi takdirde yeni dizge için bir gösterici ile döner.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-wcsdup" id="glibc-wcsdup"></a>
+<a class="indexterm" name="idx483" id="idx483"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>wchar_t *<b><tt>wcsdup</tt></b></tt></td><td valign="top"><pre class="paramdef">(const wchar_t *<i><tt>ws</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev boş geniş karakter sonlandırmalı <i><tt>ws</tt></i> dizgesini yeni bir bellek alanına kopyalar. Yeni geniş karakterli dizge için yer ayırma işlemi <b><tt>malloc</tt></b> ile yapılır; bkz. <a href="../glibc/glibc-Unconstrained-Allocation.html" class="xref" title="Özgür Bellek Ayırma">Özgür Bellek Ayırma</a>. <b><tt>malloc</tt></b> yeni geniş karakterli dizge için yer ayıramazsa işlev boş gösterici ile döner, aksi takdirde yeni geniş karakterli dizge için bir gösterici ile döner.
+      </div><div class="para">
+Bu işlev bir GNU oluşumudur.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-strndup" id="glibc-strndup"></a>
+<a class="indexterm" name="idx484" id="idx484"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>char *<b><tt>strndup</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *<i><tt>s</tt></i>,
+ size_t      <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev en fazla <i><tt>boyut</tt></i> karakteri kopyalamak dışında <b><tt>strdup</tt></b> işlevi gibidir.
+      </div><div class="para">
+<i><tt>s</tt></i> dizgesinin uzunluğu <i><tt>boyut</tt></i> bayttan uzun ise işlev ilk <i><tt>boyut</tt></i> baytı kopyalar ve sonuna bir boş karakter ekler, aksi takdirde tüm karakterler kopyalanır ve dizge sonlandırılır.
+      </div><div class="para">
+Bu işlev hedef dizgeyi daima bir boş karakter ile sonlandırması bakımından da <b><tt>strncpy</tt></b> işlevinden farklıdır.
+      </div><div class="para">
+<b><tt>strndup</tt></b> işlevi bir GNU oluşumudur.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-stpcpy" id="glibc-stpcpy"></a>
+<a class="indexterm" name="idx485" id="idx485"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>char *<b><tt>stpcpy</tt></b></tt></td><td valign="top"><pre class="paramdef">(char *restrict       <i><tt>hedef</tt></i>,
+ const char *restrict <i><tt>kaynak</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev <i><tt>hedef</tt></i> dizgesinin sonunu gösteren bir gösterici ile dönmesi dışında <b><tt>strcpy</tt></b> işlevi gibidir.
+      </div><div class="para">
+Örneğin, bu yazılımda <tt>foo</tt> ve <tt>bar</tt> birleştirilerek <tt>foobar</tt> üretilmekte ve çıktılanmaktadır:
+   </div>
+<div class="para"><div align="right"><pre class="screen">
+#include &lt;string.h&gt;
+#include &lt;stdio.h&gt;
+
+int
+main (void)
+{
+  char tampon[10];
+  char *hedef = tampon;
+  hedef = stpcpy (hedef, "foo");
+  hedef = stpcpy (hedef, "bar");
+  puts (tampon);
+  return 0;
+}
+</pre></div></div><div class="para">
+Bu işlev ISO ya da POSIX standardının parçası değildir ve Unix sistemleri ile ilgili bir özel işlev de değildir. Tabii ki MS-DOS'dan geliyor.
+      </div><div class="para">
+Dizgelerin birbirinin üstüne binmesi durumundaki davranış tanımsızdır. İşlev <tt>string.h</tt> başlık dosyasında bildirilmiştir.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-wcpcpy" id="glibc-wcpcpy"></a>
+<a class="indexterm" name="idx486" id="idx486"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>wchar_t *<b><tt>wcpcpy</tt></b></tt></td><td valign="top"><pre class="paramdef">(wchar_t *restrict       <i><tt>hedef-geniş</tt></i>,
+ const wchar_t *restrict <i><tt>kaynak-geniş</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev <i><tt>hedef-geniş</tt></i> dizgesinin sonunu gösteren bir gösterici ile dönmesi dışında <b><tt>wcscpy</tt></b> işlevi gibidir. İşlev kopyalanan dizgenin başlangıç adresi ile değil, dizgeyi sonlandıran boş geniş karakterin adresi ile döner.
+      </div><div class="para">
+Bu işlev bir ISO veya POSIX oluşumu değildir, ancak GNU C kütüphanesi geliştirilirken kullanışlı bulunmuştur.
+      </div><div class="para">
+Üstüste binme durumunda <b><tt>wcpcpy</tt></b> işlevinin davranışı tanımsızdır.
+      </div><div class="para">
+<b><tt>wcpcpy</tt></b> bir GNU oluşumudur ve  <tt>wchar.h</tt> başlık dosyasında bildirilmiştir.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-stpncpy" id="glibc-stpncpy"></a>
+<a class="indexterm" name="idx487" id="idx487"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>char *<b><tt>stpncpy</tt></b></tt></td><td valign="top"><pre class="paramdef">(char *restrict       <i><tt>hedef</tt></i>,
+ const char *restrict <i><tt>kaynak</tt></i>,
+ size_t               <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev, <i><tt>hedef</tt></i>’e ilk <i><tt>boyut</tt></i> karakteri kopyalaması dışında <b><tt>stpcpy</tt></b> gibidir.
+      </div><div class="para">
+<i><tt>kaynak</tt></i> dizgesinin uzunluğu <i><tt>boyut</tt></i> bayttan uzunsa işlev, ilk <i><tt>boyut</tt></i> karakteri kopyalar ve kopyalanan son karakterden sonraki baytın adresi ile döner. Bu durumda <i><tt>hedef</tt></i> dizgesi boş karakteri içermez.
+      </div><div class="para">
+<i><tt>kaynak</tt></i> dizgesinin uzunluğu <i><tt>boyut</tt></i> bayttan kısaysa <i><tt>kaynak</tt></i> dizgesinin boş karakterinden sonraki <i><tt>boyut</tt></i> bayta kadar olan baytlar boş karakterlerle doldurularak <i><tt>hedef</tt></i> dizgesine kopyalanır ve yazılan <i>ilk</i> boş karakterin adresi ile döner.  Bu işlev az kullanışlıdır ama  <b><tt>strncpy</tt></b> işlevinin davranışı kullanışlı bulunduğundan gerçeklenmiştir.
+      </div><div class="para">
+Bu işlev bir ISO veya POSIX oluşumu değildir, ancak GNU C kütüphanesi geliştirilirken kullanışlı bulunmuştur.
+      </div><div class="para">
+Dizgelerin birbirinin üstüne binmesi durumundaki davranış tanımsızdır. İşlev <tt>string.h</tt> başlık dosyasında bildirilmiştir.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-wcpncpy" id="glibc-wcpncpy"></a>
+<a class="indexterm" name="idx488" id="idx488"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>wchar_t *<b><tt>wcpncpy</tt></b></tt></td><td valign="top"><pre class="paramdef">(wchar_t *restrict       <i><tt>hedef-geniş</tt></i>,
+ const wchar_t *restrict <i><tt>kaynak-geniş</tt></i>,
+ size_t                  <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev, <i><tt>hedef-geniş</tt></i>’e ilk <i><tt>boyut</tt></i> karakteri kopyalaması dışında <b><tt>wcpcpy</tt></b> gibidir.
+      </div><div class="para">
+<i><tt>kaynak-geniş</tt></i> dizgesinin uzunluğu <i><tt>boyut</tt></i> bayttan uzunsa işlev, ilk <i><tt>boyut</tt></i> geniş karakteri kopyalar ve kopyalanan son boş olmayan geniş karakterden sonraki geniş karaktere bir gösterici ile döner. Bu durumda <i><tt>hedef-geniş</tt></i> dizgesi boş geniş karakteri içermez.
+      </div><div class="para">
+<i><tt>kaynak-geniş</tt></i> dizgesinin uzunluğu <i><tt>boyut</tt></i> bayttan kısaysa <i><tt>kaynak-geniş</tt></i> dizgesinin boş geniş karakterinden sonraki <i><tt>boyut</tt></i> bayta kadar olan alanlar boş geniş karakterlerle doldurularak <i><tt>hedef-geniş</tt></i> dizgesine kopyalanır ve yazılan <i>ilk</i> boş geniş karakterin adresi ile döner.  Bu işlev az kullanışlıdır ama  <b><tt>wcsncpy</tt></b> işlevinin davranışı kullanışlı bulunduğundan gerçeklenmiştir.
+      </div><div class="para">
+Bu işlev bir ISO veya POSIX oluşumu değildir, ancak GNU C kütüphanesi geliştirilirken kullanışlı bulunmuştur.
+      </div><div class="para">
+Üstüste binme durumunda <b><tt>wcpncpy</tt></b> işlevinin davranışı tanımsızdır.
+      </div><div class="para">
+<b><tt>wcpncpy</tt></b> bir GNU oluşumudur ve <tt>wchar.h</tt> başlık dosyasında bildirilmiştir.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-strdupa" id="glibc-strdupa"></a>
+<a class="indexterm" name="idx489" id="idx489"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>char *<b><tt>strdupa</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *<i><tt>s</tt></i>)</pre></td></tr></table></div><div class="sagsutun">makro</div></div></div><dl><dd><div class="para">
+Bu makro, <b><tt>malloc</tt></b> (<a href="../glibc/glibc-Variable-Size-Automatic.html" class="xref" title="Değişken Boyutlu Özdevinimli Saklama">Değişken Boyutlu Özdevinimli Saklama</a>) yerine <b><tt>alloca</tt></b> kullanarak yeni bir dizge ayırmak dışında <b><tt>strdup</tt></b> gibidir. Yani, <b><tt>alloca</tt></b> kullanarak ayrılan bellek blokları ile aynı sınırlamalara sahip bir dizi döner.
+      </div><div class="para">
+Çeşitli sebeplerle <b><tt>strdupa</tt></b> sadece bir makro olarak gerçeklenmiştir; yani bir işlev gibi adresini alamazsınız. Bu sınırlama dışında bir işlev olarak kullanışlıdır. Aşağıdaki kodda <b><tt>malloc</tt></b>        kullanıldığında işlemin ne kadar pahalıya malolduğu gösterilmiştir.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+#include &lt;paths.h&gt;
+#include &lt;string.h&gt;
+#include &lt;stdio.h&gt;
+
+const char path[] = _PATH_STDPATH;
+
+int
+main (void)
+{
+  char *wr_path = strdupa (path);
+  char *cp = strtok (wr_path, ":");
+
+  while (cp != NULL)
+    {
+      puts (cp);
+      cp = strtok (NULL, ":");
+    }
+  return 0;
+}
+</pre></div></div><div class="para">
+<b><tt>strtok</tt></b>'un doğrudan <i><tt>path</tt></i> kullanılarak çağrılmasının geçersiz olduğuna dikkat edin. Ayrıca, <b><tt>strdupa</tt></b>
+ parametre aktarımında girişime sebep olabilen <b><tt>alloca</tt></b>'yı  (<a href="../glibc/glibc-Variable-Size-Automatic.html" class="xref" title="Değişken Boyutlu Özdevinimli Saklama">Değişken Boyutlu Özdevinimli Saklama</a>) kullandığından  <b><tt>strtok</tt></b>'un argüman listesinde  <b><tt>strdupa</tt></b> kullanımına izin verilmez.
+      </div><div class="para">
+Bu işlev sadece GCC ile kullanılabilir.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-strndupa" id="glibc-strndupa"></a>
+<a class="indexterm" name="idx490" id="idx490"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>char *<b><tt>strndupa</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *<i><tt>s</tt></i>,
+ size_t      <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">makro</div></div></div><dl><dd><div class="para">
+Bu işlev, <a class="link" href="../glibc/glibc-Variable-Size-Automatic.html" title="Değişken Boyutlu Özdevinimli Saklama"><b><tt>alloca</tt></b></a> kullanarak yeni bir dizge ayırmak dışında  <b><tt>strndup</tt></b> gibidir. <b><tt>strdupa</tt></b> için geçerli olan yararlar ve sınırlamalar, <b><tt>strndupa</tt></b> için de geçerlidir.
+      </div><div class="para">
+Bu işlev de <b><tt>strdupa</tt></b> gibi sadece makro olarak gerçeklenmiştir. <b><tt>strdupa</tt></b> gibi bu makro da bir işlev çağrısının argüman listesinde kullanılamaz.
+      </div><div class="para">
+Bu işlev sadece GCC ile kullanılabilir.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-strcat" id="glibc-strcat"></a>
+<a class="indexterm" name="idx491" id="idx491"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>char *<b><tt>strcat</tt></b></tt></td><td valign="top"><pre class="paramdef">(char *restrict       <i><tt>hedef</tt></i>,
+ const char *restrict <i><tt>kaynak</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<i><tt>kaynak</tt></i> dizgesini <i><tt>hedef</tt></i> dizgesinin üzerine yazmak yerine  <i><tt>hedef</tt></i> dizgesinin sonuna ekleyerek onunla birleştirmesi dışında <b><tt>strcpy</tt></b> işlevine benzer. <i><tt>kaynak</tt></i> dizgesinin ilk karakteri <i><tt>hedef</tt></i> dizgesini sonlandıran boş karakterin üzerine yazılır.
+      </div><div class="para">
+<b><tt>strcat</tt></b> işlevinin tanımı aşağıdakine eşdeğerdir:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+char *
+strcat (char *restrict hedef, const char *restrict kaynak)
+{
+  strcpy (hedef + strlen (hedef), kaynak);
+  return hedef;
+}
+</pre></div></div><div class="para">
+Dizgelerin üstüste binmesi durumu için bu işlevin davranışı tanımlanmamıştır.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-wcscat" id="glibc-wcscat"></a>
+<a class="indexterm" name="idx492" id="idx492"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>wchar_t *<b><tt>wcscat</tt></b></tt></td><td valign="top"><pre class="paramdef">(wchar_t *restrict       <i><tt>hedef-geniş</tt></i>,
+ const wchar_t *restrict <i><tt>kaynak-geniş</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<i><tt>kaynak-geniş</tt></i> dizgesini <i><tt>hedef-geniş</tt></i> dizgesinin üzerine yazmak yerine  <i><tt>hedef-geniş</tt></i> dizgesinin sonuna ekleyerek onunla birleştirmesi dışında <b><tt>wcscpy</tt></b> işlevine benzer. <i><tt>kaynak-geniş</tt></i> dizgesinin ilk geniş karakteri<i><tt>hedef-geniş</tt></i> dizgesini sonlandıran boş geniş karakterin üzerine yazılır.
+      </div><div class="para">
+<b><tt>wcscat</tt></b> işlevinin tanımı aşağıdakine eşdeğerdir:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+wchar_t *
+wcscat (wchar_t *hedefg, const wchar_t *kaynakg)
+{
+  wcscpy (hedefg + wcslen (hedefg), kaynakg);
+  return hedefg;
+}
+</pre></div></div><div class="para">
+Dizgelerin üstüste binmesi durumu için bu işlevin davranışı tanımlanmamıştır.
+      </div></dd></dl><div style="padding:5px"></div>
+    <div class="para">
+<b><tt>strcat</tt></b> ya da <b><tt>wcscat</tt></b> (ardından da  <b><tt>strncat</tt></b> ya da <b><tt>wcsncar</tt></b>) işlevlerini kullanan yazılımcılar kolayca ihtiyatsız ve hatta deli olarak tanımlanabilir. Hemen hemen her durumda, ortak dizge uzunlukları bilinir (hem, tampon boyutunun yeterli olacağını kim bilebilir ki?). Veya en azından, çeşitli işlev çağrılarının sonuçları izlenerek bilinir. Ama yine de <b><tt>strcat</tt></b>/<b><tt>wcscat</tt></b> işlevleri yetersizdir. Kopyalama başladığında hedef dizgenin sonunu bulmak için gereksiz zaman harcanacaktır. Aşağıdaki örneğe bakınız:
+   </div>
+<a class="indexterm" name="idx493" id="idx493"></a>
+<a class="indexterm" name="idx494" id="idx494"></a>
+<div class="para"><div align="right"><pre class="screen">
+/* Bu işlev birçok dizgeyi birleştirir.
+   Son parametre <b><tt>NULL</tt></b> olmalıdır.  */
+char *
+concat (const char *dizge, …)
+{
+  va_list ap, ap2;
+  size_t toplam = 1;
+  const char *s;
+  char *sonuc;
+
+  va_start (ap, dizge);
+  /* Aslında <b><tt>va_copy</tt></b>, ama geç dönem gcc sürümleri
+     bu ismi tanır.
+  __va_copy (ap2, ap);
+
+  /* Bakalım, ne kadar yer lazımmış.  */
+  for (s = dizge; s != NULL; s = va_arg (ap, const char *))
+    toplam += strlen (s);
+
+  va_end (ap);
+
+  sonuc = (char *) malloc (toplam);
+  if (sonuc != NULL)
+    {
+      sonuc[0] = '\0';
+
+      /* Dizgeleri kopyalayalım.  */
+      for (s = dizge; s != NULL; s = va_arg (ap2, const char *))
+        strcat (sonuc, s);
+    }
+
+  va_end (ap2);
+
+  return sonuc;
+}
+</pre></div></div><div class="para">
+Basit gibi görünüyor, özellikle dizgelerin kopyalandığı ikinci döngü. Her biri 100 baytlık on dizgenin birleştirildiğini varsayalım. Aradığımız ikinci dizge için dizgenin sonunda zaten 100 bayt ayrıldığından sonraki dizgeyi ekleyebiliriz. Toplamda tüm dizgeler için ara sonuçlarla birlikte uzunluk 5500! olur. Bellek ayırma için yapılan arama ile kopyalamayı birleştirisek bu işlevi daha verimli kılabiliriz:
+   </div>
+<div class="para"><div align="right"><pre class="screen">
+char *
+concat (const char *dizge, …)
+{
+  va_list ap;
+  size_t tutulan = 100;
+  char *sonuc = (char *) malloc (tutulan);
+
+  if (sonuc != NULL)
+    {
+      char *yeniwp;
+      char *wp;
+
+      va_start (ap, dizge);
+
+      wp = sonuc;
+      for (s = dizge; s != NULL; s = va_arg (ap, const char *))
+        {
+          size_t uzunluk = strlen (s);
+
+          /* Gerekiyorsa, tutulan belleği arttıralım.  */
+          if (wp + uzunluk + 1 &gt; sonuc + tutulan)
+            {
+              tutulan = (tutulan + uzunluk) * 2;
+              yeniwp = (char *) realloc (sonuc, tutulan);
+              if (newp == NULL)
+                {
+                  free (sonuc);
+                  return NULL;
+                }
+              wp = yeniwp + (wp - sonuc);
+              sonuc = yeniwp;
+            }
+
+          wp = mempcpy (wp, s, uzunluk);
+        }
+
+      /* sonuclanan dizgeyi sonlandıralım.  */
+      *wp++ = '\0';
+
+      /* Belleği tam istenen boyuta ayarlayalım.  */
+      yeniwp = realloc (sonuc, wp - sonuc);
+      if (yeniwp != NULL)
+        sonuc = yeniwp;
+
+      va_end (ap);
+    }
+
+  return sonuc;
+}
+</pre></div></div><div class="para">
+Girdi dizgeleri hakkına biraz daha fazla bilgi birikimi kullanarak bellek ayırma işlemi daha hassas yapılabilirdi. Burada farklı olarak <b><tt>strcat</tt></b> işlevini asla kullanmadık. Ara sonuçların izini sürerek dizge sonlarının bulunmasını güvenceye aldık ve <b><tt>mempcpy</tt></b> işlevini kullandık. Ayrıca, dizgeleri elde etmek
+ bakımından daha doğal görünen <b><tt>stpcpy</tt></b> işlevini de kullanmadık. Ama zaten, dizge uzunluğunu bildiğimizden bu gerekli değildi ve bu sebeple daha hızlı bellek kopyalaması yapabildik. Örneğimiz geniş karakterler için de aynı şekilde çalışırdı.
+   </div><div class="para">
+Bir yazılımcı <b><tt>strcat</tt></b> kullanmaya karar vermeden önce iki kere düşünmeli ve hesaplanmış sonuçların getirilerinden yararlanmak için kod tekrar yazılamaz mı acaba diye bakmalıdır. Tekrarlayalım:  <b><tt>strcat</tt></b> işlevinin kullanılması hemen hemen daima gereksizdir.
+    </div><a name="glibc-strncat" id="glibc-strncat"></a>
+<a class="indexterm" name="idx495" id="idx495"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>char *<b><tt>strncat</tt></b></tt></td><td valign="top"><pre class="paramdef">(char *restrict       <i><tt>hedef</tt></i>,
+ const char *restrict <i><tt>kaynak</tt></i>,
+ size_t               <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev, <i><tt>kaynak</tt></i> dizgesinin ilk <i><tt>boyut</tt></i> karakterini <i><tt>hedef</tt></i> dizgesinin sonuna eklemek dışında <b><tt>strcat</tt></b> gibidir.  <i><tt>hedef</tt></i> dizgesinin sonuna daima bir boş karakter eklendiğinden <i><tt>hedef</tt></i> için ayrılan yer en azından <b><tt><i><tt>boyut</tt></i> + 1</tt></b> bayt olmalıdır.
+      </div><div class="para">
+<b><tt>strncat</tt></b> işlevi aşağıdaki gibi de gerçekleştirilebilirdi:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+char *
+strncat (char *hedef, const char *kaynak, size_t boyut)
+{
+  hedef[strlen (hedef) + boyut] = '\0';
+  strncpy (hedef + strlen (hedef), kaynak, boyut);
+  return hedef;
+}
+</pre></div></div><div class="para">
+Dizgelerin üstüste binmesi durumu için bu işlevin davranışı tanımlanmamıştır.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-wcsncat" id="glibc-wcsncat"></a>
+<a class="indexterm" name="idx496" id="idx496"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>wchar_t *<b><tt>wcsncat</tt></b></tt></td><td valign="top"><pre class="paramdef">(wchar_t *restrict       <i><tt>hedef-geniş</tt></i>,
+ const wchar_t *restrict <i><tt>kaynak-geniş</tt></i>,
+ size_t                  <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev, <i><tt>kaynak-geniş</tt></i> dizgesinin ilk <i><tt>boyut</tt></i> geniş karakterini <i><tt>hedef-geniş</tt></i> dizgesinin sonuna eklemek dışında  <b><tt>wcscat</tt></b> gibidir.  <i><tt>hedef-geniş</tt></i> dizgesinin sonuna daima bir boş geniş karakter eklendiğinden <i><tt>hedef-geniş</tt></i> için ayrılan yer en azından <b><tt><i><tt>boyut</tt></i> + 1</tt></b> bayt olmalıdır.
+      </div><div class="para">
+<b><tt>wcscat</tt></b> işlevi aşağıdaki gibi de gerçekleştirilebilirdi:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+wchar_t *
+wcsncat (wchar_t *restrict hedefg, const wchar_t *restrict kaynakg,
+         size_t boyut)
+{
+  hedefg[wcslen (hedefg) + boyut] = L'\0';
+  wcsncpy (hedefg + wcslen (hedefg), kaynakg, boyut);
+  return hedefg;
+}
+</pre></div></div><div class="para">
+Dizgelerin üstüste binmesi durumu için bu işlevin davranışı tanımlanmamıştır.
+      </div></dd></dl><div style="padding:5px"></div>
+    <div class="para">
+Aşağıdaki örnekte <b><tt>strncpy</tt></b> ve <b><tt>strncat</tt></b> kullanımı gösterilmiştir (Geniş karakterli olarak benzeri yazılabilir). <b><tt>strncat</tt></b> çağrısına dikkat edin, <i><tt>boyut</tt></i> parametresi <b><tt>tampon</tt></b> karakter dizisinin üste binmesine karşı korunarak hesaplanmıştır.
+   </div>
+<div class="para"><div align="right"><pre class="screen">
+#include &lt;string.h&gt;
+#include &lt;stdio.h&gt;
+
+#define BOYUT 12
+
+static char tampon[BOYUT];
+
+main ()
+{
+  strncpy (tampon, "herkese", BOYUT);
+  puts (tampon);
+  strncat (tampon, " merhaba", BOYUT - strlen (tampon) - 1);
+  puts (tampon);
+}
+</pre></div></div><div class="para">
+      Kod aşağıdaki gibi bir çıktı üretir:
+   </div>
+<div class="para"><div align="right"><pre class="screen">
+herkese
+herkese mer
+</pre></div></div>
+    <a name="glibc-bcopy" id="glibc-bcopy"></a>
+<a class="indexterm" name="idx497" id="idx497"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>bcopy</tt></b></tt></td><td valign="top"><pre class="paramdef">(const void *<i><tt>kaynak</tt></i>,
+ void       *<i><tt>hedef</tt></i>,
+ size_t      <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev, BSD'den türetilen, <b><tt>memmove</tt></b>'un kısmen eskimiş bir alternafidir.  Ancak <b><tt>memmove</tt></b> ile eşdeğer değildir, çünkü argümanları aynı sırada değildir ve dönen bir değer yoktur.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-bzero" id="glibc-bzero"></a>
+<a class="indexterm" name="idx498" id="idx498"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>bzero</tt></b></tt></td><td valign="top"><pre class="paramdef">(void  *<i><tt>blok</tt></i>,
+ size_t <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev, BSD'den türetilen, <b><tt>memset</tt></b>'in kısmen eskimiş bir alternafidir.  Ancak <b><tt>memset</tt></b> ile eşdeğer değildir, çünkü sakladığı tek değer sıfırdır.
+      </div></dd></dl><div style="padding:5px"></div>
+    </dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-String-Length.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-String-and-Array-Utilities.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-String-Array-Comparison.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Dizge Uzunluğu </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Dizi/Dizge Karşılaştırması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

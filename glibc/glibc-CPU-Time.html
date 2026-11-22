@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:22+03:00" /><title>İşlemci Zamanının Sorgulanması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Processor-And-CPU-Time.html" title="İşlemci Zamanı ve İşlemci Süresi" /><link rel="previous" href="../glibc/glibc-Processor-And-CPU-Time.html" title="İşlemci Zamanı ve İşlemci Süresi" /><link rel="next" href="../glibc/glibc-Processor-Time.html" title="İşlemci Süresinin Sorgulanması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">İşlemci Zamanının Sorgulanması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Processor-And-CPU-Time.html">Önceki</a> </td><th width="60%" align="center">İşlemci Zamanı ve İşlemci Süresi</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Processor-Time.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-CPU-Time" id="glibc-CPU-Time"></a>İşlemci Zamanının Sorgulanması</div><dl><dd><div class="para">
+Bir sürecin işlemci zamanını almak için <b><tt>clock</tt></b> işlevini kullanabilirsiniz. Bu oluşum <tt>time.h</tt> başlık dosyasında bildirilmiştir.
+<a class="indexterm" name="idx2359" id="idx2359"></a>
+    </div><div class="para">
+Genel olarak, <b><tt>clock</tt></b> işlevi ilgilenilen bir zaman aralığının başında ve sonunda çağrılır ve bu değerler birbirinden çıkarılıp sonuç <b><tt>CLOCKS_PER_SEC</tt></b> ile bölünerek işlemci süresi aşağıdaki gibi elde edilir:
+    </div>
+<div class="para"><div align="right"><pre class="screen">#include &lt;time.h&gt;
+
+clock_t start, end;
+double cpu_time_used;
+
+start = clock();
+... /* Burada bir takım işlemler yapılıyor. */
+end = clock();
+cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+</pre></div></div><div class="para">
+Belirli süreyi elde etmek için tek bir işlemci zamanı değerini kullanmayın.<sup>[<a name="id99" href="#ftn.id99" id="id99">99</a>]</sup> Ya yukarıdaki gibi bir çıkartma işlemi yapın ya da doğrudan işlemci süresini sorgulayın. Bkz. <a href="../glibc/glibc-Processor-Time.html" class="xref" title="İşlemci Süresinin Sorgulanması">İşlemci Süresinin Sorgulanması</a>.
+    </div><div class="para">
+Farklı makineler ve işletim sistemlerinde işlemci zamanının hesabı az ya da çok çılgıncadır. Bunlarda, dahili işlemci saati saniyenin yüzde biri ile milyonda biri arasında bir çözünürlüğe sahiptir.
+    </div>
+<a class="indexterm" name="idx2360" id="idx2360"></a>
+<a name="glibc-CLOCKS_PER_SEC" id="glibc-CLOCKS_PER_SEC"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>CLOCKS_PER_SEC</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">makro</div></div></div><dl><dd><div class="para">
+Bu makronun değeri <b><tt>clock</tt></b> işlevi tarafından ölçülen saniyedeki saat tiki sayısını verir. POSIX standardı bu değerin gerçek çözünürlükten bağımsız olarak bir milyon olmasını gerektirir.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2361" id="idx2361"></a>
+<a name="glibc-CLK_TCK" id="glibc-CLK_TCK"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>CLK_TCK</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">makro</div></div></div><dl><dd><div class="para">
+Bu, <b><tt>CLOCKS_PER_SEC</tt></b> değerinin atıl olmuş eşdeğeridir.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2362" id="idx2362"></a>
+<a name="glibc-clock_t" id="glibc-clock_t"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt><b><tt>clock_t</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+Bu, <b><tt>clock</tt></b> işlevinin dönüş değerinin türüdür. <b><tt>clock_t</tt></b> türünden değerler saat tiklerinin sayısıdır.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2363" id="idx2363"></a>
+<a name="glibc-clock" id="glibc-clock"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>clock_t <b><tt>clock</tt></b></tt></td><td valign="top"><pre class="paramdef">(void)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev çağrıldığı sürecin o anki işlemci zamanı ile döner. İşlemci zamanı ölçülmüyorsa ya da gösterilemiyorsa, <b><tt>clock</tt></b> işlevi <b><tt>clock_t</tt></b> cinsinden <b><tt>(-1)</tt></b> ile döner.
+    </div></dd></dl><div style="padding:5px"></div><div class="footnotes"><br /><hr width="100" align="left" /><div class="footnote"><div class="para"><sup>[<a name="ftn.id99" href="#id99" id="ftn.id99">99</a>] </sup>Ç.N.: Süre, iki mutlak zaman değeri arasındaki miktardır, zaman ise belli bir olaya göreli olarak tanımlanmış bir başlangıca göre geçen süredir; "miladi zaman", "hicri zaman", Uzay Yolu'nu izlediyseniz kaptanın günlüğünde bahsettiği "yıldız zamanı" <tt>:-)</tt>  gibi.</div></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Processor-And-CPU-Time.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Processor-And-CPU-Time.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Processor-Time.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">İşlemci Zamanı ve İşlemci Süresi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> İşlemci Süresinin Sorgulanması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

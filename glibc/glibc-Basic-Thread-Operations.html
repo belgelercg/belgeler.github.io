@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:43+03:00" /><title>Basit Evre İşlemleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-POSIX-Threads.html" title="POSIX Evreleri" /><link rel="previous" href="../glibc/glibc-POSIX-Threads.html" title="POSIX Evreleri" /><link rel="next" href="../glibc/glibc-Thread-Attributes.html" title="Evre Öznitelikleri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Basit Evre İşlemleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-POSIX-Threads.html">Önceki</a> </td><th width="60%" align="center">POSIX Evreleri</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Thread-Attributes.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Basic-Thread-Operations" id="glibc-Basic-Thread-Operations"></a>Basit Evre İşlemleri</div><dl><dd><div class="para">
+Bu işlevler <b><tt>fork</tt></b>, <b><tt>exit</tt></b> ve <b><tt>wait</tt></b> işlevlerinin evre eşdeğerleridir.
+   </div>
+<a class="indexterm" name="idx2887" id="idx2887"></a>
+<a name="glibc-pthread_create" id="glibc-pthread_create"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pthread_create</tt></b></tt></td><td valign="top"><pre class="paramdef">(pthread_t      *<i><tt>evre</tt></i>,
+ pthread_attr_t *<i><tt>öznitelik</tt></i>,
+ void         *(*<i><tt>başlatma_işlevi</tt></i>)(void *),
+ void           *<i><tt>arg</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_create</tt></b> çağıran evre ile aynı zamanda çalışan yeni bir kontrol evresi yaratır. Yeni evre ilk argümanına <i><tt>arg</tt></i> geçirerek <i><tt>başlatma_işlevi</tt></i> işlevini çağırır. Yeni evre <b><tt>pthread_exit</tt></b> işlevini çağırarak her ikisini de açıkça sonlandırır,
+veya <i><tt>başlatma_işlevi</tt></i> işlevinden dönerek örtük olarak sonlandırır.
+İkinci yaklaşım <i><tt>başlatma_işlevi</tt></i> işlevinin çıkış kodu olarak dönen sonuçla <b><tt>pthread_exit</tt></b> işlevinin çağrılmasına eşdeğerdir.
+   </div><div class="para">
+<i><tt>öznitelik</tt></i> argümanı yeni evreye uygulanacak evre özelliklerini belirler. Ayrıntılar için bkz. <a href="../glibc/glibc-Thread-Attributes.html" class="xref" title="Evre Öznitelikleri">Evre Öznitelikleri</a>. <i><tt>öznitelik</tt></i> argümanı <b><tt>NULL</tt></b> da olabilir, bu durumda öntanımlı özellikler kullanılır: oluşturulan evre birleşimcidir (ayrık değildir) ve sıradan (gerçek zamanlı değil) bir zamanlama ilkesine sahiptir.
+   </div><div class="para">
+Başarı halinde, yeni oluşturulan evrenin tanıtıcısı <i><tt>evre</tt></i> argümanıyla gösterilen yerde saklanır ve bir 0 döndürülür. Hata halinde, sıfırdan farklı bir hata kodu döndürülür.
+   </div><div class="para">
+İşlev aşağıdaki hataları döndürebilir:
+   </div>
+   <div class="variablelist"><dl><dt><span class="term"><tt>EAGAIN</tt></span></dt><dd class="varlist"><div class="para">
+Yeni evre için süreç oluşturacak yeterli sistem kaynağı yok veya <b><tt>PTHREAD_THREADS_MAX</tt></b> den fazla sayıda evre rtkin.
+      </div></dd></dl></div>
+</dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2888" id="idx2888"></a>
+<a name="glibc-pthread_exit" id="glibc-pthread_exit"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>pthread_exit</tt></b></tt></td><td valign="top"><pre class="paramdef">(void *<i><tt>dönüş_değeri</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_exit</tt></b> çağrılan evrenin çalıştırılmasını sonlandırır.
+Çağrılan evre için <b><tt>pthread_cleanup_push</tt></b> ile atanmış bütün <a class="link" href="../glibc/glibc-Cleanup-Handlers.html" title="Temizlik İşleyicileri">temizlik işleyicileri</a> ters sırayla çalıştırılır (son eklenen işleyici ilk çalıştırılır). Ardından evreye özgü veriler için kullanılan sonlandırma işlevleri, <b><tt>NULL</tt></b> olmayan değere sahip, çağıran evreyle ilişkili bütün anahtarlar için çağrılır (<a href="../glibc/glibc-Thread-Specific-Data.html" class="xref" title="Evreye Özgü Veri">Evreye Özgü Veri</a>).  Son olarak, çağıran evrenin çalıştırılması durdurulur.
+   </div><div class="para">
+<i><tt>dönüş_değeri</tt></i> argümanı evrenin dönüş değeridir. <b><tt>pthread_join</tt></b> kullanarak başka bir evreden elde edilebilir.
+   </div> <div class="para">
+<b><tt>pthread_exit</tt></b> işlevi hiç bir zaman dönmez.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2889" id="idx2889"></a>
+<a name="glibc-pthread_cancel" id="glibc-pthread_cancel"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pthread_cancel</tt></b></tt></td><td valign="top"><pre class="paramdef">(pthread_t <i><tt>evre</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_cancel</tt></b> işlevi <i><tt>evre</tt></i> argümanıyla belirtilen evreye bir iptal isteği gönderir.
+Eğer böyle bir evre yoksa, <b><tt>pthread_cancel</tt></b> başarısız olur ve <b><tt>ESRCH</tt></b> döndürür.
+Aksi takdirde 0 döndürür. Ayrıntılar için bkz. <a href="../glibc/glibc-Cancellation.html" class="xref" title="İptaletme">İptaletme</a>.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2890" id="idx2890"></a>
+<a name="glibc-pthread_join" id="glibc-pthread_join"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pthread_join</tt></b></tt></td><td valign="top"><pre class="paramdef">(pthread_t <i><tt>evre</tt></i>,
+ void    **<i><tt>evre_dönüş</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_join</tt></b> <i><tt>evre</tt></i> ile tanımlanan evre sonlanıncaya kadar çağıran evrenin çalıştırılmasını <b><tt>pthread_exit</tt></b> işlevini çağırarak veya iptal edilerek askıya alır.
+   </div><div class="para">
+Eğer <i><tt>evre_dönüş</tt></i> <b><tt>NULL</tt></b> değilse, <i><tt>evre</tt></i>nin dönüş değeri <i><tt>evre_dönüş</tt></i> ile gösterilen yerde saklanır. <i><tt>evre</tt></i>nin dönüş değeri ya <b><tt>pthread_exit</tt></b>e verdiği argümandır ya da eğer <i><tt>evre</tt></i> iptal edildiyse <b><tt>PTHREAD_CANCELED</tt></b> değeridir.
+   </div><div class="para">
+Birleşmiş evre <i><tt>evre</tt></i> birleşebilir durumda olmalıdır: <b><tt>pthread_detach</tt></b> ile ayrılmış olmamalıdır veya
+ <b><tt>PTHREAD_CREATE_DETACHED</tt></b> özelliği <b><tt>pthread_create</tt></b> işlevine verilmemiş olmalıdır.
+   </div><div class="para">
+Birleşebilir bir evre sonlandığında, onun bellek özkaynakları (evre tanımlayıcısı ve yığıt) başka bir evre üzerinde <b><tt>pthread_join</tt></b> uygulayıncaya kadar serbest bırakılmazlar. Bu nedenle, bellek kaçağını önlemek için <b><tt>pthread_join</tt></b> işlevinin her birleşebilir evre için çağrılması gerekir.
+   </div><div class="para">
+Verilen bir evrenin sonlanması için en çok bir evre bekleyebilir.
+Üzerinde başka bir evrenin sonlanması için beklemekte olduğu, bir <i><tt>evre</tt></i> evresi üzerinde, <b><tt>pthread_join</tt></b> çağrısı hata döndürür.
+   </div><div class="para">
+<b><tt>pthread_join</tt></b> bir iptal noktasıdır. <b><tt>pthread_join</tt></b>de askıya alınmış bir evre iptal edilirse, evre hemen işletmeyi sürdürür ve <i><tt>evre</tt></i> evresinin sonlanması beklenmeden iptal işletilir. Eğer <b><tt>pthread_join</tt></b> süresince iptal yaşanırsa, <i><tt>evre</tt></i> evresi birleşmemiş kalır.
+   </div><div class="para">
+Başarı halinde, <i><tt>evre</tt></i>nin dönüş değeri  <i><tt>evre_dönüş</tt></i> ile gösterilen yerde saklanır ve 0 döndürülür. Hata halinde, aşağıdaki değerlerden biri döndürülür:
+   </div><div class="variablelist"><dl><dt><span class="term"><tt>ESRCH</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>evre</tt></i> ile belirtilene uygun bir evre bulunamadı.
+     </div></dd><dt><span class="term"><tt>EINVAL</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>evre</tt></i> evresi ayrılmış veya başka bir evre <i><tt>evre</tt></i>nin sonlanmasını beklemektedir.
+    </div></dd><dt><span class="term"><tt>EDEADLK</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>evre</tt></i> argümanı çağıran evreyi belirtmektedir.
+      </div></dd></dl></div>
+    </dd></dl><div style="padding:5px"></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-POSIX-Threads.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-POSIX-Threads.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Thread-Attributes.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">POSIX Evreleri </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Evre Öznitelikleri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

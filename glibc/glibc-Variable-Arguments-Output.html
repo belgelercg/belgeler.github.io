@@ -1,264 +1,114 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="tr" xml:lang="tr">
-  <head>
-    <title>12.12.9. Değişkin Çıktı İşlevleri</title>
-    <meta name="generator" content="DocBook XSL Stylesheets V-special (derived from DocBook XSL v1.79.1 for Turkish Linux Documentation Project by Nilgün Belma Bugüner - nilgun (at) tlbp.org.tr)" />
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="/style/nav.css" />
-    <link rel="icon" type="image/png" href="/images/belgeler-logo.png" />
-    <meta name="robots" content="index, follow" />
-  </head>
-  <body>
-    <header>
-      <div class="navbar">
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Dynamic-Output.html')">Önceki</button>
-          <div class="dropdown-content">12.12.8. Biçimli Çıktıya Özdevimli Tahsis</div>
-        </div>
-        <div style="width:34%" class="dropdown">
-          <button class="dropbtn">Yukarı</button>
-          <div class="dropdown-content">
-            <button type="button" class="dropbtn" onclick="window.location.assign('/index.html')">Baş Sayfa</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('/KiTAPLIK/index.html')">Kitaplık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc.html')">Ana Başlık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Formatted-Output.html')">Üst Başlık</button>
-          </div>
-        </div>
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Parsing-a-Template-String.html')">Sonraki</button>
-          <div class="dropdown-content">12.12.10. Kalıp Dizgesinin Çözümlenmesi</div>
-        </div>
-      </div>
-    </header>
-    <section class="mainpage">
-      <div class="crumbs">
-        <p>  </p>
-      </div>
-      <section class="sect1" id="glibc-Variable-Arguments-Output">
-        <div class="titlepage">
-          <div>
-            <div>
-              <h2 class="title" style="clear: both">12.12.9. Değişkin Çıktı İşlevleri</h2>
-            </div>
-          </div>
-        </div>
-        <p>
-    Yerleşik biçimli çıktı işlevleriyle aynı iç oluşumları kullanarak değişkin <a href="glibc-Formatted-Output-Functions.html#glibc-fn-printf"><strong class="function"><code>printf</code></strong></a> benzeri işlevlerin yazılımcı tarafından tanımlanabilmesi için <a href="glibc-Variable-Arguments-Output.html#glibc-fn-vprintf"><strong class="function"><code>vprintf</code></strong></a> işlevi ve arkadaşları oluşturulmuştur.
-   </p>
-        <p>
-    Bu tür işlevleri tanımlamanın en doğal yolu, "<a href="glibc-Formatted-Output-Functions.html#glibc-fn-printf"><strong class="function"><code>printf</code></strong></a> işlevini çağır ve bu kalıpla birlikte ilk 5 bağımsız değişkenden sonra benim bağımsız değişkenlerimi aktar" diyecek bir dil yapısı kullanmak olurdu. Fakat C'de bunu yapmanın bir yolu yoktur. Ayrıca üçüncü düzey C dilinde işlevinizin kaç bağımsız değişken aldığını söyleyecek bir yol olmadığından, bir yol üretmek de zor olurdu.
-   </p>
-        <p>
-    Bu yöntemle mümkün olmadığından "ilk 5 bağımsız değişkenden sonra benim bağımsız değişkenlerimi aktar" denilebilecek <a href="glibc-Argument-Macros.html#glibc-tp-va_list"><strong class="type"><code>va_list</code></strong></a>'in aktarılacağı bir dizi işlev olarak <a href="glibc-Variable-Arguments-Output.html#glibc-fn-vprintf"><strong class="function"><code>vprintf</code></strong></a> ailesi üretilmiştir.
-   </p>
-        <p>
-    Gerçek bir işlev yerine bir makro tanımlamak yeterli olduğundan, GNU C derleyicisi bunu makrolarla çok daha kolay yapacak bir yol sağlar.
-   </p>
-        <div class="example">
-          <div class="example-title">Örnek: </div>
-          <div class="example-contents">
-            <pre class="screen">#define myprintf(a, b, c, d, e, rest...) \
-	    printf (mytemplate , ## rest)
-</pre>
-          </div>
-        </div>
-        <br class="example-break" />
-        <p>
-    Değişken sayıda bağımsız değişkenli makrolar hakkında ayrıntılı bilgi edinmek için C Önişlemci belgelerindeki <a class="link" href="https://gcc.gnu.org/onlinedocs/cpp/Variadic-Macros.html#Variadic-Macros" target="_top">Variadic Macros</a> bölümüne bakılabilir. Ancak, bu yöntem makrolarla sınırlıdır, gerçek işlevlere uygulanmaz.
-   </p>
-        <p>
-    <a href="glibc-Variable-Arguments-Output.html#glibc-fn-vprintf"><strong class="function"><code>vprintf</code></strong></a> veya bu bölümde listelenmiş diğer işlevleri çağırmadan önce değişken sayıdaki bağımsız değişkeni ilklendirmek için bir <a href="glibc-Argument-Macros.html#glibc-fn-va_start"><strong class="function"><code>va_start</code></strong></a> çağrısı (<a class="xref" href="glibc-Variadic-Functions.html" title="A.2. Değişkin İşlevler"><em>Değişkin İşlevler</em></a>) yapılmalıdır. Sonra da elde edilmek istenen bağımsız değişkenleri almak için <a href="glibc-Argument-Macros.html#glibc-fn-va_arg"><strong class="function"><code>va_arg</code></strong></a> çağrıları yapılmalıdır. Bu işlem, göstericiyi bu bağımsız değişkenlerin sonrasına ilerletir.
-   </p>
-        <p>
-    <a href="glibc-Argument-Macros.html#glibc-tp-va_list"><strong class="type"><code>va_list</code></strong></a> göstericisi için seçilen ilk bağımsız değişken gösterildikten sonra artık <a href="glibc-Variable-Arguments-Output.html#glibc-fn-vprintf"><strong class="function"><code>vprintf</code></strong></a> çağrısı yapılacak duruma gelinmiş demektir. Tanımlanan işleve aktarılan bu bağımsız değişken ve art bileşen bağımsız değişkenler ile belirtilen kalıp dizgesi <a href="glibc-Variable-Arguments-Output.html#glibc-fn-vprintf"><strong class="function"><code>vprintf</code></strong></a> işlevi tarafından kullanılacaktır.
-   </p>
-        <div class="admon note">
-          <h3 class="admon-title">Taşınabilirlik Bilgisi</h3>
-          <div class="admon-contents">
-            <p>
-     <a href="glibc-Variable-Arguments-Output.html#glibc-fn-vprintf"><strong class="function"><code>vprintf</code></strong></a> çağrısından sonra <a href="glibc-Argument-Macros.html#glibc-tp-va_list"><strong class="type"><code>va_list</code></strong></a> göstericisi belirsiz duruma gelebilir ve <a href="glibc-Variable-Arguments-Output.html#glibc-fn-vprintf"><strong class="function"><code>vprintf</code></strong></a> çağrısından sonra <a href="glibc-Argument-Macros.html#glibc-fn-va_arg"><strong class="function"><code>va_arg</code></strong></a> işlevi kullanılamayabilir. Bu durumda bir <a href="glibc-Argument-Macros.html#glibc-fn-va_end"><strong class="function"><code>va_end</code></strong></a> çağrısından sonra <a href="glibc-Argument-Macros.html#glibc-fn-va_start"><strong class="function"><code>va_start</code></strong></a> ile değişkin bağımsız değişken listesinin başlangıcındaki bağımsız değişkenlerin alımına başlanabilir. (Bunun yerine, <a href="glibc-Variable-Arguments-Output.html#glibc-fn-vprintf"><strong class="function"><code>vprintf</code></strong></a> çağrısından önce <a href="glibc-Argument-Macros.html#glibc-tp-va_list"><strong class="type"><code>va_list</code></strong></a> göstericisinin bir kopyasını yapmak için <strong class="function"><code>va_copy</code></strong> kullanılabilir.) <a href="glibc-Variable-Arguments-Output.html#glibc-fn-vprintf"><strong class="function"><code>vprintf</code></strong></a> işlevi tanımlanan işlevin bağımsız değişken listesini ortadan kaldırmaz, yalnızca ona aktarılan göstericiyi yok eder.
-    </p>
-          </div>
-        </div>
-        <p>
-    <span id="idm107440" class="indexterm"></span>
-    Bu işlevler <code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/stdio.h;hb=HEAD" target="_top">stdio.h</a></code> başlık dosyasında bildirilmiştir.
-   </p>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-    <span id="glibc-fn-vprintf" class="indexterm"></span>
-    <span id="glibc-cp-vprintf" class="indexterm"></span>
-    <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/stdio.h;hb=HEAD" target="_top">stdio.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">int </code><strong><code class="function">vprintf</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">const char </code><strong class="type">*</strong><strong><code class="parameter">template</code></strong><strong><code>, </code></strong><code class="type">va_list </code><strong><code class="parameter">ap</code></strong><strong><code>)</code></strong></td></tr></table></div>
-    
-    <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-locale">locale</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-asunsafe">AS-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-corrupt">corrupt</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-heap">heap</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acunsafe">AC-Unsafe</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-mem">mem</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-lock">lock</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-corrupt">corrupt</a>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:26:38+03:00" /><title>Değişkin Çıktı İşlevleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Formatted-Output.html" title="Biçimli Çıktı" /><link rel="previous" href="../glibc/glibc-Dynamic-Output.html" title="Biçimli Çıktıyı Özdevimli Ayırma" /><link rel="next" href="../glibc/glibc-Parsing-a-Template-String.html" title="Bir Şablon Dizgesinin Çözümlenmesi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Değişkin Çıktı İşlevleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Dynamic-Output.html">Önceki</a> </td><th width="60%" align="center">Biçimli Çıktı</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Parsing-a-Template-String.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Variable-Arguments-Output" id="glibc-Variable-Arguments-Output"></a>Değişkin Çıktı İşlevleri</div><dl><dd><div class="para">
+Yerleşik biçimli çıktı işlevleri olarak <b><tt>printf</tt></b> oluşumunu kullanarak kendi değişkin <b><tt>printf</tt></b> benzeri işlevlerinizi tanımlayabilmeniz için <b><tt>vprintf</tt></b> işlevi ve arkadaşları oluşturulmuştur.
+    </div><div class="para">
+Bu tür işlevleri tanımlamanın en doğal yolu, "<b><tt>printf</tt></b> işlevini çağır ve bu şablonla birlikte ilk 5 argümandan sonra benim argümanlarımı aktar" diyecek bir dil yapısı kullanmak olurdu. Fakat C'de bunu yapmanın bir yolu yoktur. Ayrıca üçüncü düzey C dilinde işlevinizin kaç argüman aldığını söyleyecek bir yol olmadığından, bir yol üretmek de zor olurdu.
+    </div><div class="para">
+Bu yöntemle mümkün olmadığından "ilk 5 argümandan sonra benim argümanlarımı aktar" diyebileceğiniz bir <b><tt>va_list</tt></b>'i aktaracağınız bir seri işlev, <b><tt>vprintf</tt></b> serisini ürettik.
+    </div><div class="para">
+Gerçek bir işlev yerine bir makro tanımlamak yeterli olduğundan, GNU C derleyicisi bunu makrolarla çok daha kolay yapacak bir yol sağlar. Örneğin:
     </div>
-    <p>
-     Bu işlev değişken sayıdaki bağımsız değişkenlerini doğrudan almak yerine <em class="parameter"><code>ap</code></em> bağımsız değişken listesi göstericisinden alması dışında <a href="glibc-Formatted-Output-Functions.html#glibc-fn-printf"><strong class="function"><code>printf</code></strong></a> ile aynıdır.
-    </p>
-   </div>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-    <span id="glibc-fn-vwprintf" class="indexterm"></span>
-    <span id="glibc-cp-vwprintf" class="indexterm"></span>
-    <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://gcc.gnu.org/git/?p=gcc.git;a=blob_plain;f=gcc/ginclude/stdarg.h;hb=HEAD" target="_top">stdarg.h</a></code><code>&gt;</code></td></tr><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/wchar.h;hb=HEAD" target="_top">wchar.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">int </code><strong><code class="function">vwprintf</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">const wchar_t </code><strong class="type">*</strong><strong><code class="parameter">template</code></strong><strong><code>, </code></strong><code class="type">va_list </code><strong><code class="parameter">ap</code></strong><strong><code>)</code></strong></td></tr></table></div>
-    
-    
-    <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-locale">locale</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-asunsafe">AS-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-corrupt">corrupt</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-heap">heap</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acunsafe">AC-Unsafe</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-mem">mem</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-lock">lock</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-corrupt">corrupt</a>
-    </div>
-    <p>
-     Bu işlev değişken sayıdaki bağımsız değişkenlerini doğrudan almak yerine <em class="parameter"><code>ap</code></em> bağımsız değişken listesi göstericisinden alması dışında <a href="glibc-Formatted-Output-Functions.html#glibc-fn-wprintf"><strong class="function"><code>wprintf</code></strong></a> ile aynıdır.
-    </p>
-   </div>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-    <span id="glibc-fn-vfprintf" class="indexterm"></span>
-    <span id="glibc-cp-vfprintf" class="indexterm"></span>
-    <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/stdio.h;hb=HEAD" target="_top">stdio.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">int </code><strong><code class="function">vfprintf</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">FILE </code><strong class="type">*</strong><strong><code class="parameter">stream</code></strong><strong><code>, </code></strong><code class="type">const char </code><strong class="type">*</strong><strong><code class="parameter">template</code></strong><strong><code>, </code></strong><code class="type">va_list </code><strong><code class="parameter">ap</code></strong><strong><code>)</code></strong></td></tr></table></div>
-    
-    <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-locale">locale</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-asunsafe">AS-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-corrupt">corrupt</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-heap">heap</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acunsafe">AC-Unsafe</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-mem">mem</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-lock">lock</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-corrupt">corrupt</a>
-    </div>
-    <p>
-     <a href="glibc-Variable-Arguments-Output.html#glibc-fn-vprintf"><strong class="function"><code>vprintf</code></strong></a> işlevindeki gibi doğrudan belirtilen değişken bağımsız değişken listesiyle <a href="glibc-Formatted-Output-Functions.html#glibc-fn-fprintf"><strong class="function"><code>fprintf</code></strong></a> işlevinin eşdeğeridir.
-    </p>
-   </div>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-    <span id="glibc-fn-vfwprintf" class="indexterm"></span>
-    <span id="glibc-cp-vfwprintf" class="indexterm"></span>
-    <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://gcc.gnu.org/git/?p=gcc.git;a=blob_plain;f=gcc/ginclude/stdarg.h;hb=HEAD" target="_top">stdarg.h</a></code><code>&gt;</code></td></tr><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/stdio.h;hb=HEAD" target="_top">stdio.h</a></code><code>&gt;</code></td></tr><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/wchar.h;hb=HEAD" target="_top">wchar.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">int </code><strong><code class="function">vfwprintf</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">FILE </code><strong class="type">*</strong><strong><code class="parameter">stream</code></strong><strong><code>, </code></strong><code class="type">const wchar_t </code><strong class="type">*</strong><strong><code class="parameter">template</code></strong><strong><code>, </code></strong><code class="type">va_list </code><strong><code class="parameter">ap</code></strong><strong><code>)</code></strong></td></tr></table></div>
-    
-    
-    
-    <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-locale">locale</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-asunsafe">AS-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-corrupt">corrupt</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-heap">heap</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acunsafe">AC-Unsafe</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-mem">mem</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-lock">lock</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-corrupt">corrupt</a>
-    </div>
-    <p>
-     <a href="glibc-Variable-Arguments-Output.html#glibc-fn-vwprintf"><strong class="function"><code>vwprintf</code></strong></a> işlevindeki gibi doğrudan belirtilen değişken bağımsız değişken listesiyle <a href="glibc-Formatted-Output-Functions.html#glibc-fn-fwprintf"><strong class="function"><code>fwprintf</code></strong></a> işlevinin eşdeğeridir.
-    </p>
-   </div>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-    <span id="glibc-fn-vsprintf" class="indexterm"></span>
-    <span id="glibc-cp-vsprintf" class="indexterm"></span>
-    <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/stdio.h;hb=HEAD" target="_top">stdio.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">int </code><strong><code class="function">vsprintf</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">char </code><strong class="type">*</strong><strong><code class="parameter">s</code></strong><strong><code>, </code></strong><code class="type">const char </code><strong class="type">*</strong><strong><code class="parameter">template</code></strong><strong><code>, </code></strong><code class="type">va_list </code><strong><code class="parameter">ap</code></strong><strong><code>)</code></strong></td></tr></table></div>
-    
-    <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-locale">locale</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-asunsafe">AS-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-heap">heap</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acunsafe">AC-Unsafe</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-mem">mem</a>
-    </div>
-    <p>
-     <a href="glibc-Variable-Arguments-Output.html#glibc-fn-vprintf"><strong class="function"><code>vprintf</code></strong></a> işlevindeki gibi doğrudan belirtilen değişken bağımsız değişken listesiyle <a href="glibc-Formatted-Output-Functions.html#glibc-fn-sprintf"><strong class="function"><code>sprintf</code></strong></a> işlevinin eşdeğeridir.
-    </p>
-   </div>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-    <span id="glibc-fn-vswprintf" class="indexterm"></span>
-    <span id="glibc-cp-vswprintf" class="indexterm"></span>
-    <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://gcc.gnu.org/git/?p=gcc.git;a=blob_plain;f=gcc/ginclude/stdarg.h;hb=HEAD" target="_top">stdarg.h</a></code><code>&gt;</code></td></tr><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/wchar.h;hb=HEAD" target="_top">wchar.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">int </code><strong><code class="function">vswprintf</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">wchar_t </code><strong class="type">*</strong><strong><code class="parameter">ws</code></strong><strong><code>, </code></strong><code class="type">size_t </code><strong><code class="parameter">size</code></strong><strong><code>, </code></strong><code class="type">const wchar_t </code><strong class="type">*</strong><strong><code class="parameter">template</code></strong><strong><code>, </code></strong><code class="type">va_list </code><strong><code class="parameter">ap</code></strong><strong><code>)</code></strong></td></tr></table></div>
-    
-    
-    <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-locale">locale</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-asunsafe">AS-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-heap">heap</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acunsafe">AC-Unsafe</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-mem">mem</a>
-    </div>
-    <p>
-     <a href="glibc-Variable-Arguments-Output.html#glibc-fn-vwprintf"><strong class="function"><code>vwprintf</code></strong></a> işlevindeki gibi doğrudan belirtilen değişken bağımsız değişken listesiyle <a href="glibc-Formatted-Output-Functions.html#glibc-fn-swprintf"><strong class="function"><code>swprintf</code></strong></a> işlevinin eşdeğeridir.
-    </p>
-   </div>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-    <span id="glibc-fn-vsnprintf" class="indexterm"></span>
-    <span id="glibc-cp-vsnprintf" class="indexterm"></span>
-    <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/stdio.h;hb=HEAD" target="_top">stdio.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">int </code><strong><code class="function">vsnprintf</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">char </code><strong class="type">*</strong><strong><code class="parameter">s</code></strong><strong><code>, </code></strong><code class="type">size_t </code><strong><code class="parameter">size</code></strong><strong><code>, </code></strong><code class="type">const wchar_t </code><strong class="type">*</strong><strong><code class="parameter">template</code></strong><strong><code>, </code></strong><code class="type">va_list </code><strong><code class="parameter">ap</code></strong><strong><code>)</code></strong></td></tr></table></div>
-    
-    <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-locale">locale</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-asunsafe">AS-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-heap">heap</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acunsafe">AC-Unsafe</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-mem">mem</a>
-    </div>
-    <p>
-     <a href="glibc-Variable-Arguments-Output.html#glibc-fn-vprintf"><strong class="function"><code>vprintf</code></strong></a> işlevindeki gibi doğrudan belirtilen değişken bağımsız değişken listesiyle <a href="glibc-Formatted-Output-Functions.html#glibc-fn-snprintf"><strong class="function"><code>snprintf</code></strong></a> işlevinin eşdeğeridir.
-    </p>
-   </div>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-    <span id="glibc-fn-vasprintf" class="indexterm"></span>
-    <span id="glibc-cp-vasprintf" class="indexterm"></span>
-    <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/stdio.h;hb=HEAD" target="_top">stdio.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">int </code><strong><code class="function">vasprintf</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">char </code><strong class="type">**</strong><strong><code class="parameter">ptr</code></strong><strong><code>, </code></strong><code class="type">const char </code><strong class="type">*</strong><strong><code class="parameter">template</code></strong><strong><code>, </code></strong><code class="type">va_list </code><strong><code class="parameter">ap</code></strong><strong><code>)</code></strong></td></tr></table></div>
-    
-    <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-locale">locale</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-asunsafe">AS-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-heap">heap</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acunsafe">AC-Unsafe</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-mem">mem</a>
-    </div>
-    <p>
-     <a href="glibc-Variable-Arguments-Output.html#glibc-fn-vprintf"><strong class="function"><code>vprintf</code></strong></a> işlevindeki gibi doğrudan belirtilen değişken bağımsız değişken listesiyle <a href="glibc-Dynamic-Output.html#glibc-fn-asprintf"><strong class="function"><code>asprintf</code></strong></a> işlevinin eşdeğeridir.
-    </p>
-   </div>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-    <span id="glibc-fn-obstack_vprintf" class="indexterm"></span>
-    <span id="glibc-cp-obstack_vprintf" class="indexterm"></span>
-    <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/stdio.h;hb=HEAD" target="_top">stdio.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">int </code><strong><code class="function">obstack_vprintf</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">struct obstack </code><strong class="type">*</strong><strong><code class="parameter">obstack</code></strong><strong><code>, </code></strong><code class="type">const char </code><strong class="type">*</strong><strong><code class="parameter">template</code></strong><strong><code>, </code></strong><code class="type">va_list </code><strong><code class="parameter">ap</code></strong><strong><code>)</code></strong></td></tr></table></div>
-    
-    <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a> <a class="link" href="glibc-Conditionally-Safe-Features.html#glibc-safety-race">race</a><code class="code"><a class="code" href="glibc-Other-Safety-Remarks.html#glibc-safety-identifier">:obstack</a></code> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-locale">locale</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-asunsafe">AS-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-corrupt">corrupt</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-heap">heap</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acunsafe">AC-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-corrupt">corrupt</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-mem">mem</a>
-    </div>
-    <p>
-     <a href="glibc-Variable-Arguments-Output.html#glibc-fn-vprintf"><strong class="function"><code>vprintf</code></strong></a> işlevindeki gibi doğrudan belirtilen değişken bağımsız değişken listesiyle <a href="glibc-Variable-Arguments-Output.html#glibc-fn-obstack_vprintf"><strong class="function"><code>obstack_vprintf</code></strong></a> işlevinin eşdeğeridir.
-    </p>
-   </div>
-        <div class="example">
-          <div class="example-title">Örnek: </div>
-          <div class="example-contents">
-            <p>
-     Burada <a href="glibc-Variable-Arguments-Output.html#glibc-fn-vfprintf"><strong class="function"><code>vfprintf</code></strong></a> kullanılan bir örnek vardır. Örnekteki işlev yazılımın ismi ile önceleyerek standart hataya bir hata iletisi basmaktadır. (<a href="glibc-Error-Messages.html#glibc-vr-program_invocation_short_name"><strong class="varname"><code>program_invocation_short_name</code></strong></a> değişkeninin açıklamaları için bkz. <a class="xref" href="glibc-Error-Messages.html" title="2.3. Hata İletileri"><em>Hata İletileri</em></a>.)
-    </p>
-            <pre class="screen">#include &lt;stdio.h&gt;
+<div class="para"><div align="right"><pre class="screen">
+#define myprintf(a, b, c, d, e, rest...) \
+         printf (mytemplate , ## rest)
+</pre></div></div><div class="para">
+Değişken sayıda argümanlı makrolar hakkında ayrıntılı bilgi edinmek için GCC info'sundaki "Macros with Variable Numbers of Arguments" (Değişken sayıda argümanlı makrolar) bölümüne bakınız. Bu yol sadece makrolara ayrılmıştır, gerçek işlevlere uygulanmaz.
+    </div><div class="para">
+<b><tt>vprintf</tt></b> veya bu bölümde listelenmiş diğer işlevleri çağırmadan önce değişken sayıdaki argümanı ilklendirmek için bir <b><tt>va_start</tt></b> çağrısı (<a href="../glibc/glibc-Variadic-Functions.html" class="xref" title="Değişkin İşlevler">Değişkin İşlevler</a>) yapmalısınız. Sonra da kendinizin elde etmek istediğiniz argümanları almak için <b><tt>va_arg</tt></b> çağrıları yapmalısınız.
+    </div><div class="para">
+<b><tt>va_list</tt></b> göstericinize seçtiğiniz ilk argümanı gösterdikten sonra bir <b><tt>vprintf</tt></b> çağrısı yapmaya hazırsınız demektir. İşlevinizle aktardığınız bu argüman ve artbileşen argümanlar ile belirttiğiniz şablon dizgesi <b><tt>vprintf</tt></b> işlevi tarafından kullanılacaktır.
+    </div><div class="para">
+Diğer sistemlerde <b><tt>vprintf</tt></b> çağrısından sonra <b><tt>va_list</tt></b> göstericisi geçersiz duruma gelebilir ve <b><tt>vprintf</tt></b> çağrısından sonra <b><tt>va_arg</tt></b> işlevini kullanamayabilirsiniz. Bu durumda bir <b><tt>va_end</tt></b> çağrısından sonra <b><tt>va_start</tt></b> ile göstericiyi yeniden almalısınız. <b><tt>vprintf</tt></b> işlevi işlevinizin argüman listesini ortadan kaldırmaz.
+    </div><div class="para">
+GNU C böyle sınırlamalara sahip değildir. <b><tt>va_list</tt></b> göstericisini <b><tt>vprintf</tt></b> çağrısına aktardıktan sonra bu göstericiyi kullanarak argümanları almaya devam edebilirsiniz ve <b><tt>va_end</tt></b> çağrısı da hiçbir işlem yapmaz. (<b><tt>vprintf</tt></b> çağrısından sonra yaptığınız <b><tt>va_arg</tt></b> çağrıları ile alınan argümanlar <b><tt>vprintf</tt></b> çağrısındaki argümanlarla aynıdır.)
+    </div><div class="para">
+Bu işlevlerin prototipleri <tt>stdio.h</tt> başlık dosyasında bildirilmiştir.
+<a class="indexterm" name="idx905" id="idx905"></a>
+    </div><a name="glibc-vprintf" id="glibc-vprintf"></a>
+<a class="indexterm" name="idx906" id="idx906"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>vprintf</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *<i><tt>şablon</tt></i>,
+ va_list     <i><tt>arglist-gstr</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev değişken sayıdaki argümanlarını doğrudan almak yerine <i><tt>arglist-gstr</tt></i> argüman listesi göstericisinden alması dışında <b><tt>printf</tt></b> ile aynıdır.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-vwprintf" id="glibc-vwprintf"></a>
+<a class="indexterm" name="idx907" id="idx907"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>vwprintf</tt></b></tt></td><td valign="top"><pre class="paramdef">(const wchar_t *<i><tt>şablon</tt></i>,
+ va_list        <i><tt>arglist-gstr</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev değişken sayıdaki argümanlarını doğrudan almak yerine <i><tt>arglist-gstr</tt></i> argüman listesi göstericisinden alması dışında <b><tt>wprintf</tt></b> ile aynıdır.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-vfprintf" id="glibc-vfprintf"></a>
+<a class="indexterm" name="idx908" id="idx908"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>vfprintf</tt></b></tt></td><td valign="top"><pre class="paramdef">(FILE       *<i><tt>akım</tt></i>,
+ const char *<i><tt>şablon</tt></i>,
+ va_list     <i><tt>arglist-gstr</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev değişken sayıdaki argümanlarını doğrudan almak yerine <i><tt>arglist-gstr</tt></i> argüman listesi göstericisinden alması dışında <b><tt>vprintf</tt></b> ile aynıdır.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-vfwprintf" id="glibc-vfwprintf"></a>
+<a class="indexterm" name="idx909" id="idx909"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>vfwprintf</tt></b></tt></td><td valign="top"><pre class="paramdef">(FILE          *<i><tt>akım</tt></i>,
+ const wchar_t *<i><tt>şablon</tt></i>,
+ va_list        <i><tt>arglist-gstr</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev değişken sayıdaki argümanlarını doğrudan almak yerine <i><tt>arglist-gstr</tt></i> argüman listesi göstericisinden alması dışında <b><tt>vwprintf</tt></b> ile aynıdır.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-vsprintf" id="glibc-vsprintf"></a>
+<a class="indexterm" name="idx910" id="idx910"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>vsprintf</tt></b></tt></td><td valign="top"><pre class="paramdef">(char       *<i><tt>s</tt></i>,
+ const char *<i><tt>şablon</tt></i>,
+ va_list     <i><tt>arglist-gstr</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev değişken sayıdaki argümanlarını doğrudan almak yerine <i><tt>arglist-gstr</tt></i> argüman listesi göstericisinden alması dışında <b><tt>sprintf</tt></b> ile aynıdır.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-vswprintf" id="glibc-vswprintf"></a>
+<a class="indexterm" name="idx911" id="idx911"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>vswprintf</tt></b></tt></td><td valign="top"><pre class="paramdef">(wchar_t       *<i><tt>s</tt></i>,
+ size_t         <i><tt>boyut</tt></i>,
+ const wchar_t *<i><tt>şablon</tt></i>,
+ va_list        <i><tt>arglist-gstr</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev değişken sayıdaki argümanlarını doğrudan almak yerine <i><tt>arglist-gstr</tt></i> argüman listesi göstericisinden alması dışında <b><tt>swrintf</tt></b> ile aynıdır.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-vsnprintf" id="glibc-vsnprintf"></a>
+<a class="indexterm" name="idx912" id="idx912"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>vsnprintf</tt></b></tt></td><td valign="top"><pre class="paramdef">(char       *<i><tt>s</tt></i>,
+ size_t      <i><tt>boyut</tt></i>,
+ const char *<i><tt>şablon</tt></i>,
+ va_list     <i><tt>arglist-gstr</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev değişken sayıdaki argümanlarını doğrudan almak yerine <i><tt>arglist-gstr</tt></i> argüman listesi göstericisinden alması dışında <b><tt>snprintf</tt></b> ile aynıdır.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-vasprintf" id="glibc-vasprintf"></a>
+<a class="indexterm" name="idx913" id="idx913"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>vasprintf</tt></b></tt></td><td valign="top"><pre class="paramdef">(char      **<i><tt>gstr</tt></i>,
+ const char *<i><tt>şablon</tt></i>,
+ va_list     <i><tt>arglist-gstr</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev değişken sayıdaki argümanlarını doğrudan almak yerine <i><tt>arglist-gstr</tt></i> argüman listesi göstericisinden alması dışında <b><tt>vasprintf</tt></b> ile aynıdır.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-obstack_vprintf" id="glibc-obstack_vprintf"></a>
+<a class="indexterm" name="idx914" id="idx914"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>obstack_vprintf</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct obstack *<i><tt>yığınak</tt></i>,
+ const char     *<i><tt>şablon</tt></i>,
+ va_list         <i><tt>arglist-gstr</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev değişken sayıdaki argümanlarını doğrudan almak yerine <i><tt>arglist-gstr</tt></i> argüman listesi göstericisinden alması dışında <b><tt>obstack_vprintf</tt></b> ile aynıdır.
+      </div></dd></dl><div style="padding:5px"></div>
+    <div class="para">
+Aşağıda <b><tt>vfprintf</tt></b> kullanılan bir örnek vardır. Örnekteki işlev yazılımın ismi ile önceleyerek standart hataya bir ileti basmaktadır. (<b><tt>program_invocation_short_name</tt></b> değişkeninin açıklamaları için <a href="../glibc/glibc-Error-Messages.html" class="xref" title="Hata İletileri">Hata İletileri</a> bölümüne bakınız.)
+    </div><div class="para"><div align="right"><pre class="screen">
+#include &lt;stdio.h&gt;
 #include &lt;stdarg.h&gt;
 
 void
-eprintf (const char *template, ...)
+eprintf (const char *sablon, ...)
 {
   va_list ap;
   extern char *program_invocation_short_name;
 
   fprintf (stderr, "%s: ", program_invocation_short_name);
-  va_start (ap, template);
-  vfprintf (stderr, template, ap);
+  va_start (ap, sablon);
+  vfprintf (stderr, sablon, ap);
   va_end (ap);
 }
-</pre>
-            <p>
-     <code class="code">eprintf</code> işlevi şöyle çağrılabilir:
-    </p>
-            <pre class="screen">eprintf ("file `%s' does not exist\n", filename);
-</pre>
-            <p>
-     GNU C'de <a href="glibc-Formatted-Output-Functions.html#glibc-fn-printf"><strong class="function"><code>printf</code></strong></a> tarzı biçim dizgesi kullanan bir işlevi derleyiciye bildirmek için özel bir yapı vardır. Bu yapı kullanıldığında işlevin her çağrısı için kullanılan bağımsız değişkenlerin türleri ve sayısı denetlenir ve biçim dizgesiyle eşleşmeyenler için uyarı verir. Örneğin, bu yapı <code class="code">eprintf</code> için şöyle kullanabilir:
-    </p>
-            <pre class="screen">void eprintf (const char *template, ...)
-	__attribute__ ((format (printf, 1, 2)));
-</pre>
-            <p>
-     Bu kod parçası derleyiciye <code class="code">eprintf</code> işlevinin ilk bağımsız değişkeninin <a href="glibc-Formatted-Output-Functions.html#glibc-fn-printf"><strong class="function"><code>printf</code></strong></a> biçim dizgesi olarak (<a href="glibc-Formatted-Input-Functions.html#glibc-fn-scanf"><strong class="function"><code>scanf</code></strong></a> işlevinin tersine; bkz. <a class="xref" href="glibc-Formatted-Input.html" title="12.14. Biçimli Girdi"><em>Biçimli Girdi</em></a>), biçim dizgesini oluşturan diğer bağımsız değişkenlerin başlangıcının ikinci bağımsız değişken olarak kullanıldığını söyler. İşlev özniteliklerinin bildirilmesi ile ilgili ayrıntılı bilgi edinmek için GCC kılavuzunun <a class="link" href="https://gcc.gnu.org/onlinedocs/gcc/Function-Attributes.html#Function-Attributes" target="_top">Declaring Attributes of Functions</a> bölümüne bakılabilir.
-    </p>
-          </div>
-        </div>
-        <br class="example-break" />
-      </section>
-      <footer>
-        <div align="center" class="footer">
-          <small>Bir <a href="http://belgeler.org.tr/">Linux Kitaplığı</a> Sayfası</small>
-        </div>
-      </footer>
-    </section>
-  </body>
-</html>
+     </pre></div></div><div class="para">
+       <b><tt>eprintf</tt></b> işlevi şöyle çağrılabilir:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+eprintf ("`%s' diye bir dosya yok\n", filename);
+</pre></div></div><div class="para">
+GNU C'de <b><tt>printf</tt></b> tarzı biçim dizgesi kullanan bir işlevi derleyiciye bildirebileceğiniz özel bir yapı vardır. Bu yapı kullanıldığında işlevin her çağrısı için kullanılan argümanların türleri ve sayısı denetlenir ve biçim dizgesiyle eşleşmeyenler için sizi uyarır. Örneğin, bu yapıyı <b><tt>eprintf</tt></b> için şöyle kullanabilirsiniz:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+void eprintf (const char *sablon, ...)
+        __attribute__ ((format (printf, 1, 2)));
+</pre></div></div><div class="para">
+Bu kod parçası derleyiciye <b><tt>eprintf</tt></b> işlevinin ilk argümanının <b><tt>printf</tt></b> biçim dizgesi olarak, biçim dizgesini oluşturan diğer argümanların başlangıcının ikinci argüman olarak kullanıldığını söyler. İşlev özniteliklerinin bildirilmesi ile ilgili ayrıntılı bilgi edinmek için GCC kılavuzunun (info) "Declaring Attributes of Functions" (İşlevlerin Özniteliklerinin Bildirilmesi) bölümüne bakınız.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Dynamic-Output.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Formatted-Output.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Parsing-a-Template-String.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Biçimli Çıktıyı Özdevimli Ayırma </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Bir Şablon Dizgesinin Çözümlenmesi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

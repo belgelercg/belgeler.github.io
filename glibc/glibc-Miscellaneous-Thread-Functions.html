@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:45+03:00" /><title>Çeşitli Evre İşlevleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-POSIX-Threads.html" title="POSIX Evreleri" /><link rel="previous" href="../glibc/glibc-Streams-and-Fork.html" title="Akımlar ve Çatallaşma" /><link rel="next" href="../glibc/glibc-Job-Control.html" title="XXVII. Oylum - İş Denetimi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Çeşitli Evre İşlevleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Streams-and-Fork.html">Önceki</a> </td><th width="60%" align="center">POSIX Evreleri</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Job-Control.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Miscellaneous-Thread-Functions" id="glibc-Miscellaneous-Thread-Functions"></a>Çeşitli Evre İşlevleri</div><dl><dd>
+<a class="indexterm" name="idx2953" id="idx2953"></a>
+<a name="glibc-pthread_self" id="glibc-pthread_self"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>pthread_t <b><tt>pthread_self</tt></b></tt></td><td valign="top"><pre class="paramdef">(void)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_self</tt></b> çağıran süreç için evre tanıtıcısını döndürür.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2954" id="idx2954"></a>
+<a name="glibc-pthread_equal" id="glibc-pthread_equal"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pthread_equal</tt></b></tt></td><td valign="top"><pre class="paramdef">(pthread_t <i><tt>evre1</tt></i>,
+ pthread_t <i><tt>evre2</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_equal</tt></b> iki evre tanıtıcısının aynı evreye belirtip belirtmediğini saptar.
+   </div><div class="para">
+Eğer <i><tt>evre1</tt></i> ve <i><tt>evre2</tt></i> aynı evreyi belirtiyorsa sıfırdan farklı bir değer döndürülür. Aksi takdirde 0 döndürülür.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2955" id="idx2955"></a>
+<a name="glibc-pthread_detach" id="glibc-pthread_detach"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pthread_detach</tt></b></tt></td><td valign="top"><pre class="paramdef">(pthread_t <i><tt>evre</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_detach</tt></b> işlevi <i><tt>evre</tt></i> evresini ayrık duruma koyar. Bu, <i><tt>evre</tt></i> tarafından harcanan bellek kaynaklarının <i><tt>evre</tt></i> sonlandığında hemen serbest bırakılacağını garantiler. Ancak, bu diğer evrelerin <i><tt>evre</tt></i>'nin sonlanmasında <b><tt>pthread_join</tt></b> kullanarak eşzamanlanmalarını engeller.
+   </div><div class="para">
+Bir evre <b><tt>detachstate</tt></b> özelliği <b><tt>pthread_create</tt></b> işlevine verilerek ilk başta ayrık oluşturulabilir. Buna karşın <b><tt>pthread_detach</tt></b> evrelerin birleşimci durumda oluşturulmalarını sağlar ve daha sonra ayrık duruma konulması gerekir.
+   </div><div class="para">
+<b><tt>pthread_detach</tt></b> tamamlandıktan sonra <i><tt>evre</tt></i> üzerinde <b><tt>pthread_join</tt></b> uygulama teşebbüsleri başarısız olur.
+Eğer <b><tt>pthread_detach</tt></b> çağrıldığında diğer bir evre <i><tt>evre</tt></i> evresiyle birleşiyorsa, <b><tt>pthread_detach</tt></b> birşey yapmaz ve <i><tt>evre</tt></i>'yi birleşimci durumda bırakır.
+   </div><div class="para">
+Başarı halinde 0 döndürülür. Hata halinde, aşağıdaki hata kodlarından biri döndürülür:
+   </div>
+   <div class="variablelist"><dl><dt><span class="term"><tt>ESRCH</tt></span></dt><dd class="varlist"><div class="para">
+Belirtilen <i><tt>evre</tt></i> evresi bulunamadı
+     </div></dd><dt><span class="term"><tt>EINVAL</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>evre</tt></i> evresi zaten ayrık durumda
+      </div></dd></dl></div>
+</dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2956" id="idx2956"></a>
+<a name="glibc-pthread_kill_other_threads_np" id="glibc-pthread_kill_other_threads_np"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>pthread_kill_other_threads_np</tt></b></tt></td><td valign="top"><pre class="paramdef">(void)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_kill_other_threads_np</tt></b> taşınabilir olmayan bir LinuxThreads oluşumudur. Yazılım içindeki çağıran evre hariç bütün evrelerin hemen sonlanmasına neden olur. Bir evre <b><tt>exec</tt></b> işlevlerinden birini, örneğin <b><tt>execve</tt></b> çağırmadan az önce çağrılmak üzere tasarlanmıştır.
+   </div><div class="para">
+Diğer evrelerin sonlandırılması <b><tt>pthread_cancel</tt></b> ile yapılmaz ve iptal mekanizması tamamen atlanır. Bu yüzden geçerli iptal durumu ve iptal türü ayarları dikkate alınmaz ve temizlik işleyicileri sonlandırılan evrelerde işletilmez.
+   </div><div class="para">
+POSIX 1003.1c'ye göre, evrelerden birindeki başarılı bir <b><tt>exec*</tt></b> yazılımdaki diğer bütün evreleri otomatik olarak sonlandırmalıdır. Bu davranış henüz LinuxThreads içinde uygulanmamıştır. <b><tt>pthread_kill_other_threads_np</tt></b>'in <b><tt>exec*</tt></b>'den önce çağrılması neredeyse aynı davranışı gösterir, tabii ki eğer <b><tt>exec*</tt></b> sonunda başarısız olmadıysa, o zaman zaten diğer bütün evreler sonlandırılmıştır.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2957" id="idx2957"></a>
+<a name="glibc-pthread_once" id="glibc-pthread_once"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pthread_once</tt></b></tt></td><td valign="top"><pre class="paramdef">(pthread_once_t *<i><tt>birkerelik</tt></i>,
+ void          (*<i><tt>ilklendirme_yordamı</tt></i>) (void))</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_once</tt></b>'ın amacı ilklendirme kodunun en çok bir kere işletilmesini temin etmektir.  <i><tt>birkerelik</tt></i> argümanı <b><tt>PTHREAD_ONCE_INIT</tt></b> ile durağan olarak ilklendirilmiş
+bir statik ya da extern değişkeni gösterir.
+   </div><div class="para">
+<i><tt>birkerelik</tt></i> argümanıyla <b><tt>pthread_once</tt></b> ilk çağrıldığında, <i><tt>ilklendirme_yordamı</tt></i> yordamını argümansız çağırır ve <i><tt>once_control</tt></i> değişkeninin değerini ilklendirmenin yapıldığını belirtmek için değiştirir. <b><tt>pthread_once</tt></b>'a aynı <b><tt>birkerelik</tt></b> argümanıyla yapılacak tekrarlanan çağrılar birşey yapmazlar.
+   </div><div class="para">
+Eğer bir evre <i><tt>ilklendirme_yordamı</tt></i> işletilirken iptal edilirse <i><tt>birkerelik</tt></i> değişkeninin durumu sıfırlanır, böylece <b><tt>pthread_once</tt></b>'a yapılacak sonraki çağrılar yordamı tekrar çağıracaktır.
+   </div><div class="para">
+Eğer bir veya daha fazla evre, süreç tarafından <b><tt>pthread_once</tt></b> ilklendirme yordamlarını işletirken çatallaşırsa, kendi <i><tt>birkerelik</tt></i> değişkenlerinin durumları alt süreçte sıfırlanmış olarak görünürler, böylece
+eğer alt süreç  <b><tt>pthread_once</tt></b> çağırırsa, yordamlar işletilir.
+   </div><div class="para">
+<b><tt>pthread_once</tt></b> hep 0 döndürür.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2958" id="idx2958"></a>
+<a name="glibc-pthread_setschedparam" id="glibc-pthread_setschedparam"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pthread_setschedparam</tt></b></tt></td><td valign="top"><pre class="paramdef">(pthread_t                 <i><tt>hedef_evre</tt></i>,
+ int                       <i><tt>ilke</tt></i>,
+ const struct sched_param *<i><tt>param</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_setschedparam</tt></b> işlevi <i><tt>hedef_evre</tt></i> için <i><tt>ilke</tt></i> ve <i><tt>param</tt></i> ile belirtildiği gibi zamanlama parametrelerini ayarlar. <i><tt>ilke</tt></i>,
+<b><tt>SCHED_OTHER</tt></b> (düzenli, gerçek zamanlı olmayan zamanlama),
+<b><tt>SCHED_RR</tt></b> (gerçek zamanlı, döner turnuva) veya
+<b><tt>SCHED_FIFO</tt></b> (gerçek zamanlı, ilk giren ilk çıkar) olabilir.
+<i><tt>param</tt></i> gerçek zamanlı ilkeler için zamanlama önceliğini belirtir.
+Zamanlama ilkeleri hakkında daha fazla bilgi için bkz. <a href="../glibc/glibc-Priority.html" class="xref" title="Sürecin İşlemci Önceliği ve Zamanlama">Sürecin İşlemci Önceliği ve Zamanlama</a>
+   </div><div class="para">
+Gerçek zamanlı zamanlama ilkeleri <b><tt>SCHED_RR</tt></b> ve <b><tt>SCHED_FIFO</tt></b> sadece süper kullanıcı haklarına sahip süreçler için kullanılabilir.
+   </div><div class="para">
+Başarı halinde, <b><tt>pthread_setschedparam</tt></b> 0 döndürür. Hata halinde aşağıdaki hata kodlarından birini döndürür:
+   </div>
+   <div class="variablelist"><dl><dt><span class="term"><tt>EINVAL</tt></span></dt><dd class="varlist"><div class="para"><i><tt>ilke</tt></i> <b><tt>SCHED_OTHER</tt></b>, <b><tt>SCHED_RR</tt></b>, <b><tt>SCHED_FIFO</tt></b>'dan biri değil veya <i><tt>param</tt></i> ile belirtilen öncelik değeri belirtilen ilkeye göre geçerli değil
+     </div></dd><dt><span class="term"><tt>EPERM</tt></span></dt><dd class="varlist"><div class="para">
+Gerçek zamanlı zamanlama istendi ancak çağıran süreç yeterli izinlere sahip değil
+     </div></dd><dt><span class="term"><tt>ESRCH</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>hedef_evre</tt></i> geçersiz veya sonlandırılmış
+     </div></dd><dt><span class="term"><tt>EFAULT</tt></span></dt><dd class="varlist"><div class="para"><i><tt>param</tt></i> süreç belleği dışında bir yeri gösteriyor
+     </div></dd></dl></div>
+</dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2959" id="idx2959"></a>
+<a name="glibc-pthread_getschedparam" id="glibc-pthread_getschedparam"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pthread_getschedparam</tt></b></tt></td><td valign="top"><pre class="paramdef">(pthread_t           <i><tt>hedef_evre</tt></i>,
+ int                *<i><tt>ilke</tt></i>,
+ struct sched_param *<i><tt>param</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_getschedparam</tt></b>
+<i><tt>hedef_evre</tt></i> evresi için zamanlama ilkesini ve parametrelerini elde eder,
+<i><tt>ilke</tt></i> ve <i><tt>param</tt></i> ile gösterilen yerlerde saklar.
+   </div><div class="para">
+<b><tt>pthread_getschedparam</tt></b> başarı halinde 0 döndürür, hata halinde aşağıdaki hata kodlarından birini döndürür:
+   </div>
+   <div class="variablelist"><dl><dt><span class="term"><tt>ESRCH</tt></span></dt><dd class="varlist"><div class="para"><i><tt>hedef_evre</tt></i> geçersiz veya sonlandırılmış
+     </div></dd><dt><span class="term"><tt>EFAULT</tt></span></dt><dd class="varlist"><div class="para"><i><tt>ilke</tt></i> veya <i><tt>param</tt></i> süreç bellek alanı dışında bir yeri gösteriyor
+     </div></dd></dl></div>
+</dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2960" id="idx2960"></a>
+<a name="glibc-pthread_setconcurrency" id="glibc-pthread_setconcurrency"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pthread_setconcurrency</tt></b></tt></td><td valign="top"><pre class="paramdef">(int <i><tt>seviye</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_setconcurrency</tt></b> kullanıcı evrelerinin çekirdek evrelerine eşleştirme konusundaki eksiklerden dolayı LinuxThreads'de kullanılmaz.
+Kaynak uyumluluğu için bulunmaktadır. <i><tt>seviye</tt></i> değerini saklar, böylece sonraki <b><tt>pthread_getconcurrency</tt></b> çağrılarında döndürülebilir.
+Başka bir hareket yapmaz.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2961" id="idx2961"></a>
+<a name="glibc-pthread_getconcurrency" id="glibc-pthread_getconcurrency"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pthread_getconcurrency</tt></b></tt></td><td valign="top"><pre class="paramdef">()</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_getconcurrency</tt></b> kullanıcı evrelerinin çekirdek evrelerine eşleştirme konusundaki eksiklerden dolayı LinuxThreads'de kullanılmaz. Kaynak uyumluluğu için bulunmaktadır.  Ancak, <b><tt>pthread_setconcurrency</tt></b>'e yapılan son çağrıda belirlenen değeri döndürür.
+      </div></dd></dl><div style="padding:5px"></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Streams-and-Fork.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-POSIX-Threads.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Job-Control.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Akımlar ve Çatallaşma </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> XXVII. Oylum - İş Denetimi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

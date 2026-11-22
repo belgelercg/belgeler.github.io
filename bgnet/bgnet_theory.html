@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:23+03:00" /><title>Soket Nedir?</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../bgnet/bgnet.html" title="Beej'in Ağ Programlama Kılavuzu" /><link rel="previous" href="../bgnet/bgnet_intro-copyright.html" title="Telif Hakkı ve Dağıtım" /><link rel="next" href="../bgnet/bgnet_theory-twotypes.html" title="Internet Soketlerinin İki türü" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Soket Nedir?</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../bgnet/bgnet_intro-copyright.html">Önceki</a> </td><th width="60%" align="center">Beej'in Ağ Programlama Kılavuzu</th><td width="20%" align="right"> <a accesskey="n" href="../bgnet/bgnet_theory-twotypes.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="bgnet_theory" id="bgnet_theory"></a>Soket Nedir?</div></div></div><div class="toc"><div class="formaltitle"><b>İçindekiler</b></div><dl><dt>1. <a href="../bgnet/bgnet_theory-twotypes.html">Internet Soketlerinin İki türü</a></dt><dt>2. <a href="../bgnet/bgnet_theory-lowlevel.html">Düşük Seviye Duyarsızlığı ve Ağ Teorisi</a></dt></dl></div><dl><dd><div class="para">
+      Sürekli "socket"lerden bahsedildiğini duymuşsunuzdur ve belki de bunların
+      tam olarak ne anlama geldiğini merak ediyor olabilirsiniz. Soket kısaca
+      şudur: Diğer programlarla standart Unix dosya tanımlayıcılarını kullanarak
+      haberleşmenizi sağlayan bir yapı.</div><div class="para">Ne?
+    </div><div class="para">
+      Pekala -- bazı Unix hacker'larının, "Vay canına! Unix'teki hemen hemen
+      <i>herşey</i> bir dosya!" dediğini duymuş olabilirsiniz.
+      Böyle konuşan birinin kast ettiği aslında Unix programlarının, herhangi
+      bir G/Ç işlemi yaptıklarında bunları bir dosya tanımlayıcıyı okuyarak
+      ya da ona yazarak yaptıklarıdır. Bir dosya tanımlayıcı basitçe söylemek
+      gerekirse açık bir dosya ile ilişkilendirilmiş bir tamsayıdır. Ancak
+      (işin püf noktası da burası), söz konusu bu açık dosya diskteki normal
+      bir dosya olabileceği gibi aynı zamanda bir ağ bağlantısı, bir FIFO,
+      bir uçbirim ya da başka herhangi bir veri kaynağı olabilir. Gerçekten
+      de Unix ortamında her şey bir dosyadır! Öyleyse Internet üzerinden başka
+      bir programla iletişim kurmak isterseniz bunu bir dosya tanımlayıcı
+      üzerinden yapacaksınız, inanın buna.
+    </div><div class="para">
+      "Peki bay çok bilmiş, ağ iletişimi için kullanacağım bu dosya tanımlayıcı
+      nerede?" gibi bir soru aklınıza gelmemiş olabilir ancak ben gene de cevabını
+      vereyim ki içiniz rahat etsin: Bu dosya tanımlayıcıya ulaşmak için
+      <tt>socket()</tt> sistem işlevini çağırmanız gerekir. Bu işlev
+      size soket tanımlayıcıyı döndürür ve siz de bunu ve tabii
+      <tt>send()</tt> ile <tt>recv()</tt>
+      (<b><tt><a class="ulink" href="http://linux.com.hk/man/showman.cgi?manpath=/man/man2/send.2.inc" target="_top">man send</a></tt></b>,
+      <b><tt><a class="ulink" href="http://linux.com.hk/man/showman.cgi?manpath=/man/man2/recv.2.inc" target="_top">man recv</a></tt></b>)
+      isimli soket işlevlerini kullanarak istediğiniz şekilde iletişimizini
+      kurarsınız.
+    </div><div class="para">
+      "Hey, bir dakika!" diyebilirsiniz şimdi. "Eğer bir dosya tanımlayıcı söz
+      konusu ise o halde tanrı aşkına neden her zaman kullandığım normal
+      <tt>read()</tt> ve <tt>write()</tt> işlevlerini
+      kullanarak soketler üzerinden iletişim kuramayayım ki?" Kısa cevap:
+      "Evet tabii ki!" Uzun cevap ise "Evet, mümkün ama
+      <tt>send()</tt> ve <tt>recv()</tt> işlevleri
+      veri iletişiminde çok daha fazla kontrol sağlar ve işinizi kolaylaştırır."
+    </div><div class="para">
+      Sırada ne var? Buna ne dersiniz: çeşit çeşit soket vardır. Mesela DARPA
+      Internet adresleri (Internet Soketleri), yerel bir düğümdeki (node) yol
+      isimleri (Unix Soketleri), CCITT X.25 adresleri (X.25 Soketleri ki inanın
+      bunları bilmeseniz de olur) ve kullandığınız Unix sürümüne bağlı daha pek
+      çok soket tipi. Bu belge sadece birinci tür soketleri ele almaktadır,
+      yani: Internet Soketleri.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../bgnet/bgnet_intro-copyright.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../bgnet/bgnet.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../bgnet/bgnet_theory-twotypes.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Telif Hakkı ve Dağıtım </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Internet Soketlerinin İki türü</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

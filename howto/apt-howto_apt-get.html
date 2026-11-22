@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:13+03:00" /><title>Paketlerin yönetimi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/apt-howto.html" title="APT NASIL" /><link rel="previous" href="../howto/apt-howto_basico.html" title="Temel Yapılandırma" /><link rel="next" href="../howto/apt-howto_helpers.html" title="Yardımcı araçlar" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Paketlerin yönetimi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/apt-howto_basico.html">Önceki</a> </td><th width="60%" align="center">APT NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/apt-howto_helpers.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="apt-howto_apt-get" id="apt-howto_apt-get"></a>Paketlerin yönetimi</div><dl><dd> <div class="head3"><a name="apt-howto_update" id="apt-howto_update"></a>Paket listesini güncelleme</div><dl><dd><div class="para">
+Paket yönetim sistemi kurulu paketler, kurulu olmayan paketler, kurulabilir paketler vb. hakkında bilgileri kendi özel veritabanında tutmaktadır. <b><tt>apt-get</tt></b> programı bu veritabanını kullanarak istenilen paketin nasıl kurulacağını, başka hangi paketlerin daha kurulması gerektiğini öğrenir.
+      </div><div class="para">
+Bu listeyi güncellemek için <b><tt>apt-get update</tt></b> komutunu kullanmalısınız. Bu komut <tt>/etc/apt/sources.list</tt> dosyanıza bakar ve belirtilen arşivlerden güncel paket listesini indirir; ayrıntılı bilgi için bkz. <a href="../howto/apt-howto_basico.html#apt-howto_sources.list" class="xref" title="/etc/apt/sources.list dosyası">/etc/apt/sources.list dosyası</a>.
+      </div><div class="para">
+Paket güncellemeleri ve güvenlikle ilgili güncellemelerden sizin ve sisteminizin haberdar olabilmesi için bu komutu düzenli aralıklarla çalıştırmakta fayda vardır.
+      </div></dd></dl> <div class="head3"><a name="apt-howto_install" id="apt-howto_install"></a>Paket kurma</div><dl><dd><div class="para">
+Sonunda sabırsızlıkla beklediğiniz bölüme geldik! Artık <tt>sources.list</tt> dosyanız hazır ve paket listeniz güncel durumda. Tek yapmanız gereken kuracağınız paketi belirtmek.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>apt-get install xchat</tt></b>
+</pre></div></div><div class="para">
+APT hemen kendi veritabanını tarayarak bu paketin en son sürümünü bulacak ve <tt>sources.list</tt> dosyanızda belirtilen arşivden indirmeye başlayacaktır. Bu paketin başka paketlere de bağımlı olması durumunda - ki örneğimizde de öyle - aynı adımları bağımlılık yaratan paketler için de yapacaktır. Aşağıdaki örneğe bakınız:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>apt-get install nautilus</tt></b>
+Reading Package Lists... Done
+Building Dependency Tree... Done
+The following extra packages will be installed:
+  bonobo libmedusa0 libnautilus0
+The following NEW packages will be installed:
+  bonobo libmedusa0 libnautilus0 nautilus
+0 packages upgraded, 4 newly installed, 0 to remove and 1  not upgraded.
+Need to get 8329kB of archives. After unpacking 17.2MB will be used.
+Do you want to continue? [Y/n]
+</pre></div></div><div class="para">
+<b><tt>nautilus</tt></b> paketi bazı kütüphane paketlerine bağımlı durumdadır. Eğer bağımlılık yaratan paketleri de komutumuza eklemiş olsaydık APT devam etmek istiyor musunuz? sorusunu sormayacak ve hemen paketleri indirmeye başlayacaktı.
+      </div><div class="para">
+Bunun anlamı APT'nin sadece komut satırında belirtilmeyen ancak gereken paketleri de kurmak istediği zaman onay isteyeceğidir.
+      </div><div class="para">
+Aşağıdaki <b><tt>apt-get</tt></b> seçenekleri işinize yarayabilir:
+      </div>
+<div class="para"><pre class="literallayout">
+-h    Bu yardım iletisini gösterir.
+-d    Sadece indirir, kurulum yapılmaz
+-f    Bütünlük kontrolü başarısız olsa da devam etmeye çalışır
+-s    Hiçbir eylem yapmaz, sadece olayı simüle eder
+-y    Tüm sorulara Evet cevabı verildiği varsayılır
+-u    İşlem sonucunda güncellenecek olan paketleri listeler
+</pre></div><div class="para">
+Birden fazla paket kurulmak üzere tek satırda seçim yapılabilir. Gerekli paketler indirilir ve <tt>/var/cache/apt/archives</tt> dizini altına ilerideki kurulumlarda da kullanılmak üzere kaydedilir.
+      </div><div class="para">
+Aynı komut satırında kaldırılmasını istediğiniz paketleri de belirtebilirsiniz. Bunun için kaldırmak istediğiniz paketin isminin sonuna bir <tt>-</tt> karakteri ekleyerek yazmanız yeterli:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>apt-get install nautilus gnome-panel-</tt></b>
+Reading Package Lists... Done
+Building Dependency Tree... Done
+The following extra packages will be installed:
+  bonobo libmedusa0 libnautilus0
+The following packages will be REMOVED:
+  gnome-applets gnome-panel gnome-panel-data gnome-session
+The following NEW packages will be installed:
+  bonobo libmedusa0 libnautilus0 nautilus
+0 packages upgraded, 4 newly installed, 4 to remove and 1  not upgraded.
+Need to get 8329kB of archives. After unpacking 2594kB will be used.
+Do you want to continue? [Y/n]
+</pre></div></div><div class="para">
+Paket kaldırmayla ilgili bilgiler için <a href="../howto/apt-howto_apt-get.html#apt-howto_remove" class="xref" title="Paket kaldırma">Paket kaldırma</a> bölümüne bakınız.
+      </div><div class="para">
+Eğer herhangi bir şekilde kurulu bir paketin dosyalarına zarar verdiyseniz veya sadece kurulu bir paketin yeniden indirilip tekrar kurulmasını istiyorsanız  <tt>--reinstall</tt> seçeneğini örnekteki gibi kullanmalısınız.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>apt-get --reinstall install gdm</tt></b>
+Reading Package Lists... Done
+Building Dependency Tree... Done
+0 packages upgraded, 0 newly installed, 1 reinstalled, 0 to remove and 1  not upgraded.
+Need to get 0B/182kB of archives. After unpacking 0B will be used.
+Do you want to continue? [Y/n]
+</pre></div></div></dd></dl> <div class="head3"><a name="apt-howto_remove" id="apt-howto_remove"></a>Paket kaldırma</div><dl><dd><div class="para">
+Bir paketi artık kullanmak istemiyorsanız APT ile sisteminizden paketi kaldırabilirsiniz. Bunun için <b><tt>apt-get remove package</tt></b> komutunu vermeniz yeterli olacaktır. Örneğin:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>apt-get remove gnome-panel</tt></b>
+Reading Package Lists... Done
+Building Dependency Tree... Done
+The following packages will be REMOVED:
+  gnome-applets gnome-panel gnome-panel-data gnome-session
+0 packages upgraded, 0 newly installed, 4 to remove and 1  not upgraded.
+Need to get 0B of archives. After unpacking 14.6MB will be freed.
+Do you want to continue? [Y/n]
+</pre></div></div><div class="para">
+Yukarıda da görüldüğü üzere APT kaldırılan pakete bağımlı olan paketler üzerinde de işlem yapmaktadır. Yukarıdaki soruyu onayladığınızda listelenen tüm paketler kaldırılacaktır. APT kullanarak bir paketi, o pakete bağımlı olan diğer paketleri kaldırmadan kaldırmanın :) bir yolu yoktur.
+      </div><div class="para">
+<b><tt>apt-get</tt></b>'in yukarıdaki gibi çalıştırılması sonrasında listelenen paketler sistemden kaldırılacak ancak paketlere ait yapılandırma dosyaları -eğer varsa- sistemde kalacaktır. Yapılandırma dosyaları ile birlikte paketleri tamamen kaldırmak için aşağıdaki komutu çalıştırın:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>apt-get --purge remove gnome-panel</tt></b>
+Reading Package Lists... Done
+Building Dependency Tree... Done
+The following packages will be REMOVED:
+  gnome-applets* gnome-panel* gnome-panel-data* gnome-session*
+0 packages upgraded, 0 newly installed, 4 to remove and 1  not upgraded.
+Need to get 0B of archives. After unpacking 14.6MB will be freed.
+Do you want to continue? [Y/n]
+</pre></div></div><div class="para">
+Burada isminden sonra <tt>*</tt> karakteri olan paketlere ait yapılandırma dosyalarının da kaldırılacağını anlıyoruz.
+      </div><div class="para">
+Kurulum <b><tt>install</tt></b> yönteminde olduğu gibi kaldırma <b><tt>remove</tt></b> işleminde de aynı satırda kurmak istediğiniz paketleri belirtebilirsiniz. Bunun için kurulmasını istediğiniz paketin sonuna <tt>+</tt> karakteri eklemeniz gereklidir:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>apt-get --purge remove gnome-panel nautilus+</tt></b>
+Reading Package Lists... Done
+Building Dependency Tree... Done
+The following extra packages will be installed:
+  bonobo libmedusa0 libnautilus0 nautilus
+The following packages will be REMOVED:
+  gnome-applets* gnome-panel* gnome-panel-data* gnome-session*
+The following NEW packages will be installed:
+  bonobo libmedusa0 libnautilus0 nautilus
+0 packages upgraded, 4 newly installed, 4 to remove and 1  not upgraded.
+Need to get 8329kB of archives. After unpacking 2594kB will be used.
+Do you want to continue? [Y/n]
+</pre></div></div><div class="para">
+<b><tt>apt-get</tt></b>, burada kaldırma işleminin yanı sıra kurulmasını istediğimiz paketi ve gerektirdiği diğer paketlerle birlikte listeler.
+      </div></dd></dl> <div class="head3"><a name="apt-howto_upgrade" id="apt-howto_upgrade"></a>Paket güncelleme</div><dl><dd><div class="para">
+Paket güncellemeleri APT'nin çok başarılı olduğu bir işlemdir. Tek bir <b><tt>apt-get upgrade</tt></b> komutu ile tüm paketlerin güncellenmesi sağlanabilmektedir. Bu komutu kullandığınız dağıtımdaki programların güncel sürümlerine sisteminizi yükseltmek veya tümüyle yeni bir Debian sürümüne yükseltme yapmak amacıyla kullanabilirsiniz. Dağıtım yükseltmeleri için önerilen yol <b><tt>apt-get dist-upgrade</tt></b> ile yapılmasıdır; ayrıntılar için <a href="../howto/apt-howto_apt-get.html#apt-howto_dist-upgrade" class="xref" title="Yeni bir sürüme güncelleme">Yeni bir sürüme güncelleme</a> kısmına bakınız.
+      </div><div class="para">
+Bu komutun <tt>-u</tt> seçeneği ile çalıştırılması oldukça yararlıdır. Bu seçeneklerin kullanımıyla APT güncellenecek paketleri listeler. APT paketlerin en son sürümlerini indirecek ve gereken sırada kurulumu gerçekleştirecektir. Böylesi bir güncelleme yapmadan önce <b><tt>apt-get update</tt></b> komutu ile paket listenizi de güncellemeniz önemlidir. Aşağıdaki örneğe bakalım:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>apt-get -u upgrade</tt></b>
+Reading Package Lists... Done
+Building Dependency Tree... Done
+The following packages have been kept back
+  cpp gcc lilo
+The following packages will be upgraded
+  adduser ae apt autoconf debhelper dpkg-dev esound esound-common ftp indent
+  ipchains isapnptools libaudiofile-dev libaudiofile0 libesd0 libesd0-dev
+  libgtk1.2 libgtk1.2-dev liblockfile1 libnewt0 liborbit-dev liborbit0
+  libstdc++2.10-glibc2.2 libtiff3g libtiff3g-dev modconf orbit procps psmisc
+29 packages upgraded, 0 newly installed, 0 to remove and 3 not upgraded.
+Need to get 5055B/5055kB of archives. After unpacking 1161kB will be used.
+Do you want to continue? [Y/n]
+</pre></div></div><div class="para">
+İşlem oldukça basittir. İlk bir kaç satırda <b><tt>apt-get</tt></b> bazı paketlerin sistemde tutulmaya devam edileceğini (kept back) söylemektedir. Bunun anlamı, listelenen programların yeni sürümleri olmasına rağmen herhangi bir nedenden ötürü sisteminize kurulamayacak olmasıdır. Büyük olasılıkla ilgili paketler, paket listenizde yer almayan paketlerin veya paket sürümlerinin kurulmasını gerektirmekte, bu işlem yapılamayacağı için de paketler güncellenmemektedir. İkinci olasılık, paketin yeni sürümünün sisteminizde daha önce olmayan yeni bir pakete bağımlı olmadır.
+      </div><div class="para">
+Birinci senaryo için kesin bir çözüm yoktur. İkinci durumda problem yaratan paketi <b><tt>apt-get install</tt></b> komutu ile kurarak sorunu çözebilirsiniz. Daha temiz bir yöntem ise <b><tt>dist-upgrade</tt></b> kullanmaktır, bu sayede sistemde daha önce olmayan yeni paketler de kurulacaktır, bkz. <a href="../howto/apt-howto_apt-get.html#apt-howto_dist-upgrade" class="xref" title="Yeni bir sürüme güncelleme">Yeni bir sürüme güncelleme</a>.
+      </div></dd></dl> <div class="head3"><a name="apt-howto_dist-upgrade" id="apt-howto_dist-upgrade"></a>Yeni bir sürüme güncelleme</div><dl><dd><div class="para">
+APT'nin bu özelliği sayesinde bir defada tüm sisteminizi yeni bir Debian sürümüne ister Internet üzerinden isterse varolan bir CD üzerinden (bu CD, satın alınmış veya Internet üzerinden indirilmiş bir ISO görütüsünden elde edilmiş olabilir) yükseltebilirsiniz.
+      </div><div class="para">
+Ayrıca kurulu paketler arasındaki paket bağımlılıklarında değişmeler olduğunda kullanılır. <b><tt>apt-get upgrade</tt></b> ile yapılan güncellemelerde bu tür paketlere dokunulmaz.
+      </div><div class="para">
+Örnek olarak, kararlı Debian dağıtımının 0 sürümünü kullandığınızı düşünün ve 3. sürümü içeren bir CD edinmiş olun. APT'yi kullanarak sisteminizi bu CD üzerinden yeni sürüme güncelleyebilirsiniz. Bunu yapmak için öncelikle <b><tt>apt-cdrom</tt></b> ile (bkz. <a href="../howto/apt-howto_basico.html#apt-howto_cdrom" class="xref" title="sources.list dosyasına CD-ROM ekleme">sources.list dosyasına CD-ROM ekleme</a>) ile CD'yi <tt>/etc/apt/sources.list</tt> dosyanıza ekleyin ve ardından <b><tt>apt-get dist-upgrade</tt></b> komutunu çalıştırın.
+      </div><div class="para">
+Unutmayın, APT her zaman paketin güncel sürümünü arar. Eğer <tt>/etc/apt/sources.list</tt> dosyanızda belirtilen arşivlerde bir paketin CD üzerindekinden daha yeni bir sürümü var ise güncelleme sırasında bu sürüm kullanılacaktır.
+      </div><div class="para">
+<a href="../howto/apt-howto_apt-get.html#apt-howto_upgrade" class="xref" title="Paket güncelleme">Paket güncelleme</a> bölümündeki örneğimizde bazı paketlerin güncelleme sırasında korunduğunu (kept back) görmüştük. Bu problemi şimdi <b><tt>dist-upgrade</tt></b> ile çözebiliriz:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>apt-get -u dist-upgrade</tt></b>
+Reading Package Lists... Done
+Building Dependency Tree... Done
+Calculating Upgrade... Done
+The following NEW packages will be installed:
+  cpp-2.95 cron exim gcc-2.95 libident libopenldap-runtime libopenldap1
+  libpcre2 logrotate mailx
+The following packages have been kept back
+  lilo
+The following packages will be upgraded
+  adduser ae apt autoconf cpp debhelper dpkg-dev esound esound-common ftp gcc
+  indent ipchains isapnptools libaudiofile-dev libaudiofile0 libesd0
+  libesd0-dev libgtk1.2 libgtk1.2-dev liblockfile1 libnewt0 liborbit-dev
+  liborbit0 libstdc++2.10-glibc2.2 libtiff3g libtiff3g-dev modconf orbit
+  procps psmisc
+31 packages upgraded, 10 newly installed, 0 to remove and 1 not upgraded.
+Need to get 0B/7098kB of archives. After unpacking 3118kB will be used.
+Do you want to continue? [Y/n]
+</pre></div></div><div class="para">
+Görüldüğü gibi paketler hem güncellenecek hem de yeni bağımlılıklar için yeni paketler de kurulacaktır. Ancak <b><tt>lilo</tt></b> paketi halen sistemde korunmaya devam etmektedir (kept back). Muhtemelen bağımlılık dışında daha ciddi bir problemi vardır. Problemin ne olduğunu aşağıdaki komutla görebiliriz:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>apt-get -u install lilo</tt></b>
+Reading Package Lists... Done
+Building Dependency Tree... Done
+The following extra packages will be installed:
+  cron debconf exim libident libopenldap-runtime libopenldap1 libpcre2
+  logrotate mailx
+The following packages will be REMOVED:
+  debconf-tiny
+The following NEW packages will be installed:
+  cron debconf exim libident libopenldap-runtime libopenldap1 libpcre2
+  logrotate mailx
+The following packages will be upgraded
+  lilo
+1 packages upgraded, 9 newly installed, 1 to remove and 31 not upgraded.
+Need to get 225kB/1179kB of archives. After unpacking 2659kB will be used.
+Do you want to continue? [Y/n]
+</pre></div></div><div class="para">
+Yukarıdaki belirtildiği üzere, <b><tt>lilo</tt></b> paketi <b><tt>debconf-tiny</tt></b> paketi ile yeni oluşan bir çakışmaya sahiptir. Bunun anlamı, <b><tt>debconf-tiny</tt></b> paketi kaldırılmadan <b><tt>lilo</tt></b> paketinin yüklenemeyeceği ve güncellenemeyeceğidir.
+      </div><div class="para">
+Korunan veya kaldırılan paketlerle ilgili daha ayrıntılı bilgi almak için komutu aşağıdaki gibi kullanabilirsiniz:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>apt-get -o Debug::pkgProblemResolver=yes dist-upgrade</tt></b>
+Reading Package Lists... Done
+Building Dependency Tree... Done
+Calculating Upgrade... Starting
+Starting 2
+Investigating python1.5
+Package python1.5 has broken dep on python1.5-base
+  Considering python1.5-base 0 as a solution to python1.5 0
+  Holding Back python1.5 rather than change python1.5-base
+Investigating python1.5-dev
+Package python1.5-dev has broken dep on python1.5
+  Considering python1.5 0 as a solution to python1.5-dev 0
+  Holding Back python1.5-dev rather than change python1.5
+ Try to Re-Instate python1.5-dev
+Done
+Done
+The following packages have been kept back
+  gs python1.5-dev
+0 packages upgraded, 0 newly installed, 0 to remove and 2  not upgraded.
+</pre></div></div><div class="para">
+Burada açıkça görüldüğü gibi <tt>python1.5-dev</tt> paketi kurulamayacaktır çünkü <tt>python1.5</tt> paketine bağımlıdır. <tt>python1.5</tt> kurulamadığı için <tt>python1.5-dev</tt> paketi de kurulamamaktadır.
+      </div></dd></dl> <div class="head3"><a name="apt-howto_clean" id="apt-howto_clean"></a>Kullanılmayan paket dosyalarını temizleme</div> <div class="head4" id="subtitle">apt-get clean ve autoclean</div><dl><dd><div class="para">
+Bir paket kuracağınız zaman APT gerekli dosyaları <tt>/etc/apt/sources.list</tt> dosyanızda belirtilen konaklardan alır ve yerel bir dizin (<tt>/var/cache/apt/archives/</tt>) altında saklar. Ardından kurulumu buradaki dosyalar üzerinden gerçekleştirir, bkz. <a href="../howto/apt-howto_apt-get.html#apt-howto_install" class="xref" title="Paket kurma">Paket kurma</a>.
+      </div><div class="para">
+Zamanla dosyaların tutulduğu yerel dizinin boyutları artmaya ve gereksiz yer kaplamaya başlar. APT bu dizini temizlemek için komutlar içerir: <b><tt>apt-get</tt></b>'in <b><tt>clean</tt></b> ve <b><tt>autoclean</tt></b> komutları.
+      </div><div class="para">
+<b><tt>apt-get clean</tt></b> kilit dosyaları haricinde <tt>/var/cache/apt/archives/</tt> ve <tt>/var/cache/apt/archives/partial/</tt> dizinlerideki tüm dosyları siler. Sonuç olarak, eğer bir paketi yeniden kurmak isterseniz (<tt>--reinstall</tt> seçeneği ile) APT gerekli dosyalara artık sahip olmadığından, yeninden indirecektir.
+      </div><div class="para">
+<b><tt>apt-get autoclean</tt></b> ise sadece artık indirilmesi mümkün olmayan dosyaları siler.
+      </div><div class="para">
+Aşağıdaki örnek <b><tt>apt-get autoclean</tt></b> özelliğinin nasıl çalıştığını gösteriyor:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>ls /var/cache/apt/archives/logrotate* /var/cache/apt/archives/gpm*</tt></b>
+logrotate_3.5.9-7_i386.deb
+logrotate_3.5.9-8_i386.deb
+gpm_1.19.6-11_i386.deb
+</pre></div></div><div class="para">
+<tt>/var/cache/apt/archives</tt> altında <tt>logrotate</tt> paketi için 2 dosya ve <tt>gpm</tt> paketi için de bir 1 dosya bulunmaktadır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>apt-show-versions -p logrotate</tt></b>
+logrotate/stable uptodate 3.5.9-8
+<tt>#</tt> <b><tt>apt-show-versions -p gpm</tt></b>
+gpm/stable upgradeable from 1.19.6-11 to 1.19.6-12
+</pre></div></div>
+      <div class="para">
+<b><tt>apt-show-versions</tt></b> çıktısına baktığımızda <tt>logrotate_3.5.9-8_i386.deb</tt> dosyasının <tt>logrotate</tt> paketi için güncel sürüm olduğunu görüyoruz. Bu durumda <tt>logrotate_3.5.9-7_i386.deb</tt> dosyası hiç bir işe yaramamaktadır. Ayrıca <tt>gpm_1.19.6-11_i386.deb</tt> dosyası da, indirilebilecek daha güncel bir sürümü olduğu için işe yaramamaktadır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>apt-get autoclean</tt></b>
+Reading Package Lists... Done
+Building Dependency Tree... Done
+Del gpm 1.19.6-11 [145kB]
+Del logrotate 3.5.9-7 [26.5kB]
+</pre></div></div><div class="para">
+Sonuçta, <b><tt>apt-get autoclean</tt></b> ile sadece eski ve işe yaramayacak dosyaların kaldırılmasını sağlamış olduk, bkz. <a href="../howto/apt-howto_apt-get.html#apt-howto_apt-show-versions" class="xref" title="Sadece belirli bir Debian versiyonuna sahip paketleri güncelleme">Sadece belirli bir Debian versiyonuna sahip paketleri güncelleme</a>.
+      </div></dd></dl> <div class="head3"><a name="apt-howto_dselect-upgrade" id="apt-howto_dselect-upgrade"></a>APT ile dselect kullanımı</div><dl><dd><div class="para">
+<b><tt>dselect</tt></b> kurulum için Debian paketlerini seçebileceğiniz bir programdır. Kullanımı oldukça karışık ve sıkıcıdır, fakat biraz pratikle konsol tabanlı ncurses kütüphanesi üzerinde çalışan arayüzüne alışılabilir.
+      </div><div class="para">
+<b><tt>dselect</tt></b>'in özelliklerinden biri, Debian paketlerinin "şiddetle önerilen" ve "tavsiye edilen" paketlere ait bilgileri işleyebilmesidir ("recommending" ve "suggesting"). Programı çalıştırmak için root iken  <b><tt>dselect</tt></b>'i çalıştırın. Erişim yöntemleri menüsünden <tt>apt</tt> seçimini yapın. Mutlaka gerekli olmamakla birlikte, eğer bir CDROM kullanmıyor ve paket indirmek istiyorsanız erişim yöntemi olarak <tt>apt</tt> kullanmalısınız.
+      </div><div class="para">
+<b><tt>dselect</tt></b> kullanımı hakkında ayrıntılı bilgi almak isterseniz <b><tt>dselect</tt></b> belgelerinin bulunduğu <a class="ulink" href="http://www.debian.org/doc/" target="_top">http://www.debian.org/doc/</a> adresini ziyaret edebilirsiniz.
+      </div><div class="para">
+<b><tt>dselect</tt></b> ile seçimlerinizi yaptıktan sonra, aşağıdaki komutu çalıştırın:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>apt-get -u dselect-upgrade</tt></b>
+</pre></div></div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>apt-get -u dselect-upgrade</tt></b>
+Reading Package Lists... Done
+Building Dependency Tree... Done
+The following packages will be REMOVED:
+  lbxproxy
+The following NEW packages will be installed:
+  bonobo console-tools-libs cpp-3.0 enscript expat fingerd gcc-3.0
+  gcc-3.0-base icepref klogd libdigest-md5-perl libfnlib0 libft-perl
+  libgc5-dev libgcc300 libhtml-clean-perl libltdl0-dev libsasl-modules
+  libstdc++3.0 metamail nethack proftpd-doc psfontmgr python-newt talk tidy
+  util-linux-locales vacation xbill xplanet-images
+The following packages will be upgraded
+  debian-policy
+1 packages upgraded, 30 newly installed, 1 to remove and 0  not upgraded.
+Need to get 7140kB of archives. After unpacking 16.3MB will be used.
+Do you want to continue? [Y/n]
+</pre></div></div><div class="para">
+Şimdi bu ekran çıktısını aynı sistemdeki <b><tt>apt-get dist-upgrade</tt></b> çıktısı ile karşılaştıralım:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>apt-get -u dist-upgrade</tt></b>
+Reading Package Lists... Done
+Building Dependency Tree... Done
+Calculating Upgrade... Done
+The following packages will be upgraded
+  debian-policy
+1 packages upgraded, 0 newly installed, 0 to remove and 0  not upgraded.
+Need to get 421kB of archives. After unpacking 25.6kB will be freed.
+Do you want to continue? [Y/n]
+</pre></div></div><div class="para">
+Görüldüğü gibi <b><tt>dselect</tt></b> ile yapılan güncellemede yukarıdaki listede olmayan paketler de yüklenmek üzere seçilmiştir. Çünkü güncellenecek olan paketlerin "şiddetle önerilen" ve "tavsiye edilen" paketler alanları da incelenmiş, bu paketler listeye dahil edilmiştir. <b><tt>dselect</tt></b>, APT ile birlikte kullanıldığında oldukça güçlü bir araçtır.
+      </div></dd></dl> <div class="head3"><a name="apt-howto_default-version" id="apt-howto_default-version"></a>Karışık bir sistem nasıl kurulur?</div><dl><dd><div class="para">
+Kullanıcılar bazen bir Debian sürümünü temel sistem olarak kullanırken bir veya birkaç paketini diğer sürümlerden kullanmak isterler.
+      </div><div class="para">
+Ana Debian sürümünü belirtmek için aşağıdaki satırı <tt>/etc/apt/apt.conf</tt> (eğer yoksa oluşturun) dosyanıza ekleyin:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+APT::Default-Release "<i>sürüm</i>";
+</pre></div></div><div class="para">
+Buradaki <i><tt>sürüm</tt></i> kısmı ana sürüm olarak kullanmak istediğiniz sürüm adıdır. Kullanabileceğinz sürümler <tt>stable</tt>, <tt>testing</tt> ve <tt>unstable</tt>'dır. Diğer bir sürümden paket yüklemek için APT'yi şu şekilde kullanın:
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>apt-get -t </tt></b><i>sürüm </i><b><tt>install </tt></b><i>paket_adı</i>
+</pre></div></div><div class="para">
+Bu şekilde çalıştırabilmek için <tt>/etc/apt/sources.list</tt> dosyasında paketi istediğiniz sürümle ilgili en az bir APT kaynak girdisi olmalı ve paket kaynaktan indirilebilir olmalıdır
+      </div><div class="para">
+Paketin belli bir sürümünü kullanmak isterseyebilirsiniz:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>apt-get install </tt></b><i>paket_adı</i>=<i>sürüm</i>
+</pre></div></div>
+      <div class="para">
+Örneğin aşağıdaki örnekte <tt>nautilus</tt> paketinin <tt>2.2.4-1</tt> sürümü kurulmaktadır:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>apt-get install nautilus=2.2.4-1</tt></b>
+</pre></div></div>
+      
+      <div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/warning.png" /></td><th class="admon">Uyarı</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Debian `unstable' (kararsız) sürümü Debian paketlerinin en yeni sürümlerinin konulduğu sürümdür. Bu sürümde paketlerle ilgili birkaç paketi veya tüm sistemi etkileyebilecek en küçüğünden en tehlikeli değişikliklere kadar değişmeler olur. Bu yüzden de dağıtımın bu sürümü tecrübesiz veya sistemde kararlılık bekleyen kullanıcılar tarafından <tt>kullanılmamalıdır.</tt>
+              </div><div class="para">
+`testing' (deneme) sürümü de `unstable' sürümünden daha iyi sayılmaz, çünkü güvenlik güncellemelerini zamanında kabul etmemektedir. Sunucular ve diğer üretim sistemleri için kararlı sürüm kullanılmalıdır.
+      </div></td></tr></table></div></dd></dl> <div class="head3"><a name="apt-howto_apt-show-versions" id="apt-howto_apt-show-versions"></a>Sadece belirli bir Debian versiyonuna sahip paketleri güncelleme</div><dl><dd><div class="para">
+<b><tt>apt-show-versions</tt></b> programı, karışık bir sistem kullanan kullanıcıların sistemlerini güncellemelerinde daha güvenli bir ortam sunar. Örneğin aşağıdaki gibi sadece sisteminizdeki <tt>unstable</tt> paketleri güncelleyebilirsiniz:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>apt-get install `apt-show-versions -u -b | grep unstable | cut -d ' ' -f 1`</tt></b>
+</pre></div></div>
+      </dd></dl> <div class="head3"><a name="apt-howto_pin" id="apt-howto_pin"></a>Belirli bir sürüme sahip paketlerin kurulu olarak kalmasını sağlama</div> <div class="head4" id="subtitle">ileri düzey</div><dl><dd><div class="para">
+Bazen bir paketteki bazı kısımları değiştirmeniz gerekibilir ve bunun için de zamanınızolmayabilir veya bu değişikleri programın yeni sürümüne yansıtmnak istemiyorolabilirsiniz. Örneğin sisteminizi Debian 3.0 dağıtımına güncellemiş fakat belirli bir paketin Debian 2.2 dağıtımındaki halini kullanmaya devam etmek isteyebilirsiniz. Bu problemi çözmek için paketlerinizi <b><tt>pin</tt></b>'leyebilirsiniz.
+      </div><div class="para">
+Bu özelliği kullanmak oldukça kolaydır, tek yapmanız gereken <tt>/etc/apt/preferences</tt> dosyasını düzenlemekten ibaret.
+      </div><div class="para">
+Dosyanın biçemi şu şekildedir:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+Package: &lt;paket_adı&gt;
+Pin: &lt;pin tanımlaması&gt;
+Priority: &lt;pin önceliği&gt;
+</pre></div></div><div class="para">
+Örnek olarak, <tt>sylpheed</tt> paketinin 0.4.99 sürümünü korumak isterseniz aşağıdaki kaydı buraya ekleyebilirsiniz:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+Package: sylpheed
+Pin: version 0.4.99*
+</pre></div></div><div class="para">
+Buradaki <tt>*</tt> kullanımına dikkat! Bu karakter ile girdiğimiz <b><tt>pin</tt></b> değerinin tüm 0.4.99 ile başlayan sürümler için geçerli olduğunu belirtebiliyoruz. Bu sayede program sürümünün yanı sıra paketin Debian sürümünün değişmesi durumunda da koyduğunuz kurallar geçerli olur, örneğin 0.4.99-1 sürümü ile 0.4.99-10 sürümü.
+      </div><div class="para">
+Pin önceliği "Packages:" ve "Pin:" satırlarına karşılık gelen paketlerin yüklenip yüklenmeyeceğine karar verilmede kullanılır. Yüksek öncelik değeri paketin yüklenmesini sağlar. <tt>apt_preferences(7)</tt> kılavuzunu detaylar için okuyabilirsiniz. Bir kaç örnek değeri yukarıdaki örnek için açıklayalım:
+      </div><div class="para">1001</div><div class="para">
+Sylpheed 0.4.99 sürümü apt kullanımı ile başka sürümlerle değiştirilemeyecektir. Daha yüksek sürümleri edinilebilri olsa da apt kullanımında sadece 0.4.99 sürümü kurulacaktır. Bir paketin eski sürümleri ile değiştirilebilir olmasını <b><tt>pin</tt></b> değerleri de gözönüne alınarak sağlamak için ("downgradable") öncelik değeri 1000'den büyük hale getirilmelidir.
+      </div><div class="para">1000</div><div class="para">
+Etkisi 1001 önceliği ile aynıdır. Farkı ise 0.4.99 sürümünden daha düşük bir sürüme indirmeye (downgrade) izin verilmeyecek olmasıdır.
+      </div><div class="para">990</div><div class="para">
+0.4.99 sürümü sadece "APT::Default-Release" değişkeninde belirtilen tercih edilen sürümde daha yeni bir sürümde paket olması durumunda var olanla değiştirilecektir. bknz. <a href="../howto/apt-howto_apt-get.html#apt-howto_default-version" class="xref" title="Karışık bir sistem nasıl kurulur?">Karışık bir sistem nasıl kurulur?</a>
+      </div><div class="para">500</div><div class="para">
+Herhangi bir sürümdeki sylpheed 0.4.99 sürümünden daha büyük sürüm numarasına sahip olan paket tercih edilen paket olacaktır. Düşük sürüm numaraları içinse 0.4.99 geçerliliğini koruyacaktır
+      </div><div class="para">100</div><div class="para">
+Herhangi bir sürümdeki sylpheed 0.4.99 sürümünden daha büyük sürüm numarasına sahip olan paket tercih edilen paket olacaktır. 0.4.99 sürümü eğer başka herhangi bir sürümü kurulmadıysa yüklenecektir. Bu öncelik değeri yüklü paketler için kullanılır.
+      </div><div class="para">-1</div><div class="para">
+Negatif öncelik değerleri de kullanılabilir. Bu kullanım ile 0.4.99 sürümünün yüklenmesi tamamen önlenmiş olur.
+      </div><div class="para">
+Bir <b><tt>pin</tt></b> değeri paketin "Debian dağıtımı"na, "sürümü"ne ve "adı"na göre verilebilir.
+      </div><div class="para">
+Yukarıda gördüğümüz gibi pin değeri vermede sürüm numaraları ve özel karakterler kullanılır.
+      </div><div class="para">
+<tt>Sürüme</tt> pin değeri verme işlemi APT'nin kullandığı arşivlerdeki veya CD'deki <tt>Release</tt> dosyası ile ilişkilidir. Eğer kullandığınız arşivler <tt>Release</tt> dosyasını sağlamıyorsa bu özellik kullanılamaz. <tt>Release</tt> dosyanızın içeriğini <tt>/var/lib/apt/lists/</tt> dizini altından görebilirsiniz. Sürüm için kullanılabilecek seçenekler <tt>a</tt> (arşiv), <tt>c</tt> (components - bölüm), <tt>v</tt> (version - sürüm), <tt>o</tt> (origin - kaynak) ve <tt>l</tt> (label - etiket) tir.
+</div><div class="para">Bir örnek:</div>
+<div class="para"><div align="right"><pre class="screen">
+Package: *
+Pin: release v=2.2*,a=stable,c=main,o=Debian,l=Debian
+Priority: 1001
+</pre></div></div><div class="para">
+Bu örnekte Debian 2.2* dağıtımlarını (2.2r2, 2.2r3 vb. - bu seçim ile güvenlik yamaları ve önemli güncellemeler dahil edilmiş oldu), kararlı (<tt>stable</tt>) arşivi, <tt>main</tt> bölümü (<tt>contrib</tt> veya <tt>non-free</tt> de olabilirdi), kaynak ve etiket olarak Debian'ı seçtik. Kaynak (<tt>o=</tt>) <tt>Release</tt> dosyasını kimin ürettiğini belirtir, etiket (<tt>l=</tt>) ise dağıtımın ismidir (Debian dağıtımı için etiket Debian iken Progeny için Progeny'dir). Örnek bir <tt>Release</tt> dosyasının içeriği aşağıdadır:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>$</tt> <b><tt>cat /var/lib/apt/lists/ftp.debian.org.br_debian_dists_potato_main_binary-i386_Release</tt></b>
+Archive: stable
+Version: 2.2r3
+Component: main
+Origin: Debian
+Label: Debian
+Architecture: i386
+</pre></div></div>
+      </dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/apt-howto_basico.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/apt-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/apt-howto_helpers.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Temel Yapılandırma </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Yardımcı araçlar</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

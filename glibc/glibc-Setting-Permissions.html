@@ -1,172 +1,80 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="tr" xml:lang="tr">
-  <head>
-    <title>14.9.7. Dosya İzinlerinin Atanması</title>
-    <meta name="generator" content="DocBook XSL Stylesheets V-special (derived from DocBook XSL v1.79.1 for Turkish Linux Documentation Project by Nilgün Belma Bugüner - nilgun (at) tlbp.org.tr)" />
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="/style/nav.css" />
-    <link rel="icon" type="image/png" href="/images/belgeler-logo.png" />
-    <meta name="robots" content="index, follow" />
-  </head>
-  <body>
-    <header>
-      <div class="navbar">
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Access-Permission.html')">Önceki</button>
-          <div class="dropdown-content">14.9.6. Erişim İzinleri</div>
-        </div>
-        <div style="width:34%" class="dropdown">
-          <button class="dropbtn">Yukarı</button>
-          <div class="dropdown-content">
-            <button type="button" class="dropbtn" onclick="window.location.assign('/index.html')">Baş Sayfa</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('/KiTAPLIK/index.html')">Kitaplık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc.html')">Ana Başlık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc-File-Attributes.html')">Üst Başlık</button>
-          </div>
-        </div>
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Testing-File-Access.html')">Sonraki</button>
-          <div class="dropdown-content">14.9.8. Dosya Erişim İzinlerinin Sınanması</div>
-        </div>
-      </div>
-    </header>
-    <section class="mainpage">
-      <div class="crumbs">
-        <p>  </p>
-      </div>
-      <section class="sect1" id="glibc-Setting-Permissions">
-        <div class="titlepage">
-          <div>
-            <div>
-              <h2 class="title" style="clear: both">14.9.7. Dosya İzinlerinin Atanması</h2>
-            </div>
-          </div>
-        </div>
-        <p>
-    <span id="idm121365" class="indexterm"></span>
-    <span id="idm121368" class="indexterm"></span>
-    Dosyaları oluşturmakta kullanılan <a href="glibc-Opening-and-Closing-Files.html#glibc-fn-open"><strong class="function"><code>open</code></strong></a> veya <strong class="function"><code>mkdir</code></strong> gibi ilkel işlevler yeni oluşturulacak dosyaya atanacak dosya izinlerini belirleyen bir <em class="parameter"><code>mode</code></em> (kip) bağımsız değişkeni alır. Bu kip kullanılmadan önce sürecin <em class="firstterm">dosya oluşturma maskesi</em> ya da <em class="firstterm">umask</em> ile değişikliğe uğratılır.
-   </p>
-        <p>
-    Dosya oluşturma maskesinde izinleri ifade eden bitler yeni oluşturulan dosyalar için iptal edilecek izinleri belirtir. Örneğin, maskede diğerlerine bütün erişim izinleri verilmişse, diğerleri arasında yer alan hiçbir süreç bu dosyaya erişemeyecektir; dosyayı oluşturan işlevin <em class="parameter"><code>mode</code></em> bağımsız değişkeninde diğerlerine tüm erişim izinleri verilmiş olsa bile! Başka bir deyişle dosya oluşturma maskesi, verilmek istenen erişim izinlerinin tümleyenidir.
-   </p>
-        <p>
-    Dosya oluşturan yazılımlar genellikle <em class="parameter"><code>mode</code></em> bağımsız değişkeninde herkese tüm izinleri veren bir değer belirtir. Normal bir dosya için bu herkese okuma ve yazma izinleri vermek şeklindedir. Daha sonra dosya oluşturulurken bu izinler kullanıcının dosya oluşturma maskesi kullanılarak sınırlanır.
-   </p>
-        <p>
-    İsmini belirterek mevcut bir dosyanın izinlerini değiştirmek için  <a href="glibc-Setting-Permissions.html#glibc-fn-chmod"><strong class="function"><code>chmod</code></strong></a> işlevi kullanılır. Bu işlev belirtilen izinleri kullanırken dosya oluşturma maskesini yok sayar.
-   </p>
-        <p>
-    Normal kullanımda, dosya oluşturma maskesi kullanıcının oturum açma kabuğu tarafından (<code class="code">umask</code> kabuk komutu ile) ilklendirilir ve tüm alt süreçler tarafından miras alınır. Uygulama yazılımları dosya oluşturma maskesi için normalde endişelenmez. Özdevinimli oluşturulduğu kabul edilir.
-   </p>
-        <p>
-    Yazılımın, bir dosyanın, dosya oluşturma maskesini yok sayarak erişim izinlerini belirlemesi istenirse bunun en kolay yolu dosyayı açtıktan sonra dosya oluşturma maskesini değiştirmek yerine, <a href="glibc-Setting-Permissions.html#glibc-fn-fchmod"><strong class="function"><code>fchmod</code></strong></a> işlevini kullanmaktır. Aslında, dosya oluşturma maskesini değiştirme işlemi sadece kabuk tarafından yapılır. Kabuk bunu <strong class="function"><code>umask</code></strong> işlevini kullanarak yapar.
-   </p>
-        <p>
-    Bu bölümdeki işlevler <code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/sys/stat.h;hb=HEAD" target="_top">sys/stat.h</a></code> başlık dosyasında bildirilmiştir.
-    <span id="idm121388" class="indexterm"></span>
-   </p>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-    <span id="glibc-fn-umask" class="indexterm"></span>
-    <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/sys/stat.h;hb=HEAD" target="_top">sys/stat.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">mode_t </code><strong><code class="function">umask</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">mode_t </code><strong><code class="parameter">mask</code></strong><strong><code>)</code></strong></td></tr></table></div>
-    
-    <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-assafe">AS-Safe</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acsafe">AC-Safe</a>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:26:54+03:00" /><title>Dosya İzinlerinin Atanması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-File-Attributes.html" title="Dosya Öznitelikleri" /><link rel="previous" href="../glibc/glibc-Access-Permission.html" title="Erişim İzinleri" /><link rel="next" href="../glibc/glibc-Testing-File-Access.html" title="Dosya Erişim İzinlerinin Sınanması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Dosya İzinlerinin Atanması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Access-Permission.html">Önceki</a> </td><th width="60%" align="center">Dosya Öznitelikleri</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Testing-File-Access.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Setting-Permissions" id="glibc-Setting-Permissions"></a>Dosya İzinlerinin Atanması</div><dl><dd><div class="para">
+<a class="indexterm" name="idx1368" id="idx1368"></a>
+<a class="indexterm" name="idx1369" id="idx1369"></a>
+Dosyaları oluşturmakta kullanılan <b><tt>open</tt></b> veya <b><tt>mkdir</tt></b> gibi ilkel işlevler yeni oluşturulacak dosyaya atanacak dosya izinlerini belirleyen bir <i><tt>kip</tt></i> argümanı alırlar. Bu kip kullanılmadan önce sürecin <span><i>dosya oluşturma maskesi</i></span> ya da <span><i>umask</i></span> ile değişikliğe uğratılır.
+    </div><div class="para">
+Dosya oluşturma maskesinde izinleri ifade eden bitler yeni oluşturulan dosyalar için iptal edilecek izinleri belirtir. Örneğin, maskede diğerlerine bütün erişim izinleri verilmişse, diğer kategorisindeki hiçbir süreç bu dosyaya erişemeyecektir; dosyayı oluşturan işlevin <i><tt>kip</tt></i> argümanında diğerlerine tüm erişim izinleri verilimiş olsa bile! Başka bir deyişle dosya oluşturma maskesi vermek istediğiniz erişim izinlerinin tümleyenidir.
+    </div><div class="para">
+Dosya oluşturan yazılımlar genellikle <i><tt>kip</tt></i> argümanında herkese tüm izinleri veren bir değer belirtirler. Normal bir dosya için bu herkese okuma ve yazma izinleri vermek şeklindedir. Daha sonra dosya oluşturulurken bu izinler kullanıcının dosya oluşturma maskesi kullanılarak sınırlanır.
+    </div><div class="para">
+<a class="indexterm" name="idx1370" id="idx1370"></a>
+İsmini belirterek mevcut bir dosyanın izinlerini değiştirmek için  <b><tt>chmod</tt></b> işlevi kullanılır. Bu işlev belirtilen izinleri kullanırken dosya oluşturma maskesini yoksayar.
+    </div><div class="para">
+<a class="indexterm" name="idx1371" id="idx1371"></a>
+Normal kullanımda, dosya oluşturma maskesi kullanıcının oturum açma kabuğu tarafından (<b><tt>umask</tt></b> kabuk komutu ile) ilklendirilir ve tüm alt süreçler tarafından miras alınır. Uygulama yazılımları dosya oluşturma maskesi için normalde endişelenmezler. Onun özdevinimli oluşturulduğu kabul edilir.
+    </div><div class="para">
+Yazılımınızın, bir dosyanın, dosya oluşturma maskesini yoksayarak erişim izinlerini belirlemesini istiyorsanız bunun en kolay yolu dosyayı açtıktan sonra dosya oluşturma maskesini değiştirmek yerine, <b><tt>fchmod</tt></b> işlevini kullanmaktır. Aslında, dosya oluşturma maskesini değiştirme işlemi sadece kabuk tarafından yapılır. Kabuk bunu <b><tt>umask</tt></b> işlevini kullanarak yapar.
+    </div><div class="para">
+Bu bölümdeki işlevler <tt>sys/stat.h</tt> başlık dosyasında bildirilmiştir.
+<a class="indexterm" name="idx1372" id="idx1372"></a>
+    </div><a name="glibc-umask" id="glibc-umask"></a>
+<a class="indexterm" name="idx1373" id="idx1373"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>mode_t <b><tt>umask</tt></b></tt></td><td valign="top"><pre class="paramdef">(mode_t <i><tt>maske</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>umask</tt></b> işlevi çağrıldığı sürecin dosya oluşturma maskesini <i><tt>maske</tt></i> yapar ve önceki dosya oluşturma maskesi ile döner.
+    </div><div class="para">
+Bu örnekte, dosya oluşturma maskesinin kalıcı olarak değiştirilmeksizin <b><tt>umask</tt></b> ile nasıl okunacağı gösterilmiştir:
     </div>
-    <p>
-     <code class="code">umask</code> işlevi çağrıldığı sürecin dosya oluşturma maskesini <em class="parameter"><code>mask</code></em> yapar ve önceki dosya oluşturma maskesi ile döner.
-    </p>
-    <div class="example"><div class="example-title">Örnek: </div><div class="example-contents"><p>
-      Bu örnekte, dosya oluşturma maskesinin kalıcı olarak değiştirilmeksizin <code class="code">umask</code> işlevi ile nasıl okunacağı gösterilmiştir:
-     </p><pre class="screen">mode_t
+<div class="para"><div align="right"><pre class="screen">mode_t
 read_umask (void)
 {
   mode_t mask = umask (0);
   umask (mask);
   return mask;
 }
-</pre></div></div><br class="example-break" />
-    <p>
-     Ancak, yalnızca maske değeri okunmak isteniyorsa, <a href="glibc-Setting-Permissions.html#glibc-fn-getumask"><strong class="function"><code>getumask</code></strong></a> işlevini kullanmak daha iyidir, çünkü bu işlev evreseldir.
-    </p>
-   </div>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-    <span id="glibc-fn-getumask" class="indexterm"></span>
-    <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/sys/stat.h;hb=HEAD" target="_top">sys/stat.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">mode_t </code><strong><code class="function">getumask</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code>void</code><strong><code>)</code></strong></td></tr></table></div>
-    
-    <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-assafe">AS-Safe</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acsafe">AC-Safe</a>
-    </div>
-    <p>
-     Çağrıldığı sürecin dosya oluşturma maskesi ile döner. Bu işlev GNU oluşumudur ve yalnızca GNU/Hurd sistemlerinde kullanılabilir.
-    </p>
-   </div>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-    <span id="glibc-fn-chmod" class="indexterm"></span>
-    <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/sys/stat.h;hb=HEAD" target="_top">sys/stat.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">int </code><strong><code class="function">chmod</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">const char </code><strong class="type">*</strong><strong><code class="parameter">filename</code></strong><strong><code>, </code></strong><code class="type">mode_t </code><strong><code class="parameter">mode</code></strong><strong><code>)</code></strong></td></tr></table></div>
-    
-    <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-assafe">AS-Safe</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acsafe">AC-Safe</a>
-    </div>
-    <p>
-     <code class="code">chmod</code> işlevi, ismi <em class="parameter"><code>filename</code></em> ile belirtilen dosyanın erişim izinlerini <em class="parameter"><code>mode</code></em> ile belirtilen değere ayarlar.
-    </p>
-    <p>
-     <em class="parameter"><code>filename</code></em> simgesel bağ ise, <code class="code">chmod</code> bağın değil, bağın hedefindeki dosyanın izinlerini değiştirir.
-    </p>
-    <p>
-     İşlev başarılı olduğunda <code class="code">0</code>, aksi takdirde <code class="code">-1</code> ile döner. <a class="link" href="glibc-File-Names.html#glibc-File-Name-Errors" title="11.2.3. Dosya İsmi Hataları">Dosya ismi hatalarına</a> ek olarak aşağıdaki <a href="glibc-Checking-for-Errors.html#glibc-vr-errno"><strong class="varname"><code>errno</code></strong></a> hata durumları bu işlev için tanımlanmıştır:
-    </p>
-    <div class="variablelist"><dl class="variablelist"><dt><span class="term"><code class="code">ENOENT</code></span></dt><dd><p>
-        Belirtilen dosya yok.
-       </p></dd><dt><span class="term"><code class="code">EPERM</code></span></dt><dd><p>
-        Bu sürecin, bu dosyanın erişim izinlerini değiştirme izni yok. Sadece dosyanın sahibi (sürecin etkin kullanıcı kimliğinden saptanır) ya da ayrıcalıklı kullanıcı onları değiştirebilir.
-       </p></dd><dt><span class="term"><code class="code">EROFS</code></span></dt><dd><p>
-        Dosya, salt-okunur bağlı bir dosya sisteminde.
-       </p></dd><dt><span class="term"><code class="code">EFTYPE</code></span></dt><dd><p>
-        <em class="parameter"><code>mode</code></em> bağımsız değişkeni <a href="glibc-Permission-Bits.html#glibc-fn-S_ISVTX"><strong class="varname"><code>S_ISVTX</code></strong></a> bitini ("yapışkan bit") içeriyor ama ismi belirtilen dosya bir dizin değil. Bazı dosya sistemlerinde yapışkan bitin dosyalara verilmesine izin verilirken bazılarında da verilmez (sadece dizinlerde izin verilir).
-       </p><p>
-        <a href="glibc-Error-Codes.html#glibc-vr-EFTYPE"><strong class="varname"><code>EFTYPE</code></strong></a> hatası sadece yapışkan bitin dizinler dışında anlamlı olmadığı dosya sistemlerinde alınır. Bu olduğu takdirde, yapışkan biti içermeyen bir <em class="parameter"><code>mode</code></em> değeri ile tekrar <code class="code">chmod</code> çağrısı yapılmalıdır. Yapışkan bit ile ilgili daha ayrıntılı bilgi edinmek için bkz. <a class="xref" href="glibc-Permission-Bits.html" title="14.9.5. Erişim İzinleri için Kip Bitleri">Erişim İzinleri için Kip Bitleri</a>.
-       </p></dd></dl></div>
-   </div>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-    <span id="glibc-fn-fchmod" class="indexterm"></span>
-    <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/sys/stat.h;hb=HEAD" target="_top">sys/stat.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">int </code><strong><code class="function">fchmod</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">int </code><strong><code class="parameter">filedes</code></strong><strong><code>, </code></strong><code class="type">mode_t </code><strong><code class="parameter">mode</code></strong><strong><code>)</code></strong></td></tr></table></div>
-    
-    <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-assafe">AS-Safe</a>
-      | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acsafe">AC-Safe</a>
-    </div>
-    <p>
-     Bu işlev bağımsız değişken olarak dosya ismi yerine <a class="link" href="glibc-Low-Level-I-O.html" title="13. Düşük Seviyeli Girdi ve Çıktı">açık dosya tanıtıcısı</a> alması dışında <a href="glibc-Setting-Permissions.html#glibc-fn-chmod"><strong class="function"><code>chmod</code></strong></a> işlevinin benzeridir.
-    </p>
-    <p>
-     İşlev başarılıysa <code class="code">0</code> ile değilse <code class="code">-1</code> ile döner.  Aşağıdaki <a href="glibc-Checking-for-Errors.html#glibc-vr-errno"><strong class="varname"><code>errno</code></strong></a> hata durumları bu işlev için tanımlanmıştır:
-    </p>
-    <div class="variablelist"><dl class="variablelist"><dt><span class="term"><code class="code">EBADF</code></span></dt><dd><p>
-        <em class="parameter"><code>filedes</code></em> bağımsız değişkeni geçerli bir dosya tanıtıcı değil.
-       </p></dd><dt><span class="term"><code class="code">EINVAL</code></span></dt><dd><p>
-        <em class="parameter"><code>filedes</code></em> bağımsız değişkeni bir ardışık süreç veya soket ya da erişim izinlerine konu olmayan bir şeye ait.
-       </p></dd><dt><span class="term"><code class="code">EPERM</code></span></dt><dd><p>
-        Bu sürecin, bu dosyanın erişim izinlerini değiştirme izni yok. Sadece dosyanın sahibi (sürecin etkin kullanıcı kimliğinden saptanır) ya da ayrıcalıklı kullanıcı onları değiştirebilir.
-       </p></dd><dt><span class="term"><code class="code">EROFS</code></span></dt><dd><p>
-        Dosya, salt-okunur bağlı bir dosya sisteminde.
-       </p></dd></dl></div>
-   </div>
-      </section>
-      <footer>
-        <div align="center" class="footer">
-          <small>Bir <a href="http://belgeler.org.tr/">Linux Kitaplığı</a> Sayfası</small>
-        </div>
-      </footer>
-    </section>
-  </body>
-</html>
+</pre></div></div><div class="para">
+Ancak, maske değerini sadece okumak istiyorsanız <b><tt>getumask</tt></b> işlevini kullanmak daha iyidir, çünkü bu işlev evreseldir (en azından GNU sisteminde).
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-getumask" id="glibc-getumask"></a>
+<a class="indexterm" name="idx1374" id="idx1374"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>mode_t <b><tt>getumask</tt></b></tt></td><td valign="top"><pre class="paramdef">(void)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Çağrıldığı sürecin dosya oluşturma maskesi ile döner. Bu işlev bir GNU oluşumudur
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-chmod" id="glibc-chmod"></a>
+<a class="indexterm" name="idx1375" id="idx1375"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>chmod</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *<i><tt>dosyaismi</tt></i>,
+ mode_t      <i><tt>kip</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>chmod</tt></b> işlevi, ismi <i><tt>dosyaismi</tt></i> ile belirtilen dosyanın erişim izinlerini <i><tt>kip</tt></i> ile belirtilen değere ayarlar.
+    </div><div class="para">
+<i><tt>dosyaismi</tt></i> bir sembolik bağ ise, <b><tt>chmod</tt></b> bağın değil, bağın hedefindeki dosyanın izinlerini değiştirir.
+    </div><div class="para">
+İşlev başarılı olduğunda <b><tt>0</tt></b>, aksi takdirde <b><tt>-1</tt></b> ile döner. <a class="link" href="../glibc/glibc-File-Name-Errors.html" title="Dosya İsmi Hataları">Dosya ismi hatalarına</a> ek olarak aşağıdaki <b><tt>errno</tt></b> hata durumları bu işlev için tanımlanmıştır:
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>ENOENT</tt></span></dt><dd class="varlist"><div class="para">
+Belirtilen dosya yok.
+       </div></dd><dt><span class="term"><tt>EPERM</tt></span></dt><dd class="varlist"><div class="para">
+Bu sürecin, bu dosyanın erişim izinlerini değiştirme izni yok. Sadece dosyanın sahibi (sürecin etkin kullanıcı kimliğinden saptanır) ya da ayrıcalıklı kullanıcı onları değiştirebilir.
+       </div></dd><dt><span class="term"><tt>EROFS</tt></span></dt><dd class="varlist"><div class="para">
+Dosya salt-okunur bağlı bir dosya sistemi üzerinde.
+       </div></dd><dt><span class="term">
+       <tt>EFTYPE</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>kip</tt></i> argümanı <b><tt>S_ISVTX</tt></b> bitini ("yapışkan bit") içeriyor ama ismi belirtilen dosya bir dizin değil. Bazı dosya sistemlerinde yapışkan bitin dosyalara verilmesine izin verilirken bazılarında da verilmez (sadece dizinlerde izin verilir).
+       </div><div class="para">
+<b><tt>EFTYPE</tt></b> hatasını sadece yapışkan bitin dizinler dışında anlamlı olmadığı dosya sistemlerinde alırsınız. Bu olduğu takdirde, yapışkan biti içermeyen bir <i><tt>kip</tt></i> değeri ile tekrar <b><tt>chmod</tt></b> çağrısı yapın. Yapışkan bit ile ilgili daha ayrıntılı bilgi edinmek için <a href="../glibc/glibc-Permission-Bits.html" class="xref" title="Erişim İzinleri için Kip Bitleri">Erişim İzinleri için Kip Bitleri</a> bölümüne bakınız.
+       </div></dd></dl></div>
+</dd></dl><div style="padding:5px"></div><a name="glibc-fchmod" id="glibc-fchmod"></a>
+<a class="indexterm" name="idx1376" id="idx1376"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>fchmod</tt></b></tt></td><td valign="top"><pre class="paramdef">(int <i><tt>dosyatanıtıcı</tt></i>,
+ int <i><tt>kip</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev argüman olarak dosya ismi yerine bir <a class="link" href="../glibc/glibc-Low-Level-I-O.html" title="XIII. Oylum - Düşük Seviyeli Girdi ve Çıktı">açık dosya tanıtıcı</a> alması dışında <b><tt>chmod</tt></b> işlevinin benzeridir.
+    </div><div class="para">
+İşlev başarılıysa <b><tt>0</tt></b> ile değilse <b><tt>-1</tt></b> ile döner.  Aşağıdaki <b><tt>errno</tt></b> hata durumları bu işlev için tanımlanmıştır:
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>EBADF</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>dosyatanıtıcı</tt></i> argümanı geçerli bir dosya tanıtıcı değil.
+       </div></dd><dt><span class="term"><tt>EINVAL</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>dosyatanıtıcı</tt></i> argümanı bir boru veya soket ya da erişim izinlerine konu olmayan bir şeye ait.
+       </div></dd><dt><span class="term"><tt>EPERM</tt></span></dt><dd class="varlist"><div class="para">
+Bu sürecin dosyanın izinlerini değiştirme yetkisi yok. Sadece dosyanın sahibi (sürecin etkin kullanıcı kimliğinden saptanır) ya da ayrıcalıklı kullanıcı izinleri değiştirebilir.
+       </div></dd><dt><span class="term"><tt>EROFS</tt></span></dt><dd class="varlist"><div class="para">
+Dosya salt-okunur bağlı bir dosya sisteminde bulunuyor.
+       </div></dd></dl></div>
+  </dd></dl><div style="padding:5px"></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Access-Permission.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-File-Attributes.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Testing-File-Access.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Erişim İzinleri </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Dosya Erişim İzinlerinin Sınanması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

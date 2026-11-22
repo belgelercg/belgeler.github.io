@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:28:51+03:00" /><title>Kabuk İşlevleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../bashref/bashref_shell.features.html" title="III. Oylum - Temel Kabuk Özellikleri" /><link rel="previous" href="../bashref/bashref_shell.commands-grouping.html" title="Komutların Gruplanması" /><link rel="next" href="../bashref/bashref_shell.parameters.html" title="Kabuk Parametreleri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Kabuk İşlevleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../bashref/bashref_shell.commands-grouping.html">Önceki</a> </td><th width="60%" align="center">III. Oylum - Temel Kabuk Özellikleri</th><td width="20%" align="right"> <a accesskey="n" href="../bashref/bashref_shell.parameters.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="bashref_shell.functions" id="bashref_shell.functions"></a>Kabuk İşlevleri</div></div></div><dl><dd><a class="indexterm" name="idx73" id="idx73"></a><a class="indexterm" name="idx74" id="idx74"></a><a class="indexterm" name="idx75" id="idx75"></a><div class="para">
+Kabuk işlevleri, komutları isimli bir grup altında toplayıp gerektiğinde
+basit bir komut olarak grubu ismiyle çağırarak içindeki komutların
+çalıştırılmasını sağlar. Kabuk işlevleri için bir altkabuk ya da yeni
+bir süreç oluşturulmaz, içindeki komutlar doğrudan mevcut kabukta
+yorumlanır.
+  </div><div class="para">
+İşlevler için aşağıdaki sözdizimi uygulanır:
+  </div>
+<div class="para"><pre class="literallayout">
+    [ <tt>function</tt> ] <i><tt>isim</tt></i> () <i><tt>birleşik-komut</tt></i> [ <i><tt>yönlendirmeler</tt></i> ]
+</pre></div>
+  <div class="para">
+Bu, <i><tt>isim</tt></i> isminde bir kabuk işlevi oluşturur.
+<tt>function</tt> anahtar sözcüğü isteğe bağlıdır. <tt>function</tt> kullanılmışsa parantezler isteğe bağlıdır. <i><tt>birleşik-komut</tt></i> işlevin gövdesini oluşturur (bkz, <a href="../bashref/bashref_shell.commands-compound.html" class="xref" title="Birleşik Komutlar">Birleşik Komutlar</a>). Bu komut normal olarak <tt>{</tt> ile <tt>}</tt>
+arasındaki bir <i><tt>komut-listesi</tt></i>nden oluşur, fakat evvelce açıklanan birleşik komutlardan biri olabilir. <i><tt>isim</tt></i> bir komut ismi olarak verildiğinde <i><tt>birleşik-komut</tt></i> çalıştırılır. İşlev çalıştırılırken işlevle ilişkilendirilmiş <a class="link" href="../bashref/bashref_shell.redirections.html" title="Yönlendirmeler">yönlendirmeler de uygulanır</a>.
+  </div><div class="para">
+Bir işlev tanımı <b><tt>unset</tt></b> yerleşiğinin <tt>-f</tt> seçeneğinde kullanılarak silinebilir (bkz, <a href="../bashref/bashref_bourne.shell.builtins-unset.html" class="xref" title="unset Yerleşiği">unset Yerleşiği</a>).
+  </div><div class="para">
+İşlev tanımının dönüş durumu bir sözdizimi hatası veya aynı isimde bir işlev olmadıkça sıfırdır. İşlev çalıştırıldığında, işlevin dönüş durumu gövdesindeki komutlardan sonuncusunun dönüş durumu olur.
+  </div><div class="para">
+Tarihsel sebeplerle, kaşlı ayraçlar anahtar sözcük olduklarından dolayı
+kaşlı ayraç olarak işlenebilmeleri için diğer sözcüklerden
+boşluklarla ya da satırsonu karakterleri ile ayrılmaları gerekir. Ayrıca, kaşlı ayraç kullanımında,
+<i><tt>komut-listesi</tt></i> bir noktalı virgül, bir <b><tt>&amp;</tt></b> ya da bir
+satırsonu karakteri ile sonlandırılmalıdır.
+  </div><div class="para">
+Bir işlev çalıştırılırken, argümanları <a href="../bashref/bashref_shell.parameters-positional.html" class="xref" title="Konumsal Parametreler">Konumsal Parametreler</a> olarak işlenir.
+Özel parametre olan <tt>#</tt> kullanılarak konumsal
+parametrenin konumu değiştirilebilir. Ancak, 0. konumsal parametre
+değiştirilemez. İşlevin çalıştırılması sırasında işlevin ismi
+<tt>FUNCNAME</tt> değişkeninin ilk elemanında tutulur.
+<b><tt>declare</tt></b> yerleşiği kullanılarak işlevin <b><tt>trace</tt></b> özelliği belirtilmedikçe veya <b><tt>set</tt></b> yerleşiği ile <b><tt>-o functrace</tt></b> seçeneği etkinleştirilmedikçe <b><tt>DEBUG</tt></b> ve <b><tt>RETURN</tt></b> tuzaklarının miras alınması dışında komut çalıştırma ortamının tüm diğer yönleri bir işlev ile çağrıcısı arasında aynıdır. Ayrıca <a href="../bashref/bashref_bourne.shell.builtins-trap.html" class="xref" title="trap Yerleşiği">trap Yerleşiği</a>'ne de bakınız.
+  </div><div class="para">
+Eğer komut listesinde <tt>return</tt> yerleşik komutu varsa,
+işlev tamamlandıktan sonra icra işlev çağrısından sonraki komuta geçerek
+devam eder. <b><tt>RETURN</tt></b> tuzağı ile ilişkilendirilmiş bir komut icra kaldığı yerden devam etmeden önce çalıştırılır. İşlev tamamlandığında, konumsal parametrelerin ve
+<tt>#</tt> özel parametresinin değerleri işlev çağrısından
+önceki değerlerine döndürülür. <tt>return</tt> ile birlikte
+bir sayı verilmişse, bu işlevin dönüş durumudur; verilmemişse
+<tt>return</tt> komutundan önceki son çalıştırılan komutun
+çıkış durumu işlevin dönüş durumudur.
+  </div><div class="para">
+İşleve özel değişkenler <tt>local</tt> yerleşiği ile
+belirtilebilir. Bu değişkenler sadece işlev ve onun komut listesindeki
+komutlar için geçerlidir.
+  </div><div class="para">
+İşlev isimleri ve tanımları <a class="link" href="../bashref/bashref_bash.builtins-declare.html" title="declare Yerleşiği"><b><tt>declare</tt></b></a> veya <a class="link" href="../bashref/bashref_bash.builtins-typeset.html" title="typeset Yerleşiği"><b><tt>typeset</tt></b></a> yerleşik komutlarının <tt>-f</tt> seçeneği ile listelenebilir. <b><tt>declare</tt></b> veya <b><tt>typeset</tt></b> komutunun <tt>-F</tt> seçeneği sadece işlev isimlerini listeleyecektir (eğer <b><tt>extdebug</tt></b> kabuk seçeneği etkinse isteğe bağlı olarak kaynak dosyası ismi ve satır numarasını da). Bu yolla işlevler, <a class="link" href="../bashref/bashref_bourne.shell.builtins-export.html" title="export Yerleşiği"><b><tt>export</tt></b></a> yerleşiğine <tt>-f</tt> seçeneği belirtilerek altkabuklara otomatik olarak ihraç edilebilir.
+Aynı isimli kabuk işlevleri ve değişkenleri kabuğun çocuklarına çok sayıda eşdeğer isimli girdinin ortam içinde aktarılmasına sebep olacağına dikkat ediniz. Bunun sorunlara yol açabileceği durumları dikkate alınız.
+   </div><div class="para">
+İşlevler bir diğerinin içinden çağrılabilir. Bu şekilde iç içe
+çağrılara bir sınırlama getirilmemiştir.
+  </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../bashref/bashref_shell.commands-grouping.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../bashref/bashref_shell.features.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../bashref/bashref_shell.parameters.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Komutların Gruplanması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Kabuk Parametreleri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

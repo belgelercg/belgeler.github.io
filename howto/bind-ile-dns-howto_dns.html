@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:37+03:00" /><title>DNS</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/bind-ile-dns-howto.html" title="BIND 8 ile DNS NASIL" /><link rel="previous" href="../howto/bind-ile-dns-howto.html" title="BIND 8 ile DNS NASIL" /><link rel="next" href="../howto/bind-ile-dns-howto_bind.html" title="BIND" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">DNS</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/bind-ile-dns-howto.html">Önceki</a> </td><th width="60%" align="center">BIND 8 ile DNS NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/bind-ile-dns-howto_bind.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="bind-ile-dns-howto_dns" id="bind-ile-dns-howto_dns"></a>DNS</div><dl><dd><div class="para">
+      Bilindiği üzere bir IP ağı üzerinde çeşitli servislere ulaşmak için bu
+      servislerin çalıştığı sistemlerin IP adresi adı verilen ve 4 sayıdan oluşan
+      akılda kalması zor ve son kullanıcılar için hemen hiçbir şey ifade etmeyen
+      adreslerinin bilinmesi gerekmektedir. DNS servisi bu sorunu ortadan
+      kaldırmak amacıyla tasarlanmıştır.
+    </div> <div class="head3"><a name="id1" id="id1"></a>DNS'nin Tarihçesi</div><dl><dd><div class="para">
+        Yukarıda bahsedilen isimlendirme sorunu ilk olarak Internetin babası
+        sayılan ArpaNet zamanında ortaya çıkmıştır. 1970'lerde ArpaNet günümüz
+        ağları ile karşılaştırılamayacak kadar küçük durumdaydı ve yalnızca
+        birkaç yüz ile ifade edilebilen sisteme hizmet veriyordu. Bu tarihlerde
+        isimlendirme için tek noktada tutulan bir dosyanın bulunması ve diğer
+        tüm sistemlerin bu dosyayı belli aralıklarla kendi taraflarında
+        güncellemesi isimlendirme sorununu çözmüştü.
+      </div><div class="para">
+        Adres-isim tanımlamalarını içeren <tt>HOSTS.TXT</tt> dosyası
+        SRI tarafından SRI-NIC adında bir bilgisayar üzerinde tutulmaktaydı.
+        Bu dosya her adrese bir isim karşılık gelecek şekilde düzenlenmişti.
+        ArpaNet üzerindeki yeni isim tanımlamaları ve değişiklikleri SRI'ya
+        gönderilen e-postalar aracılığı ile yapılıyor ve
+        <tt>HOSTS.TXT</tt>'in kopyası ftp ile alınıyordu.
+      </div><div class="para">
+        ArpaNet üzerinde TCP/IP kullanımına paralel olarak ortaya çıkan
+        bağlantı patlaması, isim çözümü için bir çok sorunu da beraberinde
+        getirdi. Öncelikle isim çakışmaları ortaya çıktı, sayı artmakta ve
+        her bilgisayara özgün bir isim atanmasında problemler yaşanmaktaydı.
+        Ayrıca yalnızca isim çözümlenmesi için oldukça yüksek miktarda bant
+        genişliği harcanmakta ve buna rağmen kullanılan isim veritabanlarının
+        uyumlu olması her zaman sağlanamamaktaydı.
+      </div><div class="para">
+        Bu durumun ortaya çıkmasından sonra ArpaNet daha ölçeklenebilir bir
+        isim çözümleme yapısı için araştırmalara başladı. Paul Mockapetris bu
+        işle görevlendirildi. Mockapetris 1984 yılında Domain Name System (DNS)'i
+        (Alan İsimlendirme Sistemi) tanımlayan RFC 882 ve 883'ü yayınladı.
+        Bunlar daha sonra halen geçerli olan RFC 1034 ve 1035 tarafından
+        güncellendiler.
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a> DNS'nin Yapısı</div><dl><dd><div class="para">
+        ArpaNet döneminde ortaya çıkan güçlükler nedeniyle DNS tasarlanırken
+        uçlardaki sistemlerin kendi bilgilerini kendilerinin güncelleyebileceği
+        bir yapı üzerinde durulmuştur. Ortaya çıkan yapı ise en üstten başlayarak
+        hiyerarşik bir şekilde uçlara doğru açılan dağıtık bir varitabanı
+        mimarisidir. Uçlar birbirleri ile istemci sunucu yöntemiyle konuşurlar.
+      </div><div class="para">
+        Farklı tablolar ile tek veritabanında tanımlanmış bir alan adı
+        sistemini incelenirse yapısının hiyerarşik olduğu görülür. Her alan adı
+        bir başka alan adının altında tanımlanmıştır. En üst seviyede bulunan
+        bir tablo en üst seviye alan adları olan <tt>.com</tt>,
+        <tt>net</tt> vb içerir ve bu
+        alan adlarının ayrıntılarını içeren tabloları işaret eder. Aynı şekilde
+        bu tablolar da  kendi altlarında bulunan alan adlarını içerir ve
+        ayrıntılarını gösteren tablolara işaret eder.
+      </div><div class="para">
+        Açıklanan tablo yapısı Şekil-1 üzerinde gösterilmiştir.
+      </div><div class="figure"><div class="formaltitle"><b>Şekil 3.1. </b></div><span class="inlinemediaobject"><img src="images/bindwdns/sekil1.gif" class="imagedata" alt="" /></span></div><div class="para">
+        İlk tabloda en üst seviye alan adları tanımlanmış ve bu tabloda bulunan
+        alt alan adlarının bilgileri ilgili tablolara işaret edilmiştir. Bu tek
+        bir veritabanında gösterilmiş bir yapılanmadır. Bu yapıda tablolar
+        farklı veritabanları üzerinde tutularak yönetim kolaylaştırılabilir.
+        Bu durumda oldukça dinamik ve etkin bir mekanizma kurulmuş olur.
+      </div><div class="para">
+        Dağıtık veritabanları arasında istemci-sunucu yöntemi ile bağlantı
+        kurulur.
+      </div><div class="para">
+        Az önce belirtilen en üst seviye alan adları arasında <tt>com</tt>,
+        <tt>net</tt>, <tt>gov</tt> vb yanında ülkelerin
+        ISO tarafından belirlenen sembolleri de tanımlanmıştır (tr, uk, fr, gr
+        gibi).
+      </div><div class="para">
+        Yukarıdaki açıklamaların paralelinde oluşan hiyerarşik alan adı ağacı
+        Şekil 2'de gösterilmiştir.
+      </div><div class="figure"><div class="formaltitle"><b>Şekil 3.2. </b></div><span class="inlinemediaobject"><img src="images/bindwdns/sekil2.gif" class="imagedata" alt="" /></span></div><div class="para">
+        Alan adı dağılımı en üst seviyeden başlar ve alt dallara doğru bölünür.
+        Bir alan adının okunuşu en alttan başlayarak en üste doğru yapılır.
+        Ağacın en altında bulunan alan adı <tt>ankara.ulak.net.tr</tt>
+        şeklinde okunacaktır.
+      </div><div class="para">
+        En üst seviye alan adlarının yönetimi <tt>InterNIC</tt> tarafından
+        yapılmaktadır. ISO kodları ile tanımlanmış ülke adlarının yönetimi
+        ülkelere göre değişiklik göstermektedir. Türkiye'nin ISO kodu olan <tt>tr</tt>
+        üst seviye alan adının yönetimi Orta Doğu Teknik Üniversitesi (<tt>ODTÜ</tt>)
+        tarafından yapılmaktadır. Dolayısıyla <tt>com</tt>,
+        <tt>net</tt>, <tt>gov</tt> gibi alan adlarına
+        kayıt <tt>InterNIC</tt> tarafından; <tt>com.tr</tt>,
+        <tt>net.tr</tt>, <tt>gov.tr</tt> gibi alan
+        adlarına kayıt <tt>ODTÜ</tt> tarafından yapılmaktadır. Alan
+        adı kayıtlarıyla ilgili daha fazla bilgi için
+        <a class="ulink" href="http://www.internic.net" target="_top">http://www.internic.net</a> ve
+        <a class="ulink" href="http://dns.metu.edu.tr" target="_top">http://dns.metu.edu.tr</a>
+        adresleri incelenebilir.
+      </div><div class="para">
+        <tt>ankara.ulak.net.tr</tt> örneğinde,
+        <tt>ankara.ulak.net.tr</tt> alan adı UlakNet sunucuları
+        üzerinde, <tt>ulak.net.tr</tt> alan adı ODTÜ sunucuları
+        üzerinde, <tt>net.tr</tt> alan adı yine ODTÜ sunucuları
+        üzerinde, <tt>tr</tt> alan adı ise <tt>root server</tt>
+        (kök sunucusu)adı verilen en üst seviye alan adı sunucuları üzerinde tanımlanmış
+        durumdadır. Kök sunucular, <tt>tr</tt> alan adını içeren alan
+        adlarını çözümlemez, çözümü ODTÜ sunucularından ister. Dikkat edilmesi
+        gereken nokta alan adları alındıktan sonra bu
+        alan adındaki isimlendirmenin yerel olarak yapıldığıdır. Bu daha önce
+        de değinilen yönetimin dağıtık olarak yapılabilmesini sağlar.
+      </div><div class="para">
+        Bu bilgiler ışığında <tt>xxx.ankara.ulak.net.tr</tt> ya da
+        <tt>yyy.ulak.net.tr</tt> şeklindeki bir tanımlama <tt>UlakNet</tt>'in
+        kontrolünde, benzer şekilde <tt>abc.com.tr</tt> ya da
+        <tt>xyz.net.tr</tt> şeklindeki bir tanımlama ise
+        <tt>ODTÜ</tt>'nün kontrolündedir.
+      </div><div class="para">
+        İncelenen alan adı ağacı maksimum 127 basamaktan oluşabilir ki bu da
+        pratikte ulaşılması imkansıza yakın bir değerdir.
+      </div></dd></dl> <div class="head3"><a name="bind-ile-dns-howto_resolv" id="bind-ile-dns-howto_resolv"></a>DNS Çözümlemesi</div><dl><dd><div class="para">
+        DNS'nin yapısı anlatılırken dağıtık bir veritabanı şeklinde
+        oluşturulduğu ve uçların birbirbirleriyle istemci sunucu mantığı ile
+        konuştuğunu söylenmişti. Bu işlevi yerine getiren programlara alan adı
+        sunucu adı verilir (name server). Alan adı sunucuları alan adı ağacı
+        üzerinde nokta ile gösterilirler.
+      </div><div class="para">
+        Her alan adı sunucu bir veya birkaç alan adı bilgisini tutar ve bu alan
+        adları için en yetkili alan adı sunucudur. Diğer alan adları için sorgularda
+        bu alan adları için en yetkili alan adı sunucularını bulmaya çalışır.
+      </div><div class="para">
+        Alan adı sunucular yerine getirdikleri kritik işlev nedeniyle genellikle
+        yedekli olarak çalıştırılırlar. Bilgilerin tutulduğu ana veritabanı
+        <tt>birincil alan adı sunucu</tt> olarak adlandırılır.
+        İkincil sunucular, <tt>birincil alan adı
+        sunucu</tt>larının verilerini periyodik olarak kendi veritabanına
+        kopyalarlar. Birincil sunucuda herhangi bir problem yaşandığında
+        sorgulama ikincil sunucular üzerinde yapılır.
+      </div><div class="para">
+        DNS çözümlemesi birkaç kademede incelenebilir. <tt>UlakNet</tt>
+        alan adı sunucusunu kullanan bir istemcinin <tt>www.ulak.net.tr</tt>
+        adresini sorguladığı durumda sunucu kendi veritabanında tanımlı olan bu
+        adresi istemciye döndürecektir. Bu işlem,  <tt>UlakNet</tt> alan adı
+        sunucusu <tt>ulak.net.tr</tt> alan adı altında bulunan tanımlar
+        için en yetkili sunucu olduğu için bu şekilde gerçekleşmiştir.
+      </div><div class="para">
+        Şekil 3'te bu sorgunun nasıl gerçekleştirildiği görülmektedir.
+      </div><div class="figure"><div class="formaltitle"><b>Şekil 3.3. </b></div><span class="inlinemediaobject"><img src="images/bindwdns/sekil3.gif" class="imagedata" alt="" /></span></div><div class="para">
+        Görüldüğü gibi istemci <tt>www.ulak.net.tr</tt> adresini bu
+        alan adı için en yetkili durumdaki alan adı sunucusunda sorgulamış ve
+        bu adrese tanımlanmış IP adresi cevap olarak döndürülmüştür.
+      </div><div class="para">
+        Benzer bir sorgulamayı Amerika kıtasında <tt>ns.digex.net</tt>
+        adlı alan adı sunucuyu kullanan bir istemcinin yaptığındaki durum incelenebilir.
+      </div><div class="para">
+        <tt>ns.digex.net</tt> kendisine sorulan
+        <tt>www.ulak.net.tr</tt> için herhangi bir bilgiye sahip
+        değildir. Bu yüzden kendi veritabanında tanımlı olan en üst seviye alan
+        adı sunucularına (<tt>root-servers</tt> - daha sonra ayrıntılı
+        olarak açıklanacaktır) bu adresi sorar. Bu sunucu da
+        (<tt>a.root-servers.net</tt>) <tt>www.ulak.net.tr</tt>
+        için kesin bilgiye sahip değildir. Ancak <tt>.tr</tt> üst
+        seviye alan adının <tt>ns1.metu.edu.tr</tt> sunucusu tarafından
+        kontrol edildiğini bilmektedir. Bu yüzden, <tt>ns.digex.net</tt>'e
+        sorguyu <tt>ns1.metu.edu.tr</tt> üzerinde yapması bilgisini
+        iletir. <tt>ns.digex.net</tt> bu kez aynı adresi
+        <tt>ns1.metu.edu.tr</tt> üzerinde sorgulayacaktır. Ancak bu
+        sunucu da <tt>www.ulak.net.tr</tt> için kesin adresi bilemeyecek
+        ve sorgunun <tt>ulak.net.tr</tt> alan adı sunucusu olan
+        <tt>ns.ulak.net.tr</tt> adresine yönlendirilmesini bildirecektir.
+        Son olarak <tt>ns.digex.net</tt>, <tt>www.ulak.net.tr</tt>
+        adresini <tt>ns.ulak.net.tr</tt> üzerinde sorgulayacak ve
+        <tt>ns.ulak.net.tr</tt> kendi veritabanında
+        <tt>www.ulak.net.tr</tt> için tanımlı olan
+        <tt>193.140.83.9</tt> adresini döndürecektir. Bu bilgiye ulaşan
+        <tt>ns.digex.net</tt> de kendi istemcisine bu bilgiyi
+        iletecektir.
+      </div><div class="para">
+        Bu sorgulama şekil 4'te gösterilmiştir.
+      </div><div class="figure"><div class="formaltitle"><b>Şekil 3.4. </b></div><span class="inlinemediaobject"><img src="images/bindwdns/sekil4.gif" class="imagedata" alt="" /></span></div><div class="para">
+        Bu analizde dikkati çekmesi gereken iki önemli nokta bulunmaktadır.
+      </div><div class="para">
+        Öncelikle <tt>.tr</tt> den sorumlu gözüken
+        <tt>ns1.metu.edu.tr</tt>'nin <tt>.net.tr</tt>
+        için ayrı bir alan adı sunucuya yönlendirme yapmadığı, doğrudan
+        <tt>ulak.net.tr</tt> alan adı sunucusuna yönlendirme
+        yaptığına dikkat edilmelidir. Bu işlem,<tt>ns1.metu.edu.tr</tt>
+        hem <tt>.tr</tt> hem de <tt>.net.tr</tt> için
+        alan adı sunucusu olduğu için bu şekilde gerçekleşmiştir. Eğer
+        <tt>.tr</tt> ve <tt>.net.tr</tt> farklı sunucular
+        üzerinde tanımlı olsalardı <tt>ns.digex.net</tt> ayrıca
+        <tt>.net.tr</tt>'den sorumlu sunucuyu da sorgulamak
+        durumunda kalacaktı.
+      </div><div class="para">
+        Dikkat edilmesi gereken diğer nokta ise istemcinin alan adı sunucuya
+        yalnızca bir sorgu iletmesi ve tüm iş sunucu tarafından yapıldıktan
+        sonra yalnızca cevabı almasıdır. Aynı durum
+        <tt>ns.digex.net</tt> diğer alan adı sunuculara ulaşırken
+        ortaya çıkmamış ve her biri ayrı ayrı sorgulanmıştır. Bunun sebebi
+        <tt>ns.digex.net</tt> sunucusunun tekrarlı (recursive),
+        diğer alan adı sunucularının ise tekrarlı olmayan (iterative) bir
+        şekilde sorgulanmış olmasıdır.
+      </div></dd></dl> <div class="head3"><a name="id4" id="id4"></a>IP Adresinden İsim Çözümlemesi</div><dl><dd><div class="para">
+        <a class="link" href="../howto/bind-ile-dns-howto_dns.html#bind-ile-dns-howto_resolv" title="DNS Çözümlemesi">Bölüm 1.3</a>'te isimden adres çözümlemesi incelenmiştir. Şu ana kadar
+        anlatılan yapı tüm sistemin isimden adres çözümü için tasarlandığı
+        izlenimini vermektedir.  Ancak pratik ihtiyaçlar, IP adresinden isim
+        çözümünü de gerekli kılmaktadır.
+      </div><div class="para">
+        Böyle bir sorgunun şu ana kadar incelenen yapı üzerinde nasıl
+        çalışabileceğine bakalım. İsimlerin indesklenmesine göre oluşturulmuş
+        hiyerarşik bir sistem görülmektedir. Ancak IP adreslerin bu yapı
+        üzerinde herhangi bir hiyerarşik yapısı bulunmamaktadır. Örneğin
+        <tt>www.ulak.net.tr</tt> adresi <tt>193.140.83.9</tt>
+        IP numarası ile adreslenmişken <tt>truva.ulakbim.gov.tr</tt>
+        adresi <tt>193.140.83.13</tt> IP numarası ile adreslenmiş
+        olabilir. Bu da <tt>193.140.83.</tt> ile başlayan IP'lerin
+        teorik olarak tüm alan adı uzayına yayılmış olabileceğini gösterir.
+      </div><div class="para">
+        Görüldüğü gibi mevcut yapıda bir IP adresinin isim karşılığını bulmak
+        için veritabanının tümünün taranması gerekmektedir. Bu ise indeksi
+        olmayan dağınık durumdaki milyonlarca kaydın taranması anlamına gelir ki
+        imkansıza yakın bir uğraştır. Bu sorunun çözülebilmesi için IP
+        adresleri için de hiyerarşik bir yapının kurulması gerektiği
+        görülmektedir.
+      </div><div class="para">
+        Bu yapıya geçmeden önce IP adreslemenin özelliklerinin hatırlanması
+        yararlı olacaktır.  IP adresleri ilk oktetten son oktete (soldan sağa
+        doğru) en genelden en özele doğru sıralanırlar. Örneğin
+        <tt>193.140</tt> hem <tt>193.140.83.13</tt>'ü
+        hem de <tt>193.140.83.9</tt>'u içine alır.
+      </div><div class="para">
+        Alan adları ise buna ters olarak sağdan sola doğru en genelden en
+        özele doğru sıralanırlar. Örneğin <tt>.tr</tt> hem
+        <tt>ulak.net.tr</tt>'yi hem de <tt>metu.edu.tr</tt>'yi
+        içine alır.
+      </div><div class="para">
+        İki gösterim de genelden özele sıralanabildiğine göre mevcut hiyerarşik
+        yapılandırmaya IP numaraları için bir üst seviye alan adı eklenmesi
+        mümkündür. Bu alan adı <tt>in-addr.arpa</tt> şeklinde
+        ifade edilir. Bu üst seviye alan adı 1'den 255'e kadar çeşitli alt
+        alanlara bölünür. Bu bölümlemeye 4 okteti tamamlayacak şekilde devam
+        edilebilir. Bu durumda ortaya çıkan yapı şekil 5'te gösterilmiştir.
+      </div><div class="figure"><div class="formaltitle"><b>Şekil 3.5. </b></div><span class="inlinemediaobject"><img src="images/bindwdns/sekil5.gif" class="imagedata" alt="" /></span></div><div class="para">
+        Üst seviye alan adları arasına <tt>arpa</tt> adında bir alan
+        adı eklenmiştir. Bu alan adının altında <tt>in.addr</tt>
+        şeklinde bir alan daha tanımlanmıştır. Bu alan adının altında IP
+        numarasının ilk okteti alan adı olarak eklenmiş, bunu sırayla IP
+        numarasının ikinci, üçüncü ve dördüncü oktetleri izlemiştir.
+      </div><div class="para">
+        Görüldüğü gibi artık <tt>193.140.83.13</tt> ve
+        <tt>193.140.83.9</tt> IP numaralarının isim karşılıklarını
+        bulmak son derce kolaylaşmıştır. İncelenen isim sorgusuna benzer bir
+        şekilde IP-isim sorguları da bu yapının yardımıyla yapılabilmektedir.
+        Ancak dikkat edilmesi gereken önemli birkaç nokta bulunmaktadır.
+      </div><div class="para">
+        Normal alan adı isimlendirme sisteminde isimler ağacın en altından en
+        üstüne doğru okunur.  Bu durumda IP numaraları bilinenin aksine özelden
+        genele doğru okunacaklardır. Örneğin <tt>193.140.83.13</tt>
+        IP numarasının DNS ağacı üzerinde okunuşu
+        <tt>13.83.140.193.in-addr.arpa</tt> şeklinde olacaktır.
+      </div><div class="para">
+        Dikkat edilmesi gereken diğer bir nokta ise isimden IP'ye yapılan
+        tanımlama ile IP'den isime yapılan tanımlama arasında herhangi bir
+        bağlantı bulunmayışıdır. Örneğin <tt>www.ulak.net.tr</tt>
+        adresi DNS üzerinde <tt>193.140.83.9</tt> olarak tanımlıyken,
+        <tt>193.140.83.9</tt> IP adresinin ismi
+        <tt>efe.ulakbim.gov.tr</tt> şeklinde tanımlı olabilir.
+      </div></dd></dl> <div class="head3"><a name="id5" id="id5"></a>DNS Önbelleği</div><dl><dd><div class="para">
+        DNS çözümlemesinde anlatıldığı şekilde isim çözümleme işlemi ardışıl
+        olarak alan adı sunucularının sorgulanmasını gerektirir. Bu işlem
+        oldukça vakit alıcı bir işlem olabilir ve karşılıklı olarak sistemler
+        üzerinde yük oluşturduğu gibi hatlar üzerinde yüksek miktarda bant
+        genişliği harcayabilir.
+      </div><div class="para">
+        Bunun engellenmesi ve sorgunun mümkün olan en kısa sürede
+        sonuçlandırılabilmesi için alan adı sunuculara önbellek (cache) özelliği
+        eklenmiştir. Bu sayede bir alan adı sunucu daha önce sorguladığı alan
+        adlarını kendi belleğinde tutarak yeni sorgularda diğer alan adı
+        sunucularını sorgulamadan doğrudan cevap verebilir. Bu yukarıda
+        anlatılan olumsuzlukları belli bir derecede önleyecektir. Ancak
+        burada önemli bir nokta gözden kaçırılmamalıdır.
+      </div><div class="para">
+        Sorgulanan alan adında son sorgulamadan sonra  değişiklik yapılmış
+        olabilir. Bu durumda bellekte tutulan bilgi güncelliğini yitirmiştir ve
+        istemciye hatalı bilgi geri döndürülecektir.
+      </div><div class="para">
+        Bu ancak belli bir noktaya kadar kabul edilebilir bir durumdur. Alan
+        adı tanımları normalde çok sık değiştirilen tanımlamalar değillerdir.
+        Nadiren değitirildiklerinde de değişikliğin etkinleşmesi için bir gün
+        gibi bir süre çoğu zaman yeterlidir. Şu halde bellekte tutulan bilgilerin
+        bir süre sonra güncelliğini yitirdiği kabul edilmelidir. Bunu belirleyen
+        değere daha önceki konularda da değinildiği gibi <tt>TTL</tt>
+        (Time To Live - Yaşam Süresi) denilmektedir ve her alan adının
+        tanımlanmasında bu alan adı için geçerli <tt>TTL</tt> değeri
+        belirtilir. Bu alan adından sorgulanan bilgiler bellekte <tt>TTL</tt>
+        süresince tutulduktan sonra güncelliğini yitirdiği kabul edilir.
+        <tt>TTL</tt>'in nasıl tanımlandığı daha sonra incelenecektir.
+      </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/bind-ile-dns-howto.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/bind-ile-dns-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/bind-ile-dns-howto_bind.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">BIND 8 ile DNS NASIL </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> BIND</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:25+03:00" /><title>Veri Paketlemesi Hazretleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../bgnet/bgnet_advanced.html" title="İleri Teknikler" /><link rel="previous" href="../bgnet/bgnet_advanced-sendall.html" title="Sorunlu send() Durumları" /><link rel="next" href="../bgnet/bgnet_reference.html" title="Diğer Kaynaklar" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Veri Paketlemesi Hazretleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../bgnet/bgnet_advanced-sendall.html">Önceki</a> </td><th width="60%" align="center">İleri Teknikler</th><td width="20%" align="right"> <a accesskey="n" href="../bgnet/bgnet_reference.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="bgnet_advanced-sonofdataencap" id="bgnet_advanced-sonofdataencap"></a>Veri Paketlemesi Hazretleri</div><dl><dd><div class="para">
+      Veri paketlemesi de ne demek oluyor? En basit anlamına bakacak olursak
+      bu şu anlama gelir: Verinin başına ya onu tanımlayan bir başlık bilgisi
+      koyacaksınız ya uzunluk bilgisi ya da her ikisi birden.
+    </div><div class="para">
+      Başlık deyip durduğumuz şey neye benzer? Bu tamamen size kalmış ve
+      projeden projeye değişebilen bir şeydir.
+    </div><div class="para">
+      Ama! Bu açıklamalar biraz havada kalmadı mı?
+    </div><div class="para">
+      Tamam. Mesela çok kullanıcılı bir chat programı geliştirdiğinizi ve
+      bu programın da <tt>SOCK_STREAM</tt> türünden soketler
+      kullandığını var sayalım. Kullanıcılardan biri bir şey dediğinde
+      sunucuya gitmesi gereken iki bilgi parçası vardır: Kim dedi ve ne dedi?
+    </div><div class="para">
+      Buraya kadar güzel. "Problem ne?" diye soruyor olabilirsiniz.
+    </div><div class="para">
+      Problem şu: Gelip giden mesajların uzunluğu değişken. "Ali" isimli biri
+      "Selam" diyebilir ve sonra da "Veli" isimli biri "naber moruk?"
+      diyebilir.
+    </div><div class="para">
+      Bu durumda siz de <tt>send()</tt> ile gelen verileri tüm
+      istemcilere yollarsınız öyle değil mi ve yolladığınız veri de şu
+      şekilde olur:
+    </div>
+
+<div class="para"><div align="right"><pre class="screen">
+A l i S e l a m V e l i N a b e r m o ru k ?
+</pre></div></div>
+    <div class="para">
+      Ve böyle sürüp gider. Peki istemci bir paketin bitip diğerinin
+      başladığını nasıl anlayacak? Eğer isterseniz tüm paketlerin boyunu
+      sabit yapabilirsiniz ve sonra da <tt>sendall()</tt>
+      işlevini çağırırsınız ( <a class="link" href="../bgnet/bgnet_advanced-sendall.html" title="Sorunlu send() Durumları">yukarıda bir
+      örneği var</a>). Fakat bu bant genişliğini boş yere harcamak
+      demektir! Yani herhalde <tt>send()</tt> ile sadece
+      Ali'nin "Selam" demesi için 1024 byte göndermek istemeyiz değil mi?
+    </div><div class="para">
+      İşte bu yüzden veriyi ufak tefek bir başlık ve paket yapısı ile
+      paketleriz. Hem sunucu hem de istemci verinin nasıl paketleneceğini
+      (marshal) ve bu paketin nasıl açılacağın (unmarshal) bilir. Sıkı
+      durun çünkü tam da şu andan itibaren bir sunucu ile istemcinin hangi
+      kurallara göre iletişim kuracağını belirleyen bir protokol
+      tanımlamaya başlıyoruz!
+    </div><div class="para">
+      Şimdi var sayalım ki kullanıcı adı en fazla 8 karakter boyunda
+      olabiliyor ve eğer daha kısa ise geriye kalan bölge '<tt>\0</tt>'
+      ile dolduruluyor. Ve sonra varsayalım ki mesaj uzunluğu değişken
+      olabiliyor ve maksimum 128 karaktere izin veriyoruz. Buna göre örnek
+      bir pakete bakalım:
+    </div>
+      <ol class="orderedlist" start="ignore" type="1"><li><div class="listitem"><div class="para">
+          <tt>len</tt> (1 byte, unsigned) -- Paketin toplam boyu,
+          8 baytlık kullanıcı ismi ve chat mesajı dahil.
+        </div></div></li><li><div class="listitem"><div class="para">
+          <tt>name</tt> (8 byte) -- Kullanıcı ismi, gerekirse sonu
+          NULL ile doldurulmuş.
+        </div></div></li><li><div class="listitem"><div class="para">
+          <tt>chatdata</tt> (<i>n</i>-byte) --
+          Gönderilecek mesajın kendisi. En fazla 128 byte olabilir. Paket
+          boyu bu verinin boyu artı 8 (kullanıcı ismi bölümünün uzunluğu)
+          olarak hesaplanabilir.
+        </div></div></li></ol>
+    <div class="para">
+      Neden söz konusu veri alanları için sırasi ile 8 byte ve 128 byte
+      sınırlarını seçtim? Tamamen keyfime kalmış, bana yeterince uzun
+      göründü. Ama belki de sizin ihtiyaçlarınız için 8 byte çok az
+      gelebilir ve siz de 30 byte uzunluğunda bir isim alanı
+      kullanabilirsiniz. Size kalmış.
+    </div><div class="para">
+      Yukarıdaki paket tanımlamasını kullanarak ilk paketimizin görüntüsü
+      şuna benzeyecektir (onaltılık ve ASCII):
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+      0D     41 6C 69 00 00 00 00 00      53 65 6C 61 6D
+  (uzunluk)  A  l  i     (dolgu)          S  e  l  a  m
+</pre></div></div>
+    <div class="para">
+      Ve ikincisi de benzer şekilde:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+      13     56 65 6C 69 00 00 00 00      4E 61 62 65 72 6D 6F 72 75 6B 3F
+  (uzunluk)  V  e  l  i    (dolgu)        N  a  b  e  r  m  o  r  u  k  ?
+</pre></div></div>
+    <div class="para">
+      (Uzunluk bilgisi de elbette Ağ Byte Sıralamasına uygun depolanmalıdır.
+      Ancak mevcut örnekte tek bir byte olduğu için çok önemli değil. En
+      genel durumda ise sakın unutmayın ki tüm ikili düzendeki tamsayılarınız
+      Ağ Byte Sıralamasına göre dizilmiş olmalıdır.)
+    </div><div class="para">
+      Bu veriyi yollarken güvenli bir şekilde, mesela <a class="link" href="../bgnet/bgnet_advanced-sendall.html" title="Sorunlu send() Durumları"><tt>sendall()</tt></a> gibi bir işlevle yollamalısınız.
+      Böylece birçok kez <tt>send()</tt> işlevini çağırmış olmak
+      gerekse de gittiğinden emin olabilirsiniz.
+    </div><div class="para">
+      Benzer şekilde bu veriyi aldığınızda çözmek için biraz iş yapmanız
+      gerekir. En genel durumda verinin ancak bir kısmının gelmiş
+      olabileceğini göz önünde bulundurmalısınız (misal sadece "00 13 56 65 6C"
+      size ulaşmış olabilir Veli isimli kullanıcıdan. Bu ilk parça
+      gördüğünüz gibi eksiktir ve verinin tamamına erişene dek birkaç kez
+      daha <tt>recv()</tt> işlevini çağırmanız gerekebilir.
+    </div><div class="para">
+      İyi de nasıl? Paketin en başına paket uzunluğu konmuş olduğundan en baştan
+      itibaren bir paketin orjinal uzunluğunu biliriz. Aynı zamanda biliriz ki
+      azami paket boyu da 1+8+128 olarak hesaplanabilir yani toplam olara 137
+      byte (çünkü biz böyle tanımladık).
+    </div><div class="para">
+      Bu durumda yapabileceğiniz şeylerden biri iki paketi barındırabilecek
+      büyüklükte bir dizi tanımlamaktır. Burası sizin çalışma diziniz olacak
+      ve paketler buraya vardıkça onları buradan alıp düzenleyeceksiniz.
+    </div><div class="para">
+      <tt>recv()</tt> işlevini her çağırışınızda gelen veriyi
+      çalışma dizisine aktarırsınız ve paketin tamamlanıp tamamlanmadığına
+      bakarsınız. Yani dizi içindeki byte miktarının paket boyuna eşit mi
+      yoksa ondan büyük mü olduğunu kontrol edersiniz (+1 çünkü başlıktaki
+      uzunluk kendisi için kullanılan 1 byte'lık uzunluğu içermez). Eğer
+      tampondaki byte sayısı 1'den az ise o zaman paket tam değildir açık
+      olarak. Bu durumu özel olarak ele almalısınız, çünkü bu ilk byte
+      çöplüktür ve paket boyu için ona güvenemezsiniz.
+    </div><div class="para">
+      Paket tamamlandığında artık onun üzerinde istediğiniz işlemi
+      gerçekleştirebilirsiniz. Onu kullanabilir, çalışma dizinizden
+      çıkarabilirsiniz.
+    </div><div class="para">
+      Nasıl? Kafanızda evirip çevirmeye başladınız mı? Sıkı durun şimdi
+      ikinci darbe geliyor: bir paketi sonuna kadar okumakla kalmayıp aynı
+      esnada bir sonraki paketin de bir kısmını son <tt>recv()</tt>
+      çağrısında okumuş olabilirsiniz. Yani çalışma bölgenizde bir tam paket
+      ve bir de ardından gelen bir kısmi paket vardır! (İşte çalışma
+      tamponunu biraz geniş tutun dememin sebebi bu idi. Yani iki paketi
+      tutabilecek kadar -- işte şimdi o durum gerçekleşti!)
+    </div><div class="para">
+      İlk paketin boyunu bildiğinize ve gelen byte'ları da takip ettiğinize
+      göre bu sayıları kullanarak çalışma tamponunuzdaki baytlardan
+      hangisinin ilk pakete hangisinin de kısmi pakete ait olduğunu tespit
+      edebilirsiniz. Birincisi ile uğraşmayı bitirince onu çalışma dizisinden
+      çıkarıp bir sonraki paketin parçasını tampon başlangıcına
+      taşıyabilirsiniz ve böylece tampon da bir sonraki <tt>recv()</tt>
+      çağrısı için hazır hale gelir.
+    </div><div class="para">
+      (Bazı okuyucular belki fark etmiştir, kısmi olarak gelen ikinci paketi
+      tampon başına taşımak biraz vakit alabilecek bir iştir ve program buna
+      gerek duymaması için döngüsel tampon (circular buffer) kullanacak
+      şekilde kodlanabilir. Maalesef döngüsel tamponla ilgili tartışma bu
+      makalenin alanı dışına düşmektedir. Gerçekten merak ettiyseniz Veri
+      Yapıları ile ilgili güzel bir kitap alıp ilgili bölümü okuyun)
+    </div><div class="para">
+      Kolay olduğunu söylememiştim. Şey, aslında söylemiştim ve öyleydi.
+      Öyledir, yani eğer pratik yapmaya başlarsanız gerisi çorap söküğü
+      gibi gelecektir. Excalibur üzerine yemin ederim öyle olacağına!
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../bgnet/bgnet_advanced-sendall.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../bgnet/bgnet_advanced.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../bgnet/bgnet_reference.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Sorunlu send() Durumları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Diğer Kaynaklar</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

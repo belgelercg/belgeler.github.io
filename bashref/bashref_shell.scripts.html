@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:28:53+03:00" /><title>Kabuk Betikleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../bashref/bashref_shell.features.html" title="III. Oylum - Temel Kabuk Özellikleri" /><link rel="previous" href="../bashref/bashref_shell.exec-signals.html" title="Sinyaller" /><link rel="next" href="../bashref/bashref_shell.builtins.html" title="IV. Oylum - Yerleşik Kabuk Komutları" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Kabuk Betikleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../bashref/bashref_shell.exec-signals.html">Önceki</a> </td><th width="60%" align="center">III. Oylum - Temel Kabuk Özellikleri</th><td width="20%" align="right"> <a accesskey="n" href="../bashref/bashref_shell.builtins.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="bashref_shell.scripts" id="bashref_shell.scripts"></a>Kabuk Betikleri</div></div></div><dl><dd><a class="indexterm" name="idx122" id="idx122"></a><div class="para">
+Bir kabuk betiği kabuk komutlarını içeren bir metin dosyasıdır.
+Bash çağrılırken böyle bir dosya seçenek olmayan ilk argüman olarak
+verilmişse ve seçenekler arasında <tt>-c</tt> ve
+<tt>-s</tt> seçenekleri yoksa (<a href="../bashref/bashref_invoking.bash.html" class="xref" title="Bash'in Çağrılması">Bash'in Çağrılması</a>
+bölümüne bakın), Bash dosyadan okuduğu komutları çalıştırır ve çıkar.
+Bu tür bir işlemde kullanılan kabuk etkileşimsiz kabuktur. Kabuk dosyayı
+önce çalıştırıldığı dizinin içinde arar, bulamazsa <tt>$PATH</tt>
+içindeki dizinlere bakar.
+  </div><div class="para">
+Bash bir kabuk betiğini çalıştırırken, özel parametre <tt>0</tt>'ı
+kabuğun ismine değil dosya ismine atar ve diğer konumsal parametreler de
+varsa argümanlara atanır. Olmayan argümanların konumsal parametreleri
+kaldırılır.
+  </div><div class="para">
+Bir kabuk betiği, <b><tt>chmod</tt></b> komutu ile çalıştırma biti
+1 yapılarak çalıştırılabilir yapılabilir. Bash betiğin içindeki komutları
+<tt>$PATH</tt> dizinlerinde arar ve bulduğunda bir altkabuk
+oluşturup onu orada çalıştırır. Başka bir deyişle, <tt>dosyaismi</tt>
+bir çalıştırılabilir kabuk betiği ise
+  </div>
+<div class="para"><pre class="literallayout">
+    dosyaismi <i>argumanlar</i>
+</pre></div>
+      <div class="para">ile</div>
+<div class="para"><pre class="literallayout">
+    bash dosyaismi <i>argumanlar</i>
+</pre></div>
+  <div class="para">
+komutları birbirine eşdeğerdir. Bu altkabuk kendi kendini ilklendirir,
+yani etkisi, betiği yorumlayan ve komutlarının yerlerini bilen bir
+kabuktan onun çocuğu olarak yeni bir kabuk çağırmaya benzer.
+(<b><tt>hash</tt></b> yerleşiği için <a href="../bashref/bashref_bourne.shell.builtins.html" class="xref" title="Bourne Kabuğu Yerleşikleri">Bourne Kabuğu Yerleşikleri</a> bölümüne bakınız.)
+  </div><div class="para">
+Unix'in çoğu sürümleri bunu işletim sisteminin komut çalıştırma
+mekanizmasının bir parçası yapar. Eğer bir betiğin ilk satırı
+<tt>#!</tt> çifti ile başlarsa, satırın kalanı
+dosya içindeki programın yorumlayıcısıdır. Burada Bash,
+<b><tt>awk</tt></b>, <b><tt>perl</tt></b> ya da
+betik dosyasının yazıldığı dile ait bir yorumlayıcı belirtebilirsiniz.
+  </div><div class="para">
+Yorumlayıcı için yorumlayıcı satırında yorumlayıcı isminden sonra,
+ya da betiği çağırırken betik isminden hemen sonra tek bir seçenek
+belirtilebilir, bu son durumda betiğe verilebilecek diğer argümanlar
+da ondan sonra verilir. Bash bu eylemi işletim sisteminden birşey
+beklemeden yerine getirir.
+  </div>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">Unix'in bazı eski sürümlerinde yorumlayıcı ismi ve tek
+seçeneği için toplam 32 karakterlik bir sınırlama vardır.</div></td></tr></table></div>
+  <div class="para">
+Bash betikleri çoğunlukla <tt>#! /bin/bash</tt> satırı ile
+başlar (Bash'ın <tt>/bin</tt> içinde bulunduğu varsayımıyla).
+Bu satır, betik başka bir kabuk altında çalıştırılsa bile betiğin
+Bash tarafından yorumlanmasını sağlar.
+  </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../bashref/bashref_shell.exec-signals.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../bashref/bashref_shell.features.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../bashref/bashref_shell.builtins.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Sinyaller </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> IV. Oylum - Yerleşik Kabuk Komutları</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:25+03:00" /><title>DNS -- Sen "whitehouse.gov" de, ben de "198.137.240.92" diyeyim</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../bgnet/bgnet_syscalls.html" title="Sistem Çağrıları veya Felaketleri" /><link rel="previous" href="../bgnet/bgnet_syscalls-gethostname.html" title="gethostname() -- Ben kimim?" /><link rel="next" href="../bgnet/bgnet_clientserver.html" title="İstemci-Sunucu Mimarisi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">DNS -- Sen "whitehouse.gov" de, ben de "198.137.240.92" diyeyim</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../bgnet/bgnet_syscalls-gethostname.html">Önceki</a> </td><th width="60%" align="center">Sistem Çağrıları veya Felaketleri</th><td width="20%" align="right"> <a accesskey="n" href="../bgnet/bgnet_clientserver.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="bgnet_syscalls-dns" id="bgnet_syscalls-dns"></a>DNS -- Sen "whitehouse.gov" de, ben de "198.137.240.92" diyeyim</div><dl><dd><div class="para">
+      Eğer DNS'in ne olduğunu bilmiyorsanız söyleyeyim: "Domain Name System"
+      yani "Alan Adı Sistemi" demek. Kısaca siz ona kolayca
+      hatırlayabildiğiniz adresi verirsiniz o da size buna karşılık gelen
+      IP adresini verir (ki siz de bu bilgiyi <tt>bind()</tt>,
+      <tt>connect()</tt>, <tt>sendto()</tt> ve diğer
+      işlevleri çağırırken kullanabilesiniz). Böylece biri:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>$</tt> <b><tt>telnet whitehouse.gov</tt></b>
+</pre></div></div>
+    <div class="para">
+      komutunu girdiğinde <b><tt>telnet</tt></b> yazılımı
+      <tt>connect()</tt> işlevine verilmesi gereken
+      "198.137.240.92" bilgisine erişebilir.
+    </div><div class="para">
+      Peki bu nasıl çalışır? Bunun için <tt>gethostbyname()</tt>
+      işlevini kullanacaksınız:
+    </div>
+<div class="para"><div align="right"><pre class="programlisting">
+#include &lt;netdb.h&gt;
+
+struct hostent *gethostbyname(const char *name); 
+</pre></div></div>
+    <div class="para">
+      Gördüğünüz gibi bu işlev <tt>struct hostent</tt> türünde
+      bir gösterge döndürür. Söz konusu türün ayrıntılı yapısı da şöyledir:
+    </div>
+<div class="para"><div align="right"><pre class="programlisting">
+struct hostent {
+    char    *h_name;
+    char    **h_aliases;
+    int     h_addrtype;
+    int     h_length;
+    char    **h_addr_list;
+};
+#define h_addr h_addr_list[0] 
+</pre></div></div>
+    <div class="para">
+      Bu karmaşık değişkenin içindeki alanların açıklamalarına gelince:
+    </div>
+      <ul type="disc" class="itemizedlist"><li><div class="para">
+          <i><tt>h_name</tt></i> -- Konağın resmi ismi.
+        </div></li><li><div class="para">
+          <i><tt>h_aliases</tt></i> -- Söz konusu konağın alternatif
+          isimleri, NULL ile sonlandırılmış karakter dizileri şeklinde.
+        </div></li><li><div class="para">
+          <i><tt>h_addrtype</tt></i> -- Dönen adresin türü, genellikle
+          <tt>AF_INET</tt> değerini alır.
+        </div></li><li><div class="para">
+          <i><tt>h_length</tt></i> -- Byte cinsinden adresin uzunluğu.
+        </div></li><li><div class="para">
+          <i><tt>h_addr_list</tt></i> -- Konağın ağ adresinin
+          sıfır sonlandılmalı dizisi. Konak adresleri ağ bayt sıralamasına
+          sahiptir.
+        </div></li><li><div class="para">
+          <i><tt>h_addr</tt></i> -- <i><tt>h_addr_list</tt></i>
+          listesindeki ilk adres.
+        </div></li></ul>
+    <div class="para">
+      <tt>gethostbyname()</tt> çalıştıktan sonra içini doldurduğu
+      <tt>struct hostent</tt> türünden bir gösterge döndürür. Eğer
+      hata oluşursa NULL döndürür. (Fakat <i><tt>errno</tt></i>
+      değişkeni ile ilgili herhangi bir işlem yapmaz -- bunun yerine
+      <i><tt>h_errno</tt></i> değişkeni kullanılır. Ayrıntılı bilgi için
+      aşağıdaki <tt>herror()</tt> işlevine bakın.)
+    </div><div class="para">
+      Peki tüm bu bilgileri nasıl kullanacağız? Bazen okuyucuya bilgi
+      yığınını verip onu bununla başbaşa bırakmak yeterli olmaz (bilgisayar
+      belgelerini okuyanlar ne demek istediğimi anlıyorlardır). Bu işlevi
+      kullanmak düşündüğünüzden daha kolaydır.
+    </div><div class="para">
+      <a class="ulink" href="http://www.ecst.csuchico.edu/~beej/guide/net/examples/getip.c" target="_top">İşte örnek bir program</a>:
+    </div>
+<div class="para"><div align="right"><pre class="programlisting">
+/*
+** getip.c -- konak isminden IP adresini elde edilmesi
+*/
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;errno.h&gt;
+#include &lt;netdb.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;netinet/in.h&gt;
+#include &lt;arpa/inet.h&gt;
+
+int main(int argc, char *argv[])
+{
+    struct hostent *h;
+
+    if (argc != 2) {  // komut satırında hata denetimi
+        fprintf(stderr,"usage: getip konak_ismi\n");
+        exit(1);
+    }
+
+    if ((h=gethostbyname(argv[1])) == NULL) {  // konak bilgilerini al
+        herror("gethostbyname");
+        exit(1);
+    }
+
+    printf("Konak ismi: %s\n", h-&gt;h_name);
+    printf(" IP Adresi: %s\n", inet_ntoa(*((struct in_addr *)h-&gt;h_addr)));
+
+   return 0;
+} 
+</pre></div></div>
+    <div class="para">
+      <tt>gethostbyname()</tt> söz konusu olduğunda
+      <tt>perror()</tt> işlevini hata mesajını basmak için
+      kullanamazsınız (çünkü <i><tt>errno</tt></i> gerekli değeri
+      almaz). Bunun yerine <tt>herror()</tt> işlevini
+      kullanmalısınız.
+    </div><div class="para">
+      Açıklama basit: Doğrudan ilgilendiğiniz makinanın Internet adresini
+      verirsiniz ("whitehouse.gov") ve <tt>gethostbyname()</tt>
+      işlevi de çalışıp işini bitirdikten sonra size
+      <tt>struct hostent</tt> türünde bir değişken döndürür.
+    </div><div class="para">
+      Buradaki tek gariplik şudur: IP adresini basarken kullanmanız gereken
+      <i><tt>h-&gt;h_addr</tt></i>, <tt>char*</tt> türündedir
+      ama <tt>inet_ntoa()</tt> işlevi <tt>struct in_addr</tt>
+      türünde bir değişken isteme konusunda ısrarcı olduğu için önce
+      <i><tt>h-&gt;h_addr</tt></i> değiğkenini
+      <tt>struct in_addr*</tt> türüne çevirdim ve ardından veriye
+      ulaştım.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../bgnet/bgnet_syscalls-gethostname.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../bgnet/bgnet_syscalls.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../bgnet/bgnet_clientserver.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">gethostname() -- Ben kimim? </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> İstemci-Sunucu Mimarisi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:25+03:00" /><title>Basit Bir Veri Akış İstemcisi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../bgnet/bgnet_clientserver.html" title="İstemci-Sunucu Mimarisi" /><link rel="previous" href="../bgnet/bgnet_clientserver-simpleserver.html" title="Basit Bir Veri Akış Sunucusu" /><link rel="next" href="../bgnet/bgnet_clientserver-datagram.html" title="Veri Paketi Soketleri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Basit Bir Veri Akış İstemcisi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../bgnet/bgnet_clientserver-simpleserver.html">Önceki</a> </td><th width="60%" align="center">İstemci-Sunucu Mimarisi</th><td width="20%" align="right"> <a accesskey="n" href="../bgnet/bgnet_clientserver-datagram.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="bgnet_clientserver-simpleclient" id="bgnet_clientserver-simpleclient"></a>Basit Bir Veri Akış İstemcisi</div><dl><dd><div class="para">
+      Bu program daha da basit. Bu istemcinin tek yaptığı şey komut
+      satırından belirleyeceğiniz bir konağa 3490 numaralı port üzerinden
+      bağlanmak. Sonra da sunucunun gönderdiği dizgeyi alıp ekrana basmak.
+    </div><div class="para">
+      <a class="ulink" href="http://www.ecst.csuchico.edu/~beej/guide/net/examples/client.c" target="_top">Hemen kaynak koduna bakalım:</a>:
+    </div>
+<div class="para"><div align="right"><pre class="programlisting">
+/*
+** client.c -- bir veri akış soketi istemcisi örneği
+*/
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;errno.h&gt;
+#include &lt;string.h&gt;
+#include &lt;netdb.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;netinet/in.h&gt;
+#include &lt;sys/socket.h&gt;
+
+#define PORT 3490 // istemcinin bağlanacağı port
+
+#define MAXDATASIZE 100 // bir seferde kabul edebileceğimizazami byte miktarı
+
+int main(int argc, char *argv[])
+{
+    int sockfd, numbytes;
+    char buf[MAXDATASIZE];
+    struct hostent *he;
+    struct sockaddr_in their_addr; // bağlananın adres bilgisi
+
+    if (argc != 2) {
+        fprintf(stderr,"usage: client hostname\n");
+        exit(1);
+    }
+
+    if ((he=gethostbyname(argv[1])) == NULL) {  // konak bilgisini al
+        perror("gethostbyname");
+        exit(1);
+    }
+
+    if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
+        perror("socket");
+        exit(1);
+    }
+
+    their_addr.sin_family = AF_INET;    // konak bayt sıralaması
+    their_addr.sin_port = htons(PORT);  // short, ağ bayt sıralaması
+    their_addr.sin_addr = *((struct in_addr *)he-&gt;h_addr);
+    memset(&amp;(their_addr.sin_zero), '\0', 8);  // geriye kalanı sıfırla
+
+    if (connect(sockfd, (struct sockaddr *)&amp;their_addr,
+                                          sizeof(struct sockaddr)) == -1) {
+        perror("connect");
+        exit(1);
+    }
+
+    if ((numbytes=recv(sockfd, buf, MAXDATASIZE-1, 0)) == -1) {
+        perror("recv");
+        exit(1);
+    }
+
+    buf[numbytes] = '\0';
+
+    printf("Received: %s",buf);
+
+    close(sockfd);
+
+    return 0;
+} 
+</pre></div></div>
+    <div class="para">
+      Aklınızda bulunsun eğer sunucuyu çalıştırmadan yukarıdaki istemciyi
+      çalıştıracak olursanız <tt>connect()</tt> işlevi
+      "Connection refused" (Bağlantı reddedildi) hatası verir. Çok faydalı.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../bgnet/bgnet_clientserver-simpleserver.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../bgnet/bgnet_clientserver.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../bgnet/bgnet_clientserver-datagram.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Basit Bir Veri Akış Sunucusu </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Veri Paketi Soketleri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

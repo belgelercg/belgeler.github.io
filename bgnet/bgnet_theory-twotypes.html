@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:23+03:00" /><title>Internet Soketlerinin İki türü</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../bgnet/bgnet_theory.html" title="Soket Nedir?" /><link rel="previous" href="../bgnet/bgnet_theory.html" title="Soket Nedir?" /><link rel="next" href="../bgnet/bgnet_theory-lowlevel.html" title="Düşük Seviye Duyarsızlığı ve Ağ Teorisi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Internet Soketlerinin İki türü</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../bgnet/bgnet_theory.html">Önceki</a> </td><th width="60%" align="center">Soket Nedir?</th><td width="20%" align="right"> <a accesskey="n" href="../bgnet/bgnet_theory-lowlevel.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="bgnet_theory-twotypes" id="bgnet_theory-twotypes"></a>Internet Soketlerinin İki türü</div><dl><dd><div class="para">
+        Bu da ne? İki tür Internet soketi mi var? Evet. Şey, aslında hayır.
+        Yalan söyledim. Daha çok var ama sizi korkutmak istemedim. Size sadece iki
+        tür soketten bahsedeceğim. Sadece "Ham Soketler"in (Raw Sockets) çok güçlü
+        olduğunu belirttiğim bu cümle dışında yani, bir ara bunlara da göz atarsanız
+        iyi olur.
+      </div><div class="para">
+        Pekala, gelelim şu iki tür sokete. Bir tanesi "Veri Akış Soketleri";
+        diğeri ise "Veri Paketi Soketleri" ve artık biz bunlara sırası ile
+        "<tt>SOCK_STREAM</tt>" ve "<tt>SOCK_DGRAM</tt>"
+        diyeceğiz. Veri paketi soketleri bazen "bağlantısız soketler" olarak da
+        isimlendirilir. (Her ne kadar eğer isterseniz bunlara <tt>connect()</tt>
+        işlevi ile bağlanabilecek olsanız da. Detaylı bilgi için aşağıdaki
+        <a class="link" href="../bgnet/bgnet_syscalls-connect.html" title="connect()--Hey, sen!">connect()</a> maddesine bakın.)
+      </div><div class="para">
+        Veri akış soketleri güvenilir iki yönlü iletişim kanallarıdır. Eğer bu
+        tür bir sokete sıra ile "1, 2" bilgilerini gönderirseniz, bunlar kanalın
+        diğer ucundan "1, 2" şeklinde çıkar. Aynı zamanda bu iletişim olası
+        hatalara karşı da korumalıdır. Karşılaşacağınız her türlü hatanın kaynağı
+        sizin karman çorman aklınız olacaktır ve burada bunları tartışmaya niyetim
+        yok.
+      </div><div class="para">
+        Stream soketleri gerçek hayatta ne işimize yarar? Hmm, sanırım
+        <b><tt>telnet</tt></b> diye bir program duymuşsunuzdur, değil mi? İşte
+        bu program veri akış soketlerini kullanır. Yazdığınız tüm karakterler
+        sizin yazdığınız sırada iletilmelidir öyle değil mi? Aynı zamanda web
+        tarayıcılar da HTTP protokolü ile iletişim kurarken veri akış soketleri
+        aracılığı ile sayfa bilgilerini çekerler. Gerçekten de eğer bir web
+        sitesine <b><tt>telnet</tt></b> ile 80 numaralı port üzerinden
+        bağlanır ve "<tt>GET /</tt>" komutunu yollarsanız web sitesi
+        size HTML içeriğini yollayacaktır.
+      </div><div class="para">
+        Veri akış soketleri bu kadar sorunsuz bir veri iletişimini nasıl
+        gerçekleştirir? Bunun için "Aktarım Denetim Protokolü" (Transmission
+        Control Protocol) isimli kurallar dizisinden yararlanırlar ki siz
+        bunu "TCP" olarak da duymuş olabilirsiniz (bkz. <a class="ulink" href="http://www.rfc-editor.org/rfc/rfc793.txt" target="_top">RFC-793</a> bu belge TCP ile ilgili çok
+        ayrıntılı bilgi içerir.) TCP yollanan verinin sıralı ve düzgün gitmesini
+        sağlar. "TCP"yi daha önce "TCP/IP" kısaltmasının bir parçası olarak
+        duymuş olabilirsiniz ki "IP" de "Internet Protocol" sözünün kısaltmasıdır
+        (bkz. <a class="ulink" href="http://www.rfc-editor.org/rfc/rfc791.txt" target="_top">RFC-791</a>.) IP kurallar
+        dizisi temelde Internet yönlendirme ile ilgilidir, veri bütünlüğünün
+        korunması ile ilgili pek kural içermez.
+      </div><div class="para">
+        Harika. Peki veri paketi soketleri? Neden bunlara bağlantısız deniyor?
+        Mesele nedir kısaca? Neden bunların "güvenilmez" olduğu söyleniyor?
+        Bakın, bilmeniz gereken bazı gerçekler var: eğer bir veri paketi
+        yollarsanız bu hedefine ulaşabilir de ulaşmayabilir de. Gönderdiğiniz
+        sırada ulaşması garanti edilemez. Ancak eğer hedefe ulaşırsa paketin
+        içerdiği bilgi hatasız olacaktır.
+      </div><div class="para">
+        Veri paketi soketleri de yönlendirme için IP protokolünü kullanırlar ancak
+        TCP'den faydalanmazlar onun yerine "Kullanıcı Veri Paketi Protokokü" (User
+        Datagram Protocol) veya "UDP" isimli protokolü kullanırlar (bkz. <a class="ulink" href="http://www.rfc-editor.org/rfc/rfc768.txt" target="_top">RFC-768</a>.)
+      </div><div class="para">
+        Neden bağlantısızdırlar? Aslında böyledirler çünkü veri akış soketlerinde
+        olduğu gibi bağlantıyı sürekli açık tutmanız gerekmemektedir. Sadece bir
+        paketi oluşturur, tepesine gideceği adresi söyleyen bir IP başlığı yapıştırır
+        ve onu yollarsınız. Herhangi bir bağlantı açmaya gerek yoktur. Bu tip
+        soketler genellikle paket paket iletilen veri için kullanılır. Bu tip
+        soketleri kullanan örnek uygulamalardan bazıları: <b><tt>tftp</tt></b>,
+        <b><tt>bootp</tt></b>, vs.
+      </div><div class="para">
+        "Yeter artık!" diye bağırdığınızı duyar gibiyim. "Eğer veri paketlerinin
+        yolda kaybolma ihtimali varsa nasıl olur da yukarıda saydığın programlar
+        çalışır?!" Bak dünyalı dostum bu saydığım programların hepsi UDP protokolü
+        üzerine kendi protokollerini yerleştirirler. Mesela, <b><tt>tftp</tt></b>
+        protokolüne göre gönderilen her paket için karşı tarafın "aldım!"
+        (bir "ACK" paketi) paketini geri yollaması gerekir. Eğer orjinal paketin
+        göndericisi mesela 5 saniye içinde cevap alamazsa o zaman paketi yeniden
+        yollar, taa ki ACK cevabını alana kadar. İşte bu "aldım" prosedürü
+        <tt>SOCK_DGRAM</tt> uygulamalarında çok önemlidir.
+      </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../bgnet/bgnet_theory.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../bgnet/bgnet_theory.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../bgnet/bgnet_theory-lowlevel.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Soket Nedir? </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Düşük Seviye Duyarsızlığı ve Ağ Teorisi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

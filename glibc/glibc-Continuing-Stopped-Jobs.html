@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:47+03:00" /><title>Duran İşlerin Sürdürülmesi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Implementing-a-Shell.html" title="Bir İş Denetim kabuğunun Gerçeklenmesi" /><link rel="previous" href="../glibc/glibc-Stopped-and-Terminated-Jobs.html" title="İşlerin Durdurulması ve Sonlandırılması" /><link rel="next" href="../glibc/glibc-Missing-Pieces.html" title="Eksik Parçalar" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Duran İşlerin Sürdürülmesi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Stopped-and-Terminated-Jobs.html">Önceki</a> </td><th width="60%" align="center">Bir İş Denetim kabuğunun Gerçeklenmesi</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Missing-Pieces.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Continuing-Stopped-Jobs" id="glibc-Continuing-Stopped-Jobs"></a>Duran İşlerin Sürdürülmesi</div><dl><dd><div class="para">
+<a class="indexterm" name="idx2992" id="idx2992"></a>
+<a class="indexterm" name="idx2993" id="idx2993"></a>
+Kabuk durmuş bir işi onun süreç grubuna bir <b><tt>SIGCONT</tt></b> sinyali göndererek çalışmaya devam etmesini sağlayabilir. İşin önalanda sürdürülmesi durumunda, kabuk önce uçbirimde erişim vermek için bir <b><tt>tcsetpgrp</tt></b> çağrısı yapmalıdır. İş önalanda kaldığı yerden çalışmaya başladıktan sonra sanki iş önalanda ilk defa başlatılmış gibi kabuk işin tamamlanması ya da durmasını beklemek zorundadır.
+    </div><div class="para">
+Örnek kabuk yazılımında hem yeni oluşturulan hem de devam ettrilen işler aynı işlev çiftiyle, <b><tt>put_job_in_foreground</tt></b> ve <b><tt>put_job_in_background</tt></b> işleviyle izlenirler. Bu işlevlerin tanımları <a href="../glibc/glibc-Foreground-and-Background.html" class="xref" title="Önalan ve Artalan">Önalan ve Artalan</a> bölümündeki örnek kod parçasında bulunabilir. Durmuş bir işin devam ettrilmesi durumunda <i><tt>cont</tt></i> argümanına sıfırdan farklı bir değer atanarak <b><tt>SIGCONT</tt></b> sinyalinin gönderilmesi ve uçbirim kiplerinin eski değerlerine getirilmesi sağlanır.
+    </div><div class="para">
+Burada durmuş işin tekrar çalışmaya devam etmesini sağlayan kod parçası gösterilmiştir:
+    </div>
+<div class="para"><div align="right"><pre class="screen">/* Durmuş j işini tekrar çalışmaya başlasın diye imleyelim.  */
+
+void
+mark_job_as_running (job *j)
+{
+  Process *p;
+
+  for (p = j-&gt;first_process; p; p = p-&gt;next)
+    p-&gt;stopped = 0;
+  j-&gt;notified = 0;
+}
+
+/* j işi devam etsin.  */
+
+void
+continue_job (job *j, int foreground)
+{
+  mark_job_as_running (j);
+  if (foreground)
+    put_job_in_foreground (j, 1);
+  else
+    put_job_in_background (j, 1);
+}
+</pre></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Stopped-and-Terminated-Jobs.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Implementing-a-Shell.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Missing-Pieces.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">İşlerin Durdurulması ve Sonlandırılması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Eksik Parçalar</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

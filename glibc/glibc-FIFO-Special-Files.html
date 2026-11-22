@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:26:56+03:00" /><title>FIFO Özel Dosyaları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Pipes-and-FIFOs.html" title="XV. Oylum - Borular ve FIFOlar" /><link rel="previous" href="../glibc/glibc-Pipe-to-a-Subprocess.html" title="Bir Alt Sürece Boru Hattı" /><link rel="next" href="../glibc/glibc-Pipe-Atomicity.html" title="Borunun G/Ç Bütünlüğü" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">FIFO Özel Dosyaları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Pipe-to-a-Subprocess.html">Önceki</a> </td><th width="60%" align="center">XV. Oylum - Borular ve FIFOlar</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Pipe-Atomicity.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="glibc-FIFO-Special-Files" id="glibc-FIFO-Special-Files"></a>FIFO Özel Dosyaları</div></div></div><dl><dd><div class="para">
+<a class="indexterm" name="idx1431" id="idx1431"></a>
+<a class="indexterm" name="idx1432" id="idx1432"></a>
+Bir FIFO özel dosyası boruya benzer, ancak oluşturulma şekli farklıdır.  Anonim bir haberleşme kanalı olmaktansa, FIFO özel dosyası dosya sistemine <b><tt>mkfifo</tt></b> işlevi çağrılarak girer.
+   </div><div class="para">
+FIFO özel dosyasını bir kere bu şekilde oluşturduktan sonra, herhangi bir süreç, sıradan bir dosyaya yapıldığı gibi, onu okuma veya yazma için açabilir.
+Fakat, üzerinde her hangi bir girdi veya çıktı işlemi sürdürmeden önce her iki ucun da eş zamanlı açılması gerekir.
+FIFO'yu okumak için açmak, normalde başka bir süreç aynı FIFO'yu yazmak için açana kadar bloke eder (Tam tersi de geçerlidir).
+   </div><div class="para">
+<b><tt>mkfifo</tt></b> işlevi <tt>sys/stat.h</tt> başlık dosyası içinde tanımlıdır.
+<a class="indexterm" name="idx1433" id="idx1433"></a>
+   </div><a name="glibc-mkfifo" id="glibc-mkfifo"></a>
+<a class="indexterm" name="idx1434" id="idx1434"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>mkfifo</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *<i><tt>dosyaismi</tt></i>,
+ mode_t      <i><tt>kip</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>mkfifo</tt></b> işlevi <i><tt>dosyaismi</tt></i> adında bir FIFO özel dosyası oluşturur.  <i><tt>kip</tt></i> argümanı dosyanın izinlerini belirlemek için kullanılır; bkz. <a href="../glibc/glibc-Setting-Permissions.html" class="xref" title="Dosya İzinlerinin Atanması">Dosya İzinlerinin Atanması</a>.
+   </div><div class="para">
+<b><tt>mkfifo</tt></b>'nun normal hatasız dönüş değeri <b><tt>0</tt></b>'dır. Hata durumunda, <b><tt>-1</tt></b> döndürülür.  Bildik <a class="link" href="../glibc/glibc-File-Name-Errors.html" title="Dosya İsmi Hataları">dosya ismi hatalarına</a> ek olarak, aşağıdaki <b><tt>errno</tt></b> hata durumları bu işlev için tanımlanmıştır:
+   </div><div class="variablelist"><dl><dt><span class="term"><tt>EEXIST</tt></span></dt><dd class="varlist"><div class="para">
+Bu isimde dosya zaten var.
+      </div></dd><dt><span class="term"><tt>ENOSPC</tt></span></dt><dd class="varlist"><div class="para">
+Dizin veya dosya sistemi genişletilemez.
+      </div></dd><dt><span class="term"><tt>EROFS</tt></span></dt><dd class="varlist"><div class="para">
+Dosyayı içeren dizin salt-okunur bir dosya sisteminde.
+      </div></dd></dl></div>
+  </dd></dl><div style="padding:5px"></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Pipe-to-a-Subprocess.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Pipes-and-FIFOs.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Pipe-Atomicity.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Bir Alt Sürece Boru Hattı </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Borunun G/Ç Bütünlüğü</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

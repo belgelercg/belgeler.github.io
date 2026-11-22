@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:59+03:00" /><title>DES Şifreleme</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Cryptographic-Functions.html" title="XXXII. Oylum - Şifrelemeyle İlgili İşlevler" /><link rel="previous" href="../glibc/glibc-crypt.html" title="Parolaların Şifrelenmesi" /><link rel="next" href="../glibc/glibc-Debugging-Support.html" title="XXXIII. Oylum - Hata Ayıklama Desteği" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">DES Şifreleme</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-crypt.html">Önceki</a> </td><th width="60%" align="center">XXXII. Oylum - Şifrelemeyle İlgili İşlevler</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Debugging-Support.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="glibc-DES-Encryption" id="glibc-DES-Encryption"></a>DES Şifreleme</div></div></div><dl><dd><div class="para">
+Veri Şifreleme Standardı (Data Encryption Standard), Ulusal Standartlar ve Teknoloji Enstitüsü (National Institute of Standards and Technology - NIST) tarafından yayınlanan ABD Hükümeti Federal Bilgi İşleme Standartları (US Government Federal Information Processing Standards - FIPS) 46-3 içinde anlatılmaktadır. DES geliştirildiği 1970lerden beri tamamen analiz edilmiştir ve yeni önemli bir kusuru bulunamamıştır.
+   </div><div class="para">
+Ancak, DES sadece 56 bitlik bir anahtar kullanmaktadır (artı 8 eşlik biti), ve
+1998 yapımı 200.000 Amerikan Doları değerinde bir makine 6 günde olası bütün anahtarları deneyebilmektedir; daha fazla parayla daha hızlı sonuçlar elde edilebilmektedir. Bu basit DES'i bir çok amaç için güvensiz kılmaktadır ve NIST, US hükümet sistemlerinde basit DES'in kullanım iznini kaldırmıştır.
+   </div><div class="para">
+Ciddi şifreleme işlevselliği için, bu yordamlar yerine özgür şifreleme kütüphanelerinden birinin kullanılması tavsiye edilir.
+   </div><div class="para">
+DES 64-bitlik bir blok ve 64-bitlik anahtar alarak 64-bitlik başka bir blok üreten, tersine çevrilebilir bir işlemdir. Genelde bitler numaralandırılır böylece en-anlamlı bit, yani her bloğun ilk biti 1 ile numaralandırılır.
+   </div><div class="para">
+Bu numaralama altında, anahtarın her 8. biti (8., 16., vs.) şifreleme algoritmasında kullanılmaz. Fakat anahtar tekil eşlik bitine sahip olmalıdır; 1'den 8'e, 9'dan 16'ya, şeklinde devam eden bitler `1'in tek sayılı eş bitlerine sahip olmalıdır ve bu tamamen kullanılmayan bitleri belirtir.
+   </div>
+<a class="indexterm" name="idx3291" id="idx3291"></a>
+<a name="glibc-setkey" id="glibc-setkey"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>setkey</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *<i><tt>anahtar</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>setkey</tt></b> işlevi <i><tt>anahtar</tt></i>'ın genişletilmiş bir biçimi olan bir iç veri yapısı kurar. <i><tt>anahtar</tt></i> her biti <b><tt>char</tt></b> içinde saklanan 64 bitlik bir dizi olarak tanımlanmıştır, ilk bit <i><tt>anahtar[0]</tt></i> ve 64. bit <i><tt>anahtar[63]</tt></i>'dür.  <i><tt>anahtar</tt></i> doğru eşlik değerine sahip olmalıdır.
+   </div></dd></dl><div style="padding:5px"></div>
+   
+<a class="indexterm" name="idx3292" id="idx3292"></a>
+<a name="glibc-encrypt" id="glibc-encrypt"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>encrypt</tt></b></tt></td><td valign="top"><pre class="paramdef">(char *<i><tt>blok</tt></i>,
+ int   <i><tt>bayrak</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>encrypt</tt></b> işlevi eğer <i><tt>bayrak</tt></i> 0 ise <i><tt>blok</tt></i>'u şifreler, aksi takdirde <b><tt>setkey</tt></b> ile belirtilen anahtarı kullanarak <i><tt>blok</tt></i>'u deşifre eder. Sonuç <i><tt>blok</tt></i> içinde saklanır.
+   </div><div class="para">
+<b><tt>setkey</tt></b> gibi, <i><tt>blok</tt></i> da her biti <b><tt>char</tt></b> içinde saklanan 64 bitlik dizi olarak tanımlanır, fakat  <i><tt>blok</tt></i> içinde eşlik biti yoktur.
+   </div></dd></dl><div style="padding:5px"></div>
+   
+<a class="indexterm" name="idx3293" id="idx3293"></a>
+<a class="indexterm" name="idx3294" id="idx3294"></a>
+<a name="glibc-setkey_r" id="glibc-setkey_r"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>setkey_r</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char         *<i><tt>anahtar</tt></i>,
+ struct crypt_data * <i><tt>veri</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><a name="glibc-encrypt_r" id="glibc-encrypt_r"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>encrypt_r</tt></b></tt></td><td valign="top"><pre class="paramdef">(char               *<i><tt>blok</tt></i>,
+ int                 <i><tt>bayrak</tt></i>,
+ struct crypt_data * <i><tt>veri</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bunlar <b><tt>setkey</tt></b> ve <b><tt>encrypt</tt></b>'in evresel (reentrant) sürümleridir.  Tek fark <i><tt>anahtar</tt></i> değerini saklayan ek parametresidir. <b><tt>setkey_r</tt></b> ilk kez çağrılmadan önce <i><tt>veri</tt></i> sıfırlarla doldurularak ilklendirilmelidir.
+      </div><div class="para">
+<b><tt>setkey_r</tt></b> ve <b><tt>encrypt_r</tt></b> işlevleri GNU oluşumlarıdır.
+<b><tt>setkey</tt></b>, <b><tt>encrypt</tt></b>, <b><tt>setkey_r</tt></b> ve <b><tt>encrypt_r</tt></b> işlevleri <tt>crypt.h</tt> içinde tanımlıdır.
+   </div></dd></dl><div style="padding:5px"></div>
+   
+<a class="indexterm" name="idx3295" id="idx3295"></a>
+<a name="glibc-ecb_crypt" id="glibc-ecb_crypt"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>ecb_crypt</tt></b></tt></td><td valign="top"><pre class="paramdef">(char    *<i><tt>anahtar</tt></i>,
+ char    *<i><tt>bloklar</tt></i>,
+ unsigned <i><tt>uzunluk</tt></i>,
+ unsigned <i><tt>kip</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>ecb_crypt</tt></b> işlevi DES kullanarak bir veya daha fazla blok şifreler veya şifresini çözer. Her blok bağımsız olarak şifrelenir.
+   </div><div class="para">
+<i><tt>bloklar</tt></i> ve <i><tt>anahtar</tt></i> 8-bitlik bayt paketleri içinde saklanır, böylece anahtarın ilk biti <i><tt>anahtar[0]</tt></i>'in en-anlamlı biti olarak, anahtarın 63. biti <i><tt>anahtar[7]</tt></i>'nin en az anlamlı biti olarak saklanır. <i><tt>anahtar</tt></i> doğru eşlik değerine sahip olmalıdır.
+   </div><div class="para">
+<i><tt>uzunluk</tt></i>, <i><tt>bloklar</tt></i> içindeki bayt sayısıdır. Bu değer 8'in katları olmalıdır (böylece bütün bloklar şifrelenebilir).
+<i><tt>uzunluk</tt></i>, <b><tt>DES_MAXDATA</tt></b> azami bayt sayısı ile sınırlandırılmıştır.
+   </div><div class="para">
+Şifrelemenin sonucu <i><tt>bloklar</tt></i> girdisi ile değiştirilir.
+   </div><div class="para">
+<i><tt>kip</tt></i> parametresi aşağıdaki ikisinin bit bit VEYAlanmasıdır:
+   </div><div class="variablelist"><dl><dt><span class="term"><tt>DES_ENCRYPT</tt></span></dt><dd class="varlist"><div class="para">
+Bu sabit, <i><tt>kip</tt></i> parametresinde kullanılır ve <i><tt>bloklar</tt></i>'ın şifreleneceğini belirtir.
+      </div></dd><dt><span class="term"><tt>DES_DECRYPT</tt></span></dt><dd class="varlist"><div class="para">
+Bu sabit, <i><tt>kip</tt></i> parametresinde kullanılır ve <i><tt>bloklar</tt></i>'ın şifresinin çözüleceğini belirtir.
+      </div></dd><dt><span class="term"><tt>DES_HW</tt></span></dt><dd class="varlist"><div class="para">
+Bu sabit, <i><tt>kip</tt></i> parametresinde kullanılır ve bir donanım cihazı kullanılacak mı sorar. Eğer donanım yoksa, şifreleme gerçekleşir ancak yazılımla.
+      </div></dd><dt><span class="term"><tt>DES_SW</tt></span></dt><dd class="varlist"><div class="para">
+Bu sabit, <i><tt>kip</tt></i> parametresinde kullanılır ve donanım kullanılmayacağını belirtir.
+      </div></dd></dl></div>
+    <div class="para">
+İşlev sonucu aşağıdaki değerlerden biri olur:
+   </div><div class="variablelist"><dl><dt><span class="term"><b><tt>DESERR_NONE</tt></b></span></dt><dd class="varlist"><div class="para">
+Şifreleme başarıldı.
+      </div></dd><dt><span class="term"><b><tt>DESERR_NOHWDEVICE</tt></b></span></dt><dd class="varlist"><div class="para">
+Şifreleme başarıldı, ancak donanım bulunamadı.
+      </div></dd><dt><span class="term"><b><tt>DESERR_HWERROR</tt></b></span></dt><dd class="varlist"><div class="para">
+Şifreleme donanım sorunu nedeniyle başarılamadı.
+      </div></dd><dt><span class="term"><b><tt>DESERR_BADPARAM</tt></b></span></dt><dd class="varlist"><div class="para">
+Şifreleme kötü parametre nedeniyle başarılamadı, örneğin <i><tt>uzunluk</tt></i>
+8'in katı değil veya <i><tt>uzunluk</tt></i> <b><tt>DES_MAXDATA</tt></b> değerinden büyük.
+      </div></dd></dl></div>
+   </dd></dl><div style="padding:5px"></div>
+   
+<a class="indexterm" name="idx3296" id="idx3296"></a>
+<a name="glibc-DES_FAILED" id="glibc-DES_FAILED"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>DES_FAILED</tt></b></tt></td><td valign="top"><pre class="paramdef">(int <i><tt>hata</tt></i>)</pre></td></tr></table></div><div class="sagsutun">makro</div></div></div><dl><dd><div class="para">
+Bu makro eğer <b><tt>ecb_crypt</tt></b> veya <b><tt>cbc_crypt</tt></b> sonucu <i><tt>hata</tt></i> bir `başarı' sonuç koduysa 1, aksi takdirde 0 döndürür.
+   </div></dd></dl><div style="padding:5px"></div>
+   
+<a class="indexterm" name="idx3297" id="idx3297"></a>
+<a name="glibc-cbc_crypt" id="glibc-cbc_crypt"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>cbc_crypt</tt></b></tt></td><td valign="top"><pre class="paramdef">(char    *<i><tt>anahtar</tt></i>,
+ char    *<i><tt>bloklar</tt></i>,
+ unsigned <i><tt>uzunluk</tt></i>,
+ unsigned <i><tt>kip</tt></i>,
+ char    *<i><tt>yedek</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>cbc_crypt</tt></b> işlevi Zincirleme Blok Şifreleme (Cipher Block Chaining) kipinde DES kullanarak bir veya daha fazla bloğu şifreler veya şifre çözer.
+   </div><div class="para">
+CBC kipinde şifreleme için, her blok şifrelenmeden önce <i><tt>yedek</tt></i> ile XOR'lanır, ardından <i><tt>yedek</tt></i> şifreleme sonucuyla yer değiştirilir, sonra diğer blok işlenir. Şifre çözme bu işlemin tersidir.
+   </div><div class="para">
+Bunun avantajı, şifrelenmeden önce aynı olan blokları şifrelendikten sonra yine aynı ama oldukça farklı yaptığı için, veri içindeki şablonları algılamanın daha zor olmasıdır.
+   </div><div class="para">
+Genellikle, şifreleme başlamadan önce <i><tt>yedek</tt></i> 8 rastgele bayt ile ayarlanır. Ardından 8 rastgele bayt şifrelenen veriyle birlikte aktarılır (kendisi şifrelenmeden) ve şifre çözmek için <i><tt>yedek</tt></i> olarak geri aktarılır.
+Diğer olasılık <i><tt>yedek</tt></i>'i ilk başta 8 sıfır yapmak ve ilk bloğu 8 rastgele bayt ile şifrelemektir.
+   </div><div class="para">
+Aksi takdirde, bütün parametreler <b><tt>ecb_crypt</tt></b> için olduğu gibidir.
+   </div></dd></dl><div style="padding:5px"></div>
+   
+<a class="indexterm" name="idx3298" id="idx3298"></a>
+<a name="glibc-des_setparity" id="glibc-des_setparity"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>des_setparity</tt></b></tt></td><td valign="top"><pre class="paramdef">(char *<i><tt>anahtar</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>des_setparity</tt></b> işlevi her baytın düşük bitlerini değiştirerek tek eşlik bitine sahip olmak için 8-bitlik baytlar içinde paketlenerek saklanan 64-bit <i><tt>anahtar</tt></i>'ı değiştirir,
+   </div></dd></dl><div style="padding:5px"></div><div class="para">
+<b><tt>ecb_crypt</tt></b>, <b><tt>cbc_crypt</tt></b> ve <b><tt>des_setparity</tt></b> işlevleri ve onlara eşlik eden makrolar
+<tt>rpc/des_crypt.h</tt> başlık dosyası içinde tanımlıdır.
+   </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-crypt.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Cryptographic-Functions.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Debugging-Support.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Parolaların Şifrelenmesi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> XXXIII. Oylum - Hata Ayıklama Desteği</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

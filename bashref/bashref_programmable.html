@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:28:59+03:00" /><title>Programlanabilir Tamamlama</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../bashref/bashref_command.line.editing.html" title="VIII. Oylum - Komut Satırının Düzenlenmesi" /><link rel="previous" href="../bashref/bashref_rl.vi.html" title="Readline vi Kipi" /><link rel="next" href="../bashref/bashref_programmable.builtins.html" title="Programlanabilir Tamamlama Yerleşikleri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Programlanabilir Tamamlama</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../bashref/bashref_rl.vi.html">Önceki</a> </td><th width="60%" align="center">VIII. Oylum - Komut Satırının Düzenlenmesi</th><td width="20%" align="right"> <a accesskey="n" href="../bashref/bashref_programmable.builtins.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="bashref_programmable" id="bashref_programmable"></a>Programlanabilir Tamamlama</div></div></div><dl><dd><a class="indexterm" name="idx479" id="idx479"></a><div class="para">
+<a class="link" href="../bashref/bashref_programmable.builtins.html" title="Programlanabilir Tamamlama Yerleşikleri"><b><tt>complete</tt></b></a> yerleşiği kullanılarak etkinleştirilen
+bir tamamlama belirtiminin (compspec) bir komutun bir argümanı için
+sözcük tamamlamasında kullanılmaya çalışılması halinde, programlanabilir
+tamamlama araçları çağrılmış olur.
+    </div><div class="para">
+Önce komut ismi saptanır. Bu komut için bir tamamlama belirtimi
+tanımlanmışsa, bu, sözcüğün olası tamamlamalarını üretir.
+Komut tam dosyayolu belirtilerek verilmişse ilk olarak bu dosyayoluna
+göre bir tamamlama belirtimi aranır. Tam dosyayolu için bir tamamlama
+belirtimi bulunmuyorsa, son / işaretinden sonraki kısım için bir
+tamamlama belirtimi bulunmaya çalışılır.
+    </div><div class="para">
+Bir tamamlama belirtimi bir kere bulunduktan sonra, onunla, uygun
+sözcüklerin bir listesi üretilir. Bir tamamlama belirtimi yoksa,
+<a href="../bashref/bashref_rl.commands-rltype.html" class="xref" title="Readline Sizin Yerinize Yazsın">Readline Sizin Yerinize Yazsın</a> bölümünde bahsedilen
+öntanımlı Bash tamamlaması uygulanır.
+    </div><div class="para">
+İlk olarak, tamamlama belirtimi tarafından belirtilen eylemler kullanılır
+ve sadece sözcük ile başlayan tamamlamalar döndürülür. Dosyaismi veya
+dizin ismi tamamlaması için <tt>-f</tt> ya da <tt>-d</tt>
+seçeneği kullanıldığında, <a class="link" href="../bashref/bashref_bash.vars.html#bashref-FIGNORE"><tt>FIGNORE</tt> kabuk değişkeni</a> uyuşanları süzmek için kullanılır.
+    </div><div class="para">
+Sonra, <tt>-G</tt> seçeneği ile bir dosyaismi yorumlama kalıbı
+verilerek tamamlamalar üretilir. Sözcüklerin üretildiği kalıbın tamamlanması
+istenen sözcükle eşleşmemesi gerekir. Eşleşenleri süzmekte <a class="link" href="../bashref/bashref_bash.vars.html#bashref-GLOBIGNORE"><tt>GLOBIGNORE</tt> kabuk
+değişkeni</a> değil, <tt>FIGNORE</tt> kabuk değişkeni kullanılır.
+    </div><div class="para">
+Sonra da <tt>-W</tt> seçeneğine argüman olarak dizgenin
+belirtildiği varsayılır. <tt>IFS</tt> özel değişkenindeki
+karakterler ayraç olarak kullanılarak dizge önce ayrıştırılır. Kabuk
+tarafından tırnaklama uygulanır. Her sözcüğe <a class="link" href="../bashref/bashref_shell.expansions-brace.html" title="Kaşlı Ayraçların Yorumlanması">kaşlı ayraç yorumlaması</a>,
+<a class="link" href="../bashref/bashref_shell.expansions-tilde.html" title="Yaklaşık (~) Yorumlaması">yaklaşık yorumlaması</a>,
+<a class="link" href="../bashref/bashref_shell.expansions-param.html" title="Kabuk Parametrelerinin Yorumlaması">parametre yorumlaması</a>,
+<a class="link" href="../bashref/bashref_shell.expansions-cmd.subs.html" title="Komut İkamesi">komut ikamesi</a> ve
+<a class="link" href="../bashref/bashref_shell.expansions-arith.html" title="Aritmetik Yorumlama">aritmetik yorumlama</a>
+uygulanır. Sonuçlara
+<a class="link" href="../bashref/bashref_shell.expansions-splitting.html" title="Sözcüklere Ayırma">sözcüklere ayırma</a>
+uygulanır. Yorumlama sonuçları tamamlanması istenen sözcüğün önek olduğu
+sözcüklerdir ve eşleşen sözcükler olası tamamlamalardır.
+    </div><div class="para">
+Bu eşleşmeler üretildikten sonra, <tt>-F</tt> ve
+<tt>-C</tt> seçenekleri ile bir kabuk işlevi ya da bir komut
+çağrılır ve <a class="link" href="../bashref/bashref_bash.vars.html#bashref-COMP_LINE"><tt>COMP_LINE</tt>
+ile <tt>COMP_POINT</tt></a> değişkenlerine değerleri atanır.
+Bir kabuk işlevi çağrılmışsa ayrıca <a class="link" href="../bashref/bashref_bash.vars.html#bashref-COMP_CWORD"><tt>COMP_CWORD</tt></a> ve <a class="link" href="../bashref/bashref_bash.vars.html#bashref-COMP_WORDS"><tt>COMP_WORDS</tt></a> değişkenleri de atanır.
+İşlev veya komut çağrıldığında, ilk argüman argümanları tamamlanacak
+olan komutun ismidir, ikinci argüman tamamlanan sözcüktür ve üçüncü
+argüman komut satırındaki tamamlanması istenen sözcüğü önceleyen sözcüktür.
+Tamamlanması istenen sözcüğe karşılık üretilen tamamlamalara süzme
+uygulanmaz; işlev ya da komut üretilen eşleşmelerle serbestçe tamamlanır.
+    </div><div class="para">
+Bir işlev ilk olarak` <tt>-F</tt> seçeneğine belirtilerek çağrılır.
+İşlev, eşleşmeleri üretmek için <a class="link" href="../bashref/bashref_programmable.builtins-compgen.html" title="Compgen Yerleşiği"><b><tt>compgen</tt></b> yerleşiği</a> dahil, her kabuk aracını
+kullanabilir. Olası tamamlamaları <a class="link" href="../bashref/bashref_bash.vars.html#bashref-COMPREPLY"><tt>COMPREPLY</tt></a> dizi değişkenine yerleştirmelidir.
+    </div><div class="para">
+Sonra, komut ikamesine eşdeğer bir ortam içinde bir komut <tt>-C</tt>
+seçeneğine belirtilerek çağrılır. Bu, komut tamamlamalarının listesini
+her biri bir satırda standart çıktıya basmalıdır. Gerekliyse, tersbölü
+bir satırsonunu öncelemekte kullanılabilir.
+    </div><div class="para">
+Tüm olası tamamlamalar üretildikten sonra <tt>-X</tt>
+seçeneğine belirtilen bir süzgeç listeye uygulanır. Süzgeç dosyayolu
+yorumlaması için kullanılan bir kalıptır; kalıptaki bir
+<tt>&amp;</tt> karakteri tamamlanması istenen sözcük metni ile
+değiştirilir. Kalıba uyan tamamlamalar listeden kaldırılacaktır.
+<tt>!</tt> ile başlayan bir kalıp zıt eşleme yapar;
+bu durumda, kalıba uymayan tamamlamalar listeden kaldırılacaktır.
+    </div><div class="para">
+Son olarak, <tt>-P</tt> ve <tt>-S</tt> seçenekleri
+ile belirtilen bir önek ve bir sonek tamamlama listesinin her üyesine
+eklenir ve sonuç Readline tamamlama koduna olası tamamlamaların listesi
+olarak döndürülür.
+    </div><div class="para">
+Eğer öncelikle uygulanan eylemler bir eşleşme üretmezse ve
+tamamlama belirtimi tanımlanırken <a class="link" href="../bashref/bashref_programmable.builtins-complete.html" title="Complete Yerleşiği"><b><tt>complete</tt></b></a> ile
+<tt>-o dirnames</tt>  seçeneği verilmişse, dizin ismi
+tamamlanmaya çalışılır.
+    </div><div class="para">
+Eğer tamamlama belirtimi tanımlandığında <tt>-o plusdirs</tt> seçeneği <b><tt>complete</tt></b> komutuna sağlanmışsa  dizin ismi tamamlanmaya çalışılır ve eşleşenler diğer eylemlerin sonuçlarına eklenir.
+   </div><div class="para">
+Öntanımlı olarak, bir tamamlama belirtimi varsa, onun ürettiği her ne
+varsa olası tamamlamaların bir tam kümesi olarak tamamlama koduna döner.
+Öntanımlı Bash tamamlamaları uygulanmaz ve Readline'ın öntanımlısı olan
+dosyaismi tamamlaması kapatılır.
+Eğer tamamlama belirtimi tanımlıyken <b><tt>complete</tt></b> yerleşiği <tt>-o bashdefault</tt> seçeneği ile çalıştırılmışsa ve tamamlama balirtimi bir eşleşme üretmiyosa öntanımlı Bash tamamlamaları uygulanmaya çalışılır.
+Tamamlama belirtimi tanımlıyken <tt>-o default</tt> seçeneği ile çalıştırılmışsa ve tamamlama belirtimi (ve eğer uygulanmışsa öntanımlı Bash tamamlamaları) hiç eşleşme üretememişse, Readline'ın öntanımlı tamamlaması uygulanacaktır.
+   </div><div class="para">
+Bir tamamlama belirtimi dizin ismi tamamlaması istendiğini belirtiyorsa programlanabilir tamamlama işlevleri Readline'ı dizinlere sembolik bağ olan ve <tt>mark-symlinked-directories</tt> Readline değişkeninin değerine bakmaksızın <tt>mark-directories</tt> Readline değişkeninin değerine konu olan isimleri tamamlamak için / eklemeye zorlar.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../bashref/bashref_rl.vi.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../bashref/bashref_command.line.editing.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../bashref/bashref_programmable.builtins.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Readline vi Kipi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Programlanabilir Tamamlama Yerleşikleri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

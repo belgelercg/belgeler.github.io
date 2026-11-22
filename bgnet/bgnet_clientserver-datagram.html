@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:25+03:00" /><title>Veri Paketi Soketleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../bgnet/bgnet_clientserver.html" title="İstemci-Sunucu Mimarisi" /><link rel="previous" href="../bgnet/bgnet_clientserver-simpleclient.html" title="Basit Bir Veri Akış İstemcisi" /><link rel="next" href="../bgnet/bgnet_advanced.html" title="İleri Teknikler" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Veri Paketi Soketleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../bgnet/bgnet_clientserver-simpleclient.html">Önceki</a> </td><th width="60%" align="center">İstemci-Sunucu Mimarisi</th><td width="20%" align="right"> <a accesskey="n" href="../bgnet/bgnet_advanced.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="bgnet_clientserver-datagram" id="bgnet_clientserver-datagram"></a>Veri Paketi Soketleri</div><dl><dd><div class="para">
+      Buraya dek yazılanları anladı iseniz çok fazla açıklamaya gerek yok,
+      örnek programların kodunu inceleyerek kavrayabilirsiniz:
+      <tt>talker.c</tt> ve <tt>listener.c.</tt>.
+    </div><div class="para">
+      <b><tt>listener</tt></b> programı bir makinada çalıştıktan sonra
+      4950 numaralı port üzerinden gelecek paketleri dinlemeye başlar.
+      <b><tt>talker</tt></b> ise komut satırında belirteceğiniz bir
+      makinanın 4950 numaralı portuna yine komut satırından yazdığınız
+      mesajı bir veri paketi olarak yollar.
+    </div><div class="para">
+      <a class="ulink" href="http://www.ecst.csuchico.edu/~beej/guide/net/examples/listener.c" target="_top"><tt>listener.c</tt></a> programının kaynak koduna bakalım:
+    </div>
+<div class="para"><div align="right"><pre class="programlisting">
+/*
+** listener.c -- a veri paketi soketi sunucusu örneği
+*/
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;errno.h&gt;
+#include &lt;string.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;netinet/in.h&gt;
+#include &lt;arpa/inet.h&gt;
+
+#define MYPORT 4950    // kullanıcıların bağlanacağı port
+
+#define MAXBUFLEN 100
+
+int main(void)
+{
+    int sockfd;
+    struct sockaddr_in my_addr;    // adres bilgim
+    struct sockaddr_in their_addr; // bağlananın adres bilgisi
+    int addr_len, numbytes;
+    char buf[MAXBUFLEN];
+
+    if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
+        perror("socket");
+        exit(1);
+    }
+
+    my_addr.sin_family = AF_INET;         // konak bayt sıralaması
+    my_addr.sin_port = htons(MYPORT);     // short, ağ bayt sıralaması
+    my_addr.sin_addr.s_addr = INADDR_ANY; // otomatik olarak IP'mi kullan
+    memset(&amp;(my_addr.sin_zero), '\0', 8); // kalanı sıfırla
+
+    if (bind(sockfd, (struct sockaddr *)&amp;my_addr,
+                                          sizeof(struct sockaddr)) == -1) {
+        perror("bind");
+        exit(1);
+    }
+
+    addr_len = sizeof(struct sockaddr);
+    if ((numbytes=recvfrom(sockfd,buf, MAXBUFLEN-1, 0,
+                       (struct sockaddr *)&amp;their_addr, &amp;addr_len)) == -1) {
+        perror("recvfrom");
+        exit(1);
+    }
+
+    printf("got packet from %s\n",inet_ntoa(their_addr.sin_addr));
+    printf("packet is %d bytes long\n",numbytes);
+    buf[numbytes] = '\0';
+    printf("packet contains \"%s\"\n",buf);
+
+    close(sockfd);
+
+    return 0;
+} 
+</pre></div></div>
+    <div class="para">
+      Dikkat edin ki <tt>socket()</tt> işlevini çağırırken
+      <tt>SOCK_DGRAM</tt> kullandık. Ayrıca bu tür soketlerde
+      <tt>listen()</tt> veya <tt>accept()</tt>
+      işlevlerine ihtiyacımız yok. Bağlantısız veri paketi soketlerini
+      kullanmanın güzel yanları da var gördüğünüz gibi!
+    </div><div class="para">
+      Şimdi de sırada <a class="ulink" href="http://www.ecst.csuchico.edu/~beej/guide/net/examples/talker.c" target="_top"><tt>talker.c</tt></a> programının kaynak kodu var::
+    </div>
+<div class="para"><div align="right"><pre class="programlisting">
+/*
+** talker.c -- a datagram "client" demo
+*/
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;errno.h&gt;
+#include &lt;string.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;netinet/in.h&gt;
+#include &lt;arpa/inet.h&gt;
+#include &lt;netdb.h&gt;
+
+#define MYPORT 4950    // kullanıcıların bağlanacağı port
+
+int main(int argc, char *argv[])
+{
+    int sockfd;
+    struct sockaddr_in their_addr; // bağlananın adres bilgisi
+    struct hostent *he;
+    int numbytes;
+
+    if (argc != 3) {
+        fprintf(stderr,"usage: talker hostname message\n");
+        exit(1);
+    }
+
+    if ((he=gethostbyname(argv[1])) == NULL) {  // konak bilgisini al
+        perror("gethostbyname");
+        exit(1);
+    }
+
+    if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
+        perror("socket");
+        exit(1);
+    }
+
+    their_addr.sin_family = AF_INET;     // konak bayt sıralaması
+    their_addr.sin_port = htons(MYPORT); // short, ağ bayt sıralaması
+    their_addr.sin_addr = *((struct in_addr *)he-&gt;h_addr);
+    memset(&amp;(their_addr.sin_zero), '\0', 8); // kalanı sıfırla
+
+    if ((numbytes=sendto(sockfd, argv[2], strlen(argv[2]), 0,
+         (struct sockaddr *)&amp;their_addr, sizeof(struct sockaddr))) == -1) {
+        perror("sendto");
+        exit(1);
+    }
+
+    printf("sent %d bytes to %s\n", numbytes,
+                                           inet_ntoa(their_addr.sin_addr));
+
+    close(sockfd);
+
+    return 0;
+} 
+</pre></div></div>
+    <div class="para">
+      Hepsi bu kadar! Bir bilgisayarda <b><tt>listener</tt></b> programını
+      derleyip çalıştırın ve başka bir bilgisayara geçip
+      <b><tt>talker</tt></b> programını çalıştırın, birbirleri ile ne kadar
+      güzel iletişim kurduklarını gözlemleyin!
+    </div><div class="para">
+      Bu bölümü bitirmeden önce son bir ayrıntı: daha önce bağlantılı
+      veri paketi soketlerinden bahsetmiştim. Madem veri paketi iletişimi
+      ile ilgili örnek verdik o halde birkaç şey daha söylememe izin verin.
+      Mesela <b><tt>talker</tt></b> <tt>connect()</tt>
+      işlevini çağırıyor olsun ve <b><tt>listener</tt></b>'ın adresini
+      belirtmiş olsun. O noktadan itibaren <b><tt>talker</tt></b> sadece
+      ve sadece <tt>connect()</tt> ile belirlenen adresi
+      kullanabilir. Bu yüzden <tt>sendto()</tt> ve
+      <tt>recvfrom()</tt> kullanmanıza gerek kalmaz;
+      <tt>send()</tt> ve <tt>recv()</tt> ile
+      işinizi görebilirsiniz.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../bgnet/bgnet_clientserver-simpleclient.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../bgnet/bgnet_clientserver.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../bgnet/bgnet_advanced.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Basit Bir Veri Akış İstemcisi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> İleri Teknikler</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

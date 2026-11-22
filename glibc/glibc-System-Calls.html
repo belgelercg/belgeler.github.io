@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:40+03:00" /><title>Sistem Çağrıları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Program-Basics.html" title="XXV. Oylum - Temel Yazılım ve Sistem Arayüzü" /><link rel="previous" href="../glibc/glibc-Standard-Environment.html" title="Standart Ortam Değişkenleri" /><link rel="next" href="../glibc/glibc-Program-Termination.html" title="Yazılımın Sonlandırılması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Sistem Çağrıları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Standard-Environment.html">Önceki</a> </td><th width="60%" align="center">XXV. Oylum - Temel Yazılım ve Sistem Arayüzü</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Program-Termination.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="glibc-System-Calls" id="glibc-System-Calls"></a>Sistem Çağrıları</div></div></div><dl><dd><div class="para">
+<a class="indexterm" name="idx2817" id="idx2817"></a>
+Bir <span class="wordasword"><i>sistem çağrısı</i></span> bir yazılımın çekirdekten bir hizmet isteği yapması için kullanılır. Hizmet genellikle, G/Ç işlemleri gibi sadece çekirdeğin ayrıcalığında olan şeylerdir. Yazılım geliştirenlerin genellikle bu sistem çağrılarını bilmeye ihtiyacı olmaz. Çünkü GNU C kütüphanesi sistem çağrılarının yaptığı hemen herşeyi sanal olarak sağlayan işlevler içerir. Örneğin, bir dosyanın erişim izinlerini değiştiren bir sistem çağrısı vardır, ama GNU C kütüphanesinin <b><tt>chmod</tt></b> işlevi zaten bu işlemi yaptığından bu sistem çağrısını kullanma ihtiyacı ortaya çıkmaz.
+   </div><div class="para">
+<a class="indexterm" name="idx2818" id="idx2818"></a>
+Sistem çağrılarına kimi zaman <span class="wordasword"><i>çekirdek çağrıları</i></span> dendiği de olur.
+   </div><div class="para">
+Her ne kadar doğrudan sistem çağrıları yapma ihtiyacı duyulmasa da GNU C kütüphanesi bunu yapabilmeniz için <b><tt>syscall</tt></b> işlevini içerir. <b><tt>syscall</tt></b> kullanımı zordur ve <b><tt>chmod</tt></b> gibi işlevleri kullanmak daha taşınabilirdir, ama sistem çağrılarını makine kodu komutları ile kodlamaktan daha kolay ve daha taşınabilirdir.
+   </div><div class="para">
+<b><tt>syscall</tt></b> çağrıları, henüz GNU C kütüphanesinde bulunmayan özel sistem çağrıları ile çalışacağınız zaman oldukça kulllanışlı olacaktır. <b><tt>syscall</tt></b>  tamamen soysal bir yöntemle gerçeklenmiştir; işlev belli bir sistem çağrısının ne yaptığıyla, hatta geçerli olup olmadığıyla bile ilgilenmez.
+   </div><div class="para">
+Bu kısımdaki <b><tt>syscall</tt></b> işlevi ile ilgili açıklama, GNU C kütüphanesinin çalıştığı çeşitli platformlardaki sistem çağrıları için belli bir protokolün varlığı kabulüne dayanır. Bu protokol herhangi bir otorite tarafından tanımlanmamıştır, ancak onu burada açıklamayacağız.
+   </div><div class="para">
+<b><tt>syscall</tt></b> işlevi <tt>unistd.h</tt> başlık dosyasında bildirilmiştir.
+   </div>
+<a class="indexterm" name="idx2819" id="idx2819"></a>
+<a name="glibc-syscall" id="glibc-syscall"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>long int <b><tt>syscall</tt></b></tt></td><td valign="top"><pre class="paramdef">(long int <i><tt>sysno</tt></i>, ...)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>syscall</tt></b> temel bir sistem çağrısını uygular.
+   </div><div class="para">
+<a class="indexterm" name="idx2820" id="idx2820"></a>
+<i><tt>sysno</tt></i>,  sistem çağrı numarasıdır. Sistem çağrılarının her biri bir numara ile yapılır. Olası tüm sistem çağrılarının numaralarını içeren makrolar <tt>sys/syscall.h</tt> başlık dosyasında tanımlanmıştır.
+   </div><div class="para">
+Kalan argümanlar o sistem çağrısına özel argümanlardır. Her çeşit sistem çağrısı kendine özgü sayıda, birden beşe kadar argümana sahiptir. Eğer kodunuz sistem çağrısının aldığından daha fazla argüman içeriyorsa bunlar basitçe yoksayılacaktır.
+   </div><div class="para">
+İşlevin dönüş değeri sistem çağrısı başarısız olmadıkça, sistem çağrısının dönüş değeri olacaktır. Sistem çağrısı başarısız olursa işlev <b><tt>-1</tt></b> ile döner ve <b><tt>errno</tt></b> değişkenine sistem çağrısından dönen hata kodu atanır. Sistem çağrıları başarılı olduklarında <b><tt>-1</tt></b> döndürmezler.
+<a class="indexterm" name="idx2821" id="idx2821"></a>
+   </div><div class="para">
+Geçersiz bir <i><tt>sysno</tt></i> belirtirseniz, <b><tt>syscall</tt></b> işlevi <b><tt>-1</tt></b> ile döner ve <b><tt>errno</tt></b> = <b><tt>ENOSYS</tt></b> olur.
+   </div><div class="para">
+Örnek:
+   </div>
+<div class="para"><div align="right"><pre class="screen">#include &lt;unistd.h&gt;
+#include &lt;sys/syscall.h&gt;
+#include &lt;errno.h&gt;
+
+...
+
+int rc;
+
+rc = syscall(SYS_chmod, "/etc/passwd", 0444);
+
+if (rc == -1)
+   fprintf(stderr, "chmod, errno = %d ile başarısız oldu\n", errno);
+</pre></div></div><div class="para">
+Uyumluluk bakımından yıldızları barışmışsa, bu kod şu koda eşdeğerdir:
+   </div>
+<div class="para"><div align="right"><pre class="screen">#include &lt;sys/types.h&gt;
+#include &lt;sys/stat.h&gt;
+#include &lt;errno.h&gt;
+
+...
+
+int rc;
+
+rc = chmod("/etc/passwd", 0444);
+if (rc == -1)
+   fprintf(stderr, "chmod, errno = %d ile başarısız oldu\n", errno);
+</pre></div></div></dd></dl><div style="padding:5px"></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Standard-Environment.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Program-Basics.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Program-Termination.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Standart Ortam Değişkenleri </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Yazılımın Sonlandırılması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

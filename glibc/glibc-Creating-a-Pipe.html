@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:26:55+03:00" /><title>Bir Borunun Oluşturulması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Pipes-and-FIFOs.html" title="XV. Oylum - Borular ve FIFOlar" /><link rel="previous" href="../glibc/glibc-Pipes-and-FIFOs.html" title="XV. Oylum - Borular ve FIFOlar" /><link rel="next" href="../glibc/glibc-Pipe-to-a-Subprocess.html" title="Bir Alt Sürece Boru Hattı" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Bir Borunun Oluşturulması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Pipes-and-FIFOs.html">Önceki</a> </td><th width="60%" align="center">XV. Oylum - Borular ve FIFOlar</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Pipe-to-a-Subprocess.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="glibc-Creating-a-Pipe" id="glibc-Creating-a-Pipe"></a>Bir Borunun Oluşturulması</div></div></div><dl><dd><div class="para">
+<a class="indexterm" name="idx1421" id="idx1421"></a>
+<a class="indexterm" name="idx1422" id="idx1422"></a>
+<a class="indexterm" name="idx1423" id="idx1423"></a>
+Boru oluşturmak için en ilkel işlev <b><tt>pipe</tt></b> işlevidir. Bu borunun okuma ve yazma uçlarının her ikisini de oluşturur.  Tek bir sürecin kendisiyle konuşması için boru kullanımı pek kullanışlı değildir. Tipik kullanım şekli, bir işlemin bir veya daha fazla <a class="link" href="../glibc/glibc-Creating-a-Process.html" title="Bir Sürecin Oluşturulması">alt süreci oluşturmadan</a> önce boruyu oluşturmasıdır.  Bundan sonra boru üst ve alt süreç arasında veya iki alt süreç arasında haberleşme için kullanılır.
+   </div><div class="para">
+<b><tt>pipe</tt></b> işlevi <tt>unistd.h</tt> başlık dosyası içinde tanımlıdır.
+<a class="indexterm" name="idx1424" id="idx1424"></a>
+   </div><a name="glibc-pipe" id="glibc-pipe"></a>
+<a class="indexterm" name="idx1425" id="idx1425"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>pipe</tt></b></tt></td><td valign="top"><pre class="paramdef">(int <i><tt>dosyatnm</tt></i>[2])</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+ <b><tt>pipe</tt></b> işlevi boruyu oluşturur ve borunun okuma ve yazma uçları için dosya tanımlayıcıları (sırasıyla) <i><tt>dosyatnm</tt></i><tt>[0]</tt> ve <i><tt>dosyatnm</tt></i><tt>[1]</tt> içine koyar.
+   </div><div class="para">
+Girdi ucunun önce geldiğini hatırlamanın kolay bir yolu dosya tanımlayıcı  <b><tt>0</tt></b>'ın standart girdi ve dosya tanımlayıcı <b><tt>1</tt></b>'in standart çıktı olmasıdır.
+   </div><div class="para">
+Başarı halinde  <b><tt>pipe</tt></b>,  <b><tt>0</tt></b> değerini döndürür.  Başarısızlık halinde ise <b><tt>-1</tt></b> döndürülür.  Aşağıdaki <b><tt>errno</tt></b> hata durumları bu işlev için tanımlanmıştır:
+   </div><div class="variablelist"><dl><dt><span class="term"><tt>EMFILE</tt></span></dt><dd class="varlist"><div class="para">
+Sürecin çok sayıda açık dosyası var.
+      </div></dd><dt><span class="term"><tt>ENFILE</tt></span></dt><dd class="varlist"><div class="para">
+Sistemde çok sayıda açık dosya var.  <b><tt>ENFILE</tt></b> hakkında daha fazla bilgi için <a href="../glibc/glibc-Error-Codes.html" class="xref" title="Hata Kodları">Hata Kodları</a> bölümüne bakınız.  Bu hata GNU sisteminde hiçbir zaman oluşmaz.
+      </div></dd></dl></div>
+</dd></dl><div style="padding:5px"></div><div class="para">
+Burada basit bir boru oluşturma yazılımı görüyoruz. Bu yazılım <b><tt>fork</tt></b> işlevini (<a href="../glibc/glibc-Creating-a-Process.html" class="xref" title="Bir Sürecin Oluşturulması">Bir Sürecin Oluşturulması</a>) alt süreç oluşturmak için kullanmıştır. Üst süreç veriyi boruya yazar, alt süreç okur.
+   </div>
+<div class="para"><div align="right"><pre class="screen">
+#include &lt;sys/types.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+/* Borudan karakterleri oku ve stdout'a yaz. */
+
+void
+read_from_pipe (int dosya)
+{
+  FILE *akim;
+  int c;
+  akim = fdopen (dosya, "r");
+  while ((c = fgetc (akim)) != EOF)
+    putchar (c);
+  fclose (akim);
+}
+
+/* Boruya rastgele birşeyler yaz. */
+
+void
+write_to_pipe (int dosya)
+{
+  FILE *akim;
+  akim = fdopen (dosya, "w");
+  fprintf (akim, "Merhaba!\n");
+  fprintf (akim, "Elveda!\n");
+  fclose (akim);
+}
+
+int
+main (void)
+{
+  pid_t pid;
+  int boru[2];
+
+  /* Boruyu yarat. */
+  if (pipe (boru))
+    {
+      fprintf (stderr, "Boruda hata oluştu.\n");
+      return EXIT_FAILURE;
+    }
+
+  /* Alt süreci oluşturalım. */
+  pid = fork ();
+  if (pid == (pid_t) 0)
+    {
+      /* Bu bir alt süreç.
+         Önce diğer ucu kapatalım. */
+      close (boru[1]);
+      read_from_pipe (boru[0]);
+      return EXIT_SUCCESS;
+    }
+  else if (pid &lt; (pid_t) 0)
+    {
+      /* Alt süreç oluşturulamadı. */
+      fprintf (stderr, "Alt süreç oluşturulamadı.\n");
+      return EXIT_FAILURE;
+    }
+  else
+    {
+      /* Bu bir üst süreç.
+         Önce diğer ucu kapatalım. */
+      close (boru[0]);
+      write_to_pipe (boru[1]);
+      return EXIT_SUCCESS;
+    }
+}
+</pre></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Pipes-and-FIFOs.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Pipes-and-FIFOs.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Pipe-to-a-Subprocess.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">XV. Oylum - Borular ve FIFOlar </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Bir Alt Sürece Boru Hattı</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

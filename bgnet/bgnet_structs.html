@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:23+03:00" /><title>struct'lar ve Veri İle Uğraşmak</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../bgnet/bgnet.html" title="Beej'in Ağ Programlama Kılavuzu" /><link rel="previous" href="../bgnet/bgnet_theory-lowlevel.html" title="Düşük Seviye Duyarsızlığı ve Ağ Teorisi" /><link rel="next" href="../bgnet/bgnet_structs-convert.html" title="Veri Türlerini Dönüştür!" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">struct'lar ve Veri İle Uğraşmak</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../bgnet/bgnet_theory-lowlevel.html">Önceki</a> </td><th width="60%" align="center">Beej'in Ağ Programlama Kılavuzu</th><td width="20%" align="right"> <a accesskey="n" href="../bgnet/bgnet_structs-convert.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="bgnet_structs" id="bgnet_structs"></a><tt>struct</tt>'lar ve Veri İle Uğraşmak</div></div></div><div class="toc"><div class="formaltitle"><b>İçindekiler</b></div><dl><dt>1. <a href="../bgnet/bgnet_structs-convert.html">Veri Türlerini Dönüştür!</a></dt><dt>2. <a href="../bgnet/bgnet_structs-ipaddr.html">IP Adresleri ve Bunlarla Uğraşma Yöntemleri</a></dt></dl></div><dl><dd><div class="para">
+      Hele şükür bu aşamaya gelebildik. Artık biraz programlamadan bahsedebiliriz.
+      Bu bölümde soket arayüzleri tarafından kullanılan pek çok veri türünü ele
+      alacağım çünkü bunlar gerçekten önemli.
+    </div><div class="para">
+      Kolay olanlarla başlayalım: bir soket tanımlayıcı. Bir soket tanımlayıcı
+      aşağıdaki türdendir:
+    </div>
+      <div class="para"><div align="right"><pre class="screen">int</pre></div></div>
+    <div class="para">Evet, gayet klasik, alışık olduğumuz basit bir <tt>int</tt>.
+    </div><div class="para">
+      İşte bu aşamadan itibaren işler biraz garipleşmeye başlıyor bu yüzden de
+      dikkatlice okuyun ve bana güvenin. İlk bilmeniz gereken: iki tür byte
+      sıralaması vardır: en önemli baytın (ki buna bazen öktet de denir)
+      önce geldiği sıralama veya en önemli baytın sonra geldiği sıralama.
+      Bu sıralamalardan birincisine "Ağ Bayt Sıralaması" (Network Byte Order)<sup>[<a name="id136" href="#ftn.id136" id="id136">136</a>]</sup>
+      denir. Bazı makinalar içsel olarak veriyi kendi belleklerinde bu şekilde
+      depolar, bazıları ise bu sırayı dikkate almaz. Bir şeyin Ağ Bayt Sıralaması'na
+      göre sıralanması gerektiğini söylediğimde <tt>htons()</tt> gibi
+      bir işlev çağırmanız gerekecek ("Konak Bayt Sıralaması"ndan [Host Byte Order]
+      "Ağ Bayt Sıralaması"na dönüştürebilmek için). Eğer "Ağ Bayt Sıralaması"ndan
+      bahsetmiyorsam o zaman ilgili veriyi olduğu gibi yani
+      "Konak Bayt Sıralaması" düzeninde bırakmanız gerekir.
+    </div><div class="para">
+      My First Struct™ -- <tt>struct sockaddr</tt>.
+      Bu veri yapısı pek çok türde soket için soket adres bilgisini barındırır:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+struct sockaddr {
+    unsigned short    sa_family;    // adres ailesi, AF_xxx
+    char              sa_data[14];  // protokol adresinin 14 byte'ı
+};
+</pre></div></div>
+    <div class="para">
+      <i><tt>sa_family</tt></i> pek çok değerden birini alabilir ama
+      bizim örneğimizde <tt>AF_INET</tt> olacak.
+      <i><tt>sa_data</tt></i> ise soketle ilgili hedef adres ve port
+      numarası bilgilerini barındırır. Bunun garip olduğunu kabul ediyorum, yani
+      herhalde bu bilgiyi kendi ellerinizle paketleyerek <i><tt>sa_data</tt></i>
+      değişkenine yerleştirmek istemezsiniz değil mi?
+    </div><div class="para">
+      <tt>struct sockaddr</tt> ile başa çıkabilmek için programcılar buna
+      paralel bir yapı tasarlamışlar: <tt>struct sockaddr_in</tt> ("in"
+      "Internet" anlamına geliyor.)
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+struct sockaddr_in {
+    short int          sin_family;  // Adres ailesi
+    unsigned short int sin_port;    // Port numarası
+    struct in_addr     sin_addr;    // Internet adresi
+    unsigned char      sin_zero[8]; // struct sockaddr ile aynı boyda
+};
+</pre></div></div>
+    <div class="para">
+      Bu yapı soket adresi elemanlarına erişmeyi kolaylaştırır. Dikkat etmeniz
+      gereken bir nokta: <i><tt>sin_zero</tt></i>,<sup>[<a name="id137" href="#ftn.id137" id="id137">137</a>]</sup>
+      <tt>memset()</tt> işlevi kullanılarak tamamen sıfır ile
+      doldurulmalıdır. Buna ek ve daha da önemli olarak bir <tt>struct
+      sockaddr_in</tt> göstergesi <tt>struct sockaddr</tt> göstergesine
+      dönüştürülebilir ve tersi de doğrudur. Yani her ne kadar
+      <tt>socket()</tt> işlevi <tt>struct sockaddr*</tt> şeklinde
+      bir veri beklese de siz gene de <tt>struct sockaddr_in</tt> kullanıp
+      son anda gerekli dönüştürmeyi yapabilirsiniz! Ayrıca <i><tt>sin_family</tt></i>
+      değişkeninin de <tt>struct sockaddr</tt> yapısındaki
+      <i><tt>sa_family</tt></i> değişkenine karşılık geldiğini ve
+      "<tt>AF_INET</tt>" olarak ayarlanması gerektiğini unutmayın.
+      Son olarak <i><tt>sin_port</tt></i> ve <i><tt>sin_addr</tt></i>
+      değikenlerinin de Ağ Byte Sırasında bulunmaları gerektiğini unutmayın!
+    </div><div class="para">
+      "Fakat," diye itiraz edebilirsiniz, "nasıl olur da tüm yapı yani
+      <tt>struct in_addr sin_addr</tt> Ağ Bayt Sıralamasına göre
+      dizilebilir ki?" Bu soru tüm zamanların en kötü
+      <tt>union</tt>'larından biri olan <tt>struct in_addr</tt>
+      yapısının dikkatli olarak incelenmesini gerektirir:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+// Internet adresi (tarihi sebeplerden ötürü korunmakta)
+struct in_addr {
+    unsigned long s_addr; // 32-bit yani 4 bytes
+};
+</pre></div></div>
+    <div class="para">
+      Evet, bir zamanlar kötü bir <tt>union</tt> idi. Neyse ki
+      geçmişte kaldı. Eğer <i><tt>ina</tt></i> değişkenini
+      <tt>struct sockaddr_in</tt> türünden tanımladı iseniz
+      <i><tt>ina.sin_addr.s_addr</tt></i> 4 byte'lık Internet
+      adresini gösterir (Ağ Bayt Sıralamasında). Aklınızda bulunsun eğer
+      sizin sisteminiz kahrolası <tt>struct in_addr</tt>
+      <tt>union</tt>'ını kullanıyor olsa bile yine de 4 byte'lık
+      Internet adresine tamamen benim yaptığım gibi ulaşabilirsiniz
+      (bunu <tt>#define</tt>'lara borçluyuz).
+    </div><div class="footnotes"><br /><hr width="100" align="left" /><div class="footnote"><div class="para"><sup>[<a name="ftn.id136" href="#id136" id="ftn.id136">136</a>] </sup>Meraklısına not, Ağ Bayt Sıralaması aynı zamanda "Kıymetlisi Başta Bayt
+      Sırası" (Big-Endian) ve Konak Bayt Sıralaması da "Kıymetlisi Sonda Bayt
+      Sırası"(Little-Endian) olarak bilinir.</div></div><div class="footnote"><div class="para"><sup>[<a name="ftn.id137" href="#id137" id="ftn.id137">137</a>] </sup>Burada
+      bulunmasının sebebi içinde bulunduğu veri yapısının boyunu <tt>struct
+      sockaddr</tt> yapısının boyuna tamamlamaktır.</div></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../bgnet/bgnet_theory-lowlevel.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../bgnet/bgnet.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../bgnet/bgnet_structs-convert.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Düşük Seviye Duyarsızlığı ve Ağ Teorisi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Veri Türlerini Dönüştür!</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

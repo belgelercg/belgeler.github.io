@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:01+03:00" /><title>GCC Satıriçi Sembolik Makina Dili</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/asm-syntax.html" title="Linux ile Sembolik Makina Dili Kullanımı" /><link rel="previous" href="../howto/asm-syntax-cmdline-args.html" title="Komut Satırı Argümanları" /><link rel="next" href="../howto/asm-syntax-compile.html" title="Derleme" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">GCC Satıriçi Sembolik Makina Dili</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/asm-syntax-cmdline-args.html">Önceki</a> </td><th width="60%" align="center">Linux ile Sembolik Makina Dili Kullanımı</th><td width="20%" align="right"> <a accesskey="n" href="../howto/asm-syntax-compile.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="asm-syntax-inline-asm" id="asm-syntax-inline-asm"></a>GCC Satıriçi Sembolik Makina Dili</div><dl><dd><div class="para">
+GCC satıriçi sembolik makina dili hakındaki bu bölüm sadece x86 uygulamalarını kapsayacaktır. Terimler diğer işlemcilerde farklılık göstereceklerdir. Başvurulabilecek
+diğer belgeler bu belgenin <a class="link" href="../howto/asm-syntax-links.html" title="Bağlantılar">sonundadır</a>.
+    </div><div class="para">
+GCC içerisinde temel sembolik makina dili sözdizimi oldukça açıktır. Temel sözdizimi ile aşağıdaki gibidir:
+    </div><div class="para"><pre class="literallayout">
+    __asm__("movl %esp,%eax");    // bildik görünüyor ?
+</pre></div><div class="para">veya</div><div class="para"><pre class="literallayout">
+    __asm__
+    ("
+      movl $1,%eax                // SYS_exit
+      xor  %ebx,%ebx
+      int  $0x80
+    ");
+</pre></div><div class="para">
+Sembolik makina dili için girdi ve çıktı olarak kullanılacak bilgilerin tanımlanması ile daha etkili bir kullanım mümkündür. Özel bir giriş/çıkış/değişiklik alanı zorunlu değildir. Kullanım şekli:
+    </div><div class="para"><pre class="literallayout">
+    __asm__("<i><tt>asm_deyimleri</tt></i>" : <i><tt>çıkış</tt></i> : <i><tt>giriş</tt></i> : <i><tt>değişiklik</tt></i>);
+</pre></div><div class="para">
+<i><tt>giriş</tt></i> ve <i><tt>çıkış</tt></i> alanları terim belirteçleri ile gösterilir ve parantez içinde gösterilen C değişkeni onu takip eder. <i><tt>çıkış</tt></i> teriminden önce, onun bir <i><tt>çıkış</tt></i> terimi olduğunu belirtmek için <b><tt>=</tt></b> kullanılmalıdır. Birden çok <i><tt>çıkış</tt></i>, <i><tt>giriş</tt></i> ve <i><tt>değişiklik</tt></i> yazmacı bulunabilir. Her bir "değer" virgül (',') ile birbirinden ayrılmalıdır ve toplamda 10'dan fazla değer girilmemelidir. Terim dizgesi ya yazmacın tam adını ya da kısaltmasını içermelidir.
+    </div><div class="table"><div class="formaltitle"><b><a name="asm-syntax-table-abbr" id="asm-syntax-table-abbr"></a>Tablo 9.1. Kısaltma Tablosu</b></div><table cellpadding="3" cellspacing="1" summary="Kısaltma Tablosu" style=";background:#999999;" border="0"><colgroup><col /><col /></colgroup><thead><tr style="background:#eeeedd;"><th align="center">Kısaltma</th><th align="center">Yazmaç</th></tr></thead><tbody><tr style="background:#ffffee;"><td>a</td><td><tt>%eax  %ax  %al</tt></td></tr><tr style="background:#ffffee;"><td>b</td><td><tt>%ebx  %bx  %bl</tt></td></tr><tr style="background:#ffffee;"><td>c</td><td><tt>%ecx  %cx  %cl</tt></td></tr><tr style="background:#ffffee;"><td>d</td><td><tt>%edx  %dx  %dl</tt></td></tr><tr style="background:#ffffee;"><td>S</td><td><tt>%esi  %si</tt></td></tr><tr style="background:#ffffee;"><td>D</td><td><tt>%edi  %di</tt></td></tr><tr style="background:#ffffee;"><td>m</td><td>bellek (memory)</td></tr></tbody></table></div><dl class="example"><dt class="example"><a class="example" name="idxmp70" id="idxmp70"></a><b>Örnek 9.5. </b></dt><dd class="example"><div class="para"><div align="right"><pre class="screen">
+__asm__("test %%eax,%%eax", : /* çıktı yok */ : "a"(foo));
+</pre></div></div><div class="para">veya</div><div class="para"><div align="right"><pre class="screen">
+__asm__("test %%eax,%%eax", : /* çıktı yok */ : "eax"(foo));
+</pre></div></div></dd></dl><div class="para">
+<b><tt>__asm__</tt></b>'den sonra <b><tt>__volatile__</tt></b> komutunu kullanabilirsiniz:
+    </div><div class="blockquote"><div class="para">
+" bir <b><tt>__asm__</tt></b> komutunun silinmesini, taşınmasını ve birleştirilmesini <b><tt>__asm__</tt></b> den sonra <b><tt>__volatile__</tt></b> yazarak önleyebilirsiniz."
+</div></div><dl class="example"><dt class="example"><a class="example" name="idxmp71" id="idxmp71"></a><b>Örnek 9.6. </b></dt><dd class="example"><div class="para">
+(Konsol komut satırından <tt>info gcc "C Extensions" "Extended Asm"</tt>
+yazarak erişilen "Assembler Instructions with C Expression Operands" sayfasından alınmıştır.)
+    </div><div class="para"><div align="right"><pre class="screen">
+<tt>$</tt> <b><tt>cat inline1.c</tt></b>
+#include &lt;stdio.h&gt;
+
+int
+main(void)
+{
+  int foo = 10, bar = 15;
+
+  __asm__ __volatile__
+    ("addl %%ebxx,%%eax"
+      : "=eax"(foo)                            // çıktı
+      : "eax"(foo), "ebx"(bar)                 // girdi
+      : "eax"                                  // değişiklik
+    );
+  printf("foo + bar = %d\n", foo);
+
+  return 0;
+}
+<tt>$</tt>
+</pre></div></div></dd></dl><div class="para">
+Yazmaçların <b><tt>%</tt></b> yerine <b><tt>%%</tt></b> ile öneklendirildiğini fark etmişsinizdir. Giriş/çıkış/değişiklik alanları kullanıldığında bu zorunludur çünkü genişletilmiş alanlara sahip yazmaçların kullanılması da olasıdır. Bunu daha sonra kısaca açıklayacağım.
+    </div><div class="para">
+<b><tt>"eax"</tt></b> yazmak veya <b><tt>"ax"</tt></b>, <b><tt>"al"</tt></b> gibi özel bir yazmaç tanımlamak yerine sadece <b><tt>"a"</tt></b> yazabilirsiniz. Bu tüm genel amaçlı yazmaçlar için geçerlidir (<a class="link" href="../howto/asm-syntax-inline-asm.html#asm-syntax-table-abbr" title="Tablo 9.1. Kısaltma Tablosu">Kısaltma tablosuna</a> bakınız). Bu kullanım kod yazımında her zaman kullanışlı olmadığı için GCC size yazmaç kısaltmaları sağlar. Maksimum 10 (<b><tt>%0</tt></b>-<b><tt>%9</tt></b>) tane kısaltma olduğundan sadece 10 girdi/çıktı tanımlayabilirsiniz.
+    </div><div class="para"><div align="right"><pre class="screen">
+<tt>$</tt> <b><tt>cat inline2.c</tt></b>
+int
+main(void)
+{
+  long eax;
+  short bx;
+  char cl;
+
+  __asm__("nop;nop;nop"); // kodun geri kalanını satıriçi
+                          // sembolik makina dilinden ayırmak için
+
+  __volatile__ __asm__(" test %0,%0 test %1,%1 test %2,%2"
+    : /* çıktı yok */
+    : "a"((long)eax), "b"((short)bx), "c"((char)cl) );
+
+   __asm__("nop;nop;nop");
+
+   return 0;
+}
+<tt>$</tt> <b><tt>gcc -o inline2 inline2.c</tt></b>
+<tt>$</tt> <b><tt>gdb ./inline2</tt></b>
+GNU gdb 4.18
+Copyright 1998 Free Software Foundation, Inc.
+GDB is free software, covered by the GNU General Public License, and you are
+welcome to change it and/or distribute copies of it under certain conditions.
+Type "show copying" to see the conditions.
+There is absolutely no warranty for GDB. Type "show warranty" for details.
+This GDB was configured as "i686-pc-linux-gnulibc1"...
+(no debugging symbols found)...
+(gdb) disassemble main
+Dump of assembler code for function main:
+... start: inline asm ...
+0x8048427: nop
+0x8048428: nop
+0x8048429: nop
+0x804842a: mov 0xfffffffc(%ebp),%eax
+0x804842d: mov 0xfffffffa(%ebp),%bx
+0x8048431: mov 0xfffffff9(%ebp),%cl
+0x8048434: test %eax,%eax
+0x8048436: test %bx,%bx
+0x8048439: test %cl,%cl
+0x804843b: nop
+0x804843c: nop
+0x804843d: nop
+... end: inline asm ...
+End of assembler dump.
+<tt>$</tt>
+</pre></div></div><div class="para">
+Gördüğünüz gibi, üretilen satıriçi sembolik makina dili kodu girdi bölümünde belirtilen değişkenlerin değerlerini yazmaçlara atar ve sonra gerçek kodu üretir. Derleyici, terim boylarını değişkenlerin boylarından yararlanarak otomatik olarak bulur ve böylece <tt>%0</tt>, <tt>%1</tt> ve <tt>%2</tt> kısaltmaları ile gösterilen yazmaçlar değerlerini alır. (Yazmaç kısaltmalarını kullanırken komut kısmında terim boyutunu belirtmek derleme sırasında hatalara neden olabilir).
+    </div><div class="para">
+Kısaltmalar terim belirteçlerinde de kullanılabilir. Bu işlem, yazılımcının 10'dan fazla girdi/çıktı tanımlaması yapmasına izin vermez. Bu işlemin aklıma gelen tek kullanım biçimi, terim belirteci olarak <b><tt>"q"</tt></b> kullanılan durumlardır. Terim belirteci olarak <b><tt>"q"</tt></b> kullanıldığı zaman derleyici kendisi <b><tt>a</tt></b>, <b><tt>b</tt></b>, <b><tt>c</tt></b> veya <b><tt>d</tt></b>'den uygun olanı seçer. Eğer yazmaç ataması <b><tt>"q"</tt></b> ile yapılmışsa hangi yazmacın kullanıldığını tahmin edemeyiz ve değişiklik alanıda belirtemeyiz, bu sebepten sadece yazmaç ile ilgili rakam yazılır. Örnek
+    </div><div class="para"><div align="right"><pre class="screen">
+<tt>$</tt> <b><tt>cat inline3.c</tt></b>
+#include &lt;stdio.h&gt;
+
+int
+main(void)
+{
+  long eax=1, ebx=2;
+
+  __asm__ __volatile__ (
+    "add %0,%2"
+    : "=b"((long)ebx)
+    : "a"((long)eax), "q"(ebx)
+    : "2"
+  );
+
+  printf("ebx = %x\n", ebx);
+
+  return 0;
+}
+<tt>$</tt>
+</pre></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/asm-syntax-cmdline-args.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/asm-syntax.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/asm-syntax-compile.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Komut Satırı Argümanları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Derleme</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

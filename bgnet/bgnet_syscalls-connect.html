@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:24+03:00" /><title>connect()--Hey, sen!</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../bgnet/bgnet_syscalls.html" title="Sistem Çağrıları veya Felaketleri" /><link rel="previous" href="../bgnet/bgnet_syscalls-bind.html" title="bind() -- Hangi Port Üzerindeyim?" /><link rel="next" href="../bgnet/bgnet_syscalls-listen.html" title="listen() -- Biri Beni Arayabilir mi Acaba?" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">connect()--Hey, sen!</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../bgnet/bgnet_syscalls-bind.html">Önceki</a> </td><th width="60%" align="center">Sistem Çağrıları veya Felaketleri</th><td width="20%" align="right"> <a accesskey="n" href="../bgnet/bgnet_syscalls-listen.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="bgnet_syscalls-connect" id="bgnet_syscalls-connect"></a><tt>connect()</tt>--Hey, sen!</div><dl><dd><div class="para">
+        Diyelim ki bir telnet programısınız. Sizi kullanan kişi (tıpkı
+        <i>TRON</i> filminde olduğu gibi) size bir soket
+        dosya tanımlayıcısı edinmeniz için komut veriyor. Siz de bu
+        komuta uyup <tt>socket()</tt> işlevini çağırıyorsunuz.
+        Sonra, kullanıcı sizden "<tt>10.12.110.57</tt>" adresine
+        ve "<tt>23</tt>" numaralı porta bağlanmanızı istiyor
+        (standart telnet portu). Aha! Şimdi ne yapacaksınız?
+      </div><div class="para">
+        Bir program olarak şanslısınız çünkü tam da <tt>connect()</tt>
+        bölümündeyiz -- uzaktaki bir bilgisayara nasıl bağlanırız bölümü.
+        Okumaya devam kaybedecek zaman yok, kullanıcı bekliyor!
+      </div><div class="para">
+        <tt>connect()</tt> işlevi şöyle birşeydir:
+      </div>
+<div class="para"><div align="right"><pre class="programlisting">
+#include &lt;sys/types.h&gt;
+#include &lt;sys/socket.h&gt;
+
+int connect(int sockfd, struct sockaddr *serv_addr, int addrlen); 
+</pre></div></div>
+      <div class="para">
+        <i><tt>sockfd</tt></i> dediğimiz değişken
+        <tt>socket()</tt> sistem çağrısı tarafından döndürülmüş
+        olan soket dosya tanımlayıcısının değerini tutar.
+        <i><tt>serv_addr</tt></i> ise <tt>struct sockaddr</tt>
+        türünde bir değişkendir ve hedef port ile IP adres bilgilerini
+        barındırır. <i><tt>addrlen</tt></i> değişkeni de
+        <tt>sizeof(struct sockaddr)</tt> değerini alırsa iyi olur.
+      </div><div class="para">
+        Taşlar yerine oturmaya başladı mı? Hemen bir örneğe göz atalım:
+      </div>
+<div class="para"><div align="right"><pre class="programlisting">
+#include &lt;string.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;netinet/in.h&gt;
+
+#define DEST_IP   "10.12.110.57"
+#define DEST_PORT 23
+
+main()
+{
+    int sockfd;
+    struct sockaddr_in dest_addr;             // hedef adres
+
+    sockfd = socket(AF_INET, SOCK_STREAM, 0); // hata denetimi yapın!
+
+    dest_addr.sin_family = AF_INET;          // konak bayt sıralaması
+    dest_addr.sin_port = htons(DEST_PORT);   // short, ağ bayt sıralaması
+    dest_addr.sin_addr.s_addr = inet_addr(DEST_IP);
+    memset(&amp;(dest_addr.sin_zero), '\0', 8);  // yapının geriye kalanını sıfırla
+
+    // connect() işlevini çağırdıktan sonra hata denetimi yap!
+    connect(sockfd, (struct sockaddr *)&amp;dest_addr, sizeof(struct sockaddr));
+    .
+    .
+    . 
+</pre></div></div>
+      <div class="para">
+        Sıkılsanız da söylemek zorundayım: <tt>connect()</tt>
+        işlevinden sonra mutlaka hata denetimi yapın, eğer hata oluştu
+        ise bu işlev <tt>-1</tt> değerini döndürür ve
+        <i><tt>errno</tt></i> değişkenine ilgili hata numarasını
+        yerleştirir.
+      </div><div class="para">
+        Ayrıca <tt>bind()</tt> işlevini çağırmadığımıza da
+        dikkat edin. Yani kısaca yerel port numarası ile ilgilenmiyoruz;
+        bizi ilgilendiren hedef bilgisayar (uzaktaki port). İşletim sistemi
+        çekirdeği bizim için bir yerel port bulacaktır ve bağlandığımız
+        bilgisayar da bu bilgiyi otomatik olarak bizden öğrenecektir. Siz
+        tatlı canınızı üzmeyin.
+      </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../bgnet/bgnet_syscalls-bind.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../bgnet/bgnet_syscalls.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../bgnet/bgnet_syscalls-listen.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">bind() -- Hangi Port Üzerindeyim? </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> listen() -- Biri Beni Arayabilir mi Acaba?</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:51+03:00" /><title>Kullanıcı Kimliğinin Belirtilmesi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Users-and-Groups.html" title="XXIX. Oylum - Kullanıcılar ve Gruplar" /><link rel="previous" href="../glibc/glibc-Reading-Persona.html" title="Bir Sürecin Aidiyetinin Okunması" /><link rel="next" href="../glibc/glibc-Setting-Groups.html" title="Grup Kimliğinin Belirtilmesi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Kullanıcı Kimliğinin Belirtilmesi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Reading-Persona.html">Önceki</a> </td><th width="60%" align="center">XXIX. Oylum - Kullanıcılar ve Gruplar</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Setting-Groups.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="glibc-Setting-User-ID" id="glibc-Setting-User-ID"></a>Kullanıcı Kimliğinin Belirtilmesi</div></div></div><dl><dd><div class="para">
+Bu kısımda bir sürecin gerçek ve/veya etkin kullanıcı kimliklerini değiştiren işlevlere yer verilmiştir. Bu oluşumları kullanabilmek için <tt>sys/types.h</tt> ve <tt>unistd.h</tt> başlık dosyalarını yazılımınıza dahil etmeniz gerekir.
+<a class="indexterm" name="idx3064" id="idx3064"></a>
+<a class="indexterm" name="idx3065" id="idx3065"></a>
+   </div>
+<a class="indexterm" name="idx3066" id="idx3066"></a>
+<a name="glibc-seteuid" id="glibc-seteuid"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>seteuid</tt></b></tt></td><td valign="top"><pre class="paramdef">(uid_t <i><tt>etkinkullkim</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev bir sürecin etkin kullanıcı kimliğini, sürecin etkin kullanıcı kimliğini <i><tt>etkinkullkim</tt></i> olarak değiştirmesi mümkünse, <i><tt>etkinkullkim</tt></i> ile belirtilen kimliğe ayarlar. Bir ayrıcalıklı süreç (etkin kullanıcı kimliği sıfır olan süreç) kendi etkin kullanıcı kimliğini herhangi bir kullanıcı kimliği ile değiştirebilir. Bir ayrıcalıksız süreç ise kendi etkin kullanıcı kimliğini sadece kendi gerçek kullanıcı kimliğine ya da dosya kullanıcı kimliğine değiştirebilir. Aksi takdirde, sürecin etkin kullanıcı kimliği değişmeyecektir.
+   </div><div class="para">
+<b><tt>seteuid</tt></b> işlevi, kimliği değiştirebilmişse <b><tt>0</tt></b> ile döner. <b><tt>-1</tt></b> dönüş değeri bir hata oluştuğunu gösterir. Aşağıdaki <b><tt>errno</tt></b> hata durumları bu işlev için tanımlanmıştır:
+   </div><div class="variablelist"><dl><dt><span class="term"><tt>EINVAL</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>etkinkullkim</tt></i> argümanının değeri geçersiz
+      </div></dd><dt><span class="term"><tt>EPERM</tt></span></dt><dd class="varlist"><div class="para">
+Süreç aidiyetini belirtilen kimlikle değiştiremez
+      </div></dd></dl></div><div class="para">
+<b><tt>_POSIX_SAVED_IDS</tt></b> özelliği olmayan eski sistemlerde bu işlev yoktur.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx3067" id="idx3067"></a>
+<a name="glibc-setuid" id="glibc-setuid"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>setuid</tt></b></tt></td><td valign="top"><pre class="paramdef">(uid_t <i><tt>kullkim</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlevi çağıran sürecin yetkisi varsa, sürecin gerçek ve etkin kullanıcı kimliği <i><tt>kullkim</tt></i> yapılır. İşlev ayrıca sürecin dosya kullanıcı kimliğini varsa siler. <i><tt>kullkim</tt></i> sistemde geçerli herhangi bir kullanıcı kimliği olabilir. (İşlev eski etkin kullanıcı kimliği döndürmez, dolayısıyla bir kere değiştikten sonra tekrar eski etkin kullanıcı kimliğe dönmenin bir yolu yoktur.)
+   </div><div class="para">
+Süreç istenen işlemi yapmaya yetkili değilse ve sistemde <b><tt>_POSIX_SAVED_IDS</tt></b> özelliği yoksa bu işlev <b><tt>seteuid</tt></b> gibi davranır.
+   </div><div class="para">
+İşlevin dönüş değerleri ve hata durumları <b><tt>seteuid</tt></b> ile aynıdır.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx3068" id="idx3068"></a>
+<a name="glibc-setreuid" id="glibc-setreuid"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>setreuid</tt></b></tt></td><td valign="top"><pre class="paramdef">(uid_t <i><tt>gerçekkullkim</tt></i>,
+ uid_t <i><tt>etkinkullkim</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev sürecin gerçek kullanıcı kimliğini <i><tt>gerçekkullkim</tt></i> ve etkin kullanıcı kimliğini <i><tt>etkinkullkim</tt></i> yapar.  Eğer <i><tt>gerçekkullkim</tt></i> değeri <b><tt>-1</tt></b> ise bu, gerçek kullanıcı kimliğin değiştirilmeyeceği anlamına gelir. Benzer şekilde <i><tt>etkinkullkim</tt></i> değeri <b><tt>-1</tt></b> ise etkin kullanıcı kimliği değiştirilmez.
+   </div><div class="para">
+<b><tt>setreuid</tt></b> işlevi 4.3 BSD Unix ile uyumluluk adına vardır. Bu işlevi sürecin etkin ve gerçek kullanıcı kimliklerini takaslamak için kullanabilirsiniz. (Ayrıcalıklı süreçler için böyle bir sınırlama yoktur.) Dosya kimlikleri destekleniyorsa, bu işlev bunun için kullanılmaz. Bkz. <a href="../glibc/glibc-Enable-Disable-Setuid.html" class="xref" title="Setuid Erişiminin Etkinleştirilmesi ve İptali">Setuid Erişiminin Etkinleştirilmesi ve İptali</a>.
+   </div><div class="para">
+İşlev başarılı ise <b><tt>0</tt></b> değilse <b><tt>-1</tt></b> döner. Aşağıdaki <b><tt>errno</tt></b> hata durumları bu işlev için tanımlanmıştır:
+   </div><div class="variablelist"><dl><dt><span class="term"><tt>EPERM</tt></span></dt><dd class="varlist"><div class="para">
+Sürecin yetkileri işlem için yetersiz; belirtilen kimliğe geçiş için yetkili değilsiniz.
+      </div></dd></dl></div>
+  </dd></dl><div style="padding:5px"></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Reading-Persona.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Users-and-Groups.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Setting-Groups.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Bir Sürecin Aidiyetinin Okunması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Grup Kimliğinin Belirtilmesi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

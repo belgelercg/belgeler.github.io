@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:14+03:00" /><title>BSD Rasgele Sayı İşlevleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Pseudo-Random-Numbers.html" title="Rasgeleymiş gibi Görünen Sayılar" /><link rel="previous" href="../glibc/glibc-ISO-Random.html" title="ISO C Rasgele Sayı İşlevleri" /><link rel="next" href="../glibc/glibc-SVID-Random.html" title="SVID Rasgele Sayı İşlevleri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">BSD Rasgele Sayı İşlevleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-ISO-Random.html">Önceki</a> </td><th width="60%" align="center">Rasgeleymiş gibi Görünen Sayılar</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-SVID-Random.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-BSD-Random" id="glibc-BSD-Random"></a>BSD Rasgele Sayı İşlevleri</div><dl><dd><div class="para">
+Bu bölümde BSD'den türetilmiş rasgele sayı üretim işlevlerine yer verilmiştir. GNU kütüphenesiyle bu işlevleri kullanmanın bir getirisi yoktur; onları sadece BSD uyumluluğu adına destekliyoruz.
+    </div><div class="para">
+Bu işlevlerin prototipleri <b><tt>stdlib.h</tt></b> dosyasında bildirilmiştir.
+<a class="indexterm" name="idx2053" id="idx2053"></a>
+    </div>
+<a class="indexterm" name="idx2054" id="idx2054"></a>
+<a name="glibc-random" id="glibc-random"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>long int <b><tt>random</tt></b></tt></td><td valign="top"><pre class="paramdef">(void)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev dizilimdeki sonraki rasgele gibi görünen sayıyı döndürür. Dönen değer <b><tt>0</tt></b> ile <b><tt>RAND_MAX</tt></b> arasındadır.
+    </div>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">Bu işlev geçici olarak, <b><tt>long int</tt></b> daha geniş olsa bile dönüş değerinin daima 32 bit olduğunu belirten <b><tt>int32_t</tt></b> türünde bir değer döndürecek şekilde tanımlanmıştır. Standart farklı olmasını ister. Kullanıcıların 32 bitlik sınırlamanın farkında olması için böyle yapılmıştır.</div></td></tr></table></div>
+</dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2055" id="idx2055"></a>
+<a name="glibc-srandom" id="glibc-srandom"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>srandom</tt></b></tt></td><td valign="top"><pre class="paramdef">(unsigned int <i><tt>tohum</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>srandom</tt></b> işlevi rasgele sayı üretecinin durumunu <i><tt>tohum</tt></i> tamsayısına tabanlandırır. <i><tt>tohum</tt></i> olarak <b><tt>1</tt></b> değerini verirseniz işlevin rasgele sayıların öntanımlı dizilimini üretmesine sebep olursunuz.
+    </div><div class="para">
+Yazılımınızın her çalıştırılışında farklı bir rasgele sayı dizilimi kullanmasını istiyorsanız  <b><tt>srandom (time (0))</tt></b> çağrısını kullanın.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2056" id="idx2056"></a>
+<a name="glibc-initstate" id="glibc-initstate"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void *<b><tt>initstate</tt></b></tt></td><td valign="top"><pre class="paramdef">(unsigned int <i><tt>tohum</tt></i>,
+ void        *<i><tt>durum</tt></i>,
+ size_t       <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>initstate</tt></b> işlevi rasgele sayı üretecini ilklendirmek için kullanılır. <i><tt>durum</tt></i> argümanı durum bilgisini tutan <i><tt>boyut</tt></i> baytlık bir dizidir. <i><tt>tohum</tt></i>'a bağlı olarak ilklendirilir. <i><tt>boyut</tt></i> değeri 8 ile 256 arasında ve ikinin üstel katlarında olmalıdır. Daha büyük <i><tt>durum</tt></i> dizisi daha iyidir.
+    </div><div class="para">
+İşlev önceki durum bilgisi dizisinin değerini döndürür. Bu değeri daha sonra durumu eski haline getirmek için <b><tt>setstate</tt></b> işlevinde argüman olarak kullanabilirsiniz.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2057" id="idx2057"></a>
+<a name="glibc-setstate" id="glibc-setstate"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void *<b><tt>setstate</tt></b></tt></td><td valign="top"><pre class="paramdef">(void *<i><tt>durum</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>setstate</tt></b> işlevi rasgele sayı durumunu <i><tt>durum</tt></i> durum bilgisi ile eski haline getirir. Argüman evvelce yapılmış bir <i><tt>initstate</tt></i> veya <i><tt>setstate</tt></i> çağrısından dönmüş bir değer olmalıdır.
+    </div><div class="para">
+İşlev önceki durum bilgisi dizisinin değerini döndürür. Bu değeri daha sonra durumu eski haline getirmek için <b><tt>setstate</tt></b> işlevinde argüman olarak kullanabilirsiniz.
+    </div><div class="para">
+İşlev başarısız olursa <b><tt>NULL</tt></b> ile döner.
+</div></dd></dl><div style="padding:5px"></div><div class="para">
+Bu bölümde buraya kadar bahsedilen dört işlevin hepsi durum bilgisini tüm evrelerle paylaşır. Durum bilgisi kullanıcı tarafından erişilebilir değildir, sadece bu işlevlerle erişilebilir. Bu, kendi rasgele sayı üreteçlerinin olmasını gerektiren evreler bakımından çalışılması zor bir durum oluşturur.
+    </div><div class="para">
+GNU C kütüphanesi bu dört işleve ek olarak evreye özel rasgele sayı üreteçlerini mümkün kılmak için durumu ayrı bir parametre olarak alan dört işlev daha içerir. Aslında, bundan önce bahsedilen dört işlev de dahili olarak aşağıdaki arayüz ile gerçeklenmiştir.
+    </div><div class="para">
+<b><tt>stdlib.h</tt></b> başlık dosyası şu türün bir tanımını içerir:
+    </div>
+<a class="indexterm" name="idx2058" id="idx2058"></a>
+<a name="glibc-struct-random_data" id="glibc-struct-random_data"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct <b><tt>random_data</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+<b><tt>struct random_data</tt></b> türündeki nesneler rasgele sayı üretecinin durumunu ifade etmek için gereken bilgiyi içerir. Türün tam bir tanımı mevcut olduğu halde türün şeffaf olmadığı varsayılmalıdır.
+</div></dd></dl><div style="padding:5px"></div><div class="para">
+Durum bilgisini değiştiren işlevler bundan önce açıklanan işlevlerin yaptıklarını evresel kullanıma uygun olarak yaparlar.
+    </div>
+<a class="indexterm" name="idx2059" id="idx2059"></a>
+<a name="glibc-random_r" id="glibc-random_r"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>random_r</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct random_data *restrict <i><tt>tampon</tt></i>,
+ int32_t *restrict            <i><tt>sonuç</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>random_r</tt></b> işlevi genel durum bilgisi yerine ilk parametresi ile gösterilen nesnedeki durumu kullanması dışında <b><tt>random</tt></b> işlevi gibi davranır.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2060" id="idx2060"></a>
+<a name="glibc-srandom_r" id="glibc-srandom_r"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>srandom_r</tt></b></tt></td><td valign="top"><pre class="paramdef">(unsigned int        <i><tt>tohum</tt></i>,
+ struct random_data *<i><tt>tampon</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>srandom_r</tt></b> işlevi genel durum bilgisi yerine ikinci parametresi ile gösterilen nesnedeki durumu kullanması dışında <b><tt>srandom</tt></b> işlevi gibi davranır.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2061" id="idx2061"></a>
+<a name="glibc-initstate_r" id="glibc-initstate_r"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>initstate_r</tt></b></tt></td><td valign="top"><pre class="paramdef">(unsigned int                 <i><tt>tohum</tt></i>,
+ char *restrict               <i><tt>durum-tamponu</tt></i>,
+ size_t                       <i><tt>durum-uzunluğu</tt></i>,
+ struct random_data *restrict <i><tt>tampon</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>initstate_r</tt></b> işlevi genel durum bilgisi yerine dördüncü parametresi ile gösterilen nesnedeki durumu kullanması dışında <b><tt>initstate</tt></b> işlevi gibi davranır.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2062" id="idx2062"></a>
+<a name="glibc-setstate_r" id="glibc-setstate_r"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>setstate_r</tt></b></tt></td><td valign="top"><pre class="paramdef">(char *restrict               <i><tt>durum-tamponu</tt></i>,
+ struct random_data *restrict <i><tt>tampon</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>setstate_r</tt></b> işlevi genel durum bilgisi yerine ikinci parametresi ile gösterilen nesnedeki durumu kullanması dışında <b><tt>setstate</tt></b> işlevi gibi davranır.
+  </div></dd></dl><div style="padding:5px"></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-ISO-Random.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Pseudo-Random-Numbers.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-SVID-Random.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">ISO C Rasgele Sayı İşlevleri </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> SVID Rasgele Sayı İşlevleri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

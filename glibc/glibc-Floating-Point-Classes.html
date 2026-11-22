@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:16+03:00" /><title>Gerçek Sayı Sınıflama İşlevleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Arithmetic.html" title="XX. Oylum - Aritmetik İşlevleri" /><link rel="previous" href="../glibc/glibc-Floating-Point-Numbers.html" title="Gerçek Sayılar" /><link rel="next" href="../glibc/glibc-Floating-Point-Errors.html" title="Gerçek Sayı Hesaplamalarında Hatalar" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Gerçek Sayı Sınıflama İşlevleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Floating-Point-Numbers.html">Önceki</a> </td><th width="60%" align="center">XX. Oylum - Aritmetik İşlevleri</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Floating-Point-Errors.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="glibc-Floating-Point-Classes" id="glibc-Floating-Point-Classes"></a>Gerçek Sayı Sınıflama İşlevleri</div></div></div><dl><dd><div class="para">
+<a class="indexterm" name="idx2101" id="idx2101"></a>
+<a class="indexterm" name="idx2102" id="idx2102"></a>
+ISO C99 bir değişkendeki bir gerçek sayının çeşidini saptamanıza yardımcı olacak makrolar tanımlamıştır.
+   </div>
+<a class="indexterm" name="idx2103" id="idx2103"></a>
+<a name="glibc-fpclassify" id="glibc-fpclassify"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>fpclassify</tt></b></tt></td><td valign="top"><pre class="paramdef">(<i><tt>float-type x</tt></i>)</pre></td></tr></table></div><div class="sagsutun">makro</div></div></div><dl><dd><div class="para">
+Tüm gerçek sayı türleri ile çalışan ve <b><tt>int</tt></b> türünde bir değer ile dönen bir soysal makrodur. Olası dönüş değerleri:
+   </div><div class="variablelist"><dl><dt><span class="term"><tt>FP_NAN</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>x</tt></i> sayısı normal bir sayı değil. (Bkz. <a href="../glibc/glibc-Infinity-and-NaN.html" class="xref" title="Sonsuzluk ve NaN">Sonsuzluk ve NaN</a>)
+      </div></dd><dt><span class="term"><tt>FP_INFINITE</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>x</tt></i> sayısı ya artı ya da eksi sonsuz. (Bkz. <a href="../glibc/glibc-Infinity-and-NaN.html" class="xref" title="Sonsuzluk ve NaN">Sonsuzluk ve NaN</a>)
+      </div></dd><dt><span class="term"><tt>FP_ZERO</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>x</tt></i> sayısı sıfır. IEEE 754 benzeri kayan noktalı biçimlerde sıfırlar işaretli olabilir, dolayısıyla bu değer eksi sıfır için de döner.
+      </div></dd><dt><span class="term"><tt>FP_SUBNORMAL</tt></span></dt><dd class="varlist"><div class="para">
+Mutlak değeri çok küçük olduğundan normal biçimde gösterilemeyen sayılar <span class="wordasword"><i>normalleştirilmemiş</i></span> biçim denilen biçimde gösterilebilir (bkz. <a href="../glibc/glibc-Data-Type-Measurements.html#glibc-Floating-Point-Concepts" class="xref" title="Gerçek Sayı Gösterimi ile İlgili Kavramlar">Gerçek Sayı Gösterimi ile İlgili Kavramlar</a>).  Bu biçim pek hassas olmamakla birlikte sıfıra çok yakın değerleri gösterebilir. <b><tt>fpclassify</tt></b> işlevi bu diğer biçimle gösterilmekten başka çare olmayan <i><tt>x</tt></i> değerleri için bu makronun değerini döndürür.
+      </div></dd><dt><span class="term"><tt>FP_NORMAL</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>x</tt></i> sayısına özel hiçbir durum olmadığını gösterir, yani sayı sıradan, normal bir sayıdır.
+      </div></dd></dl></div>
+    <div class="para">
+<b><tt>fpclassify</tt></b> işlevi bir sayının birden fazla özelliği olması durumunda çok kullanışlıdır. Bir defada bir özelliği sınayan daha özel makrolar da vardır. Bunlar için özel donanım desteği olduğundan bu makrolar <b><tt>fpclassify</tt></b> işlevinden daha hızlıdırlar. Bu bakımdan, mümkün olduğunca bu özel makroları kullanmalısınız.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2104" id="idx2104"></a>
+<a name="glibc-isfinite" id="glibc-isfinite"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>isfinite</tt></b></tt></td><td valign="top"><pre class="paramdef">(<i><tt>bir-float-tür x</tt></i>)</pre></td></tr></table></div><div class="sagsutun">makro</div></div></div><dl><dd><div class="para">
+Bu makro <i><tt>x</tt></i> değeri bir sonlu değerse sıfırdan farklı bir değerle döner (sonlu değer: eksi ya da artı sonsuz ve NaN olmayan). İşlem,
+   </div>
+<div class="para"><div align="right"><pre class="screen">(fpclassify (x) != FP_NAN &amp;&amp; fpclassify (x) != FP_INFINITE)</pre></div></div>
+   <div class="para">
+ifadesine eşdeğerdir. <b><tt>isfinite</tt></b> herhangi bir gerçek sayı türünü kabul eden bir makro olarak gerçeklenmiştir.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2105" id="idx2105"></a>
+<a name="glibc-isnormal" id="glibc-isnormal"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>isnormal</tt></b></tt></td><td valign="top"><pre class="paramdef">(<i><tt>bir-float-tür x</tt></i>)</pre></td></tr></table></div><div class="sagsutun">makro</div></div></div><dl><dd><div class="para">
+Bu makro <i><tt>x</tt></i> değeri bir sonlu ve normalleştirilmiş değerse sıfırdan farklı bir değerle döner. Eşdeğer ifade:
+   </div>
+<div class="para"><div align="right"><pre class="screen">(fpclassify (x) == FP_NORMAL)</pre></div></div>
+</dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2106" id="idx2106"></a>
+<a name="glibc-isnan" id="glibc-isnan"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>isnan</tt></b></tt></td><td valign="top"><pre class="paramdef">(<i><tt>float-type x</tt></i>)</pre></td></tr></table></div><div class="sagsutun">makro</div></div></div><dl><dd><div class="para">
+Bu makro <i><tt>x</tt></i> değeri normal bir sayı değilse (NaN ise) sıfırdan farklı bir değerle döner. Eşdeğer ifade:
+   </div>
+<div class="para"><div align="right"><pre class="screen">(fpclassify (x) == FP_NAN)</pre></div></div>
+</dd></dl><div style="padding:5px"></div><div class="para">
+Gerçek sayı sınıflama işlevlerinin BSD sürümleri de vardır ve GNU C kütüphanesi bu işlevleri de destekler. Yine de yeni geliştireceğiniz yazılımlarda ISO C99 makrolarını kullanmanızı öneririz. Bunlar standarttır ve daha geniş çapta kullanılır olacaktır. Ayrıca, makro olduklarından argüman türleri bakımından endişelenmeniz gerekmez.
+   </div>
+<a class="indexterm" name="idx2107" id="idx2107"></a>
+<a class="indexterm" name="idx2108" id="idx2108"></a>
+<a class="indexterm" name="idx2109" id="idx2109"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline">
+<a name="glibc-isinf" id="glibc-isinf"></a><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>isinf</tt></b></tt></td><td valign="top"><pre class="paramdef">(double <i><tt>x</tt></i>)</pre></td></tr><a name="glibc-isinff" id="glibc-isinff"></a><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>isinff</tt></b></tt></td><td valign="top"><pre class="paramdef">(float <i><tt>x</tt></i>)</pre></td></tr><a name="glibc-isinfl" id="glibc-isinfl"></a><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>isinfl</tt></b></tt></td><td valign="top"><pre class="paramdef">(long double <i><tt>x</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlevler <i><tt>x</tt></i>'in değeri negatif sonsuz ise <b><tt>-1</tt></b> ile, positif sonsuz ise <b><tt>1</tt></b> ile aksi takdirde <b><tt>0</tt></b> ile döner.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2110" id="idx2110"></a>
+<a class="indexterm" name="idx2111" id="idx2111"></a>
+<a class="indexterm" name="idx2112" id="idx2112"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline">
+<a name="glibc-func-isnan" id="glibc-func-isnan"></a><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>isnan</tt></b></tt></td><td valign="top"><pre class="paramdef">(double <i><tt>x</tt></i>)</pre></td></tr><a name="glibc-isnanf" id="glibc-isnanf"></a><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>isnanf</tt></b></tt></td><td valign="top"><pre class="paramdef">(float <i><tt>x</tt></i>)</pre></td></tr><a name="glibc-isnanl" id="glibc-isnanl"></a><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>isnanl</tt></b></tt></td><td valign="top"><pre class="paramdef">(long double <i><tt>x</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlevler <i><tt>x</tt></i> bir sayı değilse (yani NaN ise), sıfırdan farklı bir değerle, aksi takdirde sıfır ile döner.
+   </div>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">ISO C99 tarafından tanımlanan <b><tt>isnan</tt></b> makrosu BSD işlevinin yerine geçer. Bu durum normalde bir soruna yol açmaz çünkü bu ikisi birbirine eşdeğerdir. Buna rağmen, illaki BSD işlevine ihtiyacınız varsa şunu yazın:
+   </div>
+<div class="para"><div align="right"><pre class="screen">(isnan) (x)</pre></div></div></td></tr></table></div>
+</dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2113" id="idx2113"></a>
+<a class="indexterm" name="idx2114" id="idx2114"></a>
+<a class="indexterm" name="idx2115" id="idx2115"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline">
+<a name="glibc-finite" id="glibc-finite"></a><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>finite</tt></b></tt></td><td valign="top"><pre class="paramdef">(double <i><tt>x</tt></i>)</pre></td></tr><a name="glibc-finitef" id="glibc-finitef"></a><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>finitef</tt></b></tt></td><td valign="top"><pre class="paramdef">(float <i><tt>x</tt></i>)</pre></td></tr><a name="glibc-finitel" id="glibc-finitel"></a><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>finitel</tt></b></tt></td><td valign="top"><pre class="paramdef">(long double <i><tt>x</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlevler <i><tt>x</tt></i> bir sayı değilse (yani NaN ise) ya da sonlu bir sayı ise, sıfırdan farklı bir değerle, aksi takdirde sıfır ile döner.
+      </div>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Taşınabilirlik Bilgisi</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">Bu bölümde listelenen işlevler BSD oluşumudur.</div></td></tr></table></div>
+  </dd></dl><div style="padding:5px"></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Floating-Point-Numbers.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Arithmetic.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Floating-Point-Errors.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Gerçek Sayılar </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Gerçek Sayı Hesaplamalarında Hatalar</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

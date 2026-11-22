@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:25:32+03:00" /><title>init</title><link rel="icon" type="image/png" href="../../images/belgeler-logo.png" /><link rel="stylesheet" href="../../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../../man/man8/man8.html" title="Sistem Yönetim Komutları" /><link rel="previous" href="../../man/man8/man8-ifconfig.html" title="ifconfig" /><link rel="next" href="../../man/man8/man8-ipcs.html" title="ipcs" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">init</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../../man/man8/man8-ifconfig.html">Önceki</a> </td><th width="60%" align="center">Sistem Yönetim Komutları</th><td width="20%" align="right"> <a accesskey="n" href="../../man/man8/man8-ipcs.html">Sonraki</a></td></tr></table></td></tr></table><div class="refentry"><a name="tr-man8-init" id="tr-man8-init"></a><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="25%"><b>init(8)</b></td><td class="mheadfoot" align="center" width="50%"><b>Linux Sistem Yöneticisinin Kılavuzu</b> </td><td class="mheadfoot" align="right" width="25%"><b>init(8)</b></td></tr></table></div><dl><dt class="head3">İSİM</dt><dd>init — süreç kontrol başlangıcı<br /></dd><dd>telinit — çalışma seviyesini değiştirir<br /></dd><dd><div class="para"></div></dd><dt class="head3">KULLANIM</dt><dd><div class="para"><div class="para"><div align="center"><pre class="synopsis"><b><tt>/sbin/init   </tt></b> [ <b><tt>-a</tt></b> ] [ <b><tt>-s</tt></b> ] [ <b><tt>-b</tt></b> ] [ <b><tt>-z </tt></b><i>xxx</i>] [ <b><tt>0123456Ss</tt></b> ]
+<b><tt>/sbin/telinit</tt></b> [ <b><tt>-t </tt></b><i>saniye</i> ] [ <b><tt>0123456sSQqabcUu</tt></b> ]
+</pre></div></div></div></dd><dt class="head3">AÇIKLAMA</dt><dd><div class="para">
+<b><tt>init</tt></b>, bütün süreçlerin atasıdır. <b><tt>init</tt></b>’in birincil görevi <b><tt>/etc/inittab</tt></b> içinde saklı betikten süreçler oluşturmaktır (ayrıntılar için <tt><a href="../../man/man5/man5-inittab.html"><b>inittab(5)</b></a></tt>’a bakınız). Bu dosyada, <b><tt>init</tt></b>’in çeşitli hatlar üzerinden kullanıcıların bağlanmasını sağlamak üzere <tt><a href="../../man/man1/man1-getty.html"><b>getty(1)</b></a></tt> süreçleri oluşturmasını sağlayan girdiler vardır. Ayrıca belirli sistemler tarafından ihtiyaç duyulan özerk süreçleri de kontrol eder.
+    </div></dd><dt class="head3">ÇALIŞMA SEVİYELERİ</dt><dd><div class="para">
+Çalışma seviyesi, sistemde varolan süreçlerden belirtilmiş olanların
+çalışmasını sağlayan yazılım yapılandırmasına verilen addır. Her bir çalışma seviyesi için, <b><tt>init</tt></b> tarafından başlatılan süreçler <b><tt>/etc/inittab</tt></b> dosyası içinde tanımlıdır. <b><tt>init</tt></b> sekiz değişik çalışma seviyesinden birinde olabilir: <b><tt>0-6</tt></b>, <b><tt>S</tt></b> veya <b><tt>s</tt></b>. Çalışma seviyesi <b><tt>telinit</tt></b> kullanılarak yetkili bir kullanıcı tarafından, <b><tt>init</tt></b>'e uygun bir sinyal gönderilerek değiştirilir.
+    </div><div class="para">
+Çalışma seviyeleri <b><tt>0</tt></b>, <b><tt>1</tt></b> ve <b><tt>6</tt></b> ayrılmış seviyelerdir. <b><tt>0</tt></b> sistemi durdurmak için, <b><tt>6</tt></b> tekrar başlatmak için ve <b><tt>1</tt></b> ise tek kullanıcılı kipe döndürmek için kullanılır. <b><tt>S</tt></b> seviyesi doğrudan kullanıcı ile alakalı değildir, daha çok çalışma seviyesi <b><tt>1</tt></b>’e girerken çalıştırılan betikleri ifade eder. Bu konuda daha fazla bilgi için <tt><a href="../../man/man8/man8-shutdown.html"><b>shutdown(8)</b></a></tt> ve <tt><a href="../../man/man5/man5-inittab.html"><b>inittab(5)</b></a></tt>'a bakınız.
+    </div><div class="para">
+7-9 arası çalışma seviyeleri de geçerlidir ama bu seviyeler hakkında
+belgelendirme yapılmamıştır. Çünkü “geleneksel” Unix türevleri bu seviyeleri kullanmazlar. Sırf merakınız gidermek için belirteyim ki <b><tt>S</tt></b> ve <b><tt>s</tt></b> aynıdır ve aynı çalışma seviyesini belirtirler.
+    </div></dd><dt class="head3">SİSTEM AÇILIŞI</dt><dd><div class="para">
+Çekirdek açılış töreninin son halkası olarak <b><tt>init</tt></b> çalıştırıldığı zaman, içinde öntanımlı çalışma seviyesi girdisi olup olmadığını kontrol etmek için <b><tt>/etc/inittab</tt></b> dosyasına bakılır (bakınız <tt><a href="../../man/man5/man5-inittab.html"><b>inittab(5)</b></a></tt>). Bu öntanımlı çalışma seviyesi, sistem açılışı sonrası düşülecek çalışma seviyesini belirtir. Bu tür bir girdi yok ise veya <b><tt>/etc/inittab</tt></b> dosyası yok ise, konsoldan bir çalışma seviyesi girilmesi gerekir.
+    </div><div class="para">
+Çalışma seviyeleri <b><tt>S</tt></b> veya <b><tt>s</tt></b>, sistemi tek kullanıcı kipe sokar ve <b><tt>/etc/initab</tt></b> dosyasına ihtiyaç duymazlar. Tek kullanıcılı kipte, <b><tt>/dev/console</tt></b> üzerinde bir root kullanıcı kabuğu açılır.
+    </div><div class="para">
+Tek kullanıcılı kipine girilince, <b><tt>init</tt></b> konsolun <tt><b>ioctl(2)</b></tt> durumunu <b><tt>/etc/ioctl.save</tt></b> dosyasında okur. Şayet bu dosya yok ise, <b><tt>init</tt></b> hattı <b><tt>9600 baud</tt></b> ve <b><tt>CLOCAL</tt></b> ile ilklendirir. <b><tt>init</tt></b> tek kullanıcılı kipi terk ederken konsolun <b><tt>ioctl</tt></b> ayarlarını bu dosyaya kaydeder. Böylece tekrar tek kullanıcılı kipe geçildiği zaman bu ayarları kullanabilir.
+    </div><div class="para">
+Çok kullanıcılı kipe ilk sefer girişte, kullanıcılar bağlanmadan önce dosya sisteminin bağlanmasını sağlayabilmek için <b><tt>boot</tt></b> ve <b><tt>bootwait</tt></b> girdileri <b><tt>init</tt></b> tarafından çalıştırılır. Daha sonra çalışma seviyesi ile eşleşen bütün girdiler çalıştırılır.
+    </div><div class="para">
+Yeni bir süreç başlatılırken, <b><tt>init</tt></b> ilk olarak <tt>/etc/initscript</tt> dosyasının var olup olmadığını kontrol eder. Şayet var ise, bu dosyada bulunan betikler süreci başlatmak için kullanılır.
+    </div><div class="para">
+Bir alt süreç her sonlandığında, bunun sebebi <b><tt>init</tt></b> tarafından <b><tt>/var/run/utmp</tt></b> ve <b><tt>/var/log/wtmp</tt></b> içine yazılır (bu dosyaların mevcut olup olmadığı önce kontrol edilir).
+    </div></dd><dt class="head3">ÇALIŞMA SEVİYELERİNİN DEĞİŞTİRİLMESİ</dt><dd><div class="para">
+Belirtilen bütün süreçler çalıştırıldıktan sonra <b><tt>init</tt></b>; kendi oluşturduğu bir sürecin sonlandırılmasını, bir enerji kesme sinyalinin veya <b><tt>telinit</tt></b> tarafından gönderilen bir çalışma seviyesi değiştirme sinyalinin gelmesini bekler. Bu üç durumdan biri gerçekleşirse, <b><tt>/etc/inittab</tt></b> dosyasını tekrar kontrol eder. Bu dosyaya yeni girdiler eklenmiş olabilir. Bununla birlikte, <b><tt>init</tt></b> bunlardan birinin gerçekleşmesini bekler. Durumlara anında tepki verebilmek için, <b><tt>telinit</tt></b>'in <b><tt>Q</tt></b> veya <b><tt>q</tt></b> komutu ile <b><tt>init</tt></b>’in <b><tt>/etc/inittab</tt></b> dosyasını tekrar kontrol etmesi sağlanabilir.
+
+Şayet <b><tt>init</tt></b> tek kullanıcılı kipte değilse ve bir enerji kesme sinyali alırsa (<tt>SIGPWR</tt>), gidip <b><tt>/etc/powerstatus</tt></b> dosyasını okur. Daha sonra bu dosyanın içeriğine bağlı olarak şu komutlardan birini uygular:
+    </div><dl><dt><span class="glossterm"><b><tt>F</tt></b><tt>(AIL)</tt></span></dt><dd class="halfpara"><div class="para">Enerji KGK tarafından sağlanıyordur ve bir süre sonra enerji kesilecektir. <b><tt>powerwait</tt></b> ve <b><tt>powerfail</tt></b> girdileri çalıştırılır.
+        </div></dd><dt><span class="glossterm"><b><tt>O</tt></b><tt>(K)</tt></span></dt><dd class="halfpara"><div class="para">Enerji tekrar gelmiştir. <b><tt>powerokwait</tt></b> girdisi çalıştırılır.
+        </div></dd><dt><span class="glossterm"><b><tt>L</tt></b><tt>(OW)</tt></span></dt><dd class="halfpara"><div class="para">KGK'nın akülerindeki enerji azalmaktadır ve enerji kesilecektir. <b><tt>Powerfailnow</tt></b> girdisi çalıştırılır.
+        </div></dd></dl><div class="para">
+Şayet <tt>/etc/powerstatus</tt> yok ise veya <b><tt>F</tt></b>, <b><tt>O</tt></b> veya <b><tt>L</tt></b> harflerinden farklı bir
+şey ihtiva ediyorsa, <b><tt>init</tt></b>, <b><tt>F</tt></b> harfini okuduğunu kabul eder ve ona göre davranır.
+      </div><div class="para">
+<b><tt>SIGPWR</tt></b> ve <b><tt>/etc/powerstatus</tt></b> kullanımı tavsiye edilmez. <b><tt>init</tt></b> ile etkileşimli kipe geçmek isteyen birisinin <b><tt>/dev/initctl</tt></b>’yi kullanması daha uygun olur. Bu konuda daha ayrıntılı bilgi için <b><tt>sysvinit</tt></b> paketinin kaynak kodundaki belgelere bakınız.
+
+Çalışma seviyesi değiştirme isteği <b><tt>init</tt></b>’e iletilince; <b><tt>init</tt></b> yeni seviyede tanımlanmamış olan bütün süreçlere <b><tt>SIGTERM</tt></b> sinyali gönderir. Daha sonra bu süreçleri sonlandırmadan önce 5 saniye bekler. 5 saniye sonra <b><tt>SIGKILL</tt></b> sinyali gönderir. NOT: <b><tt>init</tt></b> bütün süreçlerin ve onların alt süreçlerinin aynı süreç grubu içinde kaldığını varsayar. Şayet herhangi bir süreç, süreç grubunu üyeliğini değiştirmiş ise, o süreç bu sonlandırma sinyalini almaz. Bu tür süreçlerin ayrıca sonlandırılması gerekir.
+    </div></dd><dt class="head3">TELINIT</dt><dd><div class="para">
+<b><tt>/sbin/telinit, /sbin/init</tt></b>’e bir bağdır. Tek karakterlik argümanlar ve sinyalleri kabul eder. Aşağıdaki argümanlar <b><tt>telinit</tt></b>’e talimat olarak verilebilir:
+    </div><dl><dt><span class="glossterm">
+        <b><tt>0,1,2,3,4,5</tt></b> veya <b><tt>6</tt></b>
+      </span></dt><dd class="halfpara"><div class="para"><b><tt>init</tt></b>'in, belirtilen çalışma seviyesine geçmesi istenir.
+        </div></dd><dt><span class="glossterm">
+        <b><tt>a,b</tt></b> veya <b><tt>c</tt></b>
+      </span></dt><dd class="halfpara"><div class="para"><b><tt>init</tt></b>'in, sadece <b><tt>a,b</tt></b> veya <b><tt>c</tt></b> çalışma seviyesi için verilmiş olan <b><tt>/etc/inittab</tt></b> dosyası girdilerini çalıştırması istenir.
+        </div></dd><dt><span class="glossterm">
+        <b><tt>Q</tt></b> veya <b><tt>q</tt></b>
+      </span></dt><dd class="halfpara"><div class="para"><b><tt>init</tt></b>'in, <b><tt>/etc/inittab</tt></b> dosyasını tekrar kontrol etmesi istenir.
+        </div></dd><dt><span class="glossterm">
+        <b><tt>S</tt></b> veya <b><tt>s</tt></b>
+      </span></dt><dd class="halfpara"><div class="para"><b><tt>init</tt></b>'in tek kullanıcılı kipe geçmesi istenir.
+        </div></dd><dt><span class="glossterm">
+        <b><tt>U</tt></b> veya <b><tt>u</tt></b>
+      </span></dt><dd class="halfpara"><div class="para"><b><tt>init</tt></b>'in, durumunu koruyarak, kendini tekrar başlatması istenir. <b><tt>/etc/inittab</tt></b> dosyası tekrar okunmaz. Çalışma seviyeleri <b><tt>Ss12345</tt></b>’den birisi olmalıdır. Aksi taktirde istek sessizce yok sayılır. Herhangi bir hata dönmez.
+        </div></dd></dl>
+    <div class="para">
+Ayrıca <b><tt>telinit</tt></b>, <b><tt>init</tt></b>’e <tt>SIGTERM</tt> ve <tt>SIGKILL</tt> sinyalleri arasında ne kadar beklemesi gerektiğini de söyleyebilir. Öntanımlı değer 5 saniyedir fakat
+<b><tt>–t</tt></b> seçeneği kullanılarak bu değer değiştirilebilir.
+
+<b><tt>telinit</tt></b>, sadece uygun yetkiye sahip kullanıcılar tarafından kullanılabilir.
+
+<b><tt>init</tt></b> çalıştırılabiliri,  kendinin <b><tt>init</tt></b> mi yoksa <b><tt>telinit</tt></b> mi olduğunu anlamak için süreç numarasını kontrol eder, gerçek <b><tt>init</tt></b>’in süreç numarası daima <b><tt>1</tt></b>’dir. Buradan, <b><tt>telinit</tt></b> kullanmak yerine, <b><tt>init</tt></b>’in kısa yol olarak kullanılabileceği de ortaya çıkar.
+    </div></dd><dt class="head3">ORTAM DEĞİŞKENLERİ</dt><dd><div class="para">
+<b><tt>init</tt></b>, çalıştırdığı alt süreçler için aşağıdaki ortam değişkenlerini ayarlar:
+    </div><dl><dt><span class="glossterm">
+      <b><tt>PATH</tt></b></span></dt><dd class="halfpara"><div class="para">
+<tt>/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin</tt>
+      </div></dd><dt><span class="glossterm">
+        <b><tt>INIT_VERSION</tt></b></span></dt><dd class="halfpara"><div class="para">
+<b><tt>init</tt></b> sürüm numarası. Bir betiğin doğrudan <b><tt>init</tt></b> tarafından çalıştırıp çalıştırmadığını anlamak açısından faydalıdır.
+        </div></dd><dt><span class="glossterm">
+        <b><tt>RUNLEVEL</tt></b></span></dt><dd class="halfpara"><div class="para">
+Geçerli sistem çalışma seviyesi.
+        </div></dd><dt><span class="glossterm">
+        <b><tt>PREVLEVEL</tt></b></span></dt><dd class="halfpara"><div class="para">
+Bir önceki sistem çalışma seviyesi. Çalışma seviyesinin değiştirilmesi durumunda, öncekini tespit etme açısından faydalıdır.
+        </div></dd><dt><span class="glossterm">
+        <b><tt>CONSOLE</tt></b></span></dt><dd class="halfpara"><div class="para">
+Sistem konsolu. Gerçekte çekirdekten miras alınır. Şayet bu seçenek ayarlanmaz ise, <b><tt>init</tt></b> tarafından öntanımlı olarak <b><tt>/dev/console</tt></b> kullanılır.
+        </div></dd></dl></dd><dt class="head3">AÇILIŞ SEÇENEKLERİ</dt><dd><div class="para">
+Açılış esnasında <b><tt>init</tt></b>'e seçenekler girilebilir (LILO içinden). <b><tt>init</tt></b> şu seçenekleri kabul eder:
+    </div><dl><dt><span class="glossterm">
+        <b><tt>-s, S, single</tt></b>
+      </span></dt><dd class="halfpara"><div class="para">Tek kullanıcı kipinde açılış. Bu kipte <tt>/etc/inittab</tt> dosyası incelenir ve açılış <tt>rc</tt> betikleri, tek kullanıcılı kip kabuğu başlatılmadan önce çalıştırılır.
+        </div></dd><dt><span class="glossterm">
+        <b><tt>1-5</tt></b>
+      </span></dt><dd class="halfpara"><div class="para">Açılış sonrası girilecek çalışma seviyesini belirtir.
+        </div></dd><dt><span class="glossterm">
+        <b><tt>-b, emergency</tt></b>
+      </span></dt><dd class="halfpara"><div class="para">Herhangi bir açılış betiğini çalıştırmadan doğrudan tek kullanıcılı kip kabuğuna düşer.
+        </div></dd><dt><span class="glossterm">
+        <b><tt>-a, auto</tt></b>
+      </span></dt><dd class="halfpara"><div class="para">Çekirdek, kullanıcının müdahalesine gerek kalmadan öntanımlı komut satırı ile yüklenmişse, LILO önyükleyicisi komut satırına "auto" sözcüğünü ekler. Şayet bu bulunursa, <b><tt>init</tt></b> <tt>AUTOBOOT</tt> ortam değişkenine "yes" değerini atar. Bunu bir güvenlik ölçüsü olarak kullanamayacağınızı unutmayın, çünkü kullanıcı komut satırını kendi de tanımlayabilir.
+        </div></dd><dt><span class="glossterm">
+        <b><tt>-z </tt></b><i><tt>xxx</tt></i>
+      </span></dt><dd class="halfpara"><div class="para"><b><tt>-z</tt></b>’ye verilen argüman yok sayılır. Bu seçeneği komut satırını biraz daha genişletmek için kullanabilirsiniz, böylece yığıt içinde daha fazla yer kaplaması sağlanmış olur. <b><tt>init</tt></b> komut satırını büyük bir ustalıkla yönetir, böylece <tt><b>ps(1)</b></tt> geçerli çalışma seviyesini gösterebilir.
+        </div></dd></dl></dd><dt class="head3">ARAYÜZ</dt><dd><div class="para">
+<b><tt>init</tt></b> iletiler için; <tt>/dev</tt> içindeki <tt>/dev/initctl</tt> fifosunu dinler. Arayüz tam olarak bitmemiş ve belgeleme işlemleri de bitirilmemiştir. İlgilenenler <tt>/src</tt> dizinindeki <b><tt>init</tt></b> kaynak kodlarının tar arşivindeki <tt>initreq.h</tt> dosyasına bakabilirler.
+    </div></dd><dt class="head3">SİNYALLER</dt><dd><div class="para"><b><tt>init</tt></b> çeşitli sinyallere tepki verir:
+    </div><dl><dt><span class="glossterm">
+        <b><tt>SIGHUP</tt></b>
+      </span></dt><dd class="halfpara"><div class="para"><b><tt>init</tt></b> <tt>/etc/initrunlvl</tt> ve <tt>/var/log/initrunlvl</tt> dosyalarını arar. Şayet bu dosyalardan birisi var ise ve bir ASCII çalışma seviyesi içeriyorsa, <b><tt>init</tt></b>  bu çalışma seviyesine geçer. Bu sadece geçmişe uyum için konulmuştur. Normal durumlarda (dosyanın olmadığı durumlarda) <b><tt>init</tt></b>, <b><tt>telinit</tt></b>’in <b><tt>-q</tt></b> seçeneği ile çalıştırıldığını kabul eder ve buna göre davranır.
+        </div></dd><dt><span class="glossterm">
+        <b><tt>SIGUSR1</tt></b>
+      </span></dt><dd class="halfpara"><div class="para">Bu sinyali alınca, <b><tt>init</tt></b> kendi denetim fifosu olan <b><tt>/dev/initctl</tt></b>'u kapatır ve tekrar açar. <tt>/dev</tt> dizinin tekrar bağlandığı zamanlarda, açılış betikleri için oldukça faydalıdır.
+        </div></dd><dt><span class="glossterm">
+        <b><tt>SIGINT</tt></b>
+      </span></dt><dd class="halfpara"><div class="para">CTRL-ALT-DEL üçlemesine basıldığı durumlarda, çekirdek <b><tt>init</tt></b>'e bu sinyali gönderir. O da <b><tt>ctrlaltdel</tt></b> eylemini etkinleştirir.
+        </div></dd><dt><span class="glossterm">
+        <b><tt>SIGWINCH</tt></b>
+      </span></dt><dd class="halfpara"><div class="para"><tt>KeyboardSignal</tt> tuşuna basıldığı durumlarda, çekirdek <b><tt>init</tt></b>'e bu sinyali gönderir. O da <b><tt>kbrequest</tt></b> eylemini etkinleştirir.
+        </div></dd></dl></dd><dt class="head3">UYUM</dt><dd><div class="para">
+<b><tt>init</tt></b>, System V init ile uyumludur. <tt>/etc/init.d</tt> ve <tt>/etc/rc{çalışmaseviyesi}.d</tt> dizinleri içindeki betikler ile birlikte uyum içinde çalışır. Eğer sisteminiz geleneksel yapıya uyuyorsa, <tt>/etc/init.d</tt> içinde bu betiklerin nasıl çalıştığını açıklayan bir README dosyası bulacaksınız.
+    </div></dd><dt class="head3">İLGİLİ DOSYALAR</dt><dd>
+<div class="para"><pre class="literallayout">
+/etc/inittab
+/etc/initscript
+/dev/console
+/etc/ioctl.save
+/var/run/utmp
+/var/log/wtmp
+/dev/initctl</pre></div></dd><dt class="head3">UYARILAR</dt><dd><div class="para">
+<b><tt>init</tt></b>, süreçlerin ve bu süreçlerin soyundan gelen diğer süreçlerin orijinal süreç grupları içinde kaldıklarını varsayar.  Şayet bir süreç, süreç grubunu değiştirirse, <b><tt>init</tt></b> bu süreci öldüremez ve aynı uçbirim hattında iki süreç ile karşılaşabilirsiniz.
+    </div></dd><dt class="head3">TANI KOYMA</dt><dd><div class="para">
+Şayet bir girdi 2 dakika içinde 10 kereden fazla çoğaltılıyorsa, <b><tt>init</tt></b>, bu girdi satırında bir hata olduğunu düşünecek, sistem konsolundan bir hata iletisi verecek ve 5 dakika geçmeden veya bir sinyal almadan bu girdinin tekrar çoğalmasına izin vermeyecektir. Buradaki amaç, <b><tt>/etc/inittab</tt></b> içinde hatalı bir girdinin sistem kaynaklarını yok etmesini önlemektir.
+    </div></dd><dt class="head3">YAZAN</dt><dd><div class="para">
+Miquel  van  Smoorenburg  <span class="email">&lt;miquels (at) cistron.nl&gt;</span> tarafından yazılmıştır, ilk kılavuz sayfası Michael Haardt <span class="email">&lt;u31b3hs (at) pool.informatik.rwthaachen.de&gt;</span> tarafından yazılmıştır.
+    </div></dd><dt class="head3">İLGİLİ BELGELER</dt><dd><div class="para">
+<tt><b>bash(1)</b></tt>, <tt><a href="../../man/man1/man1-getty.html"><b>getty(1)</b></a></tt>, <tt><a href="../../man/man1/man1-kill.html"><b>kill(1)</b></a></tt>, <tt><a href="../../man/man1/man1-login.html"><b>login(1)</b></a></tt>, <tt><a href="../../man/man5/man5-initscript.html"><b>initscript(5)</b></a></tt>, <tt><a href="../../man/man5/man5-inittab.html"><b>inittab(5)</b></a></tt>, <tt><b>utmp(5)</b></tt>, <tt><a href="../../man/man8/man8-runlevel.html"><b>runlevel(8)</b></a></tt>, <tt><a href="../../man/man8/man8-shutdown.html"><b>shutdown(8)</b></a></tt>.
+    </div></dd><dt class="head3">ÇEVİREN</dt><dd><div class="para">Yalçın Kolukısa <span class="email">&lt;yalcink01 (at) yahoo.com&gt;</span>, Şubat 2004</div></dd></dl><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="30%"></td><td class="mheadfoot" align="center" width="40%"><b>23 Ağustos 2001</b></td><td class="mheadfoot" align="right" width="30%"><b>init(8)</b></td></tr></table></div></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../../man/man8/man8-ifconfig.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../../man/man8/man8.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../../man/man8/man8-ipcs.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">ifconfig </td><td width="20%" align="center"><a accesskey="h" href="../../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> ipcs</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

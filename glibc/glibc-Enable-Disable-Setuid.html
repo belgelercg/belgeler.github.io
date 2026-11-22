@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:51+03:00" /><title>Setuid Erişiminin Etkinleştirilmesi ve İptali</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Users-and-Groups.html" title="XXIX. Oylum - Kullanıcılar ve Gruplar" /><link rel="previous" href="../glibc/glibc-Setting-Groups.html" title="Grup Kimliğinin Belirtilmesi" /><link rel="next" href="../glibc/glibc-Setuid-Program-Example.html" title="Setuid Yazılım Örneği" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Setuid Erişiminin Etkinleştirilmesi ve İptali</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Setting-Groups.html">Önceki</a> </td><th width="60%" align="center">XXIX. Oylum - Kullanıcılar ve Gruplar</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Setuid-Program-Example.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="glibc-Enable-Disable-Setuid" id="glibc-Enable-Disable-Setuid"></a>Setuid Erişiminin Etkinleştirilmesi ve İptali</div></div></div><dl><dd><div class="para">
+Genellikle setuid yazılımlarda bu özel erişime her zaman gerek duyulmaz. Gerekmedikçe bu erişimin kapalı tutulması daha iyidir, böylece tasarlanmamış bir erişime imkan verilmemiş olur.
+   </div><div class="para">
+Sistem <b><tt>_POSIX_SAVED_IDS</tt></b> özelliğini destekliyorsa, bunu <b><tt>seteuid</tt></b> ile yapabilirsiniz. Bir oyunun başlatıldığındaki gerçek kullanıcı kimliği <b><tt>jdoe</tt></b>, etkin kullanıcı kimliği <b><tt>games</tt></b> ise kayıtlı kullanıcı kimliği de <b><tt>games</tt></b> olur.  Bu yazılımın her iki kullanıcı kimliğinin çalıştırıldığında kaydedilmesi şöyle yapılır:
+   </div>
+<div class="para"><div align="right"><pre class="screen">user_user_id = getuid ();game_user_id = geteuid ();
+</pre></div></div><div class="para">
+Bunun ardından oyun dosyasını erişime şöyle kapatabilirsiniz:
+   </div>
+<div class="para"><div align="right"><pre class="screen">seteuid (user_user_id);</pre></div></div><div class="para">
+Oyun dosyasını tekrar erişime açmak isterseniz:
+   </div>
+<div class="para"><div align="right"><pre class="screen">seteuid (game_user_id);</pre></div></div>
+   <div class="para">
+Bu işlemler sırasında sürecin gerçek kullanıcı kimliği <b><tt>jdoe</tt></b> ve dosya kullanıcı kimliği <b><tt>games</tt></b> olarak kalır, böylece yazılım etkin kullanıcı kimliğini bunlardan biri yapabilir.
+   </div><div class="para">
+Dosya kullanıcı kimliklerini desteklemeyen sistemlerde, setuid erişimini <b><tt>setreuid</tt></b> kullanarak etkin ve gerçek kullanıcı kimlikler arasında takas edebilirsiniz:
+   </div>
+<div class="para"><div align="right"><pre class="screen">setreuid (geteuid (), getuid ());</pre></div></div>
+   <div class="para">
+Bu daima geçerli bir özel durumdur--hiç başarısız olmaz.
+   </div><div class="para">
+Setuid erişim, gerçek ve etkin kimliklerin takaslanmasından neden etkilenir? Bir oyunun başlatıldığını ve onun gerçek kullanıcı kimliğinin <b><tt>jdoe</tt></b> iken etkin kullanıcı kimliğinin <b><tt>games</tt></b> olduğunu varsayalım. Bu durumda sürecin puanların tutulduğu dosyaya yazabildiğini varsayalım. Eğer bu iki kullanıcı kimlik aralarında yer değiştirirse gerçek kullanıcı kimlik <b><tt>games</tt></b>, etkin kullanıcı kimlik <b><tt>jdoe</tt></b> olur ve süreç artık sadece <b><tt>jdoe</tt></b> erişimine sahip olur ve puanların tutulduğu dosyaya yazamaz. Tekrar yapılan bir takasla puanların tutulduğu dosyaya tekrar erişim sağlanır.
+   </div><div class="para">
+Kayıtlı kullanıcı kimlik özelliğinin desteklendiği ve desteklenmediği her iki sistemde de bu özelliği kullanabilmek için önişlemci yordamlarını kullanabilirsiniz:
+   </div>
+<div class="para"><div align="right"><pre class="screen">#ifdef _POSIX_SAVED_IDS
+  seteuid (user_user_id);
+#else
+  setreuid (geteuid (), getuid ());
+#endif
+</pre></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Setting-Groups.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Users-and-Groups.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Setuid-Program-Example.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Grup Kimliğinin Belirtilmesi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Setuid Yazılım Örneği</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

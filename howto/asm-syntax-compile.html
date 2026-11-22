@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:01+03:00" /><title>Derleme</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/asm-syntax.html" title="Linux ile Sembolik Makina Dili Kullanımı" /><link rel="previous" href="../howto/asm-syntax-inline-asm.html" title="GCC Satıriçi Sembolik Makina Dili" /><link rel="next" href="../howto/asm-syntax-links.html" title="Bağlantılar" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Derleme</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/asm-syntax-inline-asm.html">Önceki</a> </td><th width="60%" align="center">Linux ile Sembolik Makina Dili Kullanımı</th><td width="20%" align="right"> <a accesskey="n" href="../howto/asm-syntax-links.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="asm-syntax-compile" id="asm-syntax-compile"></a>Derleme</div><dl><dd><div class="para">
+Sembolik Makina Dili yazılımlarını derlemek normal C programlarını derlemeye çok benzer. Eğer yazılımınız "Liste 1"deki gibi ise normal bir C programı gibi derleyebilirsiniz. Eğer <tt>main</tt> yerine <tt>_start</tt> kullanmışsanız, "Liste 2"deki gibi, derleme işlemi birazcık değişecektir:
+    </div><div class="table"><div class="formaltitle"><b>Tablo 9.2. </b></div><table cellpadding="3" cellspacing="0" style=";background:#999999;" border="1"><colgroup><col /><col /></colgroup><thead><tr style="background:#eeeedd;"><th align="center">Liste 1</th><th align="center">Liste 2</th></tr></thead><tbody><tr style="background:#ffffee;"><td width="*"><div class="para"><div align="right"><pre class="screen">
+<tt>$</tt> <b><tt>cat write.s</tt></b>
+.data
+hw:
+  .string "hello world\n"
+.text
+.globl main
+main:
+  movl $SYS_write,%eax
+  movl $1,%ebx
+  movl $hw,%ecx
+  movl $12,%edx
+  int  $0x80
+  movl $SYS_exit,%eax
+  xorl %ebx,%ebx
+  int  $0x80
+  ret
+<tt>$</tt> <b><tt>gcc -o write write.s</tt></b>
+<tt>$</tt> <b><tt>wc -c ./write</tt></b>
+  4790 ./write
+<tt>$</tt> <b><tt>strip ./write</tt></b>
+<tt>$</tt> <b><tt>wc -c ./write</tt></b>
+  2556 ./write
+</pre></div></div></td><td width="*"><div class="para"><div align="right"><pre class="screen">
+<tt>$</tt> <b><tt>cat write.s</tt></b>
+.data
+hw:
+  .string "hello world\n"
+.text
+.globl _start
+_start:
+  movl $SYS_write,%eax
+  movl $1,%ebx
+  movl $hw,%ecx
+  movl $12,%edx
+  int  $0x80
+  movl $SYS_exit,%eax
+  xorl %ebx,%ebx
+  int $0x80
+
+<tt>$</tt> <b><tt>gcc -c write.s</tt></b>
+<tt>$</tt> <b><tt>ld -s -o write write.o</tt></b>
+<tt>$</tt> <b><tt>wc -c ./write</tt></b>
+  408./write
+</pre></div></div></td></tr></tbody></table></div><div class="para">
+<tt>-s</tt> parametresi isteğe bağlıdır ve sadece boyutu kısaltılmış çalışabilir bir ELF dosyası yaratır. Ayrıca bu yöntem (Liste 2'deki),derleyicinin, normalde olduğu gibi, fazladan giriş ve çıkış deyimleri eklemediği için, daha küçük çalışabilir dosyalar üretir.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/asm-syntax-inline-asm.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/asm-syntax.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/asm-syntax-links.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">GCC Satıriçi Sembolik Makina Dili </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Bağlantılar</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

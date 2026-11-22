@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:37+03:00" /><title>getopt_long ile Uzun Seçeneklerin Çözümlenmesi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Getopt.html" title="getopt" /><link rel="previous" href="../glibc/glibc-Example-of-Getopt.html" title="getopt Örneği" /><link rel="next" href="../glibc/glibc-Getopt-Long-Option-Example.html" title="getopt_long Kullanım Örneği." /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">getopt_long ile Uzun Seçeneklerin Çözümlenmesi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Example-of-Getopt.html">Önceki</a> </td><th width="60%" align="center">getopt</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Getopt-Long-Option-Example.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="glibc-Getopt-Long-Options" id="glibc-Getopt-Long-Options"></a><tt>getopt_long</tt> ile Uzun Seçeneklerin Çözümlenmesi</div><dl><dd><div class="para">
+Tek karakterlik seçeneklerin yanında GNU tarzı uzun seçeneklerinde kabul edilmesi için <b><tt>getopt</tt></b> yerine <b><tt>getopt_long</tt></b> işlevini kullanabilirsiniz. Bu işlev <tt>unistd.h</tt> değil, <tt>getopt.h</tt> başlık dosyasında bildirilmiştir. Her ne kadar ek bir çalışma gerektirse de yazılımı kullanan acemilerin yazılım kullanımını hatırlamalarına yardımcı olacağından<sup>[<a name="id102" href="#ftn.id102" id="id102">102</a>]</sup> yazılımınız her tek karakterlik seçenek için bir uzun seçenek kabul etmelidir.
+    </div>
+<a class="indexterm" name="idx2761" id="idx2761"></a>
+<a name="glibc-struct-option" id="glibc-struct-option"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct <b><tt>option</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+Bu yapı <b><tt>getopt_long</tt></b> işlevinin hatırı için tek bir uzun seçenek ismini açıklar. İşlevin <i><tt>uzun-seçenekler</tt></i> argümanı her elemanı bir uzun seçenek içeren bu yapıların bir dizisi olmalıdır. Dizi tamamı sıfır içeren bir elemanla sonlandırılır.
+    </div><div class="para">
+<tt>struct </tt><b><tt>option</tt></b> yapısı şu alanlara sahiptir:
+    </div><dl><dt><span class="glossterm">
+    <tt>const char *<b><tt>name</tt></b></tt>
+    </span></dt><dd class="halfpara"><div class="para">
+Seçeneğin isimini içerir. Bir dizgedir.
+    </div></dd><dt><span class="glossterm">
+    <tt>int <b><tt>has_arg</tt></b></tt>
+    </span></dt><dd class="halfpara"><div class="para">
+Seçeneğin bir argüman alıp almadığı belirtilir. Bir tamsayıdır ve üç meşru değerden birini içerir: <b><tt>no_argument</tt></b> (argümansız), <b><tt>required_argument</tt></b> (argüman gerekli) ve <b><tt>optional_argument</tt></b> (argüman isteğe bağlı).
+    </div></dd><dt><span class="glossterm">
+    <tt>int *<b><tt>flag</tt></b></tt>
+    </span></dt><dt><span class="glossterm">
+    <tt>int <b><tt>val</tt></b></tt>
+    </span></dt><dd class="halfpara"><div class="para">
+Bu alanlar bu seçeneğe rastlandığında nasıl raporlanacağı ve rölünü denetler.
+       </div><div class="para">
+<b><tt>flag</tt></b> bir boş gösterici ise, <b><tt>val</tt></b> bu seçeneği kimliklendiren bir değerdir. Bu değerler çoğunlukla, belli bir uzun seçeneği eşsiz olarak kimliklendirecek şekilde seçilirler.
+       </div><div class="para">
+<b><tt>flag</tt></b> bir boş gösterici değilse, bu seçenek için bir bayrak olan <b><tt>int</tt></b> türünde bir değişkenin adresi olmalıdır. <b><tt>val</tt></b> içindeki değer de, seçeneğe rastlandığını belirten bayrakta saklanacak değerdir.
+    </div></dd></dl>
+</dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2762" id="idx2762"></a>
+<a name="glibc-getopt_long" id="glibc-getopt_long"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>getopt_long</tt></b></tt></td><td valign="top"><pre class="paramdef">(int                  <i><tt>argc</tt></i>,
+ char *const         *<i><tt>argv</tt></i>,
+ const char          *<i><tt>kısa-seçenekler</tt></i>,
+ const struct option *<i><tt>uzun-seçenekler</tt></i>,
+ int                 *<i><tt>indis-göstr</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<i><tt>argv</tt></i> vektöründen seçenekleri ayıklar. <i><tt>kısa-seçenekler</tt></i> argümanı <b><tt>getopt</tt></b> işlevindeki gibi kabul edilecek kısa seçenekleri açıklar. <i><tt>uzun-seçenekler</tt></i> argümanı ise yukarıda bahsedildiği gibi kabul edilen uzun seçenekleri açıklar.
+    </div><div class="para">
+<b><tt>getopt_long</tt></b> bir kısa seçeneğe rastlarsa <b><tt>getopt</tt></b> işlevinin yaptığını yapar: seçeneğin karakter kodu ile döner ve seçenek argümanını (eğer varsa) <b><tt>optarg</tt></b> içinde saklar.
+    </div><div class="para">
+<b><tt>getopt_long</tt></b> bir uzun seçeneğe rastlarsa, bu seçeneği tanımlayan <b><tt>flag</tt></b> ve <b><tt>val</tt></b> üzerine tabanlanmış eylemleri ele alır.
+    </div><div class="para">
+Eğer <b><tt>flag</tt></b> bir boş gösterici ise,  <b><tt>getopt_long</tt></b> işlevi hangi seçeneğin bulunduğunu belirtmek için <b><tt>val</tt></b> içeriği ile döner. <b><tt>val</tt></b> alanındaki değerleri, farklı anlamlara gelen seçenekleri ayıklamak üzere düzenlemelisiniz, böylece işlev döndükten sonra bu değerleri çözümleyebilirsiniz. Uzun seçenek bir kısa seçeneğin eşdeğeri ise, <b><tt>val</tt></b> içinde kısa seçeneğin karakter kodunu kullanabilirsiniz.
+    </div><div class="para">
+Eğer <b><tt>flag</tt></b> bir boş gösterici değilse, bu, seçeneğin yazılımda bir bayrağı etkinleştirdiği anlamına gelir. Bayrak sizin tanımlayacağınız <b><tt>int</tt></b> türünde bir değişkendir. Bayrağın adresini <b><tt>flag</tt></b> alanına ve saklamasını istediğiniz değeri <b><tt>val</tt></b> alanına koyun. Bu durumda, <b><tt>getopt_long</tt></b> işlevi <b><tt>0</tt></b> ile döner.
+    </div><div class="para">
+Herhangi bir uzun seçenek için, <b><tt>getopt_long</tt></b> işlevi seçenek tanımlarını içeren <i><tt>uzun-seçenekler</tt></i> dizisinin seçeneği içeren elemanının indisini <i><tt>*indis-göstr</tt></i> içinde saklayarak döndürür. Seçeneğin ismini <i><tt>uzun-seçenekler</tt></i><tt>[*<i>indis-göstr</i>].name</tt> ile alabilirsiniz. Uzun seçenekleri, <b><tt>val</tt></b> alanlarındaki değerlerine göre ya da indislerine göre ayrımsayabilirsiniz. Ayrıca bir bayrak tanımlayan uzun seçenekleri bu yolla da ayrımsayabilirsiniz.
+    </div><div class="para">
+Bir uzun seçenek bir argümana sahipse, <b><tt>getopt_long</tt></b> işlevi dönmeden önce argüman değerini <b><tt>optarg</tt></b> değişkenine atar. Seçenek argümana sahip değilse, <b><tt>optarg</tt></b> değişkenindeki değer bir boş gösterici olacaktır. Bu durum bir isteğe bağlı argüman olup olmadığını size söyleyebilir.
+    </div><div class="para">
+<b><tt>getopt_long</tt></b> artık seçenek bulamazsa, <b><tt>-1</tt></b> değeri ile döner ve <i><tt>argv</tt></i> dizisindeki sonraki argümanın indisini <b><tt>optind</tt></b> değişkenine atar.
+</div></dd></dl><div style="padding:5px"></div><div class="para">
+<b><tt>getopt_long</tt></b> işlevinin devreye girmesinden önce <b><tt>--option value</tt></b> gibi seçenekler yerine <b><tt>-option value</tt></b> gibi uzun seçenekleri tanıyan yazılım arayüzleri sayesinde uzun seçenek isimleri daha önce de kullanılmaktaydı. Bu yazılımların GNU'nun getopt işlevselliğini kullanabilmelerini sağlamak için bir işlev daha vardır.
+    </div>
+<a class="indexterm" name="idx2763" id="idx2763"></a>
+<a name="glibc-getopt_long_only" id="glibc-getopt_long_only"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>getopt_long_only</tt></b></tt></td><td valign="top"><pre class="paramdef">(int                  <i><tt>argc</tt></i>,
+ char *const         *<i><tt>argv</tt></i>,
+ const char          *<i><tt>kısa-seçenekler</tt></i>,
+ const struct option *<i><tt>uzun-seçenekler</tt></i>,
+ int                 *<i><tt>indis-göstr</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>getopt_long_only</tt></b> işlevi uygulamanın kullanıcısına <b><tt>--</tt></b> yerine <b><tt>-</tt></b> ile başlayan uzun seçenekler belirtme imkanı vermesi dışında <b><tt>getopt_long</tt></b> işlevine eşdeğerdir. <b><tt>--</tt></b> ile başlayan seçenekler yine tanınırken <b><tt>-</tt></b> ile başlayan seçenekler için işlev önce dizgeye karşılık bir uzun seçenek ismi var mı diye bakar, yoksa dizgenin karakterlerini kısa seçeneklerle eşlemeye çalışır.
+    </div><div class="para">
+<b><tt>getopt_long_only</tt></b> işlevinin şu komut satırıyla çalıştırılan bir yazılımın seçeneklerini çözümlemek için kullanıldığını varsayalım:
+    </div>
+<div class="para"><div align="right"><pre class="screen">  app -foo</pre></div></div>
+    <div class="para">
+<b><tt>getopt_long_only</tt></b> işlevi önce <b><tt>foo</tt></b> isimli bir uzun seçeneğin varlığına bakacaktır. Eğer bulamazsa, <b><tt>f</tt></b>, <b><tt>o</tt></b> ve <b><tt>o</tt></b> kısa seçenklerinin varlığına bakacaktır.
+    </div></dd></dl><div style="padding:5px"></div><div class="footnotes"><br /><hr width="100" align="left" /><div class="footnote"><div class="para"><sup>[<a name="ftn.id102" href="#id102" id="ftn.id102">102</a>] </sup>Ç.N.:İngilizce düşünen acemiler için evet de, anadili ingilizce olmayanlar için uzun seçeneklerin de diğer iletiler gibi yerel dile çevrilmesi sağlansa iyi olacak.</div></div></div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Example-of-Getopt.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Getopt.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Getopt-Long-Option-Example.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">getopt Örneği </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> getopt_long Kullanım Örneği.</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

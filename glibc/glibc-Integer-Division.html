@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:15+03:00" /><title>Tamsayı Bölme</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Arithmetic.html" title="XX. Oylum - Aritmetik İşlevleri" /><link rel="previous" href="../glibc/glibc-Integers.html" title="Tamsayılar" /><link rel="next" href="../glibc/glibc-Floating-Point-Numbers.html" title="Gerçek Sayılar" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Tamsayı Bölme</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Integers.html">Önceki</a> </td><th width="60%" align="center">XX. Oylum - Aritmetik İşlevleri</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Floating-Point-Numbers.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="glibc-Integer-Division" id="glibc-Integer-Division"></a>Tamsayı Bölme</div></div></div><dl><dd><div class="para">
+<a class="indexterm" name="idx2088" id="idx2088"></a>
+Bu kısımda tamsayı bölme işlemleri yapan işlevlere yer verilmiştir. Bu işlevler GNU C derleyicisi kullanıldığında gereksizdir, çünkü GNU C <b><tt>/</tt></b> işleci daima sıfıra doğru yuvarlar (pozitif değerleri alta, negatif değerleri üste). Fakat diğer C gerçeklemeleri <b><tt>/</tt></b> işleci ile yapılan işlemleri negatif argümanlar kullanıldığında farklı yönlerde yuvarlarlar. Bu durumda, yuvarlama yönü belli (daima sıfıra doğru) olan <b><tt>div</tt></b> ve <b><tt>ldiv</tt></b> işlevleri kullanışlı olur. Bölme işleminden kalan bölünen ile aynı işaretlidir.
+   </div><div class="para">
+Bu işlevler, <b><tt><i><tt>r</tt></i>.quot * <i><tt>bölen</tt></i> + <i><tt>r</tt></i>.rem</tt></b> eşittir <i><tt>bölünen</tt></i> (bölüm çarpı bölen artı kalan eşittir bölünen) şeklinde ifadesini bulan bir <i><tt>r</tt></i> değeri ile döner.
+   </div><div class="para">
+<a class="indexterm" name="idx2089" id="idx2089"></a>
+Bu oluşumları yazılımınızda kullanmak için <tt>stdlib.h</tt> başlık dosyasını yazılımınıza dahil etmelisiniz.
+   </div>
+<a class="indexterm" name="idx2090" id="idx2090"></a>
+<a name="glibc-div_t" id="glibc-div_t"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt><b><tt>div_t</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+Bu yapı <b><tt>div</tt></b> işlevinden dönen sonucu tutan veri türüdür. Şu üyelere sahiptir:
+   </div><dl><dt><span class="glossterm">
+   <tt>int <b><tt>quot</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">Bölüm.
+   </div></dd><dt><span class="glossterm">
+   <tt>int <b><tt>rem</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">Kalan.
+   </div></dd></dl>
+</dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2091" id="idx2091"></a>
+<a name="glibc-div" id="glibc-div"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>div_t <b><tt>div</tt></b></tt></td><td valign="top"><pre class="paramdef">(int <i><tt>bölünen</tt></i>,
+ int <i><tt>bölen</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>div</tt></b> işlevi <i><tt>bölünen</tt></i>'ın <i><tt>bölen</tt></i>'e bölünmesinden kalanı ve bölümü <b><tt>div_t</tt></b> türündeki yapı içinde döndürür.
+   </div><div class="para">
+Sonuç ifade edilemiyorsa (sıfırla bölme gibi) işlevin davranışı belirsizdir.
+   </div><div class="para">
+Çok kullanışlı olmasa da bir örnek:
+   </div>
+<div class="para"><div align="right"><pre class="screen">div_t sonuc;
+sonuc = div (20, -6);
+</pre></div></div><div class="para">
+Burada <b><tt>sonuc.quot</tt></b> değeri <b><tt>-3</tt></b> ve <b><tt>sonuc.rem</tt></b> değeri <b><tt>2</tt></b>'dir.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2092" id="idx2092"></a>
+<a name="glibc-ldiv_t" id="glibc-ldiv_t"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt><b><tt>ldiv_t</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+Bu yapı <b><tt>ldiv</tt></b> işlevinden dönen sonucu tutan veri türüdür. Şu üyelere sahiptir:
+   </div><dl><dt><span class="glossterm">
+   <tt>long int <b><tt>quot</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">Bölüm.
+   </div></dd><dt><span class="glossterm">
+   <tt>long int <b><tt>rem</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">Kalan.
+   </div></dd></dl><div class="para">
+(Bu yapı elemanlarının <b><tt>int</tt></b> yerine <b><tt>long int</tt></b> türünde olması dışında <b><tt>div_t</tt></b> ile aynıdır.)
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2093" id="idx2093"></a>
+<a name="glibc-ldiv" id="glibc-ldiv"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>ldiv_t <b><tt>ldiv</tt></b></tt></td><td valign="top"><pre class="paramdef">(long int <i><tt>bölünen</tt></i>,
+ long int <i><tt>bölen</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>ldiv</tt></b> işlevi argümanlarının <b><tt>long int</tt></b> türünde olması ve sonucu <b><tt>ldiv_t</tt></b> türünde bir yapı içinde döndürmesi dışında <b><tt>div</tt></b> işlevinin benzeridir.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2094" id="idx2094"></a>
+<a name="glibc-lldiv_t" id="glibc-lldiv_t"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt><b><tt>lldiv_t</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+Bu yapı <b><tt>lldiv</tt></b> işlevinden dönen sonucu tutan veri türüdür. Şu üyelere sahiptir:
+   </div><dl><dt><span class="glossterm">
+   <tt>long long int <b><tt>quot</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">Bölüm.
+   </div></dd><dt><span class="glossterm">
+   <tt>long long int <b><tt>rem</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">Kalan.
+   </div></dd></dl><div class="para">
+(Bu yapı elemanlarının <b><tt>int</tt></b> yerine <b><tt>long long int</tt></b> türünde olması dışında <b><tt>div_t</tt></b> ile aynıdır.)
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2095" id="idx2095"></a>
+<a name="glibc-lldiv" id="glibc-lldiv"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>lldiv_t <b><tt>lldiv</tt></b></tt></td><td valign="top"><pre class="paramdef">(long long int <i><tt>bölünen</tt></i>,
+ long long int <i><tt>bölen</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>lldiv</tt></b> işlevi argümanlarının <b><tt>long long int</tt></b> türünde olması ve sonucu <b><tt>lldiv_t</tt></b> türünde bir yapı içinde döndürmesi dışında <b><tt>div</tt></b> işlevinin benzeridir.
+   </div><div class="para">
+<b><tt>lldiv</tt></b> işlevi ISO C99 ile eklendi.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2096" id="idx2096"></a>
+<a name="glibc-imaxdiv_t" id="glibc-imaxdiv_t"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt><b><tt>imaxdiv_t</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+Bu yapı <b><tt>imaxdiv</tt></b> işlevinden dönen sonucu tutan veri türüdür. Şu üyelere sahiptir:
+   </div><dl><dt><span class="glossterm">
+   <tt>intmax_t <b><tt>quot</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">Bölüm.
+   </div></dd><dt><span class="glossterm">
+   <tt>intmax_t <b><tt>rem</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">Kalan.
+   </div></dd></dl><div class="para">
+(Bu yapı elemanlarının <b><tt>int</tt></b> yerine <b><tt>intmax_t</tt></b> türünde olması dışında <b><tt>div_t</tt></b> ile aynıdır.)
+   </div><div class="para">
+<b><tt>intmax_t</tt></b> türü hakkında daha fazla bilgi için <a href="../glibc/glibc-Integers.html" class="xref" title="Tamsayılar">Tamsayılar</a> bölümüne bakınız.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2097" id="idx2097"></a>
+<a name="glibc-imaxdiv" id="glibc-imaxdiv"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>imaxdiv_t <b><tt>imaxdiv</tt></b></tt></td><td valign="top"><pre class="paramdef">(intmax_t <i><tt>bölünen</tt></i>,
+ intmax_t <i><tt>bölen</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>imaxdiv</tt></b> işlevi argümanlarının <b><tt>intmax_t</tt></b> türünde olması ve sonucu <b><tt>imaxdiv_t</tt></b> türünde bir yapı içinde döndürmesi dışında <b><tt>div</tt></b> işlevinin benzeridir.
+   </div><div class="para">
+<b><tt>intmax_t</tt></b> türü hakkında daha fazla bilgi için <a href="../glibc/glibc-Integers.html" class="xref" title="Tamsayılar">Tamsayılar</a> bölümüne bakınız.
+   </div><div class="para">
+<b><tt>imaxdiv</tt></b> işlevi ISO C99 ile eklendi.
+  </div></dd></dl><div style="padding:5px"></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Integers.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Arithmetic.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Floating-Point-Numbers.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Tamsayılar </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Gerçek Sayılar</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

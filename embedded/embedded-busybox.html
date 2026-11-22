@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:30+03:00" /><title>Busybox Kullanımı</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../embedded/embedded-ayarlamalar.html" title="Temel Ayarlamalar" /><link rel="previous" href="../embedded/embedded-kitapliklar.html" title="Gerekli Kütüphanelerin Taşınması" /><link rel="next" href="../embedded/embedded-tinylogin.html" title="Tinylogin Kullanımı" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Busybox Kullanımı</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../embedded/embedded-kitapliklar.html">Önceki</a> </td><th width="60%" align="center">Temel Ayarlamalar</th><td width="20%" align="right"> <a accesskey="n" href="../embedded/embedded-tinylogin.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="embedded-busybox" id="embedded-busybox"></a>Busybox Kullanımı</div><dl><dd><div class="para">
+Busybox projesi Debian GNU/Linux dağıtımı kurulum programının çalışabilmesi için oluşturulan 2 disketlik Linux sisteminde kullanılmak üzere geliştirilmiştir. Burada amaç, kurulum için gerekli ufak fakat çok sık kullanılan uygulamaları (<b><tt>cp</tt></b>, <b><tt>mv</tt></b>, <b><tt>tar</tt></b>, <b><tt>ls</tt></b>, <b><tt>sh</tt></b>, <b><tt>find</tt></b>, <b><tt>init</tt></b> vb.) yeniden yazarak tek bir uygulama üretmek ve böylece yerden kazanmaktı. Busybox bu yer kazancını, uygulamaların sık kullanılmayan özelliklerini desteklemeyen sürümlerinin yeniden yazılmasıyla gerçekleştiriyordu. Örnek olarak <b><tt>find</tt></b> komutu normalde onlarca parametre ile çalıştırılabilirken Busybox içerisinden çıkan <b><tt>find</tt></b>, sadece en sık kullanılan beş parametresini desteklemektedir. Bu koşul gözönünde bulundurularak en temel uygulamalar yeniden yazılmış ve sonuçta 300-400 kB büyüklüğündeki bir dosya ile, her biri ayrı ayrı kullanıldığında normalde 4-5 MB toplam yer kaplayacak olan uygulamalar ile aynı işlevsellik büyük ölçüde sağlanabilmiştir.
+  </div><div class="para">
+Sistemimizde <b><tt>busybox</tt></b> kullanımı disk alanından kazanç sağlayacaktır. Busybox'ın bir diğer önemli özelliği modüler yapısı sayesinde istediğimiz parçaları ekleyip çıkarabilmemizdir. Busybox'ı derlemeden önce <tt>Config.h</tt> dosyasını bir metin düzenleyici ile istediğiniz gibi düzenleyebilirsiniz. Bu dosyanın biçimi aşağıdaki gibidir:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+//#define BB_LOGNAME
+//#define BB_LOSETUP
+#define BB_LS
+#define BB_LSMOD
+//#define BB_MAKEDEVS
+//#define BB_MD5SUM
+#define BB_MKDIR
+//#define BB_MKFIFO
+//#define BB_MKFS_MINIX
+#define BB_MKNOD
+#define BB_MKSWAP
+//#define BB_MKTEMP
+</pre></div></div>
+  <div class="para">
+Standart bir C başlık dosyası olan <tt>Config.h</tt> içerisinden istediğiniz özellikleri yukarıdaki örnekte olduğu gibi ekleyebilir ve çıkarabilirsiniz. Böylelikle sadece size gerekli olan bileşenleri içeren bir <b><tt>busybox</tt></b> derleyebilirsiniz.
+  </div><div class="para">
+<b><tt>busybox</tt></b> derlendikten sonra sistemde sadece <b><tt>busybox</tt></b> programının olması, <b><tt>ls</tt></b>, <b><tt>cp</tt></b> vb. gibi desteklenen uygulamaların ise <b><tt>busybox</tt></b>'a sembolik bağ olarak bağlı olması yeterlidir. <b><tt>busybox</tt></b> kendi başına çalıştırıldığında ise içerdiği uygulamaları listeler:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>laptop:/usr/src/busybox-0.60.5$ </tt><b><tt>./busybox</tt></b>
+BusyBox v0.60.5 (2003.04.22-14:09+0000) multi-call binary
+
+Usage: busybox [function] [arguments]...
+  or: [function] [arguments]...
+
+      BusyBox is a multi-call binary that combines many common Unix
+      utilities into a single executable.  Most people will create a
+      link to busybox for each function they wish to use, and BusyBox
+      will act like whatever it was invoked as.
+
+Currently defined functions:
+      [, ash, basename, busybox, cat, chgrp, chmod, chown, chroot, chvt,
+      clear, cp, cut, date, dd, df, dirname, dmesg, du, echo, env, false,
+      find, free, grep, gunzip, gzip, halt, head, id, init, kill, killall,
+      klogd, linuxrc, ln, logger, ls, lsmod, mkdir, mknod, mkswap, modprobe,
+      more, mount, mv, pidof, poweroff, ps, pwd, reboot, reset, rm,
+      rmdir, sed, sh, sleep, sort, swapoff, swapon, sync, syslogd, tail,
+      tar, test, touch, true, tty, umount, uname, uniq, uptime, wc,
+      which, whoami, xargs, yes, zcat
+
+</pre></div></div>
+  <div class="para">
+<b><tt>busybox</tt></b> kaynak kodlarını <a class="ulink" href="http://www.busybox.net/downloads/" target="_top">http://www.busybox.net/downloads/</a> adresinden indirebilirsiniz. tar.gz arşivi indirip açtıktan sonra bu dizine geçip, <tt>Config.h</tt> dosyasını düzenlemelisiniz. Gene aynı dizindeki <tt>Makefile</tt> dosyasını inceleyerek programın derlenme aşamasındaki seçenekleri değiştirebilirsiniz. Bu adımları tamamladıktan sonra <b><tt>make</tt></b> ve <b><tt>make install</tt></b> komutlarıyla  programın derlenmesini ve kuruluma hazır hale gelmesini sağlıyoruz. <b><tt>make</tt></b> komutunun çalışması bittiğinde  elimizde bir <b><tt>busybox</tt></b> uygulaması oluyor. <b><tt>make install</tt></b> ise bulunduğunuz dizinde <tt>_install</tt> adında bir alt dizin açıyor ve <b><tt>busybox</tt></b> uygulamasını olması gereken sembolik bağlar ile birlikte buraya kopyalıyor:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>laptop:/usr/src/busybox-0.60.5$ </tt><b><tt>ls -l _install/usr/sbin</tt></b>
+total 0
+lrwxrwxrwx   1 demirten demirten     17 May 30 00:05 chroot -&gt; ../../bin/busybox
+lrwxrwxrwx   1 demirten demirten     17 May 30 00:05 fbset -&gt; ../../bin/busybox
+</pre></div></div>
+  <div class="para">
+Burada <tt>bin</tt>, <tt>sbin</tt>, <tt>usr/bin</tt> ve <tt>usr/sbin</tt> dizinleri oluşturulmuş, <tt>bin</tt> dizini altına <b><tt>busybox</tt></b>'ın kendisi atılmış, ilgili tüm sembolik bağlar oluşturulmuştur. Bu dizini <tt>tgz</tt> arşivi haline getirerek disketle SBC  üzerine taşıyıp orada açalım:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>laptop:/usr/src/busybox-0.60.5$ </tt><b><tt>cd _install</tt></b>
+<tt>laptop:/usr/src/busybox-0.60.5/_install$ </tt><b><tt>tar cvfz /tmp/busy-bin.tgz .</tt></b>
+...
+</pre></div></div>
+  <div class="para">
+Oluşan <tt>busy-bin.tgz</tt> arşivinin boyu 180 kB gibi çok küçük bir değer olduğu için disket ile SBC üzerine rahatlıkla taşınabilir. Daha önceden yaptığımız gibi disketi sisteme bağlayıp <tt>busy-bin.tgz</tt> dosyasını kopyalıyoruz. Ardından bu disketi SBC sistemine takıp bağladıktan sonra aşağıdaki komutlarla arşivi açıyoruz:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>cd /hedef</tt></b>
+<tt># </tt><b><tt>cp /floppy/busy-bin.tgz .</tt></b>
+<tt># </tt><b><tt>tar zxvf busy-bin.tgz</tt></b>
+...
+</pre></div></div>
+  <div class="para">
+Artık SBC sistemimiz üzerinde onlarca kullanıma hazır temel uygulama var.
+  </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../embedded/embedded-kitapliklar.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../embedded/embedded-ayarlamalar.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../embedded/embedded-tinylogin.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Gerekli Kütüphanelerin Taşınması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Tinylogin Kullanımı</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

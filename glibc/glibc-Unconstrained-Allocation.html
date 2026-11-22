@@ -1,83 +1,511 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="tr" xml:lang="tr">
-  <head>
-    <title>3.2.3. Kısıtlanmamış Bellek Tahsisi</title>
-    <meta name="generator" content="DocBook XSL Stylesheets V-special (derived from DocBook XSL v1.79.1 for Turkish Linux Documentation Project by Nilgün Belma Bugüner - nilgun (at) tlbp.org.tr)" />
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="/style/nav.css" />
-    <link rel="icon" type="image/png" href="/images/belgeler-logo.png" />
-    <meta name="robots" content="index, follow" />
-  </head>
-  <body>
-    <header>
-      <div class="navbar">
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-The-GNU-Allocator.html')">Önceki</button>
-          <div class="dropdown-content">3.2.2. GNU Bellek Tahsis Gerçeklenimi</div>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:26:15+03:00" /><title>Özgür Bellek Ayırma</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Memory-Allocation.html" title="Yazılım Verisine Saklama Alanı Ayrılması" /><link rel="previous" href="../glibc/glibc-Memory-Allocation-and-C.html" title="C Yazılımlarında Bellek Ayırma" /><link rel="next" href="../glibc/glibc-Allocation-Debugging.html" title="Bellek Ayırmada Hata Ayıklama" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Özgür Bellek Ayırma</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Memory-Allocation-and-C.html">Önceki</a> </td><th width="60%" align="center">Yazılım Verisine Saklama Alanı Ayrılması</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Allocation-Debugging.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Unconstrained-Allocation" id="glibc-Unconstrained-Allocation"></a>Özgür Bellek Ayırma</div><dl><dd><div class="para">
+<a class="indexterm" name="idx257" id="idx257"></a>
+<a class="indexterm" name="idx258" id="idx258"></a>
+<a class="indexterm" name="idx259" id="idx259"></a>
+En çok kullanılan özdevimli bellek ayırma oluşumu <b><tt>malloc</tt></b> işlevidir. Bu işlevi kullanarak istediğiniz zaman istediğiniz boyutta bellek bloğu ayırabilir, istediğinizde büyütebilir, küçültebilir ve ihtiyacınız kalmadığında serbest bırakabilir ya da hiç serbest bırakmayabilirsiniz.
+      </div> <div class="head3"><a name="glibc-Basic-Allocation" id="glibc-Basic-Allocation"></a>Özdevimli Olarak Basit Bellek Ayırma</div><dl><dd><div class="para">
+
+
+
+<a class="indexterm" name="idx260" id="idx260"></a>
+Bir bellek bloğunu ayırmak için <b><tt>malloc</tt></b> çağrılır. Bu işlev <tt>stdlib.h</tt> başlık dosyasında bildirilmiştir.
+<a class="indexterm" name="idx261" id="idx261"></a>
+        </div><a name="glibc-malloc" id="glibc-malloc"></a>
+<a class="indexterm" name="idx262" id="idx262"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void *<b><tt>malloc</tt></b></tt></td><td valign="top"><pre class="paramdef">(size_t <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev <i><tt>boyut</tt></i> bayt uzunlukta yeni bir bellek bloğu ayırabilirse bu bloğa bir gösterici ile döner yoksa bir boş gösterici ile döner.
+          </div></dd></dl><div style="padding:5px"></div>
+        <div class="para">
+Bloğun içi tanımsızdır; içeriğini kendiniz ilklendirmelisiniz (ya da  <b><tt>calloc</tt></b> kullanın). Bkz. <a href="../glibc/glibc-Unconstrained-Allocation.html#glibc-Allocating-Cleared-Space" class="xref" title="Temizlenmiş Bellek Ayırma">Temizlenmiş Bellek Ayırma</a>.
+        </div><div class="para">
+Normalde blok içinde saklamak istediğiniz nesnenin türüne bir gösterici olan değere tür dönüşümü uygulamalısınız. Aşağıda bu yönteme ilişkin bir örnek vardır. Burada blok, <b><tt>memset</tt></b> kütüphane işlevi kullanılarak sıfırlarla ilklendirilmektedir (Bkz. <a href="../glibc/glibc-Copying-and-Concatenation.html" class="xref" title="Kopyalama ve Birleştirme">Kopyalama ve Birleştirme</a>):
+     </div>
+<div class="para"><div align="right"><pre class="screen">
+struct foo *ptr;
+…
+ptr = (struct foo *) malloc (sizeof (struct foo));
+if (ptr == 0) abort ();
+memset (ptr, 0, sizeof (struct foo));
+</pre></div></div><div class="para">
+ISO C <b><tt>void *</tt></b> türünü gerektiğinde özdevinimli olarak başka bir gösterici türüne dönüştürebildiğinden, <b><tt>malloc</tt></b> işlevinin  sonucunu bir tür dönüşümü yapmaksızın bir gösterici değişkeninde saklayabilirsiniz. Ancak kodu geleneksel C ile çalıştıracaksanız ya da atama işleci kullanmayacaksanız tür dönüşümü yapmanız gerekir.
+        </div><div class="para">
+Bir dizge için yer ayırırken <b><tt>malloc</tt></b> işlevine belirteceğiniz argümanın değeri, dizgenin uzunluğu artı bir olmalıdır. Bu, dizgenin bir NULL karakteri ile sonlandırılması ve NULL karakterinin dizgenin uzunluğundan sayılmamasından dolayıdır. Örnek:
         </div>
-        <div style="width:34%" class="dropdown">
-          <button class="dropbtn">Yukarı</button>
-          <div class="dropdown-content">
-            <button type="button" class="dropbtn" onclick="window.location.assign('/index.html')">Baş Sayfa</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('/KiTAPLIK/index.html')">Kitaplık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc.html')">Ana Başlık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Memory-Allocation.html')">Üst Başlık</button>
+<div class="para"><div align="right"><pre class="screen">
+char *ptr;
+…
+ptr = (char *) malloc (length + 1);
+</pre></div></div><div class="para">
+Bu konu hakkında daha ayrıntılı bilgi edinmek için <a href="../glibc/glibc-Representation-of-Strings.html" class="xref" title="Dizgelerle İlgili Kavramlar">Dizgelerle İlgili Kavramlar</a> bölümüne bakınız.
+        </div></dd></dl> <div class="head3"><a name="glibc-Malloc-Examples" id="glibc-Malloc-Examples"></a><b><tt>malloc</tt></b> Örnekleri</div><dl><dd><div class="para">
+Ayrılabilecek bellek yoksa <b><tt>malloc</tt></b> bir boş gösterici ile döner. <b><tt>malloc</tt></b> işlevini her çağırışınızda dönen değere bakmalısınız. <b><tt>malloc</tt></b>'u çağıran, bir boş gösterge döndüğünde hatayı bildiren ve sadece sıfırdan farklı bir değerle dönen bir yardımcı işlev yazabilirsiniz. Bu yöntem teamülen <b><tt>xmalloc</tt></b> olarak bilinir ve aşağıdaki gibi gerçeklenir:
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+void * xmalloc (size_t size)
+{
+  register void *value = malloc (size);
+  if (value == 0)
+    fatal ("sanal bellek tükendi");
+  return value;
+}
+</pre></div></div><div class="para">
+Aşağıda ise <b><tt>malloc</tt></b> kullanılan (<b><tt>xmalloc</tt></b> yoluyla) gerçek bir örnek vardır. <tt>savestring</tt> işlevi bir karakter dizisini yeni ayrılan null sonlandırmalı dizgeye kopyalamaktadır:
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+char * savestring (const char *ptr, size_t len)
+{
+  register char *value = (char *) xmalloc (len + 1);
+  value[len] = '\0';
+  return (char *) memcpy (value, ptr, len);
+}
+</pre></div></div><div class="para">
+<b><tt>malloc</tt></b>'un size verdiği blok her türden veriyi tutabilir. GNU sisteminin bellek yönetimine göre,  bir çok sistemde adres sekizin katlarıdır, 64 bitlik sistemlerde ise onaltının katlarıdır. Daha yüksek sınırlar (sayfa seviyesi) gerekliyse <b><tt>memalign</tt></b>, <b><tt>posix_memalign</tt></b> veya <b><tt>valloc</tt></b>  kullanılır (Bkz. <a href="../glibc/glibc-Unconstrained-Allocation.html#glibc-Aligned-Memory-Blocks" class="xref" title="Bellek Bloklarının Hizalanarak Ayrılması">Bellek Bloklarının Hizalanarak Ayrılması</a>).
+        </div>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">Bir <b><tt>malloc</tt></b> çağrısı ile ayrılan bloğun sonuna  başka birşeyler için kullanılmak üzere  bellek eklenmesi gerekebilir. Daha önce ayrılmış bir bloğu büyütmek için <b><tt>malloc</tt></b> kullanmaya çalışırsanız ya önceki ayrılan bloğu ya da yenisini bozmanız mümkündür. Ayrılmış belleği sonradan büyütmek isterseniz <b><tt>realloc</tt></b> işlevini kullanın (Bkz. <a href="../glibc/glibc-Unconstrained-Allocation.html#glibc-Changing-Block-Size" class="xref" title="Bir Bellek Bloğunun Boyutunun Değiştirilmesi">Bir Bellek Bloğunun Boyutunun Değiştirilmesi</a>).</div></td></tr></table></div>
+        </dd></dl> <div class="head3"><a name="glibc-Freeing-after-Malloc" id="glibc-Freeing-after-Malloc"></a><tt>malloc</tt> ile Ayrılan Belleğin Serbest Bırakılması</div><dl><dd><div class="para">
+<a class="indexterm" name="idx263" id="idx263"></a>
+<a class="indexterm" name="idx264" id="idx264"></a>
+<b><tt>malloc</tt></b> ile ayırdığınız bir bloğa ihtiyacınız kalmadığında, ayrılan bloğu tekrar kullanılabilir hale getirmek için <b><tt>free</tt></b> ile serbest bırakmalısınız. <b><tt>free</tt></b> işlevi <tt>stdlib.h</tt> başlık dosyasında bildirilmiştir.
+<a class="indexterm" name="idx265" id="idx265"></a>
+        </div><a name="glibc-free" id="glibc-free"></a>
+<a class="indexterm" name="idx266" id="idx266"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>free</tt></b></tt></td><td valign="top"><pre class="paramdef">(void *<i><tt>gösterici</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>free</tt></b> işlevi <i><tt>gösterici</tt></i> ile erişilen bellek bloğunu serbest bırakır.
+          </div></dd></dl><div style="padding:5px"></div>
+        <a name="glibc-cfree" id="glibc-cfree"></a>
+<a class="indexterm" name="idx267" id="idx267"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>cfree</tt></b></tt></td><td valign="top"><pre class="paramdef">(void *<i><tt>gösterici</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev <b><tt>free</tt></b> ile aynı işi yapar. İşlev SunOS ile geriye uyumluluk adına kütüphaneye dahil edilmiştir. Bu işlevi değil <b><tt>free</tt></b> işlevini kullanmalısınız.
+          </div></dd></dl><div style="padding:5px"></div>
+        <div class="para">
+Bir bloğun serbest bırakılması bloğun içeriğini değiştirir. <i><tt>Bir bloğu serbest bıraktıktan sonra bloğun içindeki bir veriye ulaşabileceğinizi sanmayın (örneğin bir blok zincirindeki sonraki bloğa bir gösterici belirterek.)</tt></i> Bir bloğu serbest bırakmadan önce içinde kullanacağınız bir bilgi varsa kopyalamayı unutmayın. Aşağıdaki örnekte bir zincirdeki blokların tümü sırayla serbest bırakılmaktadır:
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+struct chain
+  {
+    struct chain *next;
+    char *name;
+  }
+
+void
+free_chain (struct chain *chain)
+{
+  while (chain != 0)
+    {
+      struct chain *next = chain-&gt;next;
+      free (chain-&gt;name);
+      free (chain);
+      chain = next;
+    }
+}
+</pre></div></div><div class="para">
+<b><tt>free</tt></b> işlevi bellek alanını uzun dönemde işletim sistemine döndürür ve süreci küçültür. Sistem genelinde ise, bellek alanını yeniden kullanılmak üzere serbest bırakır ve daha sonraki <b><tt>malloc</tt></b> çağrılarını mümkün kılar. Kısa dönemde ise, serbest bırakılan alan <b><tt>malloc</tt></b> tarafından süreç dahilinde kullanılmak üzere bir serbest bırakılanlar listesinin parçası olarak bekletilir.
+        </div><div class="para">
+Yazılımın çalışması sona erdiğinde blokların bırakılması gerekmez. Çünkü süreç sonlandığında sürece ayrılan tüm alan sisteme geri verilir.
+        </div></dd></dl> <div class="head3"><a name="glibc-Changing-Block-Size" id="glibc-Changing-Block-Size"></a>Bir Bellek Bloğunun Boyutunun Değiştirilmesi</div><dl><dd><div class="para">
+<a class="indexterm" name="idx268" id="idx268"></a>
+Çoğunlukla bir bellek bloğunu kullanmaya başlarken ihtiyacınız olacak bellek miktarını bilemez ve yaklaşık bir boyut ile bloğu ayırırsınız. Örneğin, blok bir dosyadan okunan satırı tutan bir tampon olabilir ve bir satır için yeterli olan tamponunuz başka bir satır için yetersiz kalabilir.
+        </div><div class="para">
+<b><tt>realloc</tt></b> işlevini çağırarak bloğu uzatabilirsiniz. Bu işlev <tt>stdlib.h</tt> başlık dosyasında bildirilmiştir.
+<a class="indexterm" name="idx269" id="idx269"></a>
+        </div><a name="glibc-realloc" id="glibc-realloc"></a>
+<a class="indexterm" name="idx270" id="idx270"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void *<b><tt>realloc</tt></b></tt></td><td valign="top"><pre class="paramdef">(void  *<i><tt>gösterici</tt></i>,
+ size_t <i><tt>yeniboyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>realloc</tt></b> işlevi <i><tt>gösterici</tt></i> ile erişilen bloğun boyunu <i><tt>yeniboyut</tt></i> ile belirtilen değere ayarlar.
+          </div><div class="para">
+Bloktan sora gelen alan kullanılabilir olsa da <b><tt>realloc</tt></b> işlevi bloğu daha fazla serbest alanın bulunduğu yeni bir adrese kopyalamayı gerekli bulabilir. <b><tt>realloc</tt></b> işlevi bloğun yeni adresi ile döner. Blokun taşınması gerekirse, <b><tt>realloc</tt></b> eski içeriği kopyalar.
+          </div><div class="para">
+<b><tt>realloc</tt></b> işlevine <i><tt>gösterici</tt></i> için bir boş gösterici belirtirseniz, işlev, <b><tt>malloc (<i><tt>newsize</tt></i>)</tt></b> çağrılmış gibi davranır. Bu kullanışlı olabilirse de, ISO C öncesi C gerçeklemeleri bu davranışı desteklemeyebilir ve büyük ihtimalle <b><tt>realloc</tt></b> boş bir gösterici ile çökebilir.
+          </div></dd></dl><div style="padding:5px"></div>
+        <div class="para">
+<b><tt>realloc</tt></b> işlevi daha büyük blok oluşturamazsa tıpkı <b><tt>malloc</tt></b> işlevi gibi bir boş gösterici ile döner. Bu durum oluştuğunda eski bloka dokunulmaz; değiştirilmez ve başka bir konuma taşınmaz.
+        </div><div class="para">
+Çoğu durumda <b><tt>realloc</tt></b> başarısız olduğunda eski bloğa ne olduğunun fazla bir önemi kalmaz. Çünkü uygulama yazılımı bellek yetmediğinde çalışmasını sürdüremez ve yapacak tek şey kalır: bir ölümcül hata iletisi ile kendini sonlandırmak. Çoğunlukla bu durum için bir yordam yazılır. <b><tt>malloc</tt></b> için benzer yordama <b><tt>xmalloc</tt></b> dendiği gibi <b><tt>realloc</tt></b> için olanına da <b><tt>xrealloc</tt></b> denir:
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+void * xrealloc (void *ptr, size_t size)
+{
+  register void *value = realloc (ptr, size);
+  if (value == 0)
+    fatal ("Sanal bellek tükendi");
+  return value;
+}
+</pre></div></div><div class="para">
+<b><tt>realloc</tt></b> işlevini bloğu küçültmek için de kullanabilirsiniz. Bu genelde daha küçük belleğin yeterli olduğu durumlarda bir bellek tıkanıklığı varsa ayrılan fazla belleği serbest bırakmak için yapılır. Bazı ayırma gerçeklemelerinde bir bloğun küçültülmesi bazı durumlarda kopyalanmasını zorunlu kılabilir ve kullanılabilir bir bellek yoksa işlev başarısız olabilir.
+        </div><div class="para">
+<b><tt>realloc</tt></b> işlevine belirtilen yeni boyut eskisi ile aynıysa işlev hiçbir değişiklik yapmaz ve verdiğiniz adresi geri döndürür.
+        </div></dd></dl> <div class="head3"><a name="glibc-Allocating-Cleared-Space" id="glibc-Allocating-Cleared-Space"></a>Temizlenmiş Bellek Ayırma</div><dl><dd><div class="para">
+<b><tt>calloc</tt></b> işlevi belleği ayırdıktan sonra içeriğini sıfırlarla doldurarak temizler. Bu işlev <tt>stdlib.h</tt> başlık dosyasında bildirilmiştir.
+<a class="indexterm" name="idx271" id="idx271"></a>
+        </div><a name="glibc-calloc" id="glibc-calloc"></a>
+<a class="indexterm" name="idx272" id="idx272"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void *<b><tt>calloc</tt></b></tt></td><td valign="top"><pre class="paramdef">(size_t <i><tt>elmsayısı</tt></i>,
+ size_t <i><tt>elmboyu</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev boyu <i><tt>elmboyu</tt></i> olan <i><tt>elmtsayısı</tt></i> sayıda eleman içeren bir blok ayırır. Bu içerik <b><tt>calloc</tt></b> dönmeden önce sıfırlarla doldurulur.
+          </div><div class="para">
+<b><tt>calloc</tt></b> işlevini aşağıdaki gibi tanımlayabilirsiniz:
           </div>
+<div class="para"><div align="right"><pre class="screen">
+void * calloc (size_t count, size_t eltsize)
+{
+  size_t size = count * eltsize;
+  void *value = malloc (size);
+  if (value != 0)
+    memset (value, 0, size);
+  return value;
+}
+</pre></div></div><div class="para">
+Ancak genelde, <b><tt>calloc</tt></b> işlevinin dahili olarak <b><tt>malloc</tt></b> işlevini çağıracağının garantisi yoktur. Bu nedenle, bir uygulama C kütüphanesi dışında kendi <b><tt>malloc</tt></b>, <b><tt>realloc</tt></b> ve <b><tt>free</tt></b> işlevlerini sağlıyorsa, <b><tt>calloc</tt></b> işlevini de mutlaka tanımlamalıdır.
+          </div></dd></dl><div style="padding:5px"></div>
+        </dd></dl> <div class="head3"><a name="glibc-Efficiency-and-Malloc" id="glibc-Efficiency-and-Malloc"></a><tt>malloc</tt> için Yeterlik Kaygıları</div><dl><dd><a class="indexterm" name="idx273" id="idx273"></a><div class="para">
+Diğer sürümlerin aksine GNU C kütüphanesindeki <b><tt>malloc</tt></b> işlevi ayırdığı belleğin boyunu ikinin kuvvetlerine ayarlamaz, dolayısıyla istenenden daha küçük ya da daha büyük bir bellek ayırmaz. Komşu bellek parçaları boyutlarına bakılmaksızın bir <b><tt>free</tt></b> üzerinden tek parça yapılabilir. Bu, yüksek belleğin küçük kesintili bloklar haline gelmesine sebep olmadan, gerçeklemeyi ayırma kalıplarının her türü için elverişli yapar.
+        </div><div class="para">
+Çok büyük bloklar (bir sayfadan büyük) bu gerçeklenimce  <b><tt>mmap</tt></b> işlevi ile (anonim veya <tt>/dev/zero</tt> üzerinden) ayrılır. Serbest bırakıldıkları anda parçaların sisteme döndürülmesi büyük yarar sağlar. Bu bakımdan, daha küçük bir bloktan büyütülürken iki işlem arasında blok kilitli hale gelemez ve hatta <b><tt>free</tt></b> çağrısından sonra blok belleği boşalır. <b><tt>mmap</tt></b> için kullanılacak boyut eşiği <b><tt>mallopt</tt></b> ile ayarlanabilir. Ayrıca <b><tt>mmap</tt></b> kullanımı tamamen iptal de edilebilir.
+        </div></dd></dl> <div class="head3"><a name="glibc-Aligned-Memory-Blocks" id="glibc-Aligned-Memory-Blocks"></a>Bellek Bloklarının Hizalanarak Ayrılması</div><dl><dd><div class="para">
+<a class="indexterm" name="idx274" id="idx274"></a>
+<a class="indexterm" name="idx275" id="idx275"></a>
+<a class="indexterm" name="idx276" id="idx276"></a>
+Bir blok için <b><tt>malloc</tt></b> tarafından döndürülen adres GNU sistemlerinde daima sekizin katlarıdır (64 bitlik sistemlerde onaltının katlarıdır). Bir bloğun daha büyük adres adımları (adım boyu ikinin kuvveti olmalı) ile adreslenmesini isterseniz <b><tt>memalign</tt></b>, <b><tt>posix_memalign</tt></b> veya <b><tt>valloc</tt></b> işlevlerini kullanmalısınız. <b><tt>memalign</tt></b> işlevi <tt>malloc.h</tt>, <b><tt>posix_memalign</tt></b> işlevi ise <tt>stdlib.h</tt> başlık dosyasında bildirilmiştir.
+        </div><div class="para">
+GNU kütüphanesi ile, <b><tt>memalign</tt></b>,  <b><tt>posix_memalign</tt></b> veya <b><tt>valloc</tt></b> ile dönen blokları serbest bırakmak için <b><tt>free</tt></b> kullanılır. Bu BSD ile çalışmaz, çünkü BSD bu tür blokları serbest bırakacak bir yol sağlamaz.
+        </div><a name="glibc-memalign" id="glibc-memalign"></a>
+<a class="indexterm" name="idx277" id="idx277"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void *<b><tt>memalign</tt></b></tt></td><td valign="top"><pre class="paramdef">(size_t <i><tt>adımboyu</tt></i>,
+ size_t <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>memalign</tt></b> işlevi <i><tt>boyut</tt></i> uzunluktaki bloğu <i><tt>adımboyu</tt></i>nun katları olan adreslerden birinde ayırır ve  bloğun adresi ile döner. <i><tt>adımboyu</tt></i> ikinin kuvveti olan  bir değer olmalıdır. İşlev büyük miktarda (sayfa kadar veya fazlası) bellek ayırmak için kullanılır.
+          </div></dd></dl><div style="padding:5px"></div>
+        <a name="glibc-posix_memalign" id="glibc-posix_memalign"></a>
+<a class="indexterm" name="idx278" id="idx278"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>posix_memalign</tt></b></tt></td><td valign="top"><pre class="paramdef">(void **<i><tt>gösterici</tt></i>,
+ size_t <i><tt>adımboyu</tt></i>,
+ size_t <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>posix_memalign</tt></b> işlevi <b><tt>memalign</tt></b> işlevine benzer şekilde <i><tt>adımboyu</tt></i>nun katlarına hizalayarak <i><tt>boyut</tt></i> uzunluktaki bir tampon ayırır. Ancak işlev <i><tt>adımboyu</tt></i> parametresinde bir özelliğin varlığına bağımlıdır: değer, <b><tt>sizeof (void *)</tt></b> değerinin ikinin kuvveti katı olmalıdır.
+          </div><div class="para">
+İşlev, belleği ayırmada başarılı olursa, ayrılan belleğin göstericisi <b><tt>*<i><tt>gösterici</tt></i></tt></b>'ye atanır ve işlev sıfır değeriyle döner. Aksi takdirde sorunu belirten bir hata değeri ile döner.
+          </div><div class="para">
+Bu işlev POSIX 1003.1d içinde geçer.
+        </div></dd></dl><div style="padding:5px"></div>
+        <a name="glibc-valloc" id="glibc-valloc"></a>
+<a class="indexterm" name="idx279" id="idx279"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void *<b><tt>valloc</tt></b></tt></td><td valign="top"><pre class="paramdef">(size_t <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>valloc</tt></b> işlevi sayfa boyunda adresleme ile <i><tt>boyut</tt></i> uzunlukta blok ayırır. <b><tt>memalign</tt></b> kullanılarak aşağıdaki gibi gerçeklenebilir:
         </div>
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Basic-Allocation.html')">Sonraki</button>
-          <div class="dropdown-content">3.2.3.1. Özdevimli Olarak Basit Bellek Tahsisi</div>
+<div class="para"><div align="right"><pre class="screen">
+void * valloc (size_t size)
+{
+  return memalign (getpagesize (), size);
+}
+</pre></div></div><div class="para">
+Bellek altsistemi hakkında ayrıntılı bilgi <a href="../glibc/glibc-Query-Memory-Parameters.html" class="xref" title="Bellek Parametrelerinin Sorgulanması">Bellek Parametrelerinin Sorgulanması</a> bölümünde bulunabilir.
+        </div></dd></dl><div style="padding:5px"></div>
+      </dd></dl> <div class="head3"><a name="glibc-Malloc-Tunable-Parameters" id="glibc-Malloc-Tunable-Parameters"></a>Ayarlanabilir Malloc Parametreleri</div><dl><dd><div class="para">
+Özdevimli bellek ayırma ile ilgili bazı parametreleri <b><tt>mallopt</tt></b> ile ayarlayabilirsiniz. Bu işlev bir genel SVID/XPG arayüzüdür ve <tt>malloc.h</tt> başlık dosyasında bildirilmiştir.
+<a class="indexterm" name="idx280" id="idx280"></a>
+      </div><a name="glibc-mallopt" id="glibc-mallopt"></a>
+<a class="indexterm" name="idx281" id="idx281"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>mallopt</tt></b></tt></td><td valign="top"><pre class="paramdef">(int <i><tt>param</tt></i>,
+ int <i><tt>değer</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>mallopt</tt></b> işlevi çağrılırken ayarlanacak parametre <i><tt>param</tt></i> ile, değeri ise <i><tt>değer</tt></i> ile belirtilir. <tt>malloc.h</tt> başlık dosyasında tanımlı <i><tt>param</tt></i> seçenekleri şunlardır:
         </div>
+          <div class="variablelist"><dl><dt><span class="term"><tt>M_TRIM_THRESHOLD</tt></span></dt><dd class="varlist"><div class="para">
+Belleğin sisteme döndürülmesi sırasında bir negatif argüman ile <b><tt>sbrk</tt></b>'in çağrılmasına sağlayacak en tepedeki serbest bırakılabilir parçanın mümkün en küçük boyudur (bayt cinsinden).
+            </div></dd><dt><span class="term"><tt>M_TOP_PAD</tt></span></dt><dd class="varlist"><div class="para">
+Bu parametre bir <b><tt>sbrk</tt></b> çağrısı gerektiğinde sistemden sağlanacak fazladan belleğin miktarını belirler. Ayrıca, bir negatif argümanla <b><tt>sbrk</tt></b> çağırarak yığın belleğin (heap) küçültülmesi sırasında tutulan baytların sayısını belirtir. Bu, yığın bellekte gerekli histerezisi oluşturur ve örneğin aşırı miktarlarda sistem çağrılarını engelleyebilir.
+            </div></dd><dt><span class="term"><tt>M_MMAP_THRESHOLD</tt></span></dt><dd class="varlist"><div class="para">
+Bu değerden daha büyük parçalar <b><tt>mmap</tt></b> sistem çağrısı kullanılarak normal yığın belleğin dışında ayrılır.  Bu yol, bu parçaların <b><tt>free</tt></b> üzerinden sisteme döndürülebilirliğini garanti eder. Bu eşik değerden daha küçük istekler hala <b><tt>mmap</tt></b> üzerinden ayrılabilir.
+            </div></dd><dt><span class="term"><tt>M_MMAP_MAX</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>mmap</tt></b> ile ayrılabilecek parçaların mümkün en büyük  sayısıdır. Bu parametreye sıfır değeri atanarak <b><tt>mmap</tt></b>  kullanımı iptal edilebilir.
+            </div></dd></dl></div>
+        </dd></dl><div style="padding:5px"></div>
+      </dd></dl> <div class="head3"><a name="glibc-Heap-Consistency-Checking" id="glibc-Heap-Consistency-Checking"></a>Yığın Bellek Tutarlılık Denetimi</div><dl><dd><div class="para">
+<a class="indexterm" name="idx282" id="idx282"></a>
+<b><tt>mcheck</tt></b> işlevini kullanarak özdevimli ayrılan belleğin tutarlılığının <b><tt>malloc</tt></b> tarafından denetlenmesini isteyebilirsiniz. Bu işlev bir GNU oluşumudur ve <tt>mcheck.h</tt> başlık dosyasında bildirilmiştir.
+<a class="indexterm" name="idx283" id="idx283"></a>
+      </div><a name="glibc-mcheck" id="glibc-mcheck"></a>
+<a class="indexterm" name="idx284" id="idx284"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>mcheck</tt></b></tt></td><td valign="top"><pre class="paramdef">(void (*<i><tt>çıkış_işlevi</tt></i>) (enum mcheck_status <i><tt>durum</tt></i>))</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>mcheck</tt></b> işlevinin çağrılması <b><tt>malloc</tt></b>'a arasıra tutarlılık denetimi yapmasını söyler. Bu sayede <b><tt>malloc</tt></b> ile ayrılan belleği aşan yazma işlemleri yakalanır.
+        </div><div class="para">
+<i><tt>çıkış_işlevi</tt></i> argümanı ile bir tutarsızlık bulunduğunda çağrılacak işlev belirtilir. Burada bir boş gösterici belirtirseniz, <b><tt>mcheck</tt></b> işlevi bir ileti basarak öntanımlı olan <a class="link" href="../glibc/glibc-Aborting-a-Program.html" title="Anormal Sonlanma"><b><tt>abort</tt></b></a> işlevini çağırır. Sizin tarafınızdan sağlanan işlev saptanan tutarsızlık türünün belirtildiği bir argümanla çağrılır. Tutarsızlık türleri <a class="link" href="../glibc/glibc-Unconstrained-Allocation.html#glibc-mcheck_status">aşağıda</a>  açıklanmıştır.
+        </div><div class="para">
+<b><tt>malloc</tt></b> ile bellek ayırma yaptıktan sonra tutarlılık denetimini başlatmak için kimi zaman çok geç kalınabilir. Bu durumda <b><tt>mcheck</tt></b> hiçbir şey yapmaz. Eğer çağrı için çok geç kalınmışsa <b><tt>mcheck</tt></b> <b><tt>-1</tt></b> ile aksi takdirde <b><tt>0</tt></b> ile döner.
+        </div><div class="para">
+<b><tt>mcheck</tt></b> işlevini yeterince erken çağırmanın en kolay yolu, yazılımınızı ilintilerken <tt>-lmcheck</tt> seçeneğini kullanmaktır. Böylece yazılımınızın kaynak kodunu değiştirmeniz gerekmez. Başka bir yol da, yazılımınızı her başlattığınızda bir <b><tt>mcheck</tt></b> çağrısı girecek bir hata ayıklayıcı kullanmaktır. Örneğin, aşağıdaki gibi yazılımınızı her başlattığınızda gdb komutları özdevinimli olarak <b><tt>mcheck</tt></b>'i çağıracaktır.
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+(gdb) break main
+Breakpoint 1, main (argc=2, argv=0xbffff964) at whatever.c:10
+(gdb) command 1
+Type commands for when breakpoint 1 is hit, one per line.
+End with a line saying just "end".
+&gt;call mcheck(0)
+&gt;continue
+&gt;end
+(gdb) …
+</pre></div></div><div class="para">
+<b><tt>mcheck</tt></b> işlevinin <b><tt>malloc</tt></b> işlevinden önce çağrılması gerektiğinden bu kod sadece <b><tt>malloc</tt></b> işlevini çağıran nesnelerde böyle bir ilklendirme işlevi yoksa çalışır.
+        </div></dd></dl><div style="padding:5px"></div>
+      <a name="glibc-mprobe" id="glibc-mprobe"></a>
+<a class="indexterm" name="idx285" id="idx285"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>enum mcheck_status <b><tt>mprobe</tt></b></tt></td><td valign="top"><pre class="paramdef">(void *<i><tt>gösterici</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>mprobe</tt></b> işlevi ile bir ayrılmış blok üzerinde tutarlılık denetimi yapılmasını doğrudan doğruya isteyebilirsiniz. Bu denetimin arasıra yapılması için zaten yazılımın hemen başlarında <b><tt>mcheck</tt></b> çağrısı yapmış olmalısınız; <b><tt>mprobe</tt></b> çağrısı ile çağrı sırasında bir ek tutarlılık denetimi yapılmasını isteyebilirsiniz.
+        </div><div class="para">
+<i><tt>gösterici</tt></i>, bir <b><tt>malloc</tt></b> ya da <b><tt>realloc</tt></b> işlevinden dönmüş bir gösterici olmalıdır. <b><tt>mprobe</tt></b> işlevi ne tür bir tutarsızlık olduğunu belirten bir değer ile döner. Bu değerler aşağıda açıklanmıştır.
+        </div></dd></dl><div style="padding:5px"></div>
+      <a name="glibc-mcheck_status" id="glibc-mcheck_status"></a>
+<a class="indexterm" name="idx286" id="idx286"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>enum <b><tt>mcheck_status</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+Bu numaralı tür, bir ayrılmış blokta saptanan tutarsızlığın çeşidini açıklar. Olası değerler:
+        </div><div class="variablelist"><dl><dt><span class="term"><a name="glibc-MCHECK_DISABLED" id="glibc-MCHECK_DISABLED"></a><tt>MCHECK_DISABLED</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>mcheck</tt></b> ilk ayırma işleminden önce çağrılmamış. Hiçbir tutarlılık denetimi yapılamaz.
+            </div></dd><dt><span class="term"><a name="glibc-MCHECK_OK" id="glibc-MCHECK_OK"></a><tt>MCHECK_OK</tt></span></dt><dd class="varlist"><div class="para">Bir tutarsızlık yok.</div></dd><dt><span class="term"><tt>MCHECK_HEAD</tt></span></dt><dd class="varlist"><div class="para">
+Bloğun öncesi değiştirildi. Bu durum genellikle, bir dizi indisi ya da bir göstericinin bloğun başlangıcındaki değerinin altına indirildiğinde ortaya çıkar.
+            </div></dd><dt><span class="term"><a name="glibc-MCHECK_TAIL" id="glibc-MCHECK_TAIL"></a><tt>MCHECK_TAIL</tt></span></dt><dd class="varlist"><div class="para">
+Bloktan sonrası değiştirildi. Bu durum genellikle, bir dizi indisi ya da bir göstericinin değeri blok aşılacak kadar arttırıldığında ortaya çıkar.
+            </div></dd><dt><span class="term"><a name="glibc-MCHECK_FREE" id="glibc-MCHECK_FREE"></a><tt>MCHECK_FREE</tt></span></dt><dd class="varlist"><div class="para">Blok zaten serbest bırakılmış.</div></dd></dl></div>
+        </dd></dl><div style="padding:5px"></div>
+      <div class="para">
+Diğer bir denetim başlatma yöntemi, <b><tt>malloc</tt></b>, <b><tt>realloc</tt></b> ve <b><tt>free</tt></b> kullanımında yazılım hatalarına karşı bir önlem olarak <b><tt>MALLOC_CHECK_</tt></b> ortam değişkeninin belirtilmesidir. <b><tt>MALLOC_CHECK_</tt></b> bir denetim yapılması için belirtilmişse, çifte <b><tt>free</tt></b> çağrısı veya bir tek baytlık taşma gibi basit hatalara tolerans gösteren (daha az tutarlı) özel bir gerçekleme kullanılır. Bu tür hatalara karşı bir koruma olmadığından bellek artıkları olabileceği dikkate alınmalıdır.
+      </div><div class="para">
+<b><tt>MALLOC_CHECK_</tt></b> için <b><tt>0</tt></b> değeri kullanılırsa, bir yığın bellek bozulması gözardı edilecektir. <b><tt>1</tt></b> kullanılırsa, standart hataya tanımlayıcı bir ileti basılır. <b><tt>2</tt></b> olması durumunda ise hemen <b><tt>abort</tt></b> çağrılır. Bu son durum genellikle hatanın hemen ardından bir çökmenin kaçınılmaz olduğu dolayısıyla hatanın geriye doğru izlenebilirliğinin çok zor olduğu durumlarda kullanışlıdır.
       </div>
-    </header>
-    <section class="mainpage">
-      <div class="crumbs">
-        <p>  </p>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/warning.png" /></td><th class="admon">MALLOC_CHECK_ ile ilgili bir sorun  vardır:</th></tr><tr><td align="left" valign="top" class="admon"><div class="para"> SUID ve  SGID'li çalıştırılabilirlerinin istismarı sözkonusu olabilir; bunlar, normal yazılım davranışından ayrılarak standart hata tanımlayıcıya bazı şeyler yazar. Bu nedenle, <b><tt>MALLOC_CHECK_</tt></b> kullanımı SUID ve SGID'li  çalıştırılabilirler için öntanımlı olarak iptal edilmiştir. Ancak sistem  yöneticisi tarafından <tt>/etc/suid-debug</tt> dosyası eklenerek etkinleştirilebilir (bu dosyanın içeriği önemli değildir, dosya boş olabilir).
+      </div></td></tr></table></div><div class="para">
+Öyleyse <b><tt>MALLOC_CHECK_</tt></b> kullanımı ve <tt>-lmcheck</tt> seçeneğiyle ilintileme arasında ne fark vardır? <tt>-lmcheck</tt> geriye uyumluluk adına vardır. Her ikisi de aynı yazılım hataları için kullanılırsa da <b><tt>MALLOC_CHECK_</tt></b> kullandığınızda yazılımı yeniden derlemek gerekmez.
+      </div></dd></dl> <div class="head3"><a name="glibc-Hooks-for-Malloc" id="glibc-Hooks-for-Malloc"></a>Bellek Ayırma Kancaları</div><dl><dd><div class="para">
+<a class="indexterm" name="idx287" id="idx287"></a>
+GNU C kütüphanesi, <b><tt>malloc</tt></b>, <b><tt>realloc</tt></b> ve  <b><tt>free</tt></b> işlevlerinin davranışını, işlevle ilgili bir kanca işlev belirterek değiştirebilmenizi sağlar. Örneğin, özdevimli bellek ayırma kullanılan yazılımlarda hata ayıklamaya yardımcı olarak bu kancaları kullanabilirsiniz.
+      </div><div class="para">
+Kanca değişkenler <tt>malloc.h</tt> başlık dosyasında tanımlanmıştır.
+<a class="indexterm" name="idx288" id="idx288"></a>
+      </div><a name="glibc__malloc_hook" id="glibc__malloc_hook"></a>
+<a class="indexterm" name="idx289" id="idx289"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt><b><tt>__malloc_hook</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">değişken</div></div></div><dl><dd><div class="para">
+Bu değer, her <b><tt>malloc</tt></b> çağrısında kullanılan işleve bir göstericidir. <b><tt>malloc</tt></b>'a benzeyecek bu işlevi siz tanımlayacaksınız; şöyle:
+        </div>
+<div class="para"><pre class="literallayout">
+void *<i><tt>function</tt></i> (size_t <i><tt>boyut</tt></i>, const void *<i><tt>çağıran</tt></i>)
+</pre></div><div class="para">
+<i><tt>çağıran</tt></i>'ın değeri, <b><tt>malloc</tt></b> çağrıldığında yığıtta bulunan dönüş adresidir. Bu değer yazılımın bellek tüketimini izlemenizi mümkün kılar.
+        </div></dd></dl><div style="padding:5px"></div>
+      <a name="glibc__realloc_hook" id="glibc__realloc_hook"></a>
+<a class="indexterm" name="idx290" id="idx290"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt><b><tt>__realloc_hook</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">değişken</div></div></div><dl><dd><div class="para">
+Bu değer, her <b><tt>realloc</tt></b> çağrısında kullanılan işleve bir göstericidir. <b><tt>realloc</tt></b>'a benzeyecek bu işlevi siz tanımlayacaksınız; şöyle:
+        </div>
+<div class="para"><pre class="literallayout">
+void *<i><tt>function</tt></i> (void *<i><tt>gösterici</tt></i>, size_t <i><tt>boyut</tt></i>, const void *<i><tt>çağıran</tt></i>)
+</pre></div><div class="para">
+<i><tt>çağıran</tt></i>'ın değeri, <b><tt>realloc</tt></b> çağrıldığında yığıtta bulunan dönüş adresidir. Bu değer yazılımın bellek tüketimini izlemenizi mümkün kılar.
+        </div></dd></dl><div style="padding:5px"></div>
+      <a name="glibc__free_hook" id="glibc__free_hook"></a>
+<a class="indexterm" name="idx291" id="idx291"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt><b><tt>__free_hook</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">değişken</div></div></div><dl><dd><div class="para">
+Bu değer, her <b><tt>free</tt></b> çağrısında kullanılan işleve bir göstericidir. <b><tt>free</tt></b>'ye benzeyecek bu işlevi siz tanımlayacaksınız; şöyle:
+        </div>
+<div class="para"><pre class="literallayout">
+void <i><tt>function</tt></i> (void *<i><tt>gösterici</tt></i>, const void *<i><tt>çağıran</tt></i>)
+</pre></div><div class="para">
+<i><tt>çağıran</tt></i>'ın değeri, <b><tt>free</tt></b> çağrıldığında yığıtta bulunan dönüş adresidir. Bu değer yazılımın bellek tüketimini izlemenizi mümkün kılar.
+        </div></dd></dl><div style="padding:5px"></div>
+      <a name="glibc__memalign_hook" id="glibc__memalign_hook"></a>
+<a class="indexterm" name="idx292" id="idx292"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt><b><tt>__memalign_hook</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">değişken</div></div></div><dl><dd><div class="para">
+Bu değer, her <b><tt>memalign</tt></b> çağrısında kullanılan işleve bir göstericidir. <b><tt>memalign</tt></b>'a benzeyecek bu işlevi siz tanımlayacaksınız; şöyle:
+        </div>
+<div class="para"><pre class="literallayout">
+void *<i><tt>function</tt></i> (size_t <i><tt>adımboyu</tt></i>, size_t <i><tt>boyut</tt></i>, const void *<i><tt>çağıran</tt></i>)
+</pre></div><div class="para">
+<i><tt>çağıran</tt></i>'ın değeri, <b><tt>free</tt></b> çağrıldığında yığıtta bulunan dönüş adresidir. Bu değer yazılımın bellek tüketimini izlemenizi mümkün kılar.
+        </div></dd></dl><div style="padding:5px"></div>
+      
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/caution.png" /></td><th class="admon">Dikkat</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">Bu işlevlerden birine bir kanca olarak tanımladığınız işlevin, öncelikle kancayı eski değerine döndürmeden bu işlevi ardışık olarak çağırmadığından emin olmalısınız. Aksi takdirde, yazılımınız sonsuz döngüye takılacaktır. İşlevi ardışık olarak çağırmadan önce tüm kancaları önceki değerlerine döndürdüğünüzden emin olmalısınız. Bir ardışık çağrıdan geri dönüldüğünde, bir kanca kendisini değiştirebileceğinden tüm kancalar yeniden kaydedilmelidir.
+      </div></td></tr></table></div><a name="glibc-__malloc_initialize_hook" id="glibc-__malloc_initialize_hook"></a>
+<a class="indexterm" name="idx293" id="idx293"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt><b><tt>__malloc_initialize_hook</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">değişken</div></div></div><dl><dd><div class="para">
+Bu değişkenin değeri, malloc gerçekleştirmesi ilklendirildiğinde bir kere çağrılan bir işleve göstericidir. Bu zayıf bir değişkendir ve aşağıdaki gibi bir tanımlama ile yazılım tarafından değiştirilebilir:
+        </div>
+<div class="para"><pre class="literallayout">
+void (*<tt>__malloc_initialize_hook</tt>) (void) = ilkendirme_kancam;
+</pre></div></dd></dl><div style="padding:5px"></div>
+      <div class="para">
+Bakmak için en iyi zaman, malloc kanca işlevlerinin güvenle kurulduğu zamandır. Kanca işlevler, malloc'la ilgili işlevleri ardışık çağırırsa, malloc'un <b><tt>__malloc_hook</tt></b>'a atandığı sırada kendisini düzgün olarak ilklendirmesi gerekir. Diğer yandan, kanca işlevler kendi malloc gerçeklemelerini sağlarlarsa, kancaların yazılımdaki ilk <b><tt>malloc</tt></b> çağrısı tamamlanmadan önce atanması yaşamsal önemdedir. Çünkü aksi takdirde, örneğin bir normal kancasız malloc'la sağlanan bir blok daha sonra bir <b><tt>__free_hook</tt></b> üzerinden elde edilmelidir.
+      </div><div class="para">
+Her iki durumda da sorun <tt>__malloc_initialize_hook</tt> tarafından gösterilen bir yazılımcı tanımlı işlev içinden ayarlanması ile çözümlenebilir ve böylece kancalar doğru zamanda güvenle ayarlanmış olur.
+      </div><div class="para">
+Aşağıdaki örnekte <b><tt>__malloc_hook</tt></b> ve  <b><tt>__free_hook</tt></b> değişkenlerinin nasıl kullanıldığı gösterilmiştir. <b><tt>malloc</tt></b> veya <b><tt>free</tt></b> her çağrıldığında bir bilgi basan bir işlev kurulmaktadır. Bu örnekte, yazılımda <b><tt>realloc</tt></b> ve <b><tt>memalign</tt></b> işlevlerinin bulunmadığı varsayılmıştır.
+     </div>
+<div class="para"><div align="right"><pre class="screen">
+/* __malloc_hook ve __free_hook için prototipler */
+#include &lt;malloc.h&gt;
+
+/* Kancalarımız için prototipler  */
+static void my_init_hook (void);
+static void *my_malloc_hook (size_t, const void *);
+static void my_free_hook (void*, const void *);
+
+/* C kütüphanesindeli ilklendirme kancasının üstüne yazalım. */
+void (*__malloc_initialize_hook) (void) = my_init_hook;
+
+static void my_init_hook (void)
+{
+  old_malloc_hook = __malloc_hook;
+  old_free_hook = __free_hook;
+  __malloc_hook = my_malloc_hook;
+  __free_hook = my_free_hook;
+}
+
+static void * my_malloc_hook (size_t size, const void *caller)
+{
+  void *result;
+  /* tüm eski kancaları önceki değerlerine getirelim */
+  __malloc_hook = old_malloc_hook;
+  __free_hook = old_free_hook;
+  /* Ardışık çağıralım */
+  result = malloc (size);
+  /* belirlenen kancaları kaydedelim */
+  old_malloc_hook = __malloc_hook;
+  old_free_hook = __free_hook;
+  /* <b><tt>printf</tt></b>, <b><tt>malloc</tt></b>'u  tekrar çağırmamalı. */
+  printf ("malloc (%u), %p döndürdü\n", (unsigned int) size, result);
+  /* Kendi kancalarımızı önceki değerlerine getirelim */
+  __malloc_hook = my_malloc_hook;
+  __free_hook = my_free_hook;
+  return result;
+}
+
+static void
+my_free_hook (void *ptr, const void *caller)
+{
+  /* tüm eski kancaları önceki değerlerine getirelim */
+  __malloc_hook = old_malloc_hook;
+  __free_hook = old_free_hook;
+  /* Ardışık çağıralım */
+  free (ptr);
+  /* belirlenen kancaları kaydedelim */
+  old_malloc_hook = __malloc_hook;
+  old_free_hook = __free_hook;
+  /* <b><tt>printf</tt></b>, <b><tt>free</tt></b>'yi  tekrar çağırmamalı. */
+  printf ("gösterici %p serbest bırakıldı\n", ptr);
+  /* Kendi kancalarımızı önceki değerlerine getirelim */
+  __malloc_hook = my_malloc_hook;
+  __free_hook = my_free_hook;
+}
+
+main ()
+{
+  …
+}
+</pre></div></div><div class="para">
+<a class="link" href="../glibc/glibc-Unconstrained-Allocation.html#glibc-Heap-Consistency-Checking" title="Yığın Bellek Tutarlılık Denetimi"><b><tt>mcheck</tt></b></a>  işlevi böyle kancalar kurularak çalışır.
+      </div></dd></dl> <div class="head3"><a name="glibc-Statistics-of-Malloc" id="glibc-Statistics-of-Malloc"></a><b><tt>malloc</tt></b> ile Bellek Ayırma İstatistikleri</div><dl><dd><div class="para">
+<a class="indexterm" name="idx294" id="idx294"></a>
+Özdevimli bellek ayırma hakkında <b><tt>mallinfo</tt></b> işlevini kullanarak bilgi edinebilirsiniz. Bu işlev ve onunla ilişkili veri türü <tt>malloc.h</tt> başlık dosyasında bildirilmiştir. Standart SVID/XPG sürümünün oluşumlarıdır.
+<a class="indexterm" name="idx295" id="idx295"></a>
+      </div><a name="glibc-mallinfo_struct" id="glibc-mallinfo_struct"></a>
+<a class="indexterm" name="idx296" id="idx296"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct <b><tt>mallinfo</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+Bu yapı özdevimli bellek ayırıcı hakkında bilgi döndürmek için kullanılır.         Aşağıdaki üyelere sahiptir:
+        </div>
+          <dl><dt><span class="glossterm">
+            <tt>int </tt><b><tt>arena</tt></b></span></dt><dd class="halfpara"><div class="para">
+<b><tt>malloc</tt></b> tarafından <b><tt>sbrk</tt></b> ile ayrılan belleğin bayt cinsinden toplam boyudur.
+          </div></dd><dt><span class="glossterm">
+           <tt>int </tt><b><tt>ordblks</tt></b></span></dt><dd class="halfpara"><div class="para">
+Kullanılmayan parçaların sayısıdır. (Bellek ayırıcı dahili olarak işletim sistemindeki bellek parçalarını alır ve tek tek  <b><tt>malloc</tt></b> çağrılarına dilimleyerek dağıtır. Bkz. <a href="../glibc/glibc-Unconstrained-Allocation.html#glibc-Efficiency-and-Malloc" class="xref" title="malloc için Yeterlik Kaygıları">malloc için Yeterlik Kaygıları</a>.)
+          </div></dd><dt><span class="glossterm">
+            <tt>int </tt><b><tt>smblks</tt></b></span></dt><dd class="halfpara"><div class="para">Bu alan kullanılmamıştır.</div></dd><dt><span class="glossterm">
+            <tt>int </tt><b><tt>hblks</tt></b></span></dt><dd class="halfpara"><div class="para">
+            <b><tt>mmap</tt></b> ile ayrılan parçaların toplam sayısıdır.
+          </div></dd><dt><span class="glossterm">
+            <tt>int </tt><b><tt>hblkhd</tt></b></span></dt><dd class="halfpara"><div class="para">
+<b><tt>mmap</tt></b> ile ayrılan belleğin bayt cinsinden toplam boyudur.
+          </div></dd><dt><span class="glossterm">
+            <tt>int </tt><b><tt>usmblks</tt></b></span></dt><dd class="halfpara"><div class="para">Bu alan kullanılmamıştır.
+          </div></dd><dt><span class="glossterm">
+            <tt>int </tt><b><tt>fsmblks</tt></b></span></dt><dd class="halfpara"><div class="para">Bu alan kullanılmamıştır.
+          </div></dd><dt><span class="glossterm">
+            <tt>int </tt><b><tt>uordblks</tt></b></span></dt><dd class="halfpara"><div class="para">
+<b><tt>malloc</tt></b> tarafından alınmayan parçaların işgal ettiği toplam boyuttur.
+          </div></dd><dt><span class="glossterm">
+            <tt>int </tt><b><tt>fordblks</tt></b></span></dt><dd class="halfpara"><div class="para">
+Serbest bırakılan (kullanımda olmayan) parçaların işgal ettiği belleğin toplam boyudur.
+          </div></dd><dt><span class="glossterm">
+           <tt>int </tt><b><tt>keepcost</tt></b></span></dt><dd class="halfpara"><div class="para">
+Normalde yığın belleğin son sınırındaki (sanal adres alanının veri bölütünün yüksek ucu) en tepe dağıtılabilir parçanın boyudur.
+          </div></dd></dl>
+        </dd></dl><div style="padding:5px"></div>
+      <a name="glibc-glibc-mallinfo_func" id="glibc-glibc-mallinfo_func"></a>
+<a class="indexterm" name="idx297" id="idx297"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct mallinfo <b><tt>mallinfo</tt></b></tt></td><td valign="top"><pre class="paramdef">(void)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev o anki özdevimli bellek kullanımı hakkında <tt>struct mallinfo</tt> yapı türünde bilgi döndürür.
+        </div></dd></dl><div style="padding:5px"></div>
+      </dd></dl> <div class="head3"><a name="glibc-Summary-of-Malloc" id="glibc-Summary-of-Malloc"></a><tt>malloc</tt> ile İlgili İşlevlerin Özeti</div><dl><dd><div class="para">
+Burada <b><tt>malloc</tt></b> ile çalışan işlevlerin bir özeti bulunmaktadır:
       </div>
-      <section class="sect1" id="glibc-Unconstrained-Allocation">
-        <div class="titlepage">
-          <div>
-            <div>
-              <h2 class="title" style="clear: both">3.2.3. Kısıtlanmamış Bellek Tahsisi</h2>
-            </div>
-          </div>
-        </div>
-        <div class="preliminary">
-          <div class="titlepage">
-            <div>
-              <div>
-                <h3 class="title">Ön Bilgi</h3>
-              </div>
-            </div>
-          </div>
-          <p>
-    <span id="idm85711" class="indexterm"></span>
-    <span id="idm85714" class="indexterm"></span>
-    En çok kullanılan özdevimli bellek tahsis oluşumu <span class="command"><strong>malloc</strong></span> işlevidir. Bu işlev kullanılarak her zaman her boyutta bellek dilimi tahsis edilebilir, istendiğinde büyütülebilir, küçültülebilir ve ihtiyaç kalmadığında serbest bırakılabilir ya da hiç serbest bırakılmayabilir.
-   </p>
-        </div>
-        <div class="toc">
-          <div class="toc-title">İçindekiler</div>
-          <dl class="toc">
-            <dt>3.2.3.1. <a href="glibc-Basic-Allocation.html">Özdevimli Olarak Basit Bellek Tahsisi</a>  -  <code class="code">malloc</code> işlevinin basit kullanımı.</dt>
-            <dt>3.2.3.2. <a href="glibc-Malloc-Examples.html"><code class="code">malloc</code> Örnekleri</a>  -  <code class="code">malloc</code> ve <code class="code">xmalloc</code> örnekleri.</dt>
-            <dt>3.2.3.3. <a href="glibc-Freeing-after-Malloc.html"><code class="code">malloc</code> ile Ayrılan Belleğin Serbest Bırakılması</a>  -  <code class="code">malloc</code> ile tahsis edilmiş bir dilim <code class="code">free</code> ile serbest bırakılabilir.</dt>
-            <dt>3.2.3.4. <a href="glibc-Changing-Block-Size.html">Bellek Diliminin Boyutunun Değiştirilmesi</a>  -  <code class="code">realloc</code> kullanarak bir dilim büyütülebilir ve küçültülebilir.</dt>
-            <dt>3.2.3.5. <a href="glibc-Allocating-Cleared-Space.html">Temizlenmiş Bellek Tahsisi</a>  -  <code class="code">calloc</code> bellek dilimini hem tahsis etmek hem de temizlemek için kullanılabilir.</dt>
-            <dt>3.2.3.6. <a href="glibc-Aligned-Memory-Blocks.html">Bellek Dilimlerinin Hizalanarak Tahsisi</a>  -  Dilimleri özellikle adımlarını ayarlayarak adreslemek.</dt>
-            <dt>3.2.3.7. <a href="glibc-Malloc-Tunable-Parameters.html"><code class="code">malloc</code> Ayarlanabilirleri</a>  -  Bellek tahsisi ayarlanabilir değişkenlerinin değerleri <code class="code">mallopt</code> ile atanır.</dt>
-            <dt>3.2.3.8. <a href="glibc-Heap-Consistency-Checking.html">Yığın Bellek Tutarlılık Denetimi</a>  -  Yığın belleğin hatalara karşı özdevinimli denetlenmesi.</dt>
-            <dt>3.2.3.9. <a href="glibc-Statistics-of-Malloc.html"><code class="code">malloc</code> ile Bellek Tahsis İstatistikleri</a>  -  Yazılımın kullandığı bellek miktarı hakkında bilgi alma.</dt>
-            <dt>3.2.3.10. <a href="glibc-Summary-of-Malloc.html"><code class="code">malloc</code> ve İlgili İşlevlerin Özeti</a></dt>
-          </dl>
-        </div>
-      </section>
-      <footer>
-        <div align="center" class="footer">
-          <small>Bir <a href="http://belgeler.org.tr/">Linux Kitaplığı</a> Sayfası</small>
-        </div>
-      </footer>
-    </section>
-  </body>
-</html>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void *<b><tt>malloc</tt></b></tt></td><td valign="top"><pre class="paramdef">(size_t <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun"></div></div></div><dl><dd><div class="para">
+<i><tt>boyut</tt></i> baytlık bir blok ayırır. Bkz. <a href="../glibc/glibc-Unconstrained-Allocation.html#glibc-Basic-Allocation" class="xref" title="Özdevimli Olarak Basit Bellek Ayırma">Özdevimli Olarak Basit Bellek Ayırma</a>.
+        </div></dd></dl><div style="padding:5px"></div>
+      
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>free</tt></b></tt></td><td valign="top"><pre class="paramdef">(void *<i><tt>gösterici</tt></i>)</pre></td></tr></table></div><div class="sagsutun"></div></div></div><dl><dd><div class="para">
+<b><tt>malloc</tt></b> ile ayrılan belleği serbest bırakır. Bkz. <a href="../glibc/glibc-Unconstrained-Allocation.html#glibc-Freeing-after-Malloc" class="xref" title="malloc ile Ayrılan Belleğin Serbest Bırakılması">malloc ile Ayrılan Belleğin Serbest Bırakılması</a>.
+        </div></dd></dl><div style="padding:5px"></div>
+      
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void *<b><tt>realloc</tt></b></tt></td><td valign="top"><pre class="paramdef">(void  *<i><tt>gösterici</tt></i>,
+ size_t <i><tt>yeniboyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun"></div></div></div><dl><dd><div class="para">
+<b><tt>malloc</tt></b> ile ayrılan belleği büyütür ya da küçültür. Bunu kimi zaman veriyi başka bir yere kopyalayarak yapar. Bkz. <a href="../glibc/glibc-Unconstrained-Allocation.html#glibc-Changing-Block-Size" class="xref" title="Bir Bellek Bloğunun Boyutunun Değiştirilmesi">Bir Bellek Bloğunun Boyutunun Değiştirilmesi</a>.
+        </div></dd></dl><div style="padding:5px"></div>
+      
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void *<b><tt>calloc</tt></b></tt></td><td valign="top"><pre class="paramdef">(size_t <i><tt>elmsayısı</tt></i>,
+ size_t <i><tt>elmboyu</tt></i>)</pre></td></tr></table></div><div class="sagsutun"></div></div></div><dl><dd><div class="para">
+<b><tt>malloc</tt></b> kullanarak <i><tt>elmsayısı</tt></i> * <i><tt>elmboyu</tt></i> baytlık bir blok ayırır ve içini sıfırlarla doldurarak temizler. Bkz. <a href="../glibc/glibc-Unconstrained-Allocation.html#glibc-Allocating-Cleared-Space" class="xref" title="Temizlenmiş Bellek Ayırma">Temizlenmiş Bellek Ayırma</a>.
+        </div></dd></dl><div style="padding:5px"></div>
+      
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void *<b><tt>valloc</tt></b></tt></td><td valign="top"><pre class="paramdef">(size_t <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun"></div></div></div><dl><dd><div class="para">
+Sayfa boyunda adresleme ile <i><tt>boyut</tt></i> uzunlukta blok ayırır. Bkz. <a href="../glibc/glibc-Unconstrained-Allocation.html#glibc-Aligned-Memory-Blocks" class="xref" title="Bellek Bloklarının Hizalanarak Ayrılması">Bellek Bloklarının Hizalanarak Ayrılması</a>.
+        </div></dd></dl><div style="padding:5px"></div>
+      
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void *<b><tt>memalign</tt></b></tt></td><td valign="top"><pre class="paramdef">(size_t <i><tt>adımboyu</tt></i>,
+ size_t <i><tt>boyut</tt></i>)</pre></td></tr></table></div><div class="sagsutun"></div></div></div><dl><dd><div class="para">
+<i><tt>adımboyu</tt></i>nun katlarında adreslenen <i><tt>boyut</tt></i> baytlık bir blok ayırır. Bkz.  <a href="../glibc/glibc-Unconstrained-Allocation.html#glibc-Aligned-Memory-Blocks" class="xref" title="Bellek Bloklarının Hizalanarak Ayrılması">Bellek Bloklarının Hizalanarak Ayrılması</a>.
+        </div></dd></dl><div style="padding:5px"></div>
+      
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>mallopt</tt></b></tt></td><td valign="top"><pre class="paramdef">(int <i><tt>param</tt></i>,
+ int <i><tt>değer</tt></i>)</pre></td></tr></table></div><div class="sagsutun"></div></div></div><dl><dd><div class="para">
+Ayarlanabilir parametreleri ayarlar. Bkz.  <a href="../glibc/glibc-Unconstrained-Allocation.html#glibc-Malloc-Tunable-Parameters" class="xref" title="Ayarlanabilir Malloc Parametreleri">Ayarlanabilir Malloc Parametreleri</a>.
+        </div></dd></dl><div style="padding:5px"></div>
+      
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>mcheck</tt></b></tt></td><td valign="top"><pre class="paramdef">(void (*<i><tt>çıkış_işlevi</tt></i>) (void))</pre></td></tr></table></div><div class="sagsutun"></div></div></div><dl><dd><div class="para">
+<b><tt>malloc</tt></b>'a özdevimli ayrıan bellek üzerinde arasıra tutarlılık denetimi yapmasını ve bir tutarsızlık bulunursa <i><tt>çıkış_işlevi</tt></i>ni çağırmasını söyler. Bkz. <a href="../glibc/glibc-Unconstrained-Allocation.html#glibc-Heap-Consistency-Checking" class="xref" title="Yığın Bellek Tutarlılık Denetimi">Yığın Bellek Tutarlılık Denetimi</a>.
+        </div></dd></dl><div style="padding:5px"></div>
+      
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void *(*__malloc_hook)</tt></td><td valign="top"><pre class="paramdef">(size_t      <i><tt>boyut</tt></i>,
+ const void *<i><tt>çağıran</tt></i>)</pre></td></tr></table></div><div class="sagsutun"></div></div></div><dl><dd><div class="para">
+Çağrıldığında <b><tt>malloc</tt></b> kullanan bir işleve gösterici.
+        </div></dd></dl><div style="padding:5px"></div>
+      
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void *(*__realloc_hook)</tt></td><td valign="top"><pre class="paramdef">(void       *<i><tt>gösterici</tt></i>,
+ size_t      <i><tt>boyut</tt></i>,
+ const void *<i><tt>çağıran</tt></i>)</pre></td></tr></table></div><div class="sagsutun"></div></div></div><dl><dd><div class="para">
+Çağrıldığında <b><tt>realloc</tt></b> kullanan bir işleve gösterici.
+        </div></dd></dl><div style="padding:5px"></div>
+      
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void (*__free_hook)</tt></td><td valign="top"><pre class="paramdef">(void       *<i><tt>ptr</tt></i>,
+ const void *<i><tt>çağıran</tt></i>)</pre></td></tr></table></div><div class="sagsutun"></div></div></div><dl><dd><div class="para">
+Çağrıldığında <b><tt>free</tt></b> kullanan bir işleve gösterici.
+        </div></dd></dl><div style="padding:5px"></div>
+      
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void (*__memalign_hook)</tt></td><td valign="top"><pre class="paramdef">(size_t      <i><tt>boyut</tt></i>,
+ size_t      <i><tt>adımboyu</tt></i>,
+ const void *<i><tt>çağıran</tt></i>)</pre></td></tr></table></div><div class="sagsutun"></div></div></div><dl><dd><div class="para">
+ Çağrıldığında <b><tt>memalign</tt></b> kullanan bir işleve gösterici.
+        </div></dd></dl><div style="padding:5px"></div>
+      
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct mallinfo <b><tt>mallinfo</tt></b></tt></td><td valign="top"><pre class="paramdef">(void)</pre></td></tr></table></div><div class="sagsutun"></div></div></div><dl><dd><div class="para">
+Özdevimli bellek kullanımı hakkında bilgi döndürür. Bkz. <a href="../glibc/glibc-Unconstrained-Allocation.html#glibc-Statistics-of-Malloc" class="xref" title="malloc ile Bellek Ayırma İstatistikleri">malloc ile Bellek Ayırma İstatistikleri</a>.
+        </div></dd></dl><div style="padding:5px"></div>
+      </dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Memory-Allocation-and-C.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Memory-Allocation.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Allocation-Debugging.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">C Yazılımlarında Bellek Ayırma </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Bellek Ayırmada Hata Ayıklama</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

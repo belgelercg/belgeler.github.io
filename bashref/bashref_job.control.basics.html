@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:28:58+03:00" /><title>İş Denetiminin Temelleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../bashref/bashref_job.control.html" title="VII. Oylum - İş Denetimi" /><link rel="previous" href="../bashref/bashref_job.control.html" title="VII. Oylum - İş Denetimi" /><link rel="next" href="../bashref/bashref_job.control.builtins.html" title="İş Denetim Yerleşikleri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">İş Denetiminin Temelleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../bashref/bashref_job.control.html">Önceki</a> </td><th width="60%" align="center">VII. Oylum - İş Denetimi</th><td width="20%" align="right"> <a accesskey="n" href="../bashref/bashref_job.control.builtins.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="bashref_job.control.basics" id="bashref_job.control.basics"></a>İş Denetiminin Temelleri</div></div></div><dl><dd><a class="indexterm" name="idx334" id="idx334"></a><a class="indexterm" name="idx335" id="idx335"></a><a class="indexterm" name="idx336" id="idx336"></a><a class="indexterm" name="idx337" id="idx337"></a><a name="bashref_definitions-job.cont" id="bashref_definitions-job.cont"></a><div class="para">
+İş denetimi, bir sürecin çalışmasını seçerek durdurma (bekletme) ve daha sonra çalışmasını sürdürme (yeniden başlatma) yeteneği demektir. Bir kullanıcı bu araçla genellikle Bash ve sistemin uçbirim sürücüsü tarafından ortak olarak sağlanan bir etkileşimli arayüz üzerinden çalışır.
+      </div><div class="para">
+Kabuk bir iş ile her boruhattını ilişkilendirir. Halen çalışmakta olan ve <b><tt>jobs</tt></b> komutu ile listelenebilen işlerin listesini bir tabloda saklar. Bash bir işi eşzamansız olarak başlattığında şöyle bir ileti gösterir:
+      </div>
+<div class="para"><div align="right"><pre class="screen">[1] 25647</pre></div></div>
+      <div class="para">
+Bu ileti, işin iş numarasının 1 ve bu işle ilişkilendirilen boruhattındaki son sürecin süreç kimliğinin (PID) 25647 olduğunu ifade eder. Bir tek boruhattındaki süreçlerin tümü aynı işin üyeleridir. Bash iş denetimi için esas olarak iş soyutlaması kullanır.
+      </div><div class="para">
+İş denetiminin kullanıcı arayüzünün gerçeklenmesini kolaylaştırmada,
+işletim sistemi, kullanılan uçbirim sürecinin grup kimliği diye bir
+kavram sağlar. Bu süreç grubunun üyeleri (süreçlerin süreç grubu kimliği,
+kullanılan uçbirimin süreç grubu kimliğine eşittir) klavyeden üretilen
+<tt>SIGINT</tt> gibi sinyalleri alır. Bu süreçler önalanda
+olduklarını söylerler. Artalan süreçleri, süreç grubu kimliği uçbiriminkinden
+farklı olan süreçlerdir. Bu süreçler klavyeden üretilen sinyallerden
+bağışıktır. Sadece önalan süreçleri uçbirime yazar ve uçbirimi
+okuyabilir. Uçbirimi okumaya (ya da yazmaya) çalışan artalan süreçleri
+bir <tt>SIGTTIN</tt> (<tt>SIGTTOU</tt>) sinyali
+yakalanmadıkça, süreci bekleten uçbirim sürücüsü üzerinden gönderir.
+      </div><div class="para">
+Bash'in çalıştığı işletim sistemi üzerinde iş denetimi destekleniyorsa,
+Bash onu kullanacak araçları içerir. Bir süreç çalışırken
+<i>bekletme karakteri</i> nin tuşlanması (genelde
+<tt>^Z</tt>, Control-Z'dir) sürecin durdurulmasına ve denetimin
+Bash'e geçmesine sebep olur. Gecikmeli bekletme karakterinin (genelde
+<tt>^Y</tt>, Control-Y'dir) tuşlanması, uçbirimden girdi
+okumaya çalıştığı zaman sürecin durdurulmasına sebep olur ve denetim Bash'e
+döndürülür. Bundan sonra kullanıcı bu işin durumunu değiştirebilir:
+<b><tt>bg</tt></b> komutunu kullanarak artalanda,
+<b><tt>fg</tt></b> komutunu kullanark önalanda işi devam
+ettirebilir ya da <b><tt>kill</tt></b> komutu ile süreci
+öldürebilir. Bir <tt>^Z</tt> hemen etkisini gösterir ve
+çıktının askıda kalmasına ve baştanyazmanın iptal edilmesine
+sebep olan bir yan etkisi vardır.
+      </div><div class="para">
+Kabuktaki bir işi ifade etmede kullanılan bir kaç yol vardır.
+<tt>%</tt> karakteri bir işin ismini ifade eder.
+      </div><div class="para">
+İş numarası <tt>n</tt>'e, <tt>%n</tt> olarak
+başvurulabilir. <tt>%+</tt> ve <tt>%%</tt>
+sembolleri, artalanda başlatılan ya da önalanda olan durmuş son işin
+yani o anki iş kavramının kabuktaki karşılığıdır. Tek bir <tt>%</tt> (iş belirtimine eşlik etmeksizin) ayrıca o anki işi belirtmek için kullanılabilir. Önceki iş ise
+<tt>%-</tt> sembolü ile ifade edilir. İşlerle ilgili çıktılarda ise (örn. <b><tt>jobs</tt></b> komutunun çıktısı), o anki iş daima bir <tt>+</tt> ile önceki iş ise <tt>-</tt> ile imlenir.
+      </div><div class="para">
+Bir işe onu başlatan ismi bir önek olarak kullanarak ya da komut satırının
+içinde geçen bir dizge kullanılarak erişilebilir. Örneğin,
+<tt>%ce</tt> durmuş olan <tt>ce</tt> işini
+ifade eder. <tt>%?ce</tt> şeklinde bir kullanımda ise
+komut satırında <tt>ce</tt> dizgesi geçen bir iş ifade
+edilebilir. Eğer önek ve dizge birden fazla işle eşleşirse, Bash bir
+hata uyarısı verir.
+      </div><div class="para">
+Bir işin isimlendirilmesi onu önalana almak için kullanılabilir:
+<tt>%1</tt>, <b><tt>fg</tt></b><tt> %1</tt>
+komutuna eşdeğerdir ve 1 numaralı işi artalandan önalana almak içindir.
+Benzer olarak, <tt>%1 &amp;</tt>,
+<b><tt>bg</tt></b><tt> %1</tt> komutuna eşdeğerdir ve
+1 numaralı işin artalanda sürdürülmesini sağlar.
+      </div><div class="para">
+Kabuk herhangi bir yerde bir iş durumunu değiştirdiğinde anında öğrenir.
+Normalde Bash bir işi, durumundaki değişiklikleri raporlamadan önce
+bir komut istemi basmaya hazır hale gelene kadar herhangi bir çıktısına
+kesme uygulamadan bekler. <b><tt>set</tt></b> yerleşiği
+<tt>-b</tt> seçeneği ile çalıştırılmışsa, Bash bu değişiklikleri
+anında raporlar. Her çocuk sürecin çıkışında varsa <tt>SIGCHLD</tt>
+sinyal kapanı çalıştırılır.
+      </div><div class="para">
+Durmuş işler varken Bash çıkmaya çalışırsa, kabuk durmuş işlerin varlığını
+belirten bir uyarı iletisi basar. Bundan sonra onların durumunu öğrenmek
+için <b><tt>jobs</tt></b> komutu kullanılabilir. Bir ara komut
+olmaksızın çıkmak için ikinci bir istek daha gelirse, kabuk bir ileti
+daha göstermez ve durmuş işler sonlandırılır.
+      </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../bashref/bashref_job.control.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../bashref/bashref_job.control.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../bashref/bashref_job.control.builtins.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">VII. Oylum - İş Denetimi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> İş Denetim Yerleşikleri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

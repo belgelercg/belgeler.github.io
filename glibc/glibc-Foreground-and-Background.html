@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:46+03:00" /><title>Önalan ve Artalan</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Implementing-a-Shell.html" title="Bir İş Denetim kabuğunun Gerçeklenmesi" /><link rel="previous" href="../glibc/glibc-Launching-Jobs.html" title="İşlerin Başlatılması" /><link rel="next" href="../glibc/glibc-Stopped-and-Terminated-Jobs.html" title="İşlerin Durdurulması ve Sonlandırılması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Önalan ve Artalan</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Launching-Jobs.html">Önceki</a> </td><th width="60%" align="center">Bir İş Denetim kabuğunun Gerçeklenmesi</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Stopped-and-Terminated-Jobs.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Foreground-and-Background" id="glibc-Foreground-and-Background"></a>Önalan ve Artalan</div><dl><dd><div class="para">
+Kabuk tarafından bir iş önalanda başlatılırken kabuk tarafından hangi eylemlerin ele alınması gerektiğine ve bunun bir artalan işi başlatmaktan ne gibi farkları olduğuna bakalım.
+    </div><div class="para">
+<a class="indexterm" name="idx2985" id="idx2985"></a>
+Bir önalan işi başlatılırken, ilk olarak kabuk bir <b><tt>tcsetpgrp</tt></b> çağrısı yaparak ona denetim uçbiriminde erişim vermelidir. Bundan sonra, kabuk bu süreç grubundaki sürecin sonlanmasını ya da durmasını beklemelidir. Bu ayrıntılı olarak <a href="../glibc/glibc-Stopped-and-Terminated-Jobs.html" class="xref" title="İşlerin Durdurulması ve Sonlandırılması">İşlerin Durdurulması ve Sonlandırılması</a> bölümünde anlatılmıştır.
+    </div><div class="para">
+Gruptaki tüm süreçler tamamlandığında ya da durduğunda, kabuk tekrar bir <b><tt>tcsetpgrp</tt></b> çağrısı yaparak kendi süreç grubu için uçbirim denetimini geri kazanmalıdır. Süreç grubuna, bir artalan işindeki G/Ç işleminden ya da kullanıcı tarafından tuşlanan bir SUSP karakterinden dolayı oluşan durdurma sinyalleri gönderildiğinde normal olarak işteki tüm süreçler durdurulur.
+    </div><div class="para">
+Önalan işi tuhaf bir durumda uçbirimde kalabilir, bu durumda kabuk devam etmeden önce kendi uçbirim kiplerini eski haline getirmelidir. İşin sadece durmuş olması durumunda, iş daha sonra devam edebileceğinden, kabuk önce o anki uçbirim kiplerini kaydetmelidir. Uçbirim kipleri ile ilgili işlemler için kullanılan <b><tt>tcgetattr</tt></b> ve <b><tt>tcsetattr</tt></b> işlevleri <a href="../glibc/glibc-Terminal-Modes.html" class="xref" title="Uçbirim Kipleri">Uçbirim Kipleri</a> bölümünde anlatılmıştır.
+    </div><div class="para">
+Bunların hepsini yapan örnek kabuk işlevi:
+    </div>
+<div class="para"><div align="right"><pre class="screen">/* j işini önalana koyalım. cont sıfırdan farklıysa,
+   kayıtlı uçbirim kiplerini yerine koyalım ve
+   biz engellemeden önce sürecin devam edebilmesi için
+   süreç grubuna bir SIGCONT sinyali gönderelim.  */
+
+void
+put_job_in_foreground (job *j, int cont)
+{
+  /* İşi önalana koyalım.  */
+  tcsetpgrp (shell_terminal, j-&gt;pgid);
+
+  /* Gerekliyse, işe bir devamet sinyali gönderelim.  */
+  if (cont)
+    {
+      tcsetattr (shell_terminal, TCSADRAIN, &amp;j-&gt;tmodes);
+      if (kill (- j-&gt;pgid, SIGCONT) &lt; 0)
+        perror ("kill (SIGCONT)");
+    }
+
+  /* Rapor vermesini bekleyelim.  */
+  wait_for_job (j);
+
+  /* Kabuğu tekrar önalana koyalım.  */
+  tcsetpgrp (shell_terminal, shell_pgid);
+
+  /* Kabuğa uçbirim kiplerini geri verelim.  */
+  tcgetattr (shell_terminal, &amp;j-&gt;tmodes);
+  tcsetattr (shell_terminal, TCSADRAIN, &amp;shell_tmodes);
+}
+</pre></div></div><div class="para">
+<a class="indexterm" name="idx2986" id="idx2986"></a>
+Eğer süreç grubu bir artalan işi olarak başlatılıyorsa, kabuğun kendisi önalanda kalmalı ve uçbirimden komutları okumaya devam etmelidir.
+    </div><div class="para">
+Örnek kabukta, bir işi artalana koymak için çok fazla bir şey yapmak gerekmemiştir. Bu işlem için kullanılan işlev:
+    </div>
+<div class="para"><div align="right"><pre class="screen">/* Bir işi artalana koyacağız. cont doğru ise,
+   süreç grubuna devam etmesi için bir
+   <b><tt>SIGCONT</tt></b> sinyali gönderelim.  */
+
+void
+put_job_in_background (job *j, int cont)
+{
+  /* Gerekliyse artalan işine bir devamet sinyali gönderelim.  */
+  if (cont)
+    if (kill (-j-&gt;pgid, SIGCONT) &lt; 0)
+      perror ("kill (SIGCONT)");
+}
+</pre></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Launching-Jobs.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Implementing-a-Shell.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Stopped-and-Terminated-Jobs.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">İşlerin Başlatılması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> İşlerin Durdurulması ve Sonlandırılması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

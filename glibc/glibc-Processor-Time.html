@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:22+03:00" /><title>İşlemci Süresinin Sorgulanması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Processor-And-CPU-Time.html" title="İşlemci Zamanı ve İşlemci Süresi" /><link rel="previous" href="../glibc/glibc-CPU-Time.html" title="İşlemci Zamanının Sorgulanması" /><link rel="next" href="../glibc/glibc-Calendar-Time.html" title="Mutlak Zaman" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">İşlemci Süresinin Sorgulanması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-CPU-Time.html">Önceki</a> </td><th width="60%" align="center">İşlemci Zamanı ve İşlemci Süresi</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Calendar-Time.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Processor-Time" id="glibc-Processor-Time"></a>İşlemci Süresinin Sorgulanması</div><dl><dd><div class="para">
+<b><tt>times</tt></b> işlevi bir sürecin harcadığı işlemci süresi ile ilgili bilgileri, <a class="link" href="../glibc/glibc-Time-Basics.html" title="Zaman Kavramları">işlemci zamanına</a> ek olarak <b><tt>struct tms</tt></b> cinsinden bir nesne olarak döndürür. Bu oluşum  <tt>sys/times.h</tt> başlık dosyasında bildirilmiştir.
+<a class="indexterm" name="idx2364" id="idx2364"></a>
+<a class="indexterm" name="idx2365" id="idx2365"></a>
+<a class="indexterm" name="idx2366" id="idx2366"></a>
+      </div>
+<a class="indexterm" name="idx2367" id="idx2367"></a>
+<a name="glibc-struct-tms" id="glibc-struct-tms"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct <b><tt>tms</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+<b><tt>tms</tt></b> yapısı bir sürecin harcadığı işlemci süresi ile ilgili bilgileri döndürmek için kullanılır. En azından şu üyelere sahip olmalıdır:
+    </div><dl><dt><span class="glossterm">
+    <tt>clock_t <b><tt>tms_utime</tt></b></tt>
+    </span></dt><dd class="halfpara"><div class="para">
+Çağrıldığı sürecin çalıştırdığı komutların harcadığı toplam işlemci süresidir.
+    </div></dd><dt><span class="glossterm">
+    <tt>clock_t <b><tt>tms_stime</tt></b></tt>
+    </span></dt><dd class="halfpara"><div class="para">
+Çağrıldığı sürece "sistem" tarafından harcanan işlemci süresidir.
+    </div></dd><dt><span class="glossterm">
+    <tt>clock_t <b><tt>tms_cutime</tt></b></tt>
+    </span></dt><dd class="halfpara"><div class="para">
+Çağrıldığı sürecin sonlandırılmış alt süreçlerinin harcadığı <b><tt>tms_utime</tt></b> ve <b><tt>tms_cutime</tt></b> sürelerinin toplamıdır. Sonlandırılmış alt süreçlerin durumu sürece <b><tt>wait</tt></b> veya <b><tt>waitpid</tt></b> ile raporlandığından (bkz. <a href="../glibc/glibc-Process-Completion.html" class="xref" title="Süreç Tamamlama">Süreç Tamamlama</a>), bu değer <b><tt>wait</tt></b> veya <b><tt>waitpid</tt></b> ile raporlanmamış süreleri içermez.
+<a class="indexterm" name="idx2368" id="idx2368"></a>
+    </div></dd><dt><span class="glossterm">
+    <tt>clock_t <b><tt>tms_cstime</tt></b></tt>
+    </span></dt><dd class="halfpara"><div class="para">
+Çağrıldığı sürecin sonlandırılmış alt süreçleri için "sistemin" harcadığı işlemci süresini göstermesi dışında <b><tt>tms_cutime</tt></b> gibidir.
+    </div></dd></dl><div class="para">
+Tüm süreler saat tikleri cinsinden verilmiştir. İşlemci zamanının tersine, bunlar bir olaya göreli olmayan birer süre gösterirler. Bkz. <a href="../glibc/glibc-Creating-a-Process.html" class="xref" title="Bir Sürecin Oluşturulması">Bir Sürecin Oluşturulması</a>.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2369" id="idx2369"></a>
+<a name="glibc-times" id="glibc-times"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>clock_t <b><tt>times</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct tms *<i><tt>tampon</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>times</tt></b> işlevi kendisini çağıran sürecin işlemci süresi ile ilgili bilgileri <i><tt>tampon</tt></i> içinde saklar.
+    </div><div class="para">
+İşlevin dönüş değeri çağrıldığı sürecin işlemci zamanıdır. Başarısızlık durumunda işlev  <b><tt>(clock_t)(-1)</tt></b> ile döner.
+</div></dd></dl><div style="padding:5px"></div>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Taşınabilirlik Bilgisi</th></tr><tr><td align="left" valign="top" class="admon"><div class="para"><a href="../glibc/glibc-CPU-Time.html" class="xref" title="İşlemci Zamanının Sorgulanması">İşlemci Zamanının Sorgulanması</a> bölümünde anlatılan <b><tt>clock</tt></b> işlevi ISO C standardında belirtilmiştir. GNU sisteminde işlemci zamanı <b><tt>times</tt></b> tarafından döndürülen yapının <b><tt>tms_utime</tt></b> ve <b><tt>tms_stime</tt></b> alanlarındaki değerlerin toplamı olarak tanımlanmıştır.</div></td></tr></table></div>
+    </dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-CPU-Time.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Processor-And-CPU-Time.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Calendar-Time.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">İşlemci Zamanının Sorgulanması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Mutlak Zaman</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

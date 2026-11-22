@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:28:51+03:00" /><title>Yaklaşık (~) Yorumlaması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../bashref/bashref_shell.expansions.html" title="Kabuk Yorumları" /><link rel="previous" href="../bashref/bashref_shell.expansions-brace.html" title="Kaşlı Ayraçların Yorumlanması" /><link rel="next" href="../bashref/bashref_shell.expansions-param.html" title="Kabuk Parametrelerinin Yorumlaması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Yaklaşık (~) Yorumlaması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../bashref/bashref_shell.expansions-brace.html">Önceki</a> </td><th width="60%" align="center">Kabuk Yorumları</th><td width="20%" align="right"> <a accesskey="n" href="../bashref/bashref_shell.expansions-param.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="bashref_shell.expansions-tilde" id="bashref_shell.expansions-tilde"></a>Yaklaşık (~) Yorumlaması</div><dl><dd><a class="indexterm" name="idx93" id="idx93"></a><a class="indexterm" name="idx94" id="idx94"></a><div class="para">
+Bir sözcük bir tırnaksız yaklaşık (~) karakteri ile başlıyorsa ve
+tırnaksız ilk / karakterine kadar olan tüm karakterler (veya
+tırnaksız bir / yoksa tüm karakterler) bir <i>yaklaşık-öneki</i>
+kabul edilir. Yaklaşık-öneki içindeki karakterlerin hiçbiri tırnaklı
+değilse, yaklaşık-öneki içindeki karakterlerin olası bir kullanıcı
+ismi oluşturduğu varsayılır. Eğer bu kullanıcı ismi boşsa yaklaşık
+işareti <tt>HOME</tt> kabuk değişkeninin değeri ile değiştirilir.
+Eğer <tt>HOME</tt> değişkeni belirlenmemişse, yerine kabuğu
+çalıştıran kullanıcının ev dizini kullanılır. Aksi takdirde yaklaşık-öneki,
+belirtilen kullanıcının ev dizini ile değiştirilir.
+    </div><div class="para">
+Yaklaşık-öneki <tt>~+</tt> ise, yaklaşık-öneki
+<tt>PWD</tt> kabuk değişkeninin değeri ile değiştirilir.
+Yaklaşık-öneki <tt>~-</tt> ise,
+varsa <tt>OLDPWD</tt> kabuk değişkeninin değeri kullanılır.
+    </div><div class="para">
+Yaklaşık-önekinden sonra istemlik olarak bir <tt>+</tt> veya
+<tt>-</tt> işareti konmuş bir sayı geliyorsa, yaklaşık-öneki,
+<a class="link" href="../bashref/bashref_directory-builtins-dirs.html" title="Dirs Yerleşiği"><b><tt>dirs</tt></b></a>
+yerleşiğine bu işaret ve sayı verilerek çağrıldığı durumda dönen dizin
+yığınındaki ilgili eleman ile değiştirilir. Eğer yaklaşık-öneki ile birlikte
+verilen sayı bir <tt>+</tt> veya <tt>-</tt> işareti
+içermiyorsa <tt>+</tt> işareti verilmiş kabul edilir.
+    </div><div class="para">
+Kullanıcı ismi geçersizse ya da yaklaşık yorumlaması başarısız olursa
+sözcük değişmeden kalır.
+    </div><div class="para">
+Her değişken ataması bir <tt>:</tt> veya ilk <tt>=</tt> işaretinden önce yaklaşık işaretinin gelebileceği varsayımıyla kontrol edilir. Bu gibi durumlarda, yaklaşık yorumlaması ayrıca uygulanır. Sonuç olarak, <tt>PATH</tt>, <tt>MAILPATH</tt> ve
+<tt>CDPATH</tt> değişkenlerine atamalarda yaklaşık işaretli dosya isimleri kullanılabilir ve kabuk değer olarak yorumlanan değeri atar.
+    </div><div class="para">
+Aşağıda tırnaksız yaklaşık-öneklerinin nasıl yorumlandığı gösterilmiştir.
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>~</tt></span></dt><dd class="varlist"><div class="para"><tt>$HOME</tt> değişkeninin değeri</div></dd><dt><span class="term"><tt>~/foo</tt></span></dt><dd class="varlist"><div class="para"><tt>$HOME/foo</tt></div></dd><dt><span class="term"><tt>~fred/foo</tt></span></dt><dd class="varlist"><div class="para">
+<tt>fred</tt> isimli kullanıcının ev dizininin <tt>foo</tt> alt dizini
+      </div></dd><dt><span class="term"><tt>~+/foo</tt></span></dt><dd class="varlist"><div class="para"><tt>$PWD/foo</tt></div></dd><dt><span class="term"><tt>~-/foo</tt></span></dt><dd class="varlist"><div class="para">
+<tt>${OLDPWD-'~-'}/foo</tt>
+      </div></dd><dt><span class="term"><tt>~N</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>dirs</tt></b> <tt>+N</tt> komutundan elde edilen dizge
+      </div></dd><dt><span class="term"><tt>~+N</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>dirs</tt></b> <tt>+N</tt> komutundan elde edilen dizge
+      </div></dd><dt><span class="term"><tt>~-N</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>dirs</tt></b> <tt>-N</tt> komutundan elde edilen dizge
+      </div></dd></dl></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../bashref/bashref_shell.expansions-brace.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../bashref/bashref_shell.expansions.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../bashref/bashref_shell.expansions-param.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Kaşlı Ayraçların Yorumlanması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Kabuk Parametrelerinin Yorumlaması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

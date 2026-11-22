@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:32+03:00" /><title>Razor</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/antispam.html" title="Posta Sunucuları için Spam Önleme Araçları" /><link rel="previous" href="../howto/antispam-spamassasin.html" title="Spamassasin" /><link rel="next" href="../howto/antispam-pyzor.html" title="Pyzor" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Razor</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/antispam-spamassasin.html">Önceki</a> </td><th width="60%" align="center">Posta Sunucuları için Spam Önleme Araçları</th><td width="20%" align="right"> <a accesskey="n" href="../howto/antispam-pyzor.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="antispam-razor" id="antispam-razor"></a>Razor</div><dl><dd><div class="para">
+Kullanıcılara daha önce gelmiş olan spam iletileri merkezi Razor sunucusuna bildirmesi ve daha sonra gelen iletilerin önceki iletilerle karşılaştırılması esasına göre çalışır. Spam iletilerin gövde karakteristikleri, daha sonra gelen iletilerle karşılaştırılmak üzere Razor sunucusunda depolanır. Üzerinde Razor kurulu olan posta sunucusu bir ileti aldığında bu iletiyi Razar sunucusundan sorgular. Eğer ileti Razor sunucusunda daha önce spam olarak kaydedilmişse, ileti spam olarak işaretlenir. SpamAssassin'le birlikte kullanıldığında başarısı %95'e kadar çıkmaktadır.
+  </div>
+<div class="para"><div align="right"><pre class="screen">apt-get install razor</pre></div></div>
+  <div class="para">
+komutuyla kurabilirsiniz. Fakat apt-get kurulumunda bazı sorunlar çıkabileceğinden derlenerek kurulumu da anlatmaya çalışacağım. apt-get kurulumu ve kullanımı ile ilgili bir eki belgenin sonunda bulabilirsiniz.
+konfigurasyon  </div><div class="para">
+<a class="ulink" href="http://sourceforge.net/project/showfiles.php?group_id=3978" target="_top">http://sourceforge.net/project/showfiles.php?group_id=3978</a> adresinde <b><tt>razor-agent</tt></b> ve <b><tt>razor-agent-sdk</tt></b> tar paketlerinin en son sürümlerini bulabilirsiniz.
+  </div><div class="para">
+Aşağıdakileri adım adım uygulayalım. Paketleri açalım ve derleyelim.
+  </div>
+<div class="para"><div align="right"><pre class="screen">tar -zxvf razor-agent-sdk-2.xx.tar.gz</pre></div></div>
+  <div class="para">
+Paket açıldıktan sonra açılan dizine geçelim ve sırayla,
+  </div>
+<div class="para"><div align="right"><pre class="screen">perl Makefile.PL
+make
+make test
+make install
+</pre></div></div>
+  <div class="para">
+komutlarını verelim, daha sonra <b><tt>razor-agent</tt></b> paketi için aynı adımları tekrarlayalım.
+  </div>
+<div class="para"><div align="right"><pre class="screen">tar -zxvf razor-agent-2.xx.tar.gz</pre></div></div>
+  <div class="para">
+Paket açıldıktan sonra açılan dizine geçelim ve sırayla,
+  </div>
+<div class="para"><div align="right"><pre class="screen">perl Makefile.PL
+make
+make test
+make install
+</pre></div></div>
+  <div class="para">
+komutlarını verelim. Derlenme sırasında çıkabilicek sorunlara karşı ilk önce sisteminizde gerekli perl modüllerinin kurulu olup olmadığına bakın. Kurulumdan hemen sonra Razor'un gerekli araçlarına sembolik bağları ataması için,
+  </div>
+<div class="para"><div align="right"><pre class="screen">razor-client</pre></div></div>
+  <div class="para">
+komutunu verin. Daha sonra Razor'un gerekli yapılandırma dosyalarını oluşturabilmesi için,
+  </div>
+<div class="para"><div align="right"><pre class="screen">razor-admin -create</pre></div></div>
+  <div class="para">
+komutunu kullanmalıyız. Bu komut o anki kullanıcının ev dizininde <tt>.razor</tt> adlı dizinin altında gerekli dosyaları oluşturur.
+  </div><div class="para">
+Bir sonraki adımda ise Razor sunucusuna raporlama yapabilmesi için gerekli kullanıcı adı ve parolayı atıyoruz:
+  </div>
+<div class="para"><div align="right"><pre class="screen">razor-admin -register -user=mehmet -pass=linux</pre></div></div>
+  <div class="para">ya da</div>
+<div class="para"><div align="right"><pre class="screen">razor-admin -register</pre></div></div>
+  <div class="para">
+komutunu kullanarak da kullanıcı adı ve parolanın rastgele üretilmesini temin edebiliriz. Kullanıcı adı ve parolalar kullanıcının evdizinindeki <tt>.razor/identity-username</tt> dosyasında saklanır. Kurulumdan sonra görmemiz gereken birkaç komut daha var. Bu komutlar iletilerimizi Razor sunucusuna raporlamak için kullanacağımız komutlardır. Kullanımları <b><tt>sa-learn</tt></b> komutuna çok benzemektedir. Bu komutlardan ilki <b><tt>razor-report</tt></b>'dur. <b><tt>razor-report</tt></b> ile sistemimizde bulunan spam iletileri Razor sunucusuna bildiririz:
+  </div>
+<div class="para"><div align="right"><pre class="screen">razor-report -d -M /root/evolution/local/Spam/mbox</pre></div></div>
+  <div class="para">
+<b><tt>-d</tt></b> seçeneği hata ayıklaması yapılabilmesini, <b><tt>-M</tt></b> seçeneği ise iletilerin <tt>mailbox</tt> türünde tutulduğunu belirtir. Spam olarak raporlayacağınız epostaların yönlendirilmemiş olmalarına dikkat edin. Çünkü yönlendirilmiş (forward) iletilerin içeriği ya da gövdesi değişeceğinden, bu raporlamanın yanlış yapılmasına sebep olur. Raporlamalar özgün iletilerle yapılmalıdır. Bir diğer komut, <b><tt>razor-revoke</tt></b> komutudur. Bu komut ise raporladığımız iletilerin <i>spam olmadığını</i> bildirir:
+  </div>
+<div class="para"><div align="right"><pre class="screen">razor-revoke -d -M /root/evolution/local/Spam/mbox</pre></div></div>
+  <div class="para">
+Son olarak, <b><tt>razor-check</tt></b> komutu, sunucumuzda bulunan iletilerin razor sunucusundaki veritabanında kayıtlı sonuçlara göre karşılaştırılmasına yarar. Bu karşılaştırmaya göre iletileri spam (1) ya da spamdeğil (0) değerleri varilir. Fakat <b><tt>razor-check</tt></b> komutunu bu şekilde kullanmak pratik  değildir. Komutu bu haliyle kullanmak bir sonuç vermez. Razor iki farklı şekilde kullanılabilir. Birincisi Razor'un ProcMail ya da MailDrop gibi eposta süzücüleri ile doğrudan çalışacak şekilde yapılandırabiliriz. Ya da SpamAssassin ile bir bütünlük içinde çalışacak şekilde yapılandırabiliriz. SpamAssassin ile çalıştırmak çok daha pratik bir yoldur ve biz bu yolu tercih edeceğiz.
+  </div> <div class="head3"><a name="id1" id="id1"></a>Razor ve SpamAssasin</div><dl><dd><div class="para">
+Razor'u Spamassasin ile bir bütünkük içinde çalıştırmak için <tt>/etc/mail/spamassassin/local.cf</tt> dosyasına şu satırı eklememiz yeterli olur.
+  </div>
+<div class="para"><pre class="literallayout">use_razor2 1</pre></div>
+  <div class="para">
+Önceki bölümde anlatılan Razor yapılandırmasını yaptıktan ve bu satırı ekledikten sonra <b><tt>spamassassin</tt></b>'i yeniden başlatın:
+  </div>
+<div class="para"><div align="right"><pre class="screen">/etc/init.d/spamassassin restart</pre></div></div>
+  <div class="para">
+ve daha sonra da ikisinin birlikte çalışmasını sınayalım:
+  </div>
+<div class="para"><div align="right"><pre class="screen">spamassassin --lint -D</pre></div></div>
+  <div class="para">
+Bu komutun çıktılarında razor sunucusuna bağlanıldığını görmeniz gerekir. Unutulmaması gereken bir başka nokta da, eğer sunucunuz bir güvenlik duvarı arkasında ise port 2703 (Razor2) ve port 7 (Echo) için gerekli ayarlamaları yapmayı unutmayın.
+  </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/antispam-spamassasin.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/antispam.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/antispam-pyzor.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Spamassasin </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Pyzor</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

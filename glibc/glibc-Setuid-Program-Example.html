@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:51+03:00" /><title>Setuid Yazılım Örneği</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Users-and-Groups.html" title="XXIX. Oylum - Kullanıcılar ve Gruplar" /><link rel="previous" href="../glibc/glibc-Enable-Disable-Setuid.html" title="Setuid Erişiminin Etkinleştirilmesi ve İptali" /><link rel="next" href="../glibc/glibc-Tips-for-Setuid.html" title="Setuid Yazılımları Geliştirmek için İpuçları" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Setuid Yazılım Örneği</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Enable-Disable-Setuid.html">Önceki</a> </td><th width="60%" align="center">XXIX. Oylum - Kullanıcılar ve Gruplar</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Tips-for-Setuid.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="glibc-Setuid-Program-Example" id="glibc-Setuid-Program-Example"></a>Setuid Yazılım Örneği</div></div></div><dl><dd><div class="para">
+Buradaki örnekte, kendi etkin kullanıcı kimliğini değiştiren bir yazılım gösterilmiştir.
+   </div><div class="para">
+Örnek, <b><tt>caber-toss</tt></b> diye bilinen bir oyundan alınmıştır. Örnek, sadece oyun sürecinin yazabildiği <tt>scores</tt> dosyasının değiştirilmesi için yapılan işlemleri içerir. Oyunun çalıştırılabilir dosyasının setuid bitinin <tt>scores</tt> dosyasının sahibi olan kullanıcı için etkin olarak kaydedildiğini varsayıyoruz. Genellikle sistem yöneticisinin yaptığı bir işlemin sonucu olarak bu amaçla <b><tt>games</tt></b> kullanıcısının kullanıldığını varsayalım.
+   </div><div class="para">
+Çalıştırılabilir dosyanın kipinin <b><tt>4755</tt></b> olduğunu varsayarsak, <b><tt>ls -l</tt></b> komutu şöyle bir çıktı üretir:
+   </div>
+<div class="para"><div align="right"><pre class="screen">-rwsr-xr-x   1 games    184422 Jul 30 15:17 caber-toss</pre></div></div>
+   <div class="para">
+Setuid biti dosya kiplerinde <b><tt>s</tt></b> olarak gösterilir.
+   </div><div class="para">
+<tt>scores</tt> dosyasının kipinin ise <b><tt>644</tt></b> olduğunu varsayarak aynı komut şu çıktıyı üretir:
+   </div>
+<div class="para"><div align="right"><pre class="screen">-rw-r--r--  1 games           0 Jul 31 15:33 scores</pre></div></div>
+    <div class="para">
+Buradaki yazılım parçası kullanıcı kimliklerin nasıl değiştirildiğini gösterir. Yazılım, dosya kimliği desteği varsa bu özelliği yoksa etkin ve gerçek kullanıcıları takaslamak için <b><tt>setreuid</tt></b> işlevini kullanmak üzere koşullandırılmıştır.
+   </div>
+<div class="para"><div align="right"><pre class="screen">#include &lt;stdio.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;stdlib.h&gt;
+
+
+/* Etkin ve gerçek kullanıcı kimlikleri hatırlayalım. */
+
+static uid_t euid, ruid;
+
+
+/* Etkin kullanıcı kimliği özgün değerine ayarlayalım. */
+
+void
+do_setuid (void)
+{
+  int status;
+
+#ifdef _POSIX_SAVED_IDS
+  status = seteuid (euid);
+#else
+  status = setreuid (ruid, euid);
+#endif
+  if (status &lt; 0) {
+    fprintf (stderr, "Kullanıcı kimliği etkinleştirilemedi.\n");
+    exit (status);
+    }
+}
+
+
+/* Etkin kullanıcı kimliği gerçek kullanıcı kimliğe ayarlayalım. */
+
+void
+undo_setuid (void)
+{
+  int status;
+
+#ifdef _POSIX_SAVED_IDS
+  status = seteuid (ruid);
+#else
+  status = setreuid (euid, ruid);
+#endif
+  if (status &lt; 0) {
+    fprintf (stderr, "Kullanıcı kimliği etkinleştirilemedi.\n");
+    exit (status);
+    }
+}
+
+/* Asıl kod. */
+
+int
+main (void)
+{
+  /* Etkin ve gerçek kullanıcı kimlikleri hatırlayalım.  */
+  ruid = getuid ();
+  euid = geteuid ();
+  undo_setuid ();
+
+  /* Oynayalım ve puanları kaydedelim.  */
+  ...
+}
+</pre></div></div><div class="para">
+<b><tt>main</tt></b> işlevinin yaptığı ilk işlem etkin kullanıcı kimliğe gerisin geriye gerçek kullanıcı kimliğe ayarlamaktır. Kullanıcı oyunu oynarken bir dosya erişimi yapmak isterse erişim yetkileri gerçek kullanıcı kimliğe göre saptansın diye böyle yapılır. Oyun yazılımı sadece <tt>scores</tt> dosyasına puanı yazacağı zaman etkin kullanıcı kimliğini dosyanın kullanıcı kimliği yapar:
+   </div>
+<div class="para"><div align="right"><pre class="screen">/* Puanı kaydedelim. */
+
+int
+record_score (int score)
+{
+  FILE *stream;
+  char *myname;
+
+  /* scores dosyasını açalım. */
+  do_setuid ();
+  stream = fopen (SCORES_FILE, "a");
+  undo_setuid ();
+
+  /* Puanı dosyaya yazalım. */
+  if (stream)
+    {
+      myname = cuserid (NULL);
+      if (score &lt; 0)
+        fprintf (stream, "%10s: Couldn't lift the caber.\n", myname);
+      else
+        fprintf (stream, "%10s: %d feet.\n", myname, score);
+      fclose (stream);
+      return 0;
+    }
+  else
+    return -1;
+}
+</pre></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Enable-Disable-Setuid.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Users-and-Groups.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Tips-for-Setuid.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Setuid Erişiminin Etkinleştirilmesi ve İptali </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Setuid Yazılımları Geliştirmek için İpuçları</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

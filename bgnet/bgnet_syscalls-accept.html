@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:24+03:00" /><title>accept() -- "3490 Numaralı Portu
+      Aradığınız İçin Teşekkürler"</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../bgnet/bgnet_syscalls.html" title="Sistem Çağrıları veya Felaketleri" /><link rel="previous" href="../bgnet/bgnet_syscalls-listen.html" title="listen() -- Biri Beni Arayabilir mi Acaba?" /><link rel="next" href="../bgnet/bgnet_syscalls-sendrecv.html" title="&#10;      send() ve recv() --&#10;      Konuş Benimle Bebeğim!&#10;    " /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">accept() -- "3490 Numaralı Portu
+      Aradığınız İçin Teşekkürler"</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../bgnet/bgnet_syscalls-listen.html">Önceki</a> </td><th width="60%" align="center">Sistem Çağrıları veya Felaketleri</th><td width="20%" align="right"> <a accesskey="n" href="../bgnet/bgnet_syscalls-sendrecv.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="bgnet_syscalls-accept" id="bgnet_syscalls-accept"></a><tt>accept()</tt> -- "3490 Numaralı Portu
+      Aradığınız İçin Teşekkürler"</div><dl><dd><div class="para">
+        Sıkı durun -- <tt>accept()</tt> işlevi biraz gariptir!
+        Neler oluyor? Şu oluyor: çok çok uzaklardan birileri
+        <tt>connect()</tt> işevi ile sizin makinanızda sizin
+        <tt>listen()</tt> ile dinlemekte olduğunuz bir porta
+        bağlanmaya çalışıyor. Bu bağlantı talebi <tt>accept()</tt>
+        ile kabul edilene dek kuyrukta bekleyecektir. Siz
+        <tt>accept()</tt> işlevini çağırırsınız ve ona beklemekte
+        olan çağrıyı kabul etmesini söylersiniz. O da size yepyeni bir soket
+        dosya tanımlayıcısı döndürür sadece ve sadece söz konusu bağlantıya
+        özel. Evet doğru duydunuz birdenbire elinizin altında iki soket dosya
+        tanımlayıcısı oldu! Orjinal olanı halen port üzerinden dinleme işlemini
+        gerçekleştirmek için kullanılıyor yeni olarak yaratılmış olan ise
+        <tt>send()</tt> ve <tt>recv()</tt> işlevlerinde
+        kullanılmak üzere emrinize amade. Hele şükür!
+      </div><div class="para">İşlevi şu şekilde çağırırsınız:</div>
+<div class="para"><div align="right"><pre class="programlisting">
+#include &lt;sys/socket.h&gt;
+
+int accept(int sockfd, void *addr, int *addrlen);
+</pre></div></div>
+      <div class="para">
+        <i><tt>sockfd</tt></i> dediğimiz <tt>listen()</tt>
+        ile dinlediğiniz soket tanımlayıcıdır. Basit. <i><tt>addr</tt></i>
+        yerel olarak kullandığınız <tt>struct sockaddr_in</tt>
+        yapısını gösteren bir göstergedir. Gelen bağlantılarla ilgili
+        bilgiler burada barındırılacak (yani bu yapıyı kullanarak gelen
+        bağlantının hangi bilgisayar ve hangi porttan geldiğini
+        öğrenebilirsiniz). <i><tt>addrlen</tt></i> yerel bir tamsayı
+        değişkendir ve kullanılmadan önce <tt>accept()</tt>
+        <tt>sizeof(struct sockaddr_in)</tt> değerini almalıdır.
+        <tt>accept()</tt> işlevi bu değerden daha fazla
+        sayıda baytı <i><tt>addr</tt></i> içine yerleştirmeyecektir.
+        Eğer söz konusu değerden daha azını yerleştirirse o zaman da
+        <i><tt>addrlen</tt></i> değerini, bunu yansıtacak şekilde
+        değiştirecektir.
+      </div><div class="para">
+        Tahmin edin ne diyeceğim? <tt>accept()</tt> hata durumunda
+        <tt>-1</tt> değerini döndürür ve <i><tt>errno</tt></i>
+        değişkenine ilgili hata kodunu yerleştirir. Tahmin etmiş miydiniz?
+        Gerçekten?
+      </div><div class="para">
+        Biliyorum, bir seferde sindirmesi kolay değil. İsterseniz aşağıdaki
+        örnek koda bakalım:
+      </div>
+<div class="para"><div align="right"><pre class="programlisting">
+#include &lt;string.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;netinet/in.h&gt;
+
+#define MYPORT 3490    // kullanıcıların bağlanacağı port
+
+#define BACKLOG 10     // kuyrukta bekleyecek bağlantı sayısı
+
+main()
+{
+    int sockfd, new_fd;  // sock_fd ile dinle, new_fd yeni bağlantı için
+    struct sockaddr_in my_addr;    // benim adres bilgim
+    struct sockaddr_in their_addr; // bağlananın adres bilgisi
+    int sin_size;
+
+    sockfd = socket(AF_INET, SOCK_STREAM, 0); // hata denetimi yap!
+
+    my_addr.sin_family = AF_INET;         // konak bayt sıralaması
+    my_addr.sin_port = htons(MYPORT);     // short, ağ bayt sıralaması
+    my_addr.sin_addr.s_addr = INADDR_ANY; // otomatik olarak benim IP'im
+    memset(&amp;(my_addr.sin_zero), '\0', 8); // geriye kalanı sıfırla
+
+    // hata denetimi yapmayı sakın unutmayın:
+    bind(sockfd, (struct sockaddr *)&amp;my_addr, sizeof(struct sockaddr));
+
+    listen(sockfd, BACKLOG);
+
+    sin_size = sizeof(struct sockaddr_in);
+    new_fd = accept(sockfd, (struct sockaddr *)&amp;their_addr, &amp;sin_size);
+    .
+    .
+    . 
+</pre></div></div>
+      <div class="para">
+        Lütfen dikkat edin: <i><tt>new_fd</tt></i> şeklindeki soket
+        tanımlayıcıyı tüm <tt>send()</tt> ve <tt>recv()</tt>
+        işlevleri için kullanacağız. Eğer sadece ve sadece tek bir bağlantıyı
+        kabul edecekseniz <tt>close()</tt>  ile
+        <i><tt>sockfd</tt></i> üzerindeki dinleyici soketi
+        kapatabilirsiniz böylece aynı port üzerinden başka bağlantı yaplamaz,
+        eğer istediğiniz gerçekten bu ise.
+      </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../bgnet/bgnet_syscalls-listen.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../bgnet/bgnet_syscalls.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../bgnet/bgnet_syscalls-sendrecv.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">listen() -- Biri Beni Arayabilir mi Acaba? </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> 
+      send() ve recv() --
+      Konuş Benimle Bebeğim!
+    </td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

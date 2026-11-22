@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:25+03:00" /><title>Sıkıştırılmış Dağıtım</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/apache-compile-howto.html" title="Apache Derleme NASIL" /><link rel="previous" href="../howto/apache-compile-howto-modules.html" title="Ek Modüller" /><link rel="next" href="../howto/apache-compile-howto-php.html" title="mod_php Ön Gereksinimleri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Sıkıştırılmış Dağıtım</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/apache-compile-howto-modules.html">Önceki</a> </td><th width="60%" align="center">Apache Derleme NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/apache-compile-howto-php.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="apache-compile-howto-compress" id="apache-compile-howto-compress"></a>Sıkıştırılmış Dağıtım</div><dl><dd><div class="para">
+Çıktı sıkıştırması için temel olarak mevcut iki modül vardır: <b><tt>mod_gzip</tt></b> ve <b><tt>mod_gunzip</tt></b>. Bu modüller band genişliği azaltımı hedefine ulaşmak için farklı yaklaşımlar kullanır.
+     </div><div class="para">
+<b><tt>mod_gunzip</tt></b>, dosya sistemi üzerinde sıkıştırılmış dosya umar ve eğer tarayıcı sıkıştırılmış veriyle başa çıkamıyorsa onu açar. Yararı, düşük CPU kullanımıdır, çünkü çoğu tarayıcı sıkıştırılmış içerikle başa çıkabilecek yetenektedir. Diğer taraftan, bugünün içeriğinin tümü dinamik olarak sunuluyor. Örneğin, PHP ve bu içeriği sıkıştırılmamış olarak dağıtılacaktır.
+     </div><div class="para">
+<b><tt>mod_gzip</tt></b>, sistemde sıkıştırılmış dosyalara gereksinim duymaz, tüm tanımlanmış içerik dağıtımdan önce sıkıştırılacaktır. Yararı, dinamik olarak oluşturulmuş ve sıkıştırılmış da olan içeriğe sahip olmaktır; diğer taraftan daha yüksek CPU kullanımı gerekir, çünkü her bir isteğin "uçuş sırasında" (on-the-fly) sıkıştırılması gerekir. <b><tt>mod_gzip</tt></b> önceden sıkıştırılmış veriyi de idare edebilir; örneğin <tt>index.html.gz</tt> olduğu gibi iletilebilir.
+     </div><div class="para">
+Sonuç: İki modülden hangisinin sizin için daha uygun olduğuna dikkatli bir şekilde karar vermelisiniz. Eğer her bir GB için ödeme yapmanız gerekiyorsa ve CPU gücü problem değilse, o zaman <b><tt>mod_gzip</tt></b> sizin için doğru seçim. Eğer cevap süresiyle alakalı sorun varsa (istek ve dağıtım arasındaki gecikme) ve band genişliğiniz sınırsız ve ucuzsa <b><tt>mod_gunzip</tt></b> ihtiyaçlarınızı daha iyi karşılar.
+     </div><div class="para">
+Bu kararı verebilmek için size yardımcı olacak iyi bir sayfa Martin Kiff'in <b><tt>mod_gunzip</tt></b> hakkındaki belgesidir: <a class="ulink" href="http://www.innerjoin.org/apache-compression/howto.html" target="_top">http://www.innerjoin.org/apache-compression/howto.html</a>
+    </div> <div class="head3"><a name="id1" id="id1"></a><tt>mod_gzip</tt></div><dl><dd> <div class="head4"><a name="id11" id="id11"></a>Kaynak paketini indirin</div><dl><dd><div class="para">Adres: <a class="ulink" href="http://prdownloads.sourceforge.net/mod-gzip/mod_gzip-1.3.26.1a.tgz?download" target="_top">http://prdownloads.sourceforge.net/mod-gzip/mod_gzip-1.3.26.1a.tgz?download</a>
+</div></dd></dl> <div class="head4"><a name="id21" id="id21"></a>Derleme ve Kurulum</div><dl><dd><div class="para">
+<b><tt>mod_gzip</tt></b>'i başarılı bir şekilde derlemek için <tt>Makefile</tt>'ı düzenlemeniz ve <b><tt>apxs</tt></b>'e doğru yolu göstermeniz gerekir.
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+$ <b><tt>make</tt></b>
+# <b><tt>make install</tt></b>
+</pre></div></div>
+        </dd></dl> <div class="head4"><a name="id31" id="id31"></a>Örnek Yapılandırma</div><dl><dd><div class="para">
+Aşağıdakini <tt>/usr/local/apache/conf/httpd.conf</tt>'un içine koyunuz:
+        </div><dl class="example"><dt class="example"><a class="example" name="idxmp31" id="idxmp31"></a><b>Örnek 1.5. <tt>/usr/local/apache/conf/httpd.conf</tt></b></dt><dd class="example">
+<div class="para"><div align="right"><pre class="screen">
+mod_gzip_on                 Yes
+mod_gzip_can_negotiate      Yes
+mod_gzip_dechunk            Yes
+mod_gzip_minimum_file_size  600
+mod_gzip_maximum_file_size  0
+mod_gzip_maximum_inmem_size 100000
+mod_gzip_keep_workfiles     No
+mod_gzip_temp_dir           /usr/local/apache/gzip
+mod_gzip_item_include       file \.html$
+mod_gzip_item_include       file \.txt$
+mod_gzip_item_include       file \.jsp$
+mod_gzip_item_include       file \.php$
+mod_gzip_item_include       file \.pl$
+mod_gzip_item_include       mime ^text/.*
+mod_gzip_item_include       mime ^application/x-httpd-php
+mod_gzip_item_include       mime ^httpd/unix-directory$
+mod_gzip_item_include       handler ^perl-script$
+mod_gzip_item_include       handler ^server-status$
+mod_gzip_item_include       handler ^server-info$
+mod_gzip_item_exclude       file \.css$
+mod_gzip_item_exclude       file \.js$
+mod_gzip_item_exclude       mime ^image/.*
+</pre></div></div>
+        </dd></dl><div class="para">
+Erişim kütüğünüze sıkıştırmanın sonucunu günlüklemek isteyebilirsiniz. Bu,<br /><tt>/usr/local/apache/conf/httpd.conf</tt>'daki <tt>LogFormat</tt> talimatı değiştirilerek yapılabilir.
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+LogFormat "%h %l %u %t \"%r\" %&gt;s %b \"%{Referer}i\" \"%{User-Agent}i\" ¬
+ mod_gzip: %{mod_gzip_compression_ratio}npct." combined
+</pre></div></div>
+        </dd></dl></dd></dl> <div class="head3"><a name="id2" id="id2"></a><tt>mod_gunzip</tt></div><dl><dd> <div class="head4"><a name="id12" id="id12"></a>Kaynak paketini indirin</div><dl><dd><div class="para">
+Adres: <a class="ulink" href="http://www.oldach.net/mod_gunzip.tar.gz" target="_top">http://www.oldach.net/mod_gunzip.tar.gz</a></div></dd></dl> <div class="head4"><a name="id22" id="id22"></a>Derleme ve Kurulum</div><dl><dd>
+<div class="para"><div align="right"><pre class="screen">
+$ <b><tt>tar -xvzf mod_gunzip.tar.gz</tt></b>
+$ <b><tt>cd mod_gunzip-2</tt></b>
+
+$ <b><tt>/usr/local/apache/bin/apxs -i -a -c -lz mod_gunzip.c</tt></b>
+</pre></div></div>
+        </dd></dl> <div class="head4"><a name="id32" id="id32"></a>Örnek Yapılandırma</div><dl><dd><div class="para">
+Aşağıdakini <tt>/usr/local/apache/conf/httpd.conf</tt>'un içine koyunuz:</div><dl class="example"><dt class="example"><a class="example" name="idxmp32" id="idxmp32"></a><b>Örnek 1.6. <tt>/usr/local/apache/conf/httpd.conf</tt></b></dt><dd class="example">
+<div class="para"><div align="right"><pre class="screen">
+AddType text/html .htmz
+AddHandler send-gunzipped .htmz
+</pre></div></div>
+        </dd></dl><div class="para">
+Şimdi html dosyalarınızı gzip'leyebilir ve onları örnekteki gibi yeniden isimlendirebilirsiniz:
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+$ <b><tt>gzip index.html</tt></b>
+$ <b><tt>mv index.html.gz index.htmz</tt></b>
+</pre></div></div>
+        <div class="para">
+Elbette ki tüm bağları <tt>htmz</tt>'ye değiştirmelisiniz; örneğin, <tt>&lt;a href="sayfa.htmz"&gt;Herhangi sayfa&lt;/a&gt;</tt>
+        </div></dd></dl></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/apache-compile-howto-modules.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/apache-compile-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/apache-compile-howto-php.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Ek Modüller </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> mod_php Ön Gereksinimleri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

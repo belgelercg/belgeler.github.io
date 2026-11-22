@@ -1,153 +1,58 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="tr" xml:lang="tr">
-  <head>
-    <title>12.12.6. Diğer Çıktı Dönüşümleri</title>
-    <meta name="generator" content="DocBook XSL Stylesheets V-special (derived from DocBook XSL v1.79.1 for Turkish Linux Documentation Project by Nilgün Belma Bugüner - nilgun (at) tlbp.org.tr)" />
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="/style/nav.css" />
-    <link rel="icon" type="image/png" href="/images/belgeler-logo.png" />
-    <meta name="robots" content="index, follow" />
-  </head>
-  <body>
-    <header>
-      <div class="navbar">
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Floating-Point-Conversions.html')">Önceki</button>
-          <div class="dropdown-content">12.12.5. Kayan Noktalı Sayı Dönüşümleri</div>
-        </div>
-        <div style="width:34%" class="dropdown">
-          <button class="dropbtn">Yukarı</button>
-          <div class="dropdown-content">
-            <button type="button" class="dropbtn" onclick="window.location.assign('/index.html')">Baş Sayfa</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('/KiTAPLIK/index.html')">Kitaplık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc.html')">Ana Başlık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Formatted-Output.html')">Üst Başlık</button>
-          </div>
-        </div>
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Formatted-Output-Functions.html')">Sonraki</button>
-          <div class="dropdown-content">12.12.7. Biçimli Çıktı İşlevleri</div>
-        </div>
-      </div>
-    </header>
-    <section class="mainpage">
-      <div class="crumbs">
-        <p>  </p>
-      </div>
-      <section class="sect1" id="glibc-Other-Output-Conversions">
-        <div class="titlepage">
-          <div>
-            <div>
-              <h2 class="title" style="clear: both">12.12.6. Diğer Çıktı Dönüşümleri</h2>
-            </div>
-          </div>
-        </div>
-        <p>
-    Bu bölümde <a href="glibc-Formatted-Output-Functions.html#glibc-fn-printf"><strong class="function"><code>printf</code></strong></a> için çeşitli dönüşümlerden bahsedilmiştir.
-   </p>
-        <p>
-    ‘<code class="code">%c</code>’ dönüşümü tek bir karakter basar.  ‘<code class="code">l</code>’ değiştiricisinin olmadığı durumda  <code class="type">int</code> türündeki bağımsız değişken önce <code class="type">unsigned char</code> türüne dönüştürülür.  Bundan sonra, bir geniş yönlenimli akım işlevi kullanılmışsa karakter karşı düşen geniş karaktere dönüştürülür. ‘<code class="code">-</code>’ imi kullanılmış, başka bir im tanımlanmamış, tür ve hassasiyet belirtilmemişse karakter alanda sola yanaştırılır. Örneğin:
-   </p>
-        <div class="example">
-          <div class="example-title">Örnek: </div>
-          <div class="example-contents">
-            <pre class="screen">printf ("%c%c%c%c%c", 'h', 'e', 'l', 'l', 'o');
-</pre>
-            <p>‘hello’ basar.</p>
-          </div>
-        </div>
-        <br class="example-break" />
-        <p>
-     ‘<code class="code">l</code>’ değiştiricisi varsa bağımsız değişkenin <code class="type">wint_t</code> türünde olacağı umulur. Çok baytlı karakter işlevi içinde kullanılmışsa geniş karakter çıktıya eklenmeden önce çok baytlı karaktere dönüştürülür. Bu durumda birden fazla bayt içeren çıktı üretilebilir.
-    </p>
-        <p>
-     ‘<code class="code">%s</code>’ dönüşümü bir dizge basar. ‘<code class="code">l</code>’ değiştiricisi yoksa karşı düşen bağımsız değişken <code class="type">char *</code> (ya da <code class="type">const char *</code>) türünde olmalıdır. Geniş yönlenimli akım işlevi kullanılmışsa, dizge geniş karakter dizgesine dönüştürülür. Yazılacak karakterlerin sayısı hassasiyet ile belirtilebilir; aksi takdirde, sonlandıran boş karaktere kadar boş karakter hariç dizge akıma çıktılanır. ‘<code class="code">-</code>’ imi kullanılmış ama başka bir im tanımlanmamış, tür ve hassasiyet belirtilmemişse dizge alanda sola yanaştırılır. Örneğin:
-    </p>
-        <div class="example">
-          <div class="example-title">Örnek: </div>
-          <div class="example-contents">
-            <pre class="screen">printf ("%3s%-6s", "no", "where");
-</pre>
-            <p>‘nowhere’ basar.</p>
-          </div>
-        </div>
-        <br class="example-break" />
-        <p>
-     ‘<code class="code">l</code>’ değiştiricisi varsa bağımsız değişkenin <a href="glibc-Extended-Char-Intro.html#glibc-tp-wchar_t"><strong class="type"><code>wchar_t</code></strong></a> (ya da <code class="type">const wchar_t *</code>) türünde olacağı umulur.
-   </p>
-        <p>
-    ‘<code class="code">%s</code>’ dönüşümüne istemeyerek bağımsız değişken olarak boş gösterici aktarılırsa, GNU C Kütüphanesi onu <code class="code">(null)</code> olarak basar. Bunun çökmekten daha iyi olduğunu düşünülmektedir. Ancak boş göstericiyi bile bile aktarmak iyi bir uygulama olmayacaktır.
-   </p>
-        <p>
-   ‘<code class="code">%m</code>’ dönüşümü <a href="glibc-Checking-for-Errors.html#glibc-vr-errno"><strong class="varname"><code>errno</code></strong></a> hata kodunun karşılığı olan dizgeyi basar. Bkz. <a class="xref" href="glibc-Error-Messages.html" title="2.3. Hata İletileri"><em>Hata İletileri</em></a>. Burada:
-   </p>
-        <div class="example">
-          <div class="example-title">Örnek: </div>
-          <div class="example-contents">
-            <pre class="screen">fprintf (stderr, "`%s' açılamıyor: %m\n", filename);
-</pre>
-            <p>deyimi ile</p>
-            <pre class="screen">fprintf (stderr, "`%s' açılamıyor: %s\n", filename, strerror (errno));
-</pre>
-            <p>
-     deyimi eşdeğerdir.
-    </p>
-          </div>
-        </div>
-        <br class="example-break" />
-        <p>
-    ‘<code class="code">%m</code>’ dönüşümü <a href="glibc-Error-Messages.html#glibc-fn-strerrorname-np"><strong class="function"><code>strerrorname_np</code></strong></a> tarafından sağlanan hata sabitini basmak için ‘<code class="code">#</code>’ seçeneği ile birlikte kullanılabilir.‘<code class="code">%m</code>’ ve ‘<code class="code">%#m</code>’ birer GNU C Kütüphanesi oluşumudur.
-   </p>
-        <p>
-    ‘<code class="code">%p</code>’ dönüşümü gösterici değeri basar. Karşı düşen bağımsız değişken <code class="type">void *</code> türünde olmalıdır. Uygulamada herhangi bir türden gösterici kullanılabilir.
-   </p>
-        <p>
-    
-    
-    GNU C Kütüphanesinde boş olmayan göstericiler bir ‘<code class="code">%#x</code>’ dönüşümü kullanılmış gibi imsiz tamsayı olarak basılır. Boş göstericiler <code class="code">(nil)</code> olarak basılır. (Diğer sistemlerde göstericiler farklı basılabilir.)
-   </p>
-        <div class="example">
-          <div class="example-title">Örnek: </div>
-          <div class="example-contents">
-            <pre class="screen">printf ("%p", "testing");
-</pre>
-            <p>
-     deyimi ‘<code class="code">0x</code>’ten sonra <code class="code">"testing"</code> dizge sabitinin adresini onaltılık sayı olarak basar; '<code class="code">testing</code>' sözcüğünü basmaz.
-    </p>
-          </div>
-        </div>
-        <br class="example-break" />
-        <p>
-    ‘<code class="code">-</code>’ imi kullanılmış ama başka bir im tanımlanmamış, tür ve  hassasiyet belirtilmemişse gösterici değeri alanda sola yanaştırılır.
-   </p>
-        <p>
-    ‘<code class="code">%n</code>’ belirteci diğer dönüşüm belirteçlerine benzemez. Bir <code class="type">int</code> türüne gösterici olan bir bağımsız değişken kullanır, ama bir şey çıktılamaz, onun yerine o çağrı ile çıktılanan karakterlerin sayısını kaydeder. ‘<code class="code">h</code>’ ve ‘<code class="code">l</code>’ tür değiştiricileri kullanılarak (birim, hassasiyet veya alan genişliği belirtilemez) bağımsız değişkenin türü <code class="type">int *</code> yerine <code class="type">short int *</code> veya <code class="type">long int *</code> türünde belirtilebilir.
-   </p>
-        <div class="example">
-          <div class="example-title">Örnek: </div>
-          <div class="example-contents">
-            <pre class="screen">int nchar;
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:26:37+03:00" /><title>Diğer Çıktı Dönüşümleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Formatted-Output.html" title="Biçimli Çıktı" /><link rel="previous" href="../glibc/glibc-Floating-Point-Conversions.html" title="Gerçek Sayı Dönüşümleri" /><link rel="next" href="../glibc/glibc-Formatted-Output-Functions.html" title="Biçimli Çıktı İşlevleri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Diğer Çıktı Dönüşümleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Floating-Point-Conversions.html">Önceki</a> </td><th width="60%" align="center">Biçimli Çıktı</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Formatted-Output-Functions.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Other-Output-Conversions" id="glibc-Other-Output-Conversions"></a>Diğer Çıktı Dönüşümleri</div><dl><dd><div class="para">
+Bu bölümde <b><tt>printf</tt></b> için çeşitli dönüşümlerden bahsedilmiştir.
+    </div><div class="para">
+ <b><tt>%c</tt></b> dönüşümü tek bir karakter basar.  <b><tt>l</tt></b> değiştiricisinin olmadığı durumda  <b><tt>int</tt></b> türündeki argüman önce <b><tt>unsigned char</tt></b> türüne dönüştürülür.  Bundan sonra, bir geniş yönlenimli akım işlevi kullanılmışsa karakter karşı düşen geniş karaktere dönüştürülür. <b><tt>-</tt></b> imi kullanılmış, başka bir im tanımlanmamış, tür ve hassasiyet belirtilmemişse karakter alanda sola yanaştırılır. Örneğin:
+    </div>
+<div class="para"><div align="right"><pre class="screen">printf ("%c%c%c%c%c", 'h', 'e', 'l', 'l', 'o');</pre></div></div>
+    <div class="para">
+deyimi <b><tt>hello</tt></b> basar.
+    </div><div class="para">
+Bir <b><tt>l</tt></b> değiştiricisi varsa argümanın <b><tt>wint_t</tt></b> türünde olacağı umulur. Bir çokbaytlı işlev içinde kullanılmışsa geniş karakter çıktıya eklenmeden önce bir çok baytlı karaktere dönüştürülür. Bu durumda birden fazla bayt içeren çıktı üretilebilir.
+    </div><div class="para">
+<b><tt>%s</tt></b> dönüşümü bir dizge basar. Bir <b><tt>l</tt></b> değiştiricisi yoksa karşı düşen argüman <b><tt>char *</tt></b> (ya da <b><tt>const char *</tt></b>) türünde olmalıdır. Bir geniş yönlenimli akım işlevi kullanılmışsa, dizge bir geniş karakter dizgesine dönüştürülür. Yazılacak karakterlerin sayısı hassasiyet parametresi ile belirtilebilir; aksi takdirde, sonlandıran boş karaktere kadar boş karakter hariç dizge akıma çıktılanır. <b><tt>-</tt></b> imi kullanılmış ama başka bir im tanımlanmamış, tür ve hassasiyet belirtilmemişse dizge alanda sola yanaştırılır. Örneğin:
+    </div>
+<div class="para"><div align="right"><pre class="screen">printf ("%3s%-6s", "no", "where");</pre></div></div>
+    <div class="para">
+deyimi <b><tt> nowhere </tt></b> basar.
+    </div><div class="para">
+Bir <b><tt>l</tt></b> değiştiricisi varsa argümanın <b><tt>wchar_t</tt></b> (ya da <b><tt>const wchar_t *</tt></b>) türünde olacağı umulur.
+    </div><div class="para">
+<b><tt>%s</tt></b> dönüşümüne istemeyerek argüman olarak bir boş gösterici  aktarırsanız, GNU kütüphanesi onu <b><tt>(null)</tt></b> olarak basar. Bunun çökmekten daha iyi olduğunu düşünüyoruz. Ancak bir boş göstericiyi bile bile aktarmak iyi bir uygulama olmayacaktır.
+    </div><div class="para">
+<b><tt>%m</tt></b> dönüşümü <b><tt>errno</tt></b> hata kodunun karşılığı olan dizgeyi basar. Bkz. <a href="../glibc/glibc-Error-Messages.html" class="xref" title="Hata İletileri">Hata İletileri</a>. Burada:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+fprintf (stderr, "`%s' açılamıyor: %m\n", filename);
+</pre></div></div><div class="para">deyimi ile</div>
+<div class="para"><div align="right"><pre class="screen">
+fprintf (stderr, "`%s' açılamıyor: %s\n", filename, strerror (errno));
+</pre></div></div><div class="para">
+deyimi eşdeğerdir. <b><tt>%m</tt></b> dönüşümü bir GNU oluşumudur.
+    </div><div class="para">
+<b><tt>%p</tt></b> dönüşümü bir gösterici değeri basar. Karşı düşen argüman <b><tt>void *</tt></b> türünde olmalıdır. Uygulamada herhangi bir türden gösterici kullanabilirsiniz.
+    </div><div class="para">
+
+
+GNU sisteminde boş olmayan göstericiler bir <b><tt>%#x</tt></b> dönüşümü kullanılmış gibi işaretsiz tamsayılar olarak basılır. Boş göstericiler <b><tt>(nil)</tt></b> olarak basılır. (Diğer sistemlerde göstericiler farklı basılabilir.) Örneğin:
+    </div>
+<div class="para"><div align="right"><pre class="screen">printf ("%p", "testing");</pre></div></div>
+   <div class="para">
+deyimi <b><tt>0x</tt></b>’ten sonra <b><tt>"testing"</tt></b> dizge sabitinin adresini bir onaltılık sayı olarak basar; <b><tt>testing</tt></b> sözcüğünü basmaz.
+    </div><div class="para">
+<b><tt>-</tt></b> imi kullanılmış ama başka bir im tanımlanmamış, tür ve  hassasiyet belirtilmemişse gösterici değeri alanda sola yanaştırılır.
+    </div><div class="para">
+<b><tt>%n</tt></b> belirteci diğer dönüşüm belirteçlerine benzemez. Bir <b><tt>int</tt></b> türüne gösterici olan bir argüman kullanır, ama birşey çıktılamaz, onun yerine o çağrı ile çıktılanan karakterlerin sayısını kaydeder. <b><tt>h</tt></b> ve <b><tt>l</tt></b> tür değiştiricileri kullanılarak (birim, hassasiyet veya alan genişliği belirtilemez) argümanın türü <b><tt>int *</tt></b> yerine <b><tt>short int *</tt></b> veya <b><tt>long int *</tt></b> türünde belirtilebilir. Örneğin:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+int nchar;
 printf ("%d %s%n\n", 3, "bears", &amp;nchar);
-</pre>
-            <p>deyimi</p>
-            <pre class="screen">3 bears
-</pre>
-            <p>
-     basar ve <code class="code">nchar</code>'a 7 değerini atar, çünkü basılan karakterlerin sayısı 7'dir.
-    </p>
-          </div>
-        </div>
-        <br class="example-break" />
-        <p>
-    ‘<code class="code">%%</code>’ belirteci bir <code class="code">%</code> imi basar. Bu belirteç bir bağımsız değişken kullanmaz ve im, alan genişliği, hassasiyet veya tür değiştirici belirtilemez.
-   </p>
-      </section>
-      <footer>
-        <div align="center" class="footer">
-          <small>Bir <a href="http://belgeler.org.tr/">Linux Kitaplığı</a> Sayfası</small>
-        </div>
-      </footer>
-    </section>
-  </body>
-</html>
+</pre></div></div><div class="para">kod parçası</div>
+<div class="para"><div align="right"><pre class="screen">3 bears</pre></div></div>
+    <div class="para">
+basar ve <b><tt>nchar</tt></b>'a 7 değerini atar, çünkü basılan karakterlerin sayısı 7'dir.
+    </div><div class="para">
+<b><tt>%%</tt></b> belirteci bir <b><tt>%</tt></b> işareti basar. Bu belirteç bir argüman kullanmaz ve im, alan genişliği, hassasiyet veya tür değiştirici belirtilemez.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Floating-Point-Conversions.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Formatted-Output.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Formatted-Output-Functions.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Gerçek Sayı Dönüşümleri </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Biçimli Çıktı İşlevleri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

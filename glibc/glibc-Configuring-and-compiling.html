@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:28:11+03:00" /><title>GNU Libc'nin Yapılandırılması ve Derlenmesi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Installation.html" title="Ek C. GNU C Kütüphanesinin Kurulması" /><link rel="previous" href="../glibc/glibc-Installation.html" title="Ek C. GNU C Kütüphanesinin Kurulması" /><link rel="next" href="../glibc/glibc-Running-make-install.html" title="C Kütüphanesinin Kurulması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">GNU Libc'nin Yapılandırılması ve Derlenmesi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Installation.html">Önceki</a> </td><th width="60%" align="center">Ek C. GNU C Kütüphanesinin Kurulması</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Running-make-install.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Configuring-and-compiling" id="glibc-Configuring-and-compiling"></a>GNU Libc'nin Yapılandırılması ve Derlenmesi</div><dl><dd><div class="para">
+<a class="indexterm" name="idx3380" id="idx3380"></a>
+<a class="indexterm" name="idx3381" id="idx3381"></a>
+GNU libc kaynak ağacının kök dizininde derlenemez. Ayrı bir <tt>build</tt> dizininde derlemelisiniz. Örneğin, glibc kaynak paketini <tt>/usr/src/gnu/glibc-2.4</tt> dizinine açtıysanız, <tt>/usr/src/gnu/glibc-build</tt> adında bir dizin daha oluşturup derlenen nesne dosyalarının bu dizinde bulunmasını sağlamalısınız. Böylece, derleme sırasında bir hata oluşursa basitçe bu dizini içindekilerle birlikte silip yeniden temiz bir derleme yapabilirsiniz.
+   </div><div class="para">
+<b><tt>configure</tt></b> betiğini <tt>/usr/src/gnu/glibc-build</tt> dizininden aşağıdaki komutla çalıştırırsanız, derleme sırasında nesne dosyaları bu dizinde yer alacaktır:
+   </div>
+<div class="para"><div align="right"><pre class="screen">$ ../glibc-2.4/configure <i><tt>argümanlar…</tt></i></pre></div></div>
+   <div class="para">
+Burada anlatıldığı gibi paketi ayrı bir dizinde derlerken bile kaynak dizindeki bazı dosyaların derleme sırasında değişeceğini bilmelisiniz. Özellikle <tt>manual</tt> dizinindeki dosyalar bundan etkilenecektir.
+   </div><div class="para">
+<b><tt>configure</tt></b> betiği çok sayıda seçenek kabul eder, ancak burada önemli olan tek bir seçenek üzerinde duracağız: <b><tt>--prefix</tt></b>.  Bu seçenek ile glibc'nin kurulmasını istediğiniz yeri belirtebilirsiniz. Bu seçenek için  <tt>/usr/local</tt> öntanımlıdır fakat standart sistem kütüphanesi olarak bu seçenek GNU/Linux sistemleri için  <b><tt>--prefix=/usr</tt></b>, GNU/Hurd sistemleri için ise <b><tt>--prefix=</tt></b> (boş önekle) biçiminde belirtilmelidir.
+   </div><div class="para">
+Ayrıca, <b><tt>configure</tt></b> betiği çalıştırılırken <tt>CC</tt> ve <tt>CFLAGS</tt> değişkenlerini de ortama dahil etmek yararlı olabilir. <tt>CC</tt> değişkeni ile kullanılacak C derleyicisi, <tt>CFLAGS</tt> ile derleyicinin kullanacağı eniyilemeler belirtilebilir.
+   </div><div class="para">
+<b><tt>configure</tt></b> betiğinde kullanılabilecek komut satırı seçeneklerinin listesi:
+   </div><dl><dt><span class="glossterm">
+   <tt><b><tt>--prefix</tt></b>=<i>dizin</i></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Makineye bağımlı veri dosyaları <i><tt>dizin</tt></i> dizininin alt dizinlerine kurulur. Öntanımlı olarak <tt>/usr/local</tt> dizinidir.
+   </div></dd><dt><span class="glossterm">
+   <tt><b><tt>--exec-prefix</tt></b>=<i>dizin</i></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Kütüphane ve makineye bağımlı diğer veri dosyaları <i><tt>dizin</tt></i> dizininin alt dizinlerine kurulur. Öntanımlı değeri eğer belirtilmişse <b><tt>--prefix</tt></b> seçeneğinde belirtilen dizindir, aksi takdirde <tt>/usr/local</tt> dizinidir.
+   </div></dd><dt><span class="glossterm">
+   <tt><b><tt>--with-headers</tt></b>=<i>dizin</i></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Çekirdek başlık dosyaları <tt>/usr/include</tt> dizininde değil, <i><tt>dizin</tt></i> dizininde aranır. Glibc normalde  <tt>/usr/include</tt> dizine bakar, ancak bu seçenekle farklı bir dizin belirtirseniz <i><tt>dizin</tt></i> dizinine bakar.
+      </div><div class="para">
+Bu seçenek öncelikli olarak <tt>/usr/include</tt>  içindeki başlık dosyaları glibc'nin daha eski bir sürümünden gelen bir sistemde yararlı olur. Bu durumda kimi vakit çelişkiler oluşur. Linux libc5'in glibc'nin daha eski bir sürümünü nitelediğine dikkat edin. Bu seçeneği ayrıca glibc'yi <tt>/usr/include</tt> içindeki dosyalardan daha yeni bir çekirdeğin başlık dosyalarıyla derlemek isterseniz de kullanabilirsiniz.
+   </div></dd><dt><span class="glossterm">
+   <b><tt>--enable-add-ons</tt></b><tt>[=</tt><i>liste</i><tt>]</tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Derleme sırasında dahil edilecek eklentiler belirtilir. Eğer bu seçenek listesiz olarak belirtilirse, ana kaynak dizininde bulunan bütün eklentiler etkinleştirilir; bu öntanımlı davranıştır. Etkin olmasını istediklerinizin listesini aralarına boşluk veya virgül koyarak belirtebilirsiniz (boşluk kullanacaksanız onları kabuktan korumak için tırnak içine almayı unutmayın). <i><tt>liste</tt></i> içindeki her eklenti bir mutlak dizin ismi olabileceği gibi ana kaynak dizinine göreli bir dizin ismi, hatta derleme dizinine (yani, o anki çalışma dizinine) göreli bir dizin ismi olabilir. Örnek: <b><tt>--enable-add-ons=nptl,../glibc-libidn-2.4</tt></b>.
+   </div></dd><dt><span class="glossterm">
+   <tt><b><tt>--enable-kernel</tt></b>=<i>sürüm</i></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Bu seçenek şimdilik sadece GNU/Linux sistemlerinde kullanışlıdır.  <i><tt>sürüm</tt></i> parametresi X.Y.Z şeklinde belirtilmeli ve üretilen kütüphanenin destekleyeceği en küçük Linux çekirdeğinin sürümü olmalıdır. Daha yüksek <i><tt>sürüm</tt></i> numarası daha az uyumluluk kodu ekler ve kod daha hızlı olur.
+   </div></dd><dt><span class="glossterm">
+   <tt><b><tt>--with-binutils</tt></b>=<i>dizin</i></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+C derleyicinin öntanımlı kullandığı değil, <i><tt>dizin</tt></i> ile belirtilen yerdeki binutils (çevirici ve ilintileyici) kullanılır. Eğer GNU C kütüphanesindeki oluşumlar sisteminizdeki öntanımlı binutils ile çalışamayacaksa bu seçeneği kullanabilirsiniz. Bu durumda, <b><tt>configure</tt></b> sorunu saptar ve bu oluşumları bastırır, böylece kütüphane hala kullanılabilir kalabilir, ancak işlevsellik kaybolabilir; örneğin, eski binutils ile bir paylaşımlı libc derleyemezsiniz.
+   </div></dd><dt><span class="glossterm">
+   <b><tt>--without-fp</tt></b>
+   </span></dt><dd class="halfpara"><div class="para">
+Makinenin donanımında kayan noktalı sayılar için destek yoksa ve işletim sistemi de bu desteği yazılımsal olarak içermiyorsa bu seçeneği kullanmalısınız.
+   </div></dd><dt><span class="glossterm">
+   <b><tt>--disable-shared</tt></b>
+   </span></dt><dd class="halfpara"><div class="para">
+Mümkün olsa bile paylaşımlı kütüphaneler oluşturulmaz. Tüm sistemlerde paylaşımlı kütüphane desteği yoktur; paylaşımlı kütüphaneler için ELF desteği ve GNU ilintileyici gerekir.
+   </div></dd><dt><span class="glossterm">
+   <b><tt>--disable-profile</tt></b>
+   </span></dt><dd class="halfpara"><div class="para">
+Kütüphaneler profil desteği ile derlenmez. Profil desteğine ihtiyacınız olmayacağını düşünüyorsanız bu seçeneği kullanabilirsiniz.
+   </div></dd><dt><span class="glossterm">
+   <b><tt>--enable-omitfp</tt></b>
+   </span></dt><dd class="halfpara"><div class="para">
+Normal (durağan ve paylaşımlı) kütüphaneler için en yüksek eniyileme kullanılır ve durağan kütüphaneler ayrı olarak hata ayıklama bilgileri ile eniyilemesiz derlenir. Bunu yapmanızı tavsiye etmiyoruz. Fazladan bir eniyileme size fazla birşey kazandırmadığı gibi derleyici hatalarını uyandırabilir ve C kütüphanesi üzerinden hataları izlemek mümkün olmayabilir.
+   </div></dd><dt><span class="glossterm">
+   <b><tt>--disable-versioning</tt></b>
+   </span></dt><dd class="halfpara"><div class="para">
+Paylaşımlı kütüphaneleri sembol sürüm bilgileri ile derlemez. Böyle yaparak derlenen kütüphane eski ikilik dosyalarla uyumsuz olacaktır, bu bakımdan tavsiye edilmez.
+   </div></dd><dt><span class="glossterm">
+   <b><tt>--enable-static-nss</tt></b>
+   </span></dt><dd class="halfpara"><div class="para">
+NSS kütüphanelerinin durağan sürümleri derlenir. Bu NSS'in amacını bozacağından tavsiye edilmez; NSS kütüphaneleriyle durağan ilintili bir yazılım farklı bir isim veritabanını kullanmak için yeniden özdevimli olarak yapılandırılamaz.
+   </div></dd><dt><span class="glossterm">
+   <b><tt>--without-tls</tt></b>
+   </span></dt><dd class="halfpara"><div class="para">
+Öntanımlı olarak C kütüphanesi evreye özel saklama alanı (thread-local storage) desteği ile derlenir.  Bu seçenek kullanılarak bunun olmaması sağlanabilir ama uyumluluk sorunlarına yol açacağından genellikle böyle birşeye gerek yoktur.
+   </div></dd><dt><span class="glossterm">
+   <tt><b><tt>--build</tt></b>=<i>derleme-sistemi</i></tt>
+   </span></dt><dt><span class="glossterm">
+   <tt><b><tt>--host</tt></b>=<i>çalışma-sistemi</i></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Bu seçenekler çapraz derleme için kullanılır.Her iki seçeneği de belirtirseniz ve  <i><tt>derleme-sistemi</tt></i> ile <i><tt>çalışma-sistemi</tt></i> farklıysa, <b><tt>configure</tt></b> betiği glibc'yi <i><tt>çalışma-sistemi</tt></i> üzerinde <i><tt>derleme-sistemi</tt></i> olarak kullanılacak şekilde çapraz derlemeye hazırlar. Büyük ihtimalle <b><tt>--with-headers</tt></b> seçeneğine de ihtiyacınız olacaktır, ayrıca betiğin derleyici ve/veya binutils seçimlerini değiştirmek zorunda kalabilirsiniz.
+      </div><div class="para">
+Sadece <b><tt>--host</tt></b> seçeneğini kullanırsanız, betik sizin sisteminiz yerine belirttiğiniz sistem için sistemdeki mevcut derleme araçlarıyla derlenecek şekilde glibc'yi derlemeye hazırlar Bu daha alt seviyede bir işlemci belirtmek için yararlıdır. Örneğin, <b><tt>configure</tt></b> betiği sizin makinenizi <b><tt>i586-pc-linux-gnu</tt></b> olarak belirlemişse ve siz bunun yerine kütüphaneyi 386'lar üzerinde çalışacak şekilde derlemek isterseniz seçeneği <b><tt>--host=i386-pc-linux-gnu</tt></b> ya da sadece <b><tt>--host=i386-linux</tt></b> olarak belirtebilir ve <tt>CFLAGS</tt> değişkeninde derleyiciye <b><tt>--mcpu=i386</tt></b> belirtebilirsiniz.
+      </div><div class="para">
+Sadece <b><tt>--build</tt></b> seçeneğinin belirtilmesi betiğin şaşırmasına sebep olacaktır.
+      </div></dd></dl><div class="para">
+Kütüphaneyi ve ilgili uygulamaları derlemek için <b><tt>make</tt></b> komutunu kullanın. Derleme sırasında epey bir çıktı üretilir, bazıları da hata gibi görünebilir ama değildir. <b><tt>make</tt></b>'in ürettiği iletiler <b><tt>***</tt></b> içeriyorsa bunlar hata iletileridir. Bunlar bazı şeylerin yanlış gittiğini belirtirler.
+   </div><div class="para">
+Derleme işlemi yapılandırmanıza ve makinenizin hızına bağlı olarak biraz uzun sürebilir. Bazı karmaşık modüllerin derlenmesi çok uzun zaman alabilir, daha yavaş makineler için bu daha da artar. Eğer derleyici çökmüş gibi görünürse paniklemeyin, işini bitirmesini bekleyin.
+   </div><div class="para">
+Paralel derleme yapmak isterseniz <b><tt>make</tt></b>'e <b><tt>-j</tt></b> seçeneği ile uygun sayısal parametreleri vermeniz yeterlidir. Bunun için en son GNU <b><tt>make</tt></b> sürümüne ihtiyacınız var.
+   </div><div class="para">
+Bazı kütüphane oluşumlarının çalışıp çalışmadığını sınamak isterseniz sınama yazılımlarını derlemek ve çalıştırmak için <b><tt>make check</tt></b> komutunu verebilirsiniz. Bu işlem başarıyla tamamlanmazsa derlenen kütüphaneyi kullanmayın ve sorunun bilinenlerden biri olmadığını saptarsanız hatayı raporlayın. Hata raporlama hakkında daha fazla bilgi için  <a href="../glibc/glibc-Reporting-Bugs.html" class="xref" title="Yazılım Hatalarının Raporlanması">Yazılım Hatalarının Raporlanması</a> bölümüne bakınız. Bazı sınamaların yapılması <b><tt>root</tt></b> tarafından çalışıtırılmış olmamayı gerektirir. Glibc'yi derlerken ve sınarken ayrıcalıksız kullanıcı olmanızı öneririz.
+   </div><div class="para">
+Hataları raporlamadan önce sorunun sizin sisteminizden kaynaklanmadığından emin olmalısınız. Sınamalar (daha sonra da kurulum) <tt>/etc/passwd</tt>, <tt>/etc/nsswitch.conf</tt>, vb. sistem dosyalarını kullanır. Bu dosyaların hepsi doğru içeriğe sahip olmalıdır.
+   </div><div class="para">
+[GNU C Kütüphanesi Kılavuzu]'nu yazdırmaya hazırlamak isterseniz <b><tt>make dvi</tt></b> komutunu verin. Bunu yapabilmek için çalışan bir TeX kurulumuna ihtiyacınız vardır. Kılavuzun Info dosyaları pakette biçimlenmiş olarak zaten vardır. Bunları yeniden üretmek isterseniz <b><tt>make info</tt></b> komutunu verebilirsiniz ama bu gerekmez.
+   </div><div class="para">
+Kütüphane, <b><tt>Makeconfig</tt></b> içinde bulabileceğiniz bir miktar özel amaçlı yapılandırma parametresine sahiptir. Bunlar <b><tt>configparms</tt></b> dosyası ile değiştirilebilir.  Bunları değiştirmek isterseniz derleme işlemini yapacağınız dizinde bir <b><tt>configparms</tt></b> dosyası oluşturun ve içine sisteminize uygun değerleri ekleyin. Bu dosya <b><tt>make</tt></b> tarafından derleme ortamına dahil edilir.
+   </div><div class="para">
+GNU C kütüphanesini çapraz derleme için yapılandırmak  <b><tt>configparms</tt></b> içine bir kaç tanım ekleyerek kolayca yapılabilir.  <tt>CC</tt> değişkenine kütüphaneyi kendisi için yapılandıracağınız hedef derleyiciyi atayabilirsiniz; bu değerin <b><tt>configure</tt></b> betiğini çalıştırırken kullanılacak <tt>CC</tt> değeri ile aynı olması önemlidir. Örnek: <tt>CC=<i>hedef</i>-gcc </tt><b><tt>configure </tt></b><i><tt> hedef</tt></i>.  Derlenen kütüphanenin parçası olacağı sistemde çalışacak yazılımlar için kullanılacak derleyiciyi <tt>BUILD_CC</tt> değişkenine atayın. Eğer yerel araçlar hedefteki nesne dosyaları ile çalışacak şekilde yapılandırılmamışsa, hedef sistemde çalışacak <b><tt>ar</tt></b> ve <b><tt>ranlib</tt></b> araçlarını  <tt>AR</tt> ve <tt>RANLIB</tt> değişkenlerinde belirtmeniz gerekebilir.
+   </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Installation.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Installation.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Running-make-install.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Ek C. GNU C Kütüphanesinin Kurulması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> C Kütüphanesinin Kurulması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

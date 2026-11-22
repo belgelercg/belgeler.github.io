@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:59+03:00" /><title>Parolaların Şifrelenmesi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Cryptographic-Functions.html" title="XXXII. Oylum - Şifrelemeyle İlgili İşlevler" /><link rel="previous" href="../glibc/glibc-getpass.html" title="Parolaların Okunması" /><link rel="next" href="../glibc/glibc-DES-Encryption.html" title="DES Şifreleme" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Parolaların Şifrelenmesi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-getpass.html">Önceki</a> </td><th width="60%" align="center">XXXII. Oylum - Şifrelemeyle İlgili İşlevler</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-DES-Encryption.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="glibc-crypt" id="glibc-crypt"></a>Parolaların Şifrelenmesi</div></div></div><dl><dd>
+<a class="indexterm" name="idx3289" id="idx3289"></a>
+<a name="glibc-func-crypt" id="glibc-func-crypt"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>char *<b><tt>crypt</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *<i><tt>anahtar</tt></i>,
+ const char *<i><tt>tuz</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>crypt</tt></b> işlevi parolayı, bir <i><tt>anahtar</tt></i> dizgesi ile aşağıda ne olduğu anlatıldığı gibi bir <i><tt>tuz</tt></i> karakter dizisi olarak alır ve başka bir tuz ile başlayan yazılabilir bir ASCII dizge döndürür. İşlevin çıktısından, onu üreten <i><tt>anahtar</tt></i> değerini bulmanın en iyi yolunun <i><tt>anahtar</tt></i>'ın gerçek değerini bulana kadar <i><tt>anahtar</tt></i> için tahminde bulunmak olduğuna inanılmaktadır.
+   </div><div class="para">
+<i><tt>tuz</tt></i> parametresi iki şey yapar. Öncelikle, hangi algoritmanın kullanılacağını seçer, MD5-temelli olanı mı yoksa DES-temelli olanı mı. İkinci olarak, parolaları içeren bir dosya üzerinde parola tahmin etmeye çalışan birilerine hayatı dar eder; <i><tt>tuz</tt></i> olmadan, bir davetsiz misafir <b><tt>crypt</tt></b> çalıştırarak ve sonucu dosyadaki parolalarla karşılaştırarak tahminde bulunabilir. <i><tt>tuz</tt></i> ile davetsiz misafir <b><tt>crypt</tt></b>'i her farklı tuz ile çalıştırmak zorunda kalır.
+   </div><div class="para">
+MD-5 temelli algoritma için, <i><tt>tuz</tt></i> <b><tt>$1$</tt></b> dizgesi ile başlayan, en çok 8 karakterle devam eden  ve <b><tt>$</tt></b> ile ya da dizge sonu ile sonlandırılan bir dizgeden oluşmalıdır. <b><tt>crypt</tt></b>'in sonucu, eğer tuz bir ile bitmiyorsa <i><tt>tuz</tt></i>ı takip eden bir <b><tt>$</tt></b> ve bunu da izleyen <b><tt>./0-9A-Za-z</tt></b> alfabesinden 22 karakterle devam eder, toplamda en çok 34 karakter olabilir. <i><tt>anahtar</tt></i>'deki her karakter anlamlıdır.
+   </div><div class="para">
+DES temelli algoritma için, <i><tt>tuz</tt></i>, <b><tt>./0-9A-Za-z</tt></b> alfabesindeki iki karakterden oluşmalıdır ve <b><tt>crypt</tt></b> işlevinin sonucu bu iki karakteri takip eden aynı alfabeden 11 karakterle birlikte toplam 13 karakterden oluşur. <i><tt>anahtar</tt></i> değerinin sadece ilk 8 karakteri anlamlıdır.
+   </div><div class="para">
+MD5 temelli algoritmanın kullanışlı olan uzunluğu hakkında bir sınır yoktur ve daha güvenlidir. Bu nedenle DES temelliye nazaran tercih edilir.
+   </div><div class="para">
+Kullanıcı parolasını ilk girdiğinde, <i><tt>tuz</tt></i> rastgele yeni bir dizge olarak ayarlanmalıdır. Bir parolayı <b><tt>crypt</tt></b>'in önceki çağrısının sonucu ile doğrulamak için, önceki çağrının sonucunu <i><tt>tuz</tt></i> olarak geçirin.
+   </div></dd></dl><div style="padding:5px"></div><div class="para">
+Aşağıdaki kısa program <b><tt>crypt</tt></b>'in parola ilk kez girildiğinde nasıl kullanılacağına bir örnektir. Buradaki <i><tt>tuz</tt></i> üretiminin ancak kabul edilebilir olduğunu unutmayınız; bu makineler arasında eşsiz değildir ve bir çok uygulamada saldıran kişi kullanıcının parolasını ne zaman ayarladığı bilgisine erişemez.
+   </div><div class="para"><div align="right"><pre class="screen">
+#include &lt;stdio.h&gt;
+#include &lt;time.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;crypt.h&gt;
+
+int
+main(void)
+{
+  unsigned long seed[2];
+  char salt[] = "$1$........";
+  const char *const seedchars =
+    "./0123456789ABCDEFGHIJKLMNOPQRST"
+    "UVWXYZabcdefghijklmnopqrstuvwxyz";
+  char *password;
+  int i;
+
+  /* (Hemen hemen) Rastgele tohum üret.
+     Bundan daha iyi yapmalısınız. */
+  seed[0] = time(NULL);
+  seed[1] = getpid() ^ (seed[0] &gt;&gt; 14 &amp; 0x30000);
+
+  /* 'tohum karakter'leri yazılabilir karakterlere dönüştür. */
+  for (i = 0; i &lt; 8; i++)
+    salt[3+i] = seedchars[(seed[i/5] &gt;&gt; (i%5)*6) &amp; 0x3f];
+
+  /* Kullanıcı parolasını oku ve şifrele. */
+  password = crypt(getpass("Parola:"), salt);
+
+  /* Sonuçları yaz. */
+  puts(password);
+  return 0;
+}
+</pre></div></div><div class="para">
+Diğer yazılım bir parolanın nasıl doğrulanacağını göstermektedir. Kullanıcıya parola isteminde bulunur ve ekrana "Erişim onaylandı." basar; eğer kullanıcı <b><tt>GNU libc manual</tt></b> yazarsa.
+   </div><div class="para"><div align="right"><pre class="screen">
+#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;crypt.h&gt;
+
+int
+main(void)
+{
+  /* "GNU libc manual" değerinin haşlaması. */
+  const char *const pass = "$1$/iSaq7rB$EoUw5jJPPvAPECNaaWzMK/";
+
+  char *result;
+  int ok;
+
+  /* Kullanıcı parolasını oku ve beklenilen parolayı
+     salt olarak geçirerek şifrele. */
+  result = crypt(getpass("Parola:"), pass);
+
+  /* Sonucu sına. */
+  ok = strcmp (result, pass) == 0;
+
+  puts(ok ? "Erisim onaylandi." : "Erisim reddedildi.");
+  return ok ? 0 : 1;
+}
+</pre></div></div>
+<a class="indexterm" name="idx3290" id="idx3290"></a>
+<a name="glibc-crypt_r" id="glibc-crypt_r"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>char *<b><tt>crypt_r</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char         *<i><tt>anahtar</tt></i>,
+ const char         *<i><tt>tuz</tt></i>,
+ struct crypt_data * <i><tt>veri</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>crypt_r</tt></b> işlevi <b><tt>crypt</tt></b> ile aynı şeyi yapar, fakat ek bir parametre ile işlev sonucu için yer bulundurur, bu yüzden evresel (reentrant) olabilir. <b><tt>crypt_r</tt></b> ilk kez çağrılmadan önce <i><tt>veri</tt></i> sıfırlarla doldurularak ilklendirilmelidir.
+   </div><div class="para">
+<b><tt>crypt_r</tt></b> işlevi bir GNU oluşumudur.
+   </div></dd></dl><div style="padding:5px"></div><div class="para">
+<b><tt>crypt</tt></b> ve <b><tt>crypt_r</tt></b> işlevlerinin prototipleri
+<tt>crypt.h</tt> başlık dosyası içinde bulunur.
+   </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-getpass.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Cryptographic-Functions.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-DES-Encryption.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Parolaların Okunması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> DES Şifreleme</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

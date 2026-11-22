@@ -1,215 +1,92 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="tr" xml:lang="tr">
-  <head>
-    <title>12.9. Satır Yönlenimli Girdi</title>
-    <meta name="generator" content="DocBook XSL Stylesheets V-special (derived from DocBook XSL v1.79.1 for Turkish Linux Documentation Project by Nilgün Belma Bugüner - nilgun (at) tlbp.org.tr)" />
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="/style/nav.css" />
-    <link rel="icon" type="image/png" href="/images/belgeler-logo.png" />
-    <meta name="robots" content="index, follow" />
-  </head>
-  <body>
-    <header>
-      <div class="navbar">
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Character-Input.html')">Önceki</button>
-          <div class="dropdown-content">12.8. Karakter Girdilerinin Alınması</div>
-        </div>
-        <div style="width:34%" class="dropdown">
-          <button class="dropbtn">Yukarı</button>
-          <div class="dropdown-content">
-            <button type="button" class="dropbtn" onclick="window.location.assign('/index.html')">Baş Sayfa</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('/KiTAPLIK/index.html')">Kitaplık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc.html')">Ana Başlık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc-I-O-on-Streams.html')">Üst Başlık</button>
-          </div>
-        </div>
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Unreading.html')">Sonraki</button>
-          <div class="dropdown-content">12.10. Okunmamış Yapmak</div>
-        </div>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:26:36+03:00" /><title>Satır Yönlenimli Girdi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-I-O-on-Streams.html" title="XII. Oylum - Akımlar Üzerinde Giriş/Çıkış" /><link rel="previous" href="../glibc/glibc-Character-Input.html" title="Karakter Girdilerinin Alınması" /><link rel="next" href="../glibc/glibc-Unreading.html" title="Okunmamış Yapmak" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Satır Yönlenimli Girdi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Character-Input.html">Önceki</a> </td><th width="60%" align="center">XII. Oylum - Akımlar Üzerinde Giriş/Çıkış</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Unreading.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="glibc-Line-Input" id="glibc-Line-Input"></a>Satır Yönlenimli Girdi</div></div></div><dl><dd><div class="para">
+Birçok yazılım girdiyi satır temelinde yorumladığından bir akımdan bir metin satırını okuyacak işlevlerin de bulunması yararlıdır.
+    </div><div class="para">
+Standart C bunu yapacak işlevlere sahiptir ama onlar çok güvenilir değildir: Boş karakterler ve hatta uzun satırlar (<b><tt>gets</tt></b> için) onları şaşırtabilir. Bu nedenle GNU kütüphanesi satırları güvenilir bir şekilde kolayca okumak için standart olmayan <b><tt>getline</tt></b> işlevini içerir.
+    </div><div class="para">
+Diğer bir GNU oluşumu olan <b><tt>getdelim</tt></b> işlevi, <b><tt>getline</tt></b> işlevini genelleştirir. İşlev belirtilmiş bir ayraç karakteriyle ayrılmış kayıtlardan bir kaydı okur.
+    </div><div class="para">
+Bu işlevlerin tümü <tt>stdio.h</tt> başlık dosyasında bildirilmiştir.
+    </div><a name="glibc-getline" id="glibc-getline"></a>
+<a class="indexterm" name="idx863" id="idx863"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>ssize_t <b><tt>getline</tt></b></tt></td><td valign="top"><pre class="paramdef">(char  **<i><tt>satır-gstr</tt></i>,
+ size_t *<i><tt>n</tt></i>,
+ FILE   *<i><tt>akım</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev <i><tt>akım</tt></i>’daki bir tam satırı okur, metni satırsonu karakteri ve bir sonlandırıcı boş karakterle bir tampona yazar ve bu tamponun adresini <b><tt>*</tt></b><i><tt>satır-gstr</tt></i> içinde saklar.
+      </div><div class="para">
+<b><tt>getline</tt></b> çağrısından önce, <b><tt>*</tt></b><i><tt>n</tt></i> bayt uzunluğundaki <b><tt>malloc</tt></b> ile ayrılmış bir tamponun adresi  <b><tt>*</tt></b><i><tt>satır-gstr</tt></i> içine yerleştirilmelidir. Bu tampon yeterli uzunluktaysa, <b><tt>getline</tt></b> okuduğu satırı bu tampona yazar. Aksi takdirde <b><tt>getline</tt></b> işlevi <b><tt>realloc</tt></b> kullanarak tamponu büyütür ve yeni tampon adresini <b><tt>*</tt></b><i><tt>satır-gstr</tt></i> argümanı ile ve arttırdığı uzunluğu <b><tt>*</tt></b><i><tt>n</tt></i> argümanı ile geri döndürür. Bkz. <a href="../glibc/glibc-Unconstrained-Allocation.html" class="xref" title="Özgür Bellek Ayırma">Özgür Bellek Ayırma</a>.
+      </div><div class="para">
+<b><tt>*</tt></b><i><tt>satır-gstr</tt></i> olarak bir boş gösterici ve <b><tt>*<i><tt>n</tt></i></tt></b> için 0 değerini vererek çağrı yaparsanız, <b><tt>getline</tt></b> işlevi <b><tt>malloc</tt></b> işlevini kullanarak tamponu sizin için ayırır.
+      </div><div class="para">
+Her iki durumda, <b><tt>getline</tt></b> döndüğünde,  <b><tt>*</tt></b><i><tt>satır-gstr</tt></i> satırın metnini gösteren  bir <b><tt>char *</tt></b>’dır.
+      </div><div class="para">
+<b><tt>getline</tt></b> başarılı olduğunda okunan karakterlerin sayısı (satırsonu karakteri ve bir boş karakter dahil) ile döner. Bu değer satırın parçası olan boş karakterleri sonlandırıcı olarak eklenen boş karakterden ayırabilmenizi sağlar.
+      </div><div class="para">
+Bu işlev bir GNU oluşumudur ve bir akımdan satırları okumak için önerilen bir yoldur. Aynı amaçlı diğer standart işlevler güvenilir değildir.
+      </div><div class="para">
+Bir hata oluşursa ya da herhangi bir bayt okunmadan dosya sonuna gelinirse <b><tt>getline</tt></b> işlevi <b><tt>-1</tt></b> ile döner.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-getdelim" id="glibc-getdelim"></a>
+<a class="indexterm" name="idx864" id="idx864"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>ssize_t <b><tt>getdelim</tt></b></tt></td><td valign="top"><pre class="paramdef">(char  **<i><tt>satır-gstr</tt></i>,
+ size_t *<i><tt>n</tt></i>,
+ int     <i><tt>ayraç</tt></i>,
+ FILE   *<i><tt>akım</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev okumayı sonlandıran karakterin belirtilebilmesi dışında <b><tt>getline</tt></b> gibidir. <i><tt>ayraç</tt></i> argümanı ile ayraç karakteri belirtilir. İşlev bu karakteri görene kadar ya da bu karakter yoksa dosya sonunu görene kadar metni okur.
+      </div><div class="para">
+<i><tt>satır-gstr</tt></i> içinde saklanan metin ayraç karakterini ve  sonlandırıcı olarak bir boş karakter içerir. <b><tt>getline</tt></b> gibi <b><tt>getdelim</tt></b> işlevi de gerekirse <i><tt>satır-gstr</tt></i> tamponunu büyütür.
+      </div><div class="para">
+<b><tt>getline</tt></b> bir <b><tt>getdelim</tt></b> işlevi ile aşağıdaki gibi gerçeklenebilir:
       </div>
-    </header>
-    <section class="mainpage">
-      <div class="crumbs">
-        <p>  </p>
-      </div>
-      <section class="chapter" id="glibc-Line-Input">
-        <div class="titlepage">
-          <div>
-            <div>
-              <h2 class="title">12.9. Satır Yönlenimli Girdi</h2>
-            </div>
-          </div>
-        </div>
-        <p>
-   Birçok yazılım girdiyi satır temelinde yorumladığından bir akımdan bir metin satırını okuyacak işlevlerin de bulunması yararlıdır.
-  </p>
-        <p>
-   Standart C bunu yapacak işlevlere sahiptir ama onlar çok güvenilir değildir: Boş karakterler ve hatta uzun satırlar (<a href="glibc-Line-Input.html#glibc-fn-gets"><strong class="function"><code>gets</code></strong></a> için) onları şaşırtabilir. Bu nedenle GNU C Kütüphanesi satırları güvenilir bir şekilde kolayca okumak için standart olmayan <a href="glibc-Line-Input.html#glibc-fn-getline"><strong class="function"><code>getline</code></strong></a> işlevini içerir.
-  </p>
-        <p>
-   Diğer bir GNU oluşumu olan <a href="glibc-Line-Input.html#glibc-fn-getdelim"><strong class="function"><code>getdelim</code></strong></a> işlevi, <a href="glibc-Line-Input.html#glibc-fn-getline"><strong class="function"><code>getline</code></strong></a> işlevini genelleştirir. İşlev belirtilmiş bir ayraç karakteriyle ayrılmış kayıtlardan bir kaydı okur.
-  </p>
-        <p>
-   Bu işlevlerin tümü <code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/stdio.h;hb=HEAD" target="_top">stdio.h</a></code> başlık dosyasında bildirilmiştir.
-  </p>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-   <span id="glibc-fn-getline" class="indexterm"></span>
-   <span id="glibc-cp-getline" class="indexterm"></span>
-   <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/stdio.h;hb=HEAD" target="_top">stdio.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">ssize_t </code><strong><code class="function">getline</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">char </code><strong class="type">**</strong><strong><code class="parameter">lineptr</code></strong><strong><code>, </code></strong><code class="type">size_t </code><strong class="type">*</strong><strong><code class="parameter">n</code></strong><strong><code>, </code></strong><code class="type">FILE </code><strong class="type">*</strong><strong><code class="parameter">stream</code></strong><strong><code>)</code></strong></td></tr></table></div>
-   
-   <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-asunsafe">AS-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-corrupt">corrupt</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-heap">heap</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acunsafe">AC-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-lock">lock</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-corrupt">corrupt</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-mem">mem</a>
-   </div>
-   <p>
-    Bu işlev <em class="parameter"><code>stream</code></em> akımından tam bir satır okur, metni satır sonu karakteri ve bir sonlandırıcı boş karakterle bir tampona yazar ve tamponun adresini *<em class="parameter"><code>lineptr</code></em> içinde saklar.
-   </p>
-   <p>
-    <code class="code">getline</code> çağrısından önce, *<em class="parameter"><code>n</code></em> bayt uzunluğundaki <a href="glibc-Basic-Allocation.html#glibc-fn-malloc"><strong class="function"><code>malloc</code></strong></a> ile tahsis edilmiş tamponun adresi  *<em class="parameter"><code>lineptr</code></em> içine yerleştirilmelidir. Bu tampon yeterli uzunluktaysa, <code class="code">getline</code> okuduğu satırı bu tampona yazar. Aksi takdirde <code class="code">getline</code>, <a href="glibc-Changing-Block-Size.html#glibc-fn-realloc"><strong class="function"><code>realloc</code></strong></a> kullanarak tamponu büyütür ve yeni tampon adresini *<em class="parameter"><code>lineptr</code></em> bağımsız değişkeni ile ve artırdığı uzunluğu *<em class="parameter"><code>n</code></em> bağımsız değişkeni ile döndürür. Bkz. <a class="xref" href="glibc-Unconstrained-Allocation.html" title="3.2.3. Kısıtlanmamış Bellek Tahsisi">Kısıtlanmamış Bellek Tahsisi</a>.
-   </p>
-   <p>
-    *<em class="parameter"><code>lineptr</code></em> olarak boş gösterici ve *<em class="parameter"><code>n</code></em> için <code class="code">0</code> değeri ile çağrı yapılırsa, <code class="code">getline</code> işlevi <a href="glibc-Basic-Allocation.html#glibc-fn-malloc"><strong class="function"><code>malloc</code></strong></a> işlevini kullanarak tamponu özdevinimli olarak tahsis eder.
-   </p>
-   <p>
-    Her iki durumda, <code class="code">getline</code> döndüğünde,  *<em class="parameter"><code>lineptr</code></em> satırın metnini gösteren  bir <code class="type">char *</code>’dır.
-   </p>
-   <p>
-    <code class="code">getline</code> başarılı olduğunda okunan karakterlerin sayısı (satır sonu karakteri ve boş karakter dahil) ile döner. Bu değer satırın parçası olan boş karakterlerim sonlandırıcı olarak eklenen boş karakterden ayırt edilebilmesini sağlar.
-   </p>
-   <p>
-    Bu işlev bir GNU oluşumudur ve bir akımdan satırları okumak için önerilen bir yoldur. Aynı amaçlı diğer standart işlevler güvenilir değildir.
-   </p>
-   <p>
-    Bir hata oluşursa ya da herhangi bir bayt okunmadan dosya sonuna gelinirse <code class="code">getline</code> işlevi <code class="code">-1</code> ile döner.
-   </p>
-  </div>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-   <span id="glibc-fn-getdelim" class="indexterm"></span>
-   <span id="glibc-cp-getdelim" class="indexterm"></span>
-   <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/stdio.h;hb=HEAD" target="_top">stdio.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">ssize_t </code><strong><code class="function">getdelim</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">char </code><strong class="type">**</strong><strong><code class="parameter">lineptr</code></strong><strong><code>, </code></strong><code class="type">size_t </code><strong class="type">*</strong><strong><code class="parameter">n</code></strong><strong><code>, </code></strong><code class="type">int </code><strong><code class="parameter">delimiter</code></strong><strong><code>, </code></strong><code class="type">FILE </code><strong class="type">*</strong><strong><code class="parameter">stream</code></strong><strong><code>)</code></strong></td></tr></table></div>
-   
-   <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-asunsafe">AS-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-corrupt">corrupt</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-heap">heap</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acunsafe">AC-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-lock">lock</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-corrupt">corrupt</a> <a class="link" href="glibc-Other-Safety-Remarks.html#glibc-safety-mem">mem</a>
-   </div>
-   <p>
-    Bu işlev okumayı sonlandıran karakterin belirtilebilmesi dışında <a href="glibc-Line-Input.html#glibc-fn-getline"><strong class="function"><code>getline</code></strong></a> gibidir. <em class="parameter"><code>delimiter</code></em> bağımsız değişkeni ile ayraç karakteri belirtilir. İşlev bu karakteri görene kadar ya da bu karakter yoksa dosya sonunu görene kadar metni okur.
-   </p>
-   <p>
-    <em class="parameter"><code>lineptr</code></em> içinde saklanan metin ayraç karakterini ve  sonlandırıcı olarak boş karakter içerir. <a href="glibc-Line-Input.html#glibc-fn-getline"><strong class="function"><code>getline</code></strong></a> gibi  <code class="code">getdelim</code> işlevi de gerekirse <em class="parameter"><code>lineptr</code></em> tamponunu büyütür.
-   </p>
-   <p>
-    <a href="glibc-Line-Input.html#glibc-fn-getline"><strong class="function"><code>getline</code></strong></a> işlevi  <code class="code">getdelim</code> işlevi kullanılarak aşağıdaki gibi gerçeklenebilir:
-   </p>
-   <div class="example"><div class="example-title">Örnek: </div><div class="example-contents"><pre class="screen">ssize_t
+<div class="para"><div align="right"><pre class="screen">
+ssize_t
 getline (char **lineptr, size_t *n, FILE *stream)
 {
   return getdelim (lineptr, n, '\n', stream);
 }
-</pre></div></div><br class="example-break" />
-  </div>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-   <span id="glibc-fn-fgets" class="indexterm"></span>
-   <span id="glibc-cp-fgets" class="indexterm"></span>
-   <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/stdio.h;hb=HEAD" target="_top">stdio.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">char </code><strong class="type">*</strong><strong><code class="function">fgets</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">char </code><strong class="type">*</strong><strong><code class="parameter">s</code></strong><strong><code>, </code></strong><code class="type">int </code><strong><code class="parameter">count</code></strong><strong><code>, </code></strong><code class="type">FILE </code><strong class="type">*</strong><strong><code class="parameter">stream</code></strong><strong><code>)</code></strong></td></tr></table></div>
-   
-   <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-asunsafe">AS-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-corrupt">corrupt</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acunsafe">AC-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-lock">lock</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-corrupt">corrupt</a>
-   </div>
-   <p>
-    <code class="code">fgets</code> işlevi <em class="parameter"><code>stream</code></em> akımından satırı satır sonu karakterine kadar bu karakter de dahil olmak üzere okur ve <em class="parameter"><code>s</code></em> dizgesine sonuna boş karakter ekleyerek yerleştirir. <em class="parameter"><code>s</code></em> dizgesindeki alan <em class="parameter"><code>count</code></em> karakterlik belirtilebilir, ancak okunan karakter sayısı <em class="parameter"><code>count</code></em> - 1 olacaktır. Kalan son yer, dizgenin sonunu gösteren boş karakter için kullanılacaktır.
-   </p>
-   <p>
-    <code class="code">fgets</code> çağrısı sırasında sistem zaten dosyanın sonundaysa <em class="parameter"><code>s</code></em> dizisinin içeriği değiştirilmez ve boş gösterici döner. Bir okuma hatası olduğunda da boş gösterici döner. Aksi takdirde dönen değer <em class="parameter"><code>s</code></em> dizisine göstericidir.
-   </p>
-   <div class="admon warning"><h3 class="admon-title">Uyarı</h3><div class="admon-contents"><p>
-     Girdi verisi boş karakter içeriyorsa bu belirtilemez. Bu nedenle, sadece verinin boş karakter içermediği biliniyorsa <code class="code">fgets</code> işlevi kullanılmalı, yoksa kullanılmamalıdır. Kullanıcı tarafından düzenlenmiş dosyaları okumak için <code class="code">fgets</code> kullanılmamalıdır, çünkü kullanıcı boş karakter girmişse ya onu olması gerektiği gibi okumak ya da bir hata iletisi çıktılamak gerekir. Daha iyisi, <code class="code">fgets</code> yerine <a href="glibc-Line-Input.html#glibc-fn-getline"><strong class="function"><code>getline</code></strong></a> kullanılması önerilir.
-    </p></div></div>
-  </div>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-   <span id="glibc-fn-fgetws" class="indexterm"></span>
-   <span id="glibc-cp-fgetws" class="indexterm"></span>
-   <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/wchar.h;hb=HEAD" target="_top">wchar.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">wchar_t </code><strong class="type">*</strong><strong><code class="function">fgetws</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">wchar_t </code><strong class="type">*</strong><strong><code class="parameter">ws</code></strong><strong><code>, </code></strong><code class="type">int </code><strong><code class="parameter">count</code></strong><strong><code>, </code></strong><code class="type">FILE </code><strong class="type">*</strong><strong><code class="parameter">stream</code></strong><strong><code>)</code></strong></td></tr></table></div>
-   
-   <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-asunsafe">AS-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-corrupt">corrupt</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acunsafe">AC-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-lock">lock</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-corrupt">corrupt</a>
-   </div>
-   <p>
-    <code class="code">fgetws</code> işlevi <em class="parameter"><code>stream</code></em> akımından bir satırı satır sonu karakterine kadar bu karakter de dahil olmak üzere okur ve <em class="parameter"><code>ws</code></em> dizgesine sonuna boş geniş karakter ekleyerek yerleştirir. <em class="parameter"><code>ws</code></em> dizgesindeki alan <em class="parameter"><code>count</code></em> karakterlik belirtilebilir, ancak okunan karakter sayısı <em class="parameter"><code>count</code></em> - 1 olacaktır. Kalan son yer, dizgenin sonunu gösteren boş geniş karakter için kullanılacaktır.
-   </p>
-   <p>
-    <code class="code">fgetws</code> çağrısı sırasında sistem zaten dosyanın sonundaysa <em class="parameter"><code>ws</code></em> dizisinin içeriği değiştirilmez ve boş gösterici döner. Bir okuma hatası olduğunda da boş gösterici döner. Aksi takdirde dönen değer <em class="parameter"><code>ws</code></em> dizisine göstericidir.
-   </p>
-   <div class="admon warning"><h3 class="admon-title">Uyarı</h3><div class="admon-contents"><p>
-     Girdi verisi boş geniş karakter içeriyorsa bu belirtilemez. Bu nedenle, sadece verinin boş geniş karakter içermediği biliniyorsa <code class="code">fgetws</code> işlevi kullanılmalı, yoksa kullanılmamalıdır. Kullanıcı tarafından düzenlenmiş dosyaları okumak için <code class="code">fgetws</code> kullanılmamalıdır, çünkü kullanıcı boş geniş karakter girmişse ya onu olması gerektiği gibi okumak ya da bir hata iletisi çıktılamak gerekir.
-    </p></div></div>
-  </div>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-   <span id="glibc-fn-fgets_unlocked" class="indexterm"></span>
-   <span id="glibc-cp-fgets_unlocked" class="indexterm"></span>
-   <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/stdio.h;hb=HEAD" target="_top">stdio.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">char </code><strong class="type">*</strong><strong><code class="function">fgets_unlocked</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">char </code><strong class="type">*</strong><strong><code class="parameter">s</code></strong><strong><code>, </code></strong><code class="type">int </code><strong><code class="parameter">count</code></strong><strong><code>, </code></strong><code class="type">FILE </code><strong class="type">*</strong><strong><code class="parameter">stream</code></strong><strong><code>)</code></strong></td></tr></table></div>
-   
-   <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a> <a class="link" href="glibc-Conditionally-Safe-Features.html#glibc-safety-race">race</a><code class="code"><a class="code" href="glibc-Other-Safety-Remarks.html#glibc-safety-identifier">:stream</a></code>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-asunsafe">AS-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-corrupt">corrupt</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acunsafe">AC-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-corrupt">corrupt</a>
-   </div>
-   <p>
-    <code class="code">fgets_unlocked</code> işlevi akımı dolaylı olarak kilitlememesi dışında <a href="glibc-Line-Input.html#glibc-fn-fgets"><strong class="function"><code>fgets</code></strong></a> işlevine eşdeğerdir.
-   </p>
-   <p>
-    Bu işlev GNU oluşumudur.
-   </p>
-  </div>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-   <span id="glibc-fn-fgetws_unlocked" class="indexterm"></span>
-   <span id="glibc-cp-fgetws_unlocked" class="indexterm"></span>
-   <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/wchar.h;hb=HEAD" target="_top">wchar.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">wchar_t </code><strong class="type">*</strong><strong><code class="function">fgetws_unlocked</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">wchar_t </code><strong class="type">*</strong><strong><code class="parameter">ws</code></strong><strong><code>, </code></strong><code class="type">int </code><strong><code class="parameter">count</code></strong><strong><code>, </code></strong><code class="type">FILE </code><strong class="type">*</strong><strong><code class="parameter">stream</code></strong><strong><code>)</code></strong></td></tr></table></div>
-   
-   <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a> <a class="link" href="glibc-Conditionally-Safe-Features.html#glibc-safety-race">race</a><code class="code"><a class="code" href="glibc-Other-Safety-Remarks.html#glibc-safety-identifier">:stream</a></code>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-asunsafe">AS-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-corrupt">corrupt</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acunsafe">AC-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-corrupt">corrupt</a>
-   </div>
-   <p>
-    <code class="code">fgetws_unlocked</code> işlevi akımı dolaylı olarak kilitlememesi dışında <a href="glibc-Line-Input.html#glibc-fn-fgetws"><strong class="function"><code>fgetws</code></strong></a> işlevine eşdeğerdir.
-   </p>
-   <p>
-    Bu işlev GNU oluşumudur.
-   </p>
-  </div>
-        <div class="csynopsis"><div class="cstype">      işlev</div>
-   <span id="glibc-fn-gets" class="indexterm"></span>
-   <span id="glibc-cp-gets" class="indexterm"></span>
-   <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=include/stdio.h;hb=HEAD" target="_top">stdio.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">char </code><strong class="type">*</strong><strong><code class="function">gets</code></strong></td><td style="vertical-align: text-top;"><strong><code>(</code></strong><code class="type">char </code><strong class="type">*</strong><strong><code class="parameter">s</code></strong><strong><code>)</code></strong></td></tr></table></div>
-   
-   <div class="safety"><a class="xref" href="glibc-POSIX.html#glibc-POSIX-Safety-Concepts">Evresel Güvenilirlik:</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-mtsafe">MT-Safe</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-asunsafe">AS-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-corrupt">corrupt</a>
-     | <a class="link" href="glibc-POSIX-Safety-Concepts.html#glibc-cp-acunsafe">AC-Unsafe</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-lock">lock</a> <a class="link" href="glibc-Unsafe-Features.html#glibc-safety-corrupt">corrupt</a>
-   </div>
-   <p>
-    <code class="code">gets</code> işlevi standart girdiden satırı satır sonu karakterine kadar okur ve <em class="parameter"><code>s</code></em> dizgesine yerleştirir. Satır sonu karakteri iptal edilir. (İşlev bu davranışı ile  satır sonu karakterini de dizgeye yerleştiren <a href="glibc-Line-Input.html#glibc-fn-fgets"><strong class="function"><code>fgets</code></strong></a>  işlevinden faklıdır.) Bir okuma hatası olduğunda ya da dosya sonu saptandığında boş gösterici döner. Aksi takdirde dönen değer <em class="parameter"><code>s</code></em> dizgesine göstericidir.
-   </p>
-   <div class="admon warning"><h3 class="admon-title">Uyarı</h3><div class="admon-contents"><p>
-     <code class="code">gets</code> işlevi <em class="wordasword">çok tehlikelidir</em>. Çünkü <em class="parameter"><code>s</code></em> dizgesinin taşmasına karşı bir korumaya sahip değildir. GNU C Kütüphanesi işlevi sadece uyumluluk adına içerir. Bunun yerine daima ya <a href="glibc-Line-Input.html#glibc-fn-fgets"><strong class="function"><code>fgets</code></strong></a> ya da <a href="glibc-Line-Input.html#glibc-fn-getline"><strong class="function"><code>getline</code></strong></a> işlevi kullanılmalıdır. Bunu hatırlatmak için ilintileyici (GNU <tt><b>ld</b>(1)</tt> kullanılıyorsa) <code class="code">gets</code> kullanılırsa uyaracaktır.
-    </p></div></div>
-  </div>
-      </section>
-      <footer>
-        <div align="center" class="footer">
-          <small>Bir <a href="http://belgeler.org.tr/">Linux Kitaplığı</a> Sayfası</small>
-        </div>
-      </footer>
-    </section>
-  </body>
-</html>
+</pre></div></div><div class="para">
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-fgets" id="glibc-fgets"></a>
+<a class="indexterm" name="idx865" id="idx865"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>char *<b><tt>fgets</tt></b></tt></td><td valign="top"><pre class="paramdef">(char *<i><tt>s</tt></i>,
+ int   <i><tt>kar-sayısı</tt></i>,
+ FILE *<i><tt>akım</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>fgets</tt></b> işlevi <i><tt>akım</tt></i>’dan bir satırı satırsonu karakterine kadar bu karakter de dahil olmak üzere okur ve <i><tt>s</tt></i> dizgesine sonuna bir boş karakter ekleyerek yerleştirir. <i><tt>s</tt></i> dizgesindeki alanı <i><tt>kar-sayısı</tt></i> karakterlik olarak belirtebilirsiniz, ancak okunan karakterlerin sayısı <i><tt>kar-sayısı</tt></i> - 1 olacaktır. Kalan son yer, dizgenin sonunu gösteren boş karakter için kullanılacaktır.
+      </div><div class="para">
+<b><tt>fgets</tt></b> çağrısı yaptığınızda sistem zaten dosyanın sonundaysa <i><tt>s</tt></i> dizisinin içeriği değiştirilmez ve bir boş gösterici döner. Bir okuma hatası olduğunda da boş gösterici döner. Aksi takdirde dönen değer <i><tt>s</tt></i> göstericisidir.
+      </div>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/warning.png" /></td><th class="admon">Uyarı</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">Girdi verisi bir boş karakter içeriyorsa bunu belirtemezsiniz. Bu nedenle, sadece verinin bir boş karakter içermediğini biliyorsanız <b><tt>fgets</tt></b> işlevini kullanın, yoksa kullanmayın. Kullanıcı tarafından düzenlenmiş dosyaları okumak için <b><tt>fgets</tt></b> kullanmayın, çünkü kullanıcı bir boş karakter girmişse ya onu olması gerektiği gibi okumanız ya da bir hata iletisi basmanız gerekir. Daha iyisi, <b><tt>fgets</tt></b> yerine <b><tt>getline</tt></b> kullanmanızı öneririz.</div></td></tr></table></div>
+</dd></dl><div style="padding:5px"></div><a name="glibc-fgetws" id="glibc-fgetws"></a>
+<a class="indexterm" name="idx866" id="idx866"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>wchar_t *<b><tt>fgetws</tt></b></tt></td><td valign="top"><pre class="paramdef">(wchar_t *<i><tt>ws</tt></i>,
+ int      <i><tt>kar-sayısı</tt></i>,
+ FILE    *<i><tt>akım</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>fgetws</tt></b> işlevi <i><tt>akım</tt></i>’dan geniş karakterleri satırsonu karakterine kadar bu karakter de dahil olmak üzere okur ve <i><tt>ws</tt></i> dizgesine sonuna bir boş karakter ekleyerek yerleştirir. <i><tt>ws</tt></i> dizgesindeki alanı <i><tt>kar-sayısı</tt></i> karakterlik olarak belirtebilirsiniz, ancak okunan geniş karakterlerin sayısı <i><tt>kar-sayısı</tt></i> - 1 olacaktır. Kalan son yer, dizgenin sonunu gösteren boş karakter için kullanılacaktır.
+      </div><div class="para">
+<b><tt>fgetws</tt></b> çağrısı yaptığınızda sistem zaten dosyanın sonundaysa <i><tt>ws</tt></i> dizisinin içeriği değiştirilmez ve bir boş gösterici döner. Bir okuma hatası olduğunda da boş gösterici döner. Aksi takdirde dönen değer <i><tt>ws</tt></i> göstericisidir.
+      </div>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/warning.png" /></td><th class="admon">Uyarı</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">Girdi verisi bir boş karakter içeriyorsa bunu belirtemezsiniz. Bu nedenle, sadece verinin bir boş karakter içermediğini biliyorsanız <b><tt>fgetws</tt></b> işlevini kullanın, yoksa kullanmayın. Kullanıcı tarafından düzenlenmiş dosyaları okumak için <b><tt>fgetws</tt></b> kullanmayın, çünkü kullanıcı bir boş karakter girmişse ya onu olması gerektiği gibi okumanız ya da bir hata iletisi basmanız gerekir.</div></td></tr></table></div>
+</dd></dl><div style="padding:5px"></div><a name="glibc-fgets_unlocked" id="glibc-fgets_unlocked"></a>
+<a class="indexterm" name="idx867" id="idx867"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>char *<b><tt>fgets_unlocked</tt></b></tt></td><td valign="top"><pre class="paramdef">(char *<i><tt>s</tt></i>,
+ int   <i><tt>kar-sayısı</tt></i>,
+ FILE *<i><tt>akım</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>fgets_unlocked</tt></b> işlevi akımı dolaylı olarak kilitlememesi dışında <b><tt>fgets</tt></b> işlevine eşdeğerdir.
+      </div><div class="para">
+Bu işlev bir GNU oluşumudur.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-fgetws_unlocked" id="glibc-fgetws_unlocked"></a>
+<a class="indexterm" name="idx868" id="idx868"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>wchar_t *<b><tt>fgetws_unlocked</tt></b></tt></td><td valign="top"><pre class="paramdef">(wchar_t *<i><tt>ws</tt></i>,
+ int      <i><tt>kar-sayısı</tt></i>,
+ FILE    *<i><tt>akım</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>fgetws_unlocked</tt></b> işlevi akımı dolaylı olarak kilitlememesi dışında <b><tt>fgetws</tt></b> işlevine eşdeğerdir.
+      </div><div class="para">
+Bu işlev bir GNU oluşumudur.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-gets" id="glibc-gets"></a>
+<a class="indexterm" name="idx869" id="idx869"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>char *<b><tt>gets</tt></b></tt></td><td valign="top"><pre class="paramdef">(char *<i><tt>s</tt></i>)</pre></td></tr></table></div><div class="sagsutun">önerilmeyen işlev</div></div></div><dl><dd><div class="para">
+<b><tt>gets</tt></b> işlevi standart girdiden bir satırı satırsonu karakterine kadar okur ve <i><tt>s</tt></i> dizgesine yerleştirir. Satırsonu karakteri iptal edilir. (İşlev bu davranışı ile  satırsonu karakterini de dizgeye yerleştiren <b><tt>fgets</tt></b>  işlevinden faklıdır.) Bir okuma hatası olduğunda ya da dosya sonu saptandığında boş gösterici döner. Aksi takdirde dönen değer <i><tt>s</tt></i> göstericisidir.
+      </div>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/warning.png" /></td><th class="admon">Uyarı</th></tr><tr><td align="left" valign="top" class="admon"><div class="para"><b><tt>gets</tt></b> işlevi <b><tt>çok tehlikelidir</tt></b>. Çünkü <i><tt>s</tt></i> dizgesinin taşmasına karşı bir korumaya sahip değildir. GNU kütüphanesi işlevi sadece uyumluluk adına içerir. Bunun yerine daima ya <b><tt>fgets</tt></b> ya da <b><tt>getline</tt></b> işlevini kullanmalısınız. Bunu hatırlatmak için ilintileyici (GNU <b><tt>ld</tt></b> kullanıyorsanız) <b><tt>gets</tt></b> kullanırsanız sizi uyaracaktır.
+      </div></td></tr></table></div></dd></dl><div style="padding:5px"></div>
+    </dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Character-Input.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-I-O-on-Streams.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Unreading.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Karakter Girdilerinin Alınması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Okunmamış Yapmak</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

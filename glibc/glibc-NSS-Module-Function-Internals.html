@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:50+03:00" /><title>NSS Modül İşlevlerinin Özellikleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Extending-NSS.html" title="NSS'nin Genişletilmesi" /><link rel="previous" href="../glibc/glibc-Adding-another-Service-to-NSS.html" title="NSS'ye Başka Hizmetlerin Eklenmesi" /><link rel="next" href="../glibc/glibc-Users-and-Groups.html" title="XXIX. Oylum - Kullanıcılar ve Gruplar" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">NSS Modül İşlevlerinin Özellikleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Adding-another-Service-to-NSS.html">Önceki</a> </td><th width="60%" align="center">NSS'nin Genişletilmesi</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Users-and-Groups.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-NSS-Module-Function-Internals" id="glibc-NSS-Module-Function-Internals"></a>NSS Modül İşlevlerinin Özellikleri</div><dl><dd><div class="para">
+Şimdiye kadar NSS modülündeki işlevlerin sözdizimsel arayüzünden bahsettik. Her işlevin gerçeklenmesi ister istemez farklı olacağında aslında söylenebilecek fazla bir şey yoktur. Fakat tüm işlevlerin uyması gereken bir kaç genel kuraldan bahsedilebilir.
+    </div><div class="para">
+Aslında arayüzde görülebilecek dört farklı işlev çeşidi vardır. Hepsi sistem veritabanları için kullanılan geleneksel işlevlerden türetilir. Aşağıdaki gösterimde <i><tt>vt</tt></i>, veritabanı sözcüğünün kısaltmasıdır.
+      </div><dl><dt><span class="glossterm">
+<tt>enum nss_status _nss_<i><tt>veritabanı</tt></i>_set<i><tt>vt</tt></i>ent (void)</tt>
+      </span></dt><dd class="halfpara"><div class="para">
+Bu işlev hizmeti belirttiği işlem için hazırlar. Basit bir dosya temelli arama için dosyaları açan, diğer hizmetlerde basitçe hiçbir işlem yapmayan bir işlev olabilir.
+       </div><div class="para">
+Bu işlev için özel bir durum, <b><tt>sethostent</tt></b> işlevindeki (<a href="../glibc/glibc-Host-Addresses.html#glibc-Host-Names" class="xref" title="Konak İsimleri">Konak İsimleri</a>) gibi bazı <i><tt>veritabanı</tt></i> veritabanları için ek argümanlar alabilmesidir. (<b><tt>int set<i><tt>vt</tt></i>ent (int)</tt></b> gösterimi ile karşılaştırılırsa "hosts" veritabanı için "host" kısaltmasının kullanıldığı görülür.)
+       </div><div class="para">
+Normal dönüş değeri <i><tt>NSS_STATUS_SUCCESS</tt></i> olmalı; bir hata durumunda <a href="../glibc/glibc-NSS-Modules-Interface.html" class="xref" title="NSS Modüllerinde İşlev Arayüzü">NSS Modüllerinde İşlev Arayüzü</a> bölümündeki tabloda belirtilen değerlerden biri olmalıdır.
+      </div></dd><dt><span class="glossterm">
+<tt>enum nss_status _nss_<i><tt>veritabanı</tt></i>_end<i><tt>vt</tt></i>ent (void)</tt>
+      </span></dt><dd class="halfpara"><div class="para">
+Bu işlev hala açık olan tüm dosyaları kapatır ya da bellekten tamponları kaldırır. Kaldırılacak bir tampon ya da kapatılacak bir dosya yoksa, işlev yine basitçe hiçbir işlem yapmayacaktır.
+       </div><div class="para">
+Normalde <i><tt>NSS_STATUS_SUCCESS</tt></i>'dan farklı bir dönüş değeri olmaz.
+      </div></dd><dt><span class="glossterm">
+<tt>enum nss_status _nss_<i><tt>veritabanı</tt></i>_get<i><tt>vt</tt></i>ent_r (<i><tt>yapı</tt></i> *<i><tt>sonuc</tt></i>, char *<i><tt>tampon</tt></i>, size_t <i><tt>tampon_boyu</tt></i>, int *<i><tt>hata_num</tt></i>)</tt>
+      </span></dt><dd class="halfpara"><div class="para">
+Bu işlev peşpeşe girdi almak için bir satırda defalarca çağrılacağından bir durum bilgisi tutmak zorundadır. Ama bu zorunluluk ayrıca işlevin gerçekte evresel olmayacağı anlamına da gelir. Sadece, bu işlev aynı anda yapılan başka çağrılarıyla verinin alındığı yere veri yazmayı denemeyecekse,  <i><tt>sonuc</tt></i> ile belirtilen tampona yazacaksa evresel olabilir. Fakat, bir ortak durumu paylaşan çağrıların varlığında ve bir dosya erişimi durumunda bu, dosyadaki komşu girdilerin dönmesi anlamına gelir.
+       </div><div class="para">
+<i><tt>tampon</tt></i> tamponunun uzunluğunu belirtmede kullanılan <i><tt>tampon_boyu</tt></i> tamponu sonuç ile ilgili bazı ek verilerin saklanması için kullanılabilir ama bu durumda işlevin sonraki çağrılarının aynı tamponla yapılabilmesi mümkün olmaz. Ancak, bu tamponun bazı durum bilgilerini döndürmesinden hareketle bu tampon, bir çağrıdan diğerine durum bilgisini aktarmak için kullanılmamalıdır.
+       </div><div class="para">
+İşlev dönmeden önce, gerçekleme <i><tt>hata_num</tt></i> ile gösterilen değeri <i><tt>errno</tt></i> genel değişkeninde saklamalıdır. Modülün durağan ilintili yazılımlarla da çalışabilmesini sağlamak için bunun böyle olması önemlidir.
+       </div><div class="para">
+Evvelce açıklandığı gibi bu işlev ayrıca bir ek argüman alabilir. Bu kullanılan veritabanına bağlıdır; sadece <b><tt>hosts</tt></b> ve <b><tt>networks</tt></b> veritabanlarında görülür.
+       </div><div class="para">
+İşlev <b><tt>NSS_STATUS_SUCCESS</tt></b> ile döneceği gibi başka değerlerle de dönebilir. Son girdi okunduktan sonra <b><tt>NSS_STATUS_NOTFOUND</tt></b> dönebilir. Belirtilen tampon gereğinden küçükse <b><tt>NSS_STATUS_TRYAGAIN</tt></b> ile dönebilir. Bir <b><tt>_nss_<i><tt>veritabanı</tt></i>_set<i><tt>vt</tt></i>ent</tt></b> çağrısı ile hizmet başta ilklendirilemediğinde bu işlev için izin verilen tüm dönüş değerleri burada ayrıca döndürülebilir.
+      </div></dd><dt><span class="glossterm">
+<tt>enum nss_status _nss_<i><tt>veritabanı</tt></i>_get<i><tt>vt</tt></i>by<i><tt>xx</tt></i>_r (<i><tt>parametreler</tt></i>, <i><tt>yapı</tt></i> *<i><tt>sonuc</tt></i>, char *<i><tt>tampon</tt></i>, size_t <i><tt>tampon_boyu</tt></i>, int *<i><tt>hata_num</tt></i>)</tt>
+      </span></dt><dd class="halfpara"><div class="para">
+Bu işlev veritabanından <i><tt>parametreler</tt></i> ile adreslenen girdiyi döndürür. Bu argümanların sayısı ve türü değişebilir. Bunlar tek tek kullanıcı seviyesi arayüz işlevlerine bakarak saptanır. İşlevin evresel olmayan sürümünde belirtilen tüm argümanlar burada <i><tt>parametreler</tt></i> alanında belirtilmelidir.
+       </div><div class="para">
+Sonuç <i><tt>sonuc</tt></i> ile gösterilen yapıda saklanmalıdır. Eğer döndürülecek başka veriler varsa (örn, dizgeler <i><tt>sonuc</tt></i> yapısında sadece göstericilerle içerilebilir) işlev <i><tt>tampon</tt></i> ya da <i><tt>tampon_boyu</tt></i> ile gösterilen tamponları kullanmalıdır. Sabitler biçiminde olmayan hiçbir genel değişkenli veri olmamalıdır.
+       </div><div class="para">
+Bu işlevi gerçeklemesi <b><tt>set<i><tt>vt</tt></i>ent</tt></b> işlevi tarafından atanan <i><tt>açıkkal</tt></i> seçeneği ile de bu bir gereklilikse ilgilenmelidir.
+       </div><div class="para">
+İşlev dönmeden önce, gerçekleme <i><tt>hata_num</tt></i> ile gösterilen değeri <i><tt>errno</tt></i> genel değişkeninde saklamalıdır. Modülün durağan ilintili yazılımlarla da çalışabilmesini sağlamak için bunun böyle olması önemlidir.
+       </div><div class="para">
+Evvelce açıklandığı gibi bu işlev <b><tt>hosts</tt></b> ve <b><tt>networks</tt></b> veritabanları için ayrıca bir ek argüman alabilir.
+       </div><div class="para">
+İşlevin dönüş değerleri daima <a href="../glibc/glibc-NSS-Modules-Interface.html" class="xref" title="NSS Modüllerinde İşlev Arayüzü">NSS Modüllerinde İşlev Arayüzü</a> bölümünde açıklanan kurallara uygun olmalıdır.
+       </div></dd></dl>
+     </dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Adding-another-Service-to-NSS.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Extending-NSS.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Users-and-Groups.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">NSS'ye Başka Hizmetlerin Eklenmesi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> XXIX. Oylum - Kullanıcılar ve Gruplar</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

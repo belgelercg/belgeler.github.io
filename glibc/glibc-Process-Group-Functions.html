@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:47+03:00" /><title>Süreç Grubu İşlevleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Functions-for-Job-Control.html" title="İş Denetimi İşlevleri" /><link rel="previous" href="../glibc/glibc-Identifying-the-Terminal.html" title="Denetim Uçbiriminin İsimlendirilmesi" /><link rel="next" href="../glibc/glibc-Terminal-Access-Functions.html" title="Denetim Uçbirimine Erişim İşlevleri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Süreç Grubu İşlevleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Identifying-the-Terminal.html">Önceki</a> </td><th width="60%" align="center">İş Denetimi İşlevleri</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Terminal-Access-Functions.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Process-Group-Functions" id="glibc-Process-Group-Functions"></a>Süreç Grubu İşlevleri</div><dl><dd><div class="para">
+Bu bölümde süreç grupları ile etkileşen işlevlerin açıklamaları bulunmaktadır. Bu işlevleri kullanabilmek için yazılımınıza <tt>sys/types.h</tt> ve <tt>unistd.h</tt> başlık dosyalarını dahil etmelisiniz.
+<a class="indexterm" name="idx3000" id="idx3000"></a>
+<a class="indexterm" name="idx3001" id="idx3001"></a>
+    </div>
+<a class="indexterm" name="idx3002" id="idx3002"></a>
+<a name="glibc-setsid" id="glibc-setsid"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>pid_t <b><tt>setsid</tt></b></tt></td><td valign="top"><pre class="paramdef">(void)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>setsid</tt></b> işlevi yeni bir oturum oluşturur. Bu işlevi çağıran süreç oturum lideri haline gelir ve süreç, süreç grubunun kimliği kendi süreç kimliği olan süreç grubuna konur. Başlangıçta yeni süreç grubunda başka süreç ve süreç grubu yoktur.
+    </div><div class="para">
+Bu işlev ayrıca çağrıldığı süreci denetim uçbirimsiz süreç durumuna getirir.
+    </div><div class="para">
+Normalde, <b><tt>setsid</tt></b> işlevi kendini çağıran sürecin yeni süreç grubu kimliği ile döner. Dönüş değeri <b><tt>-1</tt></b> ise bu bir hata oluştuğunu gösterir. Aşağıdaki <b><tt>errno</tt></b> hata durumu bu işlev için tanımlanmıştır:
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>EPERM</tt></span></dt><dd class="varlist"><div class="para">
+Çağıran süreç zaten bir süreç grubunun lideri ya da aynı süreç grup kimliğine sahip başka bir süreç grubu var
+       </div></dd></dl></div>
+</dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx3003" id="idx3003"></a>
+<a name="glibc-getsid" id="glibc-getsid"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>pid_t <b><tt>getsid</tt></b></tt></td><td valign="top"><pre class="paramdef">(pid_t <i><tt>pid</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>getsid</tt></b> işlevi belirtilen sürecin oturum liderinin süreç grup kimliğini döndürür. <i><tt>pid</tt></i>'in değeri <b><tt>0</tt></b> ise, işlevi çağıran sürecin oturum liderinin süreç grup kimliği döner.
+    </div><div class="para">
+Bir hata oluşmuşsa işlev <b><tt>-1</tt></b> ile döner ve <b><tt>errno</tt></b> değişkenine şu hata durumlarından biri atanır:
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>ESRCH</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>pid</tt></i> kimlikli bir süreç yok
+       </div></dd><dt><span class="term"><tt>EPERM</tt></span></dt><dd class="varlist"><div class="para">
+Çağıran süreç ve <i><tt>pid</tt></i> ile belirtilen süreç farklı oturumlara ait ve gerçekleme <i><tt>pid</tt></i> ile belirtilen sürecin oturum liderinin süreç grup kimliğine erişime izin vermiyor
+       </div></dd></dl></div>
+</dd></dl><div style="padding:5px"></div><div class="para">
+<b><tt>getpgrp</tt></b> işlevinin iki tanımı vardır: biri BSD Unix'den diğeri POSIX.1 standardından türetilmiştir. <a class="link" href="../glibc/glibc-Feature-Test-Macros.html" title="Özellik Sınama Makroları">Özellik sınama makrolarıyla</a> hangi tanımı kullanmak istediğinizi belirleyebilirsiniz. Özellikle, BSD sürümünü kullanmak istiyorsanız <b><tt>_BSD_SOURCE</tt></b>; POSIX sürümünü kullanmak istiyorsanız <b><tt>_POSIX_SOURCE</tt></b> veya <b><tt>_GNU_SOURCE</tt></b> makrosunu belirtmelisiniz.  Özellikle <b><tt>_BSD_SOURCE</tt></b> altında tanımlı <b><tt>getpgrp</tt></b> işlevini kullanan Eski BSD sistemleri için yazılmış yazılımlar <tt>unistd.h</tt> başlık dosyasını içermeyecektir.  Böyle yazılımların BSD tanımlarını elde etmek için <b><tt>-lbsd-compat</tt></b> ile ilintilemelisiniz.
+<a class="indexterm" name="idx3004" id="idx3004"></a>
+<a class="indexterm" name="idx3005" id="idx3005"></a>
+<a class="indexterm" name="idx3006" id="idx3006"></a>
+       </div>
+<a class="indexterm" name="idx3007" id="idx3007"></a>
+<a name="glibc-getpgrp" id="glibc-getpgrp"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>pid_t <b><tt>getpgrp</tt></b></tt></td><td valign="top"><pre class="paramdef">(void)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Çağrıldığı sürecin süreç grup kimliğini döndüren <b><tt>getpgrp</tt></b> işlevinin POSIX.1 tanımı.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx3008" id="idx3008"></a>
+<a name="glibc-bsd-getpgrp" id="glibc-bsd-getpgrp"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>pid_t <b><tt>getpgrp</tt></b></tt></td><td valign="top"><pre class="paramdef">(pid_t <i><tt>pid</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<i><tt>pid</tt></i> kimlikli sürecin süreç grup kimliğini döndüren <b><tt>getpgrp</tt></b> işlevinin BSD tanımı. <i><tt>pid</tt></i> değeri olarak <b><tt>0</tt></b> verirseniz çağrıldığı sürecin süreç grup kimliğini döndürür.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx3009" id="idx3009"></a>
+<a name="glibc-getpgid" id="glibc-getpgid"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>getpgid</tt></b></tt></td><td valign="top"><pre class="paramdef">(pid_t <i><tt>pid</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>getpgid</tt></b> işlevi bir BSD işlevi olarak <b><tt>getpgrp</tt></b> işlevi ile aynıdır.  <i><tt>pid</tt></i> kimlikli sürecin süreç grup kimliğini döndürür. <i><tt>pid</tt></i> değeri olarak <b><tt>0</tt></b> verirseniz çağrıldığı sürecin süreç grup kimliğini döndürür.
+    </div><div class="para">
+Bir hata oluşmuşsa işlev <b><tt>-1</tt></b> ile döner ve <b><tt>errno</tt></b> değişkenine şu hata durumlarından biri atanır:
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>ESRCH</tt></span></dt><dd class="varlist"><div class="para">
+Çağıran süreç ve <i><tt>pid</tt></i> ile belirtilen süreç farklı oturumlara ait ve gerçekleme <i><tt>pid</tt></i> ile belirtilen sürecin oturum liderinin süreç grup kimliğine erişime izin vermiyor
+       </div></dd></dl></div>
+</dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx3010" id="idx3010"></a>
+<a name="glibc-setpgid" id="glibc-setpgid"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>setpgid</tt></b></tt></td><td valign="top"><pre class="paramdef">(pid_t <i><tt>pid</tt></i>,
+ pid_t <i><tt>pgid</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>setpgid</tt></b> işlevi <i><tt>pid</tt></i> sürecini <i><tt>pgid</tt></i> süreç grubuna koyar. Özel bir durum olarak, çağıran süreci belirtmek üzere <i><tt>pid</tt></i> ya da <i><tt>pgid</tt></i> sıfır olabilir.
+    </div><div class="para">
+İş denetimini desteklemeyen bir sistemde işlev başarısız olur. Daha fazla bilgi için <a href="../glibc/glibc-Job-Control-is-Optional.html" class="xref" title="İş Denetimi İsteğe Bağlıdır">İş Denetimi İsteğe Bağlıdır</a> bölümüne bakınız.
+    </div><div class="para">
+İşlem başarılıysa işlev sıfırla döner. Aksi takdirde <b><tt>-1</tt></b> döner ve <b><tt>errno</tt></b> değişkenine şu hata durumlarından biri atanır:
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>EACCES</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>pid</tt></i> kimlikli alt süreç çatallandığında bir <b><tt>exec</tt></b> çağrısı yaptı
+       </div></dd><dt><span class="term"><tt>EINVAL</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>pgid</tt></i> değeri geçersiz
+       </div></dd><dt><span class="term"><tt>ENOSYS</tt></span></dt><dd class="varlist"><div class="para">
+Sistem iş denetimini desteklemiyor
+       </div></dd><dt><span class="term"><tt>EPERM</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>pid</tt></i> ile belirtilen süreç ya bir oturum lideri ya da işlevin çağrıldığı süreçle aynı oturumda değil veya <i><tt>pgid</tt></i> argümanı işlevin çağrıldığı süreç ile aynı oturumdaki bir süreç grup kimliğiyle eşleşmiyor
+       </div></dd><dt><span class="term"><tt>ESRCH</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>pid</tt></i> kimlikli süreç işlevi çağıran süreç değil ya da işlevi çağıran sürecin bir alt süreci değil.
+       </div></dd></dl></div>
+</dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx3011" id="idx3011"></a>
+<a name="glibc-setpgrp" id="glibc-setpgrp"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>setpgrp</tt></b></tt></td><td valign="top"><pre class="paramdef">(pid_t <i><tt>pid</tt></i>,
+ pid_t <i><tt>pgid</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev, <b><tt>setpgid</tt></b> işlevinin BSD Unix sürümüdür.  Her iki işlev de tamamen aynı işlemi yapar.
+    </div></dd></dl><div style="padding:5px"></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Identifying-the-Terminal.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Functions-for-Job-Control.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Terminal-Access-Functions.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Denetim Uçbiriminin İsimlendirilmesi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Denetim Uçbirimine Erişim İşlevleri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

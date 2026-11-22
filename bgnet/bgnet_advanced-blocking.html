@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:25+03:00" /><title>Bloklama</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../bgnet/bgnet_advanced.html" title="İleri Teknikler" /><link rel="previous" href="../bgnet/bgnet_advanced.html" title="İleri Teknikler" /><link rel="next" href="../bgnet/bgnet_advanced-select.html" title="select() -- Eşzamanlı G/Ç Çoğullama" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Bloklama</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../bgnet/bgnet_advanced.html">Önceki</a> </td><th width="60%" align="center">İleri Teknikler</th><td width="20%" align="right"> <a accesskey="n" href="../bgnet/bgnet_advanced-select.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="bgnet_advanced-blocking" id="bgnet_advanced-blocking"></a>Bloklama</div><dl><dd><div class="para">
+      Bloklama. Bunu duymuş olmalısınız -- peki anlamı nedir? Kabaca
+      söylemek gerekirse "blok" (block) sözcüğü "uyku" (sleep) için
+      kullandığımız teknik bir terim. Bunu, yukarıdaki
+      <b><tt>listener</tt></b> programını çalıştırdığınızda görmüş
+      olmalısınız. Yani program çalışır ve orada öylece bir paketin
+      gelmesini bekler. Olup biten şudur: Bu program
+      <tt>recvfrom()</tt> işlevini çağırır, ortalıkta bir
+      veri yoktur ve bu yüzden <tt>recvfrom()</tt>
+      "bloklama" yapar (yani orada uyur) ta ki bir veri gelene kadar.
+    </div><div class="para">
+      Pek çok işlev blok yapar, yani uyur. <tt>accept()</tt>
+      bloklar. Tüm <tt>recv()</tt> işlevleri bloklar, yani
+      bekler. Bunu yapabilmelerinin sebebi ise onlara bunu yapabilmeleri
+      için izin verilmiş olmasıdır. Soket tanımlayıcısını ilk aşamada
+      <tt>socket()</tt> ile yarattığınızda, işletim sistemi
+      çekirdeği onu bloklayan olarak ayarlar. Eğer bir soketin bloklama
+      yapabilmesini istemiyorsanız o zaman <tt>fcntl()</tt>
+      işlevini çağırmanız gerekir:
+    </div>
+<div class="para"><div align="right"><pre class="programlisting">
+#include &lt;unistd.h&gt;
+#include &lt;fcntl.h&gt;
+.
+.
+sockfd = socket(AF_INET, SOCK_STREAM, 0);
+fcntl(sockfd, F_SETFL, O_NONBLOCK);
+.
+. 
+</pre></div></div>
+    <div class="para">
+      Bir soketi bloklamayan olarak ayarladığınızda o soketten bilgi
+      alabilirsiniz. Eğer bloklamayan bir soketten bir şeyler okumaya
+      kalkarsanız ve orada bir veri yoksa, bloklama yapmasına izin
+      verilmediği için bir değer döndürecektir, bu değer <tt>-1</tt>
+      olacaktır ve <i><tt>errno</tt></i> değişkeni de
+      <tt>EWOULDBLOCK</tt> değerini alacaktır.
+    </div><div class="para">
+      Ancak genelde bu şekilde bilgi edinmeye çalışmak pek de iyi bir
+      fikir değildir. Eğer programınızı sürekli soketten veri okumaya
+      çalışır hale getirirseniz o zaman çok fazla işlemci zamanından
+      çalarsınız. Okunmak üzere bir verinin gelip gelmediğini kontrol
+      etmenin daha şık bir yöntemi vardır ve bu yöntem
+      <tt>select()</tt> işlevini temel alır.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../bgnet/bgnet_advanced.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../bgnet/bgnet_advanced.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../bgnet/bgnet_advanced-select.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">İleri Teknikler </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> select() -- Eşzamanlı G/Ç Çoğullama</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

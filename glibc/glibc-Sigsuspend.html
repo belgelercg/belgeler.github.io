@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:35+03:00" /><title>sigsuspend Kullanımı</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Waiting-for-a-Signal.html" title="Sinyalin Beklenmesi" /><link rel="previous" href="../glibc/glibc-Pause-Problems.html" title="pause Sorunları" /><link rel="next" href="../glibc/glibc-Signal-Stack.html" title="Sinyal Yığıtı" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">sigsuspend Kullanımı</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Pause-Problems.html">Önceki</a> </td><th width="60%" align="center">Sinyalin Beklenmesi</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Signal-Stack.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Sigsuspend" id="glibc-Sigsuspend"></a><tt>sigsuspend</tt> Kullanımı</div><dl><dd><div class="para">
+Bir sinyali beklemenin en temiz ve güvenilir yolu sinyali engelleyip <b><tt>sigsuspend</tt></b> kullanmaktır. Bir döngü içinde <b><tt>sigsuspend</tt></b> kullanarak, her sinyal için farklı bir sinyal eylemci oluşturarak sinyalleri bekleyebilirsiniz.
+    </div>
+<a class="indexterm" name="idx2721" id="idx2721"></a>
+<a name="glibc-sigsuspend" id="glibc-sigsuspend"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>sigsuspend</tt></b></tt></td><td valign="top"><pre class="paramdef">(const sigset_t *<i><tt>küme</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev sürecin sinyal maskesini <i><tt>küme</tt></i> ile değiştirerek bir sinyal eylemciyi çalıştıracak ya da süreci sonlandıracak bir sinyal alıncaya kadar süreci bekletir. Başka bir deyişle, süreç, <i><tt>küme</tt></i>'nin üyesi olmayan sinyallerden biri gelene dek süreci bekletir.
+    </div><div class="para">
+Eğer süreç bir sinyal eylemciyi çalıştıracak bir sinyalin alınması ve eylemci işlevin dönmesiyle işlemi sürdürüyorsa <b><tt>sigsuspend</tt></b> ayrıca dönecektir.
+    </div><div class="para">
+<i><tt>küme</tt></i> ile belirtilen maske <b><tt>sigsuspend</tt></b> etkin olduğu sürece geçerli olur. İşlev döndüğünde eski maske tekrar etkin olur.
+    </div><div class="para">
+Dönüş değeri ve hata durumu  <b><tt>pause</tt></b> ile aynıdır.
+</div></dd></dl><div style="padding:5px"></div><div class="para">
+Önceki bölümdeki <b><tt>pause</tt></b> ve <b><tt>sleep</tt></b> ile ilgili örnekleri <b><tt>sigsuspend</tt></b> tamamen güvenilir duruma getirebilirsiniz:
+    </div>
+<div class="para"><div align="right"><pre class="screen">sigset_t mask, oldmask;
+
+...
+
+/* Geçici olarak engellenecek sinyallerin maskesini oluşturalım. */
+sigemptyset (&amp;mask);
+sigaddset (&amp;mask, SIGUSR1);
+
+...
+
+/* Sinyal gelmesini bekleyelim. */
+sigprocmask (SIG_BLOCK, &amp;mask, &amp;oldmask);
+while (!usr_interrupt)
+  sigsuspend (&amp;oldmask);
+sigprocmask (SIG_UNBLOCK, &amp;mask, NULL);
+
+</pre></div></div><div class="para">
+Kodun son parçası biraz dikkat gerektiriyor. Burada hatırlanması gereken nokta, <b><tt>sigsuspend</tt></b> döndüğünde sinyal maskesini çağrılmadan önceki değere ayarlamasıdır. Bu durumda <b><tt>SIGUSR1</tt></b> sinyali bir kere daha engellenir. İkinci <b><tt>sigprocmask</tt></b> çağrısı bu sinyalin engellenmesini kaldırmak için gereklidir.
+    </div><div class="para">
+Bir diğer nokta: <b><tt>while</tt></b> döngüsünün neden gerekli olduğunu düşünebilirsiniz. Öyle ya, yazılım sadece tek bir <b><tt>SIGUSR1</tt></b> sinyali bekliyor. Yanıt: <b><tt>sigsuspend</tt></b>'e aktarılan maskeye bakarsanız yazılımın ayrıca başka sinyalleri de beklediğini görürsünüz--örneğin, iş denetim sinyalleri. Eğer <b><tt>usr_interrupt</tt></b> değişkenine dokunmayan sinyal eylemciler de varsa, değişkeni değiştiren bir sinyal eylemci çalıştırılana kadar döngü sürecektir.
+    </div><div class="para">
+Bu teknik bir kaç satır daha gerektirir ama bu kullanım amacınıza uygun kriterlere bağlı olacaktır. Koda aslında sadece bu dört satırda bekler.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Pause-Problems.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Waiting-for-a-Signal.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Signal-Stack.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">pause Sorunları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Sinyal Yığıtı</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:30+03:00" /><title>Ağ Ayarları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../embedded/embedded.html" title="Gömülü Sistemler İçin Linux Dağıtımı Geliştirme" /><link rel="previous" href="../embedded/embedded-kullanicilar_ve_gruplar.html" title="Sistem Kullanıcıları ve Gruplar" /><link rel="next" href="../embedded/embedded-inetd.html" title="Inetd Kurulumu" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Ağ Ayarları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../embedded/embedded-kullanicilar_ve_gruplar.html">Önceki</a> </td><th width="60%" align="center">Gömülü Sistemler İçin Linux Dağıtımı Geliştirme</th><td width="20%" align="right"> <a accesskey="n" href="../embedded/embedded-inetd.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="embedded-ag_ayarlari" id="embedded-ag_ayarlari"></a>Ağ Ayarları</div></div></div><div class="toc"><div class="formaltitle"><b>İçindekiler</b></div><dl><dt>1. <a href="../embedded/embedded-inetd.html">Inetd Kurulumu</a></dt><dt>2. <a href="../embedded/embedded-ftp.html">FTP Sunucu Kurulumu</a></dt><dt>3. <a href="../embedded/embedded-telnet.html">Telnet Sunucu Kurulumu</a></dt></dl></div><dl><dd><div class="para">
+Kullandığınız SBC üzerinde bir ethernet kartı varsa bu hayatınızı ciddi orada kolaylaştıracaktır. Dosya aktarımları, sisteme erişim vb. gibi konularda getirileri oldukça fazladır. Ayrıca SBC'yi bir ağa dahil etme, onunla yapabileceklerinizi de elbette artıracaktır.
+  </div><div class="para">
+Belgenin yazımında kullandığımız SBC üzerinde bir Realtek 8139 ethernet arayüzü mevcut idi. Bu nedenle çekirdeği derlerken RTL8139 desteğini de seçtik ve ethernet kartımızın Linux çekirdeği tarafından tanınabilmesini sağladık. Benzer işlemleri kendi ethernet kartınıza göre sizin de yapmanız gerekiyor.
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>cat /proc/pci | grep -i eth</tt></b>
+  Ethernet controller: Realtek Semiconductor Co., Ltd. RTL-8139/8139C/8139C+ ¬
+  (rev 16).
+<tt># </tt><b><tt>dmesg | grep eth</tt></b>
+eth0: RealTek RTL8139 Fast Ethernet at 0xc2800000, 00:05:b7:01:20:16, IRQ 10
+eth0:  Identified 8139 chip type 'RTL-8139C'
+<tt># </tt>
+</pre></div></div>
+  <div class="para">
+Kartımız sistem tarafından tanındığına göre ayarlamaları yapabiliriz. Bunun için değişebilir nitelikte olan bilgileri statik olarak açılışta çalışacak kabuk programına yazmak yerine <tt>/etc</tt> dizini altında bir genel ayar dosyası oluşturup buraya yazma yöntemini seçelim. Dosyamızın adı <tt>/etc/config</tt> olsun. Şimdi <b><tt>vi /etc/config</tt></b> ile bu dosyanın içeriğini aşağıdaki gibi oluşturalım:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+HOSTNAME=embed
+IP=192.168.0.155
+NETMASK=255.255.255.0
+GATEWAY=192.168.0.1
+</pre></div></div>
+  <div class="para">
+Gerekli parametrelerimizi burada ayarladık. Şimdi bu parametrelerle sistemin açılışı esnasında <tt>/etc/hosts</tt> dosyasını düzenleyecek ve <tt>HOSTNAME</tt> değerini atayacak, ardından ağ kartına ilişkin IP ve yönlendirme ayarlarını yapacak program satırlarını açılışta çalışan betiğimiz olan <tt>/etc/init.d/rcS</tt> dosyasına ekleyelim.
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+## Ayar dosyasını oku
+. /etc/config
+
+## Ağ ayarlamaları
+if [ -n "$HOSTNAME" ]; then
+    hostname $HOSTNAME
+    echo "127.0.0.1    localhost" &gt; /etc/hosts
+    echo "$IP    $HOSTNAME" &gt;&gt; /etc/hosts
+fi
+
+ifconfig lo 127.0.0.1 netmask 255.0.0.0 up
+
+ifconfig eth0 $IP netmask $NETMASK up
+
+if [ -n "$GATEWAY" ]; then
+    route add default gw $GATEWAY
+fi
+</pre></div></div>
+  <div class="para">
+Bu değişiklikleri yaptıktan sonra sistemi yeniden başlatmaya gerek olmaksızın <tt>/etc/init.d/rcS</tt> betiğini çalıştırıp istenilen sonucu verip vermediğini görebiliriz:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>/etc/init.d/rcS</tt></b>
+mount: Mounting proc on /proc failed: Device or resource busy
+eth0: Setting 100mbps full-duplex based on auto-negotiated partner ability 45e1
+<tt># </tt><b><tt>ifconfig eth0</tt></b>
+eth0    Link encap:Ethernet  HWaddr 00:05:B7:01:20:16
+        inet addr:192.168.0.155  Bcast:192.168.0.255  Mask:255.255.255.0
+        UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+        RX packets:10 errors:0 dropped:0 overruns:0 frame:0
+        TX packets:7 errors:0 dropped:0 overruns:0 carrier:0
+        collisions:0 txqueuelen:100
+        RX bytes:1234 (1.2 kiB)  TX bytes:610 (610.0 iB)
+        Interrupt:10
+
+<tt># </tt><b><tt>ping 212.156.4.1</tt></b>
+PING 212.156.4.1 (212.156.4.1): 56 data bytes
+64 bytes from 212.156.4.1: icmp_seq=0 ttl=57 time=23.2 ms
+64 bytes from 212.156.4.1: icmp_seq=1 ttl=57 time=22.7 ms
+64 bytes from 212.156.4.1: icmp_seq=2 ttl=57 time=21.8 ms
+</pre></div></div>
+  <div class="para">
+SBC üzerinden ağ bağlantısını artık gerçekleştirdiğimize göre sisteme <b><tt>FTP</tt></b> ve <b><tt>telnet</tt></b> sunucularını kurabiliriz. Bunun için öncelikle <tt>inetd</tt> servisinin kurulması gereklidir.
+  </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../embedded/embedded-kullanicilar_ve_gruplar.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../embedded/embedded.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../embedded/embedded-inetd.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Sistem Kullanıcıları ve Gruplar </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Inetd Kurulumu</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,90 +1,27 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="tr" xml:lang="tr">
-  <head>
-    <title>16.6.3. İnternet Portları</title>
-    <meta name="generator" content="DocBook XSL Stylesheets V-special (derived from DocBook XSL v1.79.1 for Turkish Linux Documentation Project by Nilgün Belma Bugüner - nilgun (at) tlbp.org.tr)" />
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="/style/nav.css" />
-    <link rel="icon" type="image/png" href="/images/belgeler-logo.png" />
-    <meta name="robots" content="index, follow" />
-  </head>
-  <body>
-    <header>
-      <div class="navbar">
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Host-Names.html')">Önceki</button>
-          <div class="dropdown-content">16.6.2.4. Konak İsimleri</div>
-        </div>
-        <div style="width:34%" class="dropdown">
-          <button class="dropbtn">Yukarı</button>
-          <div class="dropdown-content">
-            <button type="button" class="dropbtn" onclick="window.location.assign('/index.html')">Baş Sayfa</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('/KiTAPLIK/index.html')">Kitaplık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc.html')">Ana Başlık</button>
-            <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Internet-Namespace.html')">Üst Başlık</button>
-          </div>
-        </div>
-        <div style="width:33%" class="dropdown">
-          <button type="button" class="dropbtn" onclick="window.location.assign('glibc-Services-Database.html')">Sonraki</button>
-          <div class="dropdown-content">16.6.4. Hizmet Veritabanı</div>
-        </div>
-      </div>
-    </header>
-    <section class="mainpage">
-      <div class="crumbs">
-        <p>  </p>
-      </div>
-      <section class="sect1" id="glibc-Ports">
-        <div class="titlepage">
-          <div>
-            <div>
-              <h2 class="title" style="clear: both">16.6.3. İnternet Portları</h2>
-            </div>
-          </div>
-        </div>
-        <p>
-    <span id="idm124921" class="indexterm"></span>
-    İnternet isim alanındaki bir soket adresi, bir makinenin İnternet adresi ile makine üzerindeki soketleri birbirinden ayıran (belirtilen protokole göre) <em class="wordasword">port numarası</em>ndan oluşur. Port numaraları 0 ile 65,535 arasında değer alır.
-   </p>
-        <p>
-    <a href="glibc-Ports.html#glibc-vr-IPPORT_RESERVED"><strong class="varname"><code>IPPORT_RESERVED</code></strong></a> değerinin altındaki port numaraları <tt><b>finger</b>(1)</tt> ve <tt><b>telnet</b>(1)</tt> gibi standart sunucular için ayrılmıştır. Bunların kayıtlarını tutan bir veritabanı vardır ve hizmet ismini port numarasına eşlemek için <a href="glibc-Services-Database.html#glibc-fn-getservbyname"><strong class="function"><code>getservbyname</code></strong></a> işlevi kullanılabilir. Bkz. <a class="xref" href="glibc-Services-Database.html" title="16.6.4. Hizmet Veritabanı">Hizmet Veritabanı</a>.
-   </p>
-        <p>
-    Eğer veritabanında tanımlanmış standart sunucular dışında bir sunucu yazılırsa onun için bir port numarası seçmek gerekir. Bunun için <a href="glibc-Ports.html#glibc-vr-IPPORT_USERRESERVED"><strong class="varname"><code>IPPORT_USERRESERVED</code></strong></a> değerinden büyük bir numara kullanılmalıdır; bu numaralar sunucular için ayrılmıştır ancak sistem tarafından özdevinimli olarak üretilmez. Diğer kullanıcılar tarafından çalıştırılan sunucularla karışıklıktan kaçınmak yazılımcının sorumluluğundadır.
-   </p>
-        <p>
-    Bir soket adres belirtmeden kullanılırsa, port numarasını sistem üretir. Bu numara <a href="glibc-Ports.html#glibc-vr-IPPORT_RESERVED"><strong class="varname"><code>IPPORT_RESERVED</code></strong></a> ve <a href="glibc-Ports.html#glibc-vr-IPPORT_USERRESERVED"><strong class="varname"><code>IPPORT_USERRESERVED</code></strong></a> arasındadır.
-   </p>
-        <p>
-    Aslında internette iki farklı soketin aynı port numarasını kullanması, her ikisi de aynı soket adresiyle (konak adresi artı port numarası) çalışmadığı sürece olasıdır. Port numarası, üst düzey protokollerin bunu gerektirmesi gibi özel durumlar haricinde tekrar kullanılmamalıdır. Normalde sistem buna izin vermez; <a href="glibc-Setting-Address.html#glibc-fn-bind"><strong class="function"><code>bind</code></strong></a> normalde farklı port numaraları verilmesinde ısrar eder. Port numarasını tekrar kullanmak için, <a href="glibc-Socket-Options.html#glibc-vr-SO_REUSEADDR"><strong class="varname"><code>SO_REUSEADDR</code></strong></a> <a class="link" href="glibc-Socket-Options.html#glibc-Socket-Level-Options" title="16.12.2. Soket Seviye Seçenekleri">soket seçeneğinin</a> etkinleştirilmesi gerekir.
-   </p>
-        <p>
-    <span id="idm124940" class="indexterm"></span>
-    Bu makrolar <code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=inet/netinet/in.h;hb=HEAD" target="_top">netinet/in.h</a></code> başlık dosyasında tanımlıdır.
-   </p>
-        <div class="csynopsis"><div class="cstype">      makro</div>
-    <span id="glibc-vr-IPPORT_RESERVED" class="indexterm"></span>
-    <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=inet/netinet/in.h;hb=HEAD" target="_top">netinet/in.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">int </code> <strong><code class="function">IPPORT_RESERVED</code></strong></td><td style="vertical-align: text-top;"></td></tr></table></div>
-    
-    <p>
-     <code class="code">IPPORT_RESERVED</code> değerinden düşük port numaraları süper kullanıcının kullanımına ayrılmıştır.
-    </p>
-   </div>
-        <div class="csynopsis"><div class="cstype">      makro</div>
-    <span id="glibc-vr-IPPORT_USERRESERVED" class="indexterm"></span>
-    <div class="csproto"><table border="0" class="csprototab" style="cellspacing: 0; cellpadding: 0;"><tr><td colspan="2"><code>#include &lt;</code><code class="filename"><a class="filename" href="https://sourceware.org/git/?p=glibc.git;a=blob_plain;f=inet/netinet/in.h;hb=HEAD" target="_top">netinet/in.h</a></code><code>&gt;</code></td></tr><tr><td style="vertical-align: text-top;"><code class="type">int </code> <strong><code class="function">IPPORT_USERRESERVED</code></strong></td><td style="vertical-align: text-top;"></td></tr></table></div>
-    
-    <p>
-     <code class="code">IPPORT_USERRESERVED</code> değerinden büyük ya da eşit port numaraları doğrudan kullanıma ayrılmıştır; bunlar özdevinimli ayrılmaz.
-    </p>
-   </div>
-      </section>
-      <footer>
-        <div align="center" class="footer">
-          <small>Bir <a href="http://belgeler.org.tr/">Linux Kitaplığı</a> Sayfası</small>
-        </div>
-      </footer>
-    </section>
-  </body>
-</html>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:26:58+03:00" /><title>İnternet Portları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Internet-Namespace.html" title="İnternet İsim Alanı" /><link rel="previous" href="../glibc/glibc-Host-Addresses.html" title="Konak Adresleri" /><link rel="next" href="../glibc/glibc-Services-Database.html" title="Servis Veritabanı" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">İnternet Portları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Host-Addresses.html">Önceki</a> </td><th width="60%" align="center">İnternet İsim Alanı</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Services-Database.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Ports" id="glibc-Ports"></a>İnternet Portları</div><dl><dd><div class="para">
+<a class="indexterm" name="idx1540" id="idx1540"></a>
+İnternet isim alanındaki bir soket adresi bir makinenin İnternet adresi ve makine üzerindeki soketleri birbirinden ayıran (belirtilen protokole göre) <span class="wordasword"><i>port numarası</i></span>ndan oluşur. Port numaraları 0 ile 65,535 arasında değer alır.
+    </div><div class="para">
+<b><tt>IPPORT_RESERVED</tt></b> değerinin altındaki port numaraları <b><tt>finger</tt></b> ve <b><tt>telnet</tt></b> gibi standart sunucular için ayrılmıştır. Bunların kayıtlarını tutan bir veritabanı vardır ve bir servis ismini bir port numarasına eşleştirmek için <b><tt>getservbyname</tt></b> işlevini kullanabilirsiniz. Bilgi için <a href="../glibc/glibc-Services-Database.html" class="xref" title="Servis Veritabanı">Servis Veritabanı</a> bölümüne bakınız.
+    </div><div class="para">
+Eğer veritabanında tanımlanmış standart sunucular dışında bir sunucu yazarsanız onun için bir port numarası seçmeniz gerekir. Bunun için <b><tt>IPPORT_USERRESERVED</tt></b> değerinden büyük bir numara kullanın; bu numaralar sunucular için ayrılmıştır ancak sistem tarafından özdevinimli olarak üretilmemiştir. Diğer kullanıcılar tarafından çalıştırılan sunucularla karışıklıktan kaçınmak sizin sorumluluğunuzdadır.
+    </div><div class="para">
+Bir soketi adres belirtmeden kullanırsanız, sistem onun için bir port numarası üretir. Bu numara <b><tt>IPPORT_RESERVED</tt></b> ve <b><tt>IPPORT_USERRESERVED</tt></b> arasındadır.
+    </div><div class="para">
+Aslında internette iki farklı soketin bir port numarasını kullanması, her ikisi de aynı soket adresiyle (konak adresi artı port numarası) e çalışmadığı sürece olasıdır. Port numarasını üst düzey protokollerin bunu gerektirmesi gibi özel durumlar haricinde tekrar kullanmamalısınız. Normalde sistem bunu yapmanıza izin vermez; <b><tt>bind</tt></b> normalde farklı port numaraları vermenizde ısrar eder. Port numarasını tekrar kullanmak için, <b><tt>SO_REUSEADDR</tt></b> <a class="link" href="../glibc/glibc-Socket-Level-Options.html" title="Soket Seviye Seçenekleri">soket seçeneğini</a> etkinleştirmeniz gerekir.
+    </div><div class="para">
+<a class="indexterm" name="idx1541" id="idx1541"></a>
+Bu makrolar <tt>netinet/in.h</tt> başlık dosyasında tanımlıdır.
+    </div><a name="glibc-IPPORT_RESERVED" id="glibc-IPPORT_RESERVED"></a>
+<a class="indexterm" name="idx1542" id="idx1542"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>IPPORT_RESERVED</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">makro</div></div></div><dl><dd><div class="para">
+<b><tt>IPPORT_RESERVED</tt></b> değerinden düşük port numaraları süper kullanıcının kullanımı için ayrılmıştır.
+</div></dd></dl><div style="padding:5px"></div><a name="glibc-IPPORT_USERRESERVED" id="glibc-IPPORT_USERRESERVED"></a>
+<a class="indexterm" name="idx1543" id="idx1543"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>IPPORT_USERRESERVED</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">makro</div></div></div><dl><dd><div class="para">
+<b><tt>IPPORT_USERRESERVED</tt></b> değerinden büyük ya da eşit port numaraları doğrudan kullanıma ayrılmıştır; bunlar özdevinimli ayrılmazlar.
+      </div></dd></dl><div style="padding:5px"></div>
+    </dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Host-Addresses.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Internet-Namespace.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Services-Database.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Konak Adresleri </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Servis Veritabanı</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:37+03:00" /><title>getopt Örneği</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Getopt.html" title="getopt" /><link rel="previous" href="../glibc/glibc-Using-Getopt.html" title="getopt Kullanımı" /><link rel="next" href="../glibc/glibc-Getopt-Long-Options.html" title="getopt_long ile Uzun Seçeneklerin Çözümlenmesi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">getopt Örneği</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Using-Getopt.html">Önceki</a> </td><th width="60%" align="center">getopt</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Getopt-Long-Options.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="glibc-Example-of-Getopt" id="glibc-Example-of-Getopt"></a><tt>getopt</tt> Örneği</div><dl><dd><div class="para">
+Bu bölümde <b><tt>getopt</tt></b> işlevinin tipik kullanımını gösteren bir örneğe yer verilmiştir. Önemli noktalar şunlardır:
+    </div><ul type="disc" class="itemizedlist"><li>
+Normalde, <b><tt>getopt</tt></b> bir döngü içinde çağrılır. <b><tt>getopt</tt></b> işlevi  <b><tt>-1</tt></b> ile dönerse, artık seçenek kalmamış demektir, dolayısıyla döngüden çıkılır.
+      </li><li><b><tt>getopt</tt></b> işlevinden dönen değeri ayıklamak için bir <b><tt>switch</tt></b> deyimi kullanılmıştır. Tipik kullanımda, her <b><tt>case</tt></b> deyiminde daha sonra yazılımda kullanılmak üzere bir değişkene değer atanır.
+      </li><li>
+İkinci bir döngü kalan seçenek olmayan argümanlar içindir.
+      </li></ul>
+<div class="para"><div align="right"><pre class="screen">#include &lt;ctype.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+
+int
+main (int argc, char **argv)
+{
+  int aflag = 0;
+  int bflag = 0;
+  char *cvalue = NULL;
+  int index;
+  int c;
+
+  opterr = 0;
+
+  while ((c = getopt (argc, argv, "abc:")) != -1)
+    switch (c)
+      {
+      case 'a':
+        aflag = 1;
+        break;
+      case 'b':
+        bflag = 1;
+        break;
+      case 'c':
+        cvalue = optarg;
+        break;
+      case '?':
+        if (optopt == 'c')
+          fprintf (stderr, "-%c seçeneği bir argüman gerektirir.\n", optopt);
+        else if (isprint (optopt))
+          fprintf (stderr, "`-%c' seçeneği bilinmiyor.\n", optopt);
+        else
+          fprintf (stderr,
+                    "Seçenek karakteri `\\x%x' bilinmiyor.\n",
+                    optopt);
+        return 1;
+      default:
+        abort ();
+      }
+
+  printf ("aflag = %d, bflag = %d, cvalue = %s\n",
+          aflag, bflag, cvalue);
+
+  for (index = optind; index &lt; argc; index++)
+    printf ("Seçenek olmayan argüman: %s\n", argv[index]);
+  return 0;
+}
+</pre></div></div><div class="para">
+Yazılımın değişik komut satırı seçenekleriyle çalıştırılmasıyla alınan bazı sonuçlar:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+$ <b><tt>testopt</tt></b>
+aflag = 0, bflag = 0, cvalue = (null)
+
+$ <b><tt>testopt -a -b</tt></b>
+aflag = 1, bflag = 1, cvalue = (null)
+
+$ <b><tt>testopt -ab</tt></b>
+aflag = 1, bflag = 1, cvalue = (null)
+
+$ <b><tt>testopt -c foo</tt></b>
+aflag = 0, bflag = 0, cvalue = foo
+
+$ <b><tt>testopt -cfoo</tt></b>
+aflag = 0, bflag = 0, cvalue = foo
+
+$ <b><tt>testopt arg1</tt></b>
+aflag = 0, bflag = 0, cvalue = (null)
+Seçenek olmayan argüman: arg1
+
+$ <b><tt>testopt -a arg1</tt></b>
+aflag = 1, bflag = 0, cvalue = (null)
+Seçenek olmayan argüman: arg1
+
+$ <b><tt>testopt -c foo arg1</tt></b>
+aflag = 0, bflag = 0, cvalue = foo
+Seçenek olmayan argüman: arg1
+
+$ <b><tt>testopt -a -- -b</tt></b>
+aflag = 1, bflag = 0, cvalue = (null)
+Seçenek olmayan argüman: -b
+
+$ <b><tt>testopt -a -</tt></b>
+aflag = 1, bflag = 0, cvalue = (null)
+Seçenek olmayan argüman: -
+</pre></div></div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Using-Getopt.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Getopt.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Getopt-Long-Options.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">getopt Kullanımı </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> getopt_long ile Uzun Seçeneklerin Çözümlenmesi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

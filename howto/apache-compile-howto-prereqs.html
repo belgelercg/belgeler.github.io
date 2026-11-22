@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:25+03:00" /><title>Ön Gereksinimler</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/apache-compile-howto.html" title="Apache Derleme NASIL" /><link rel="previous" href="../howto/apache-compile-howto-intro.html" title="Giriş" /><link rel="next" href="../howto/apache-compile-howto-apache.html" title="Apache'yi Temel Modülleriyle Elde Etme, Derleme ve Kurma" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Ön Gereksinimler</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/apache-compile-howto-intro.html">Önceki</a> </td><th width="60%" align="center">Apache Derleme NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/apache-compile-howto-apache.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="apache-compile-howto-prereqs" id="apache-compile-howto-prereqs"></a>Ön Gereksinimler</div><dl><dd> <div class="head3"><a name="id1" id="id1"></a>Genel</div><dl><dd>
+<ul type="disc" class="itemizedlist"><li>flex 2.54</li><li>bison 1.28</li><li>autoconf 2.52</li><li>automake 1.4</li><li>libtool 1.4</li><li>yacc 91.7.30</li><li>freetype2-devel<sup>[<a name="id25" href="#ftn.id25" id="id25">25</a>]</sup></li><li>re2c<sup>[<a name="id26" href="#ftn.id26" id="id26">26</a>]</sup></li></ul>
+  <div class="para">diye devam ediyor.</div><div class="para">
+Bütün önemli dağıtımlar bu genel ön gereksinimleri içermelidirler.
+    </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>OpenSSL</div><dl><dd> <div class="head4"><a name="id12" id="id12"></a>OpenSSL nedir?</div><dl><dd><div class="blockquote"><div class="para">
+OpenSSL projesi güvenliği geliştirmek için çaba harcayan ticari, geniş özellikli ve açık kaynak kodlu, Güvenli Soket Katmanı (SSL v2/v3), İletim Seviyesi güvenliği (TLS v1) protokollerini uygulayan, çok güçlü genel amaçlı bir şifreleme kütüphanesidir. Bu proje bütün dünyada iletişim, plan ve OpenSSL araçlarını geliştirmek için interneti kullanan gönüllüler topluluğu tarafından yönetilir.
+          </div><div class="para">
+OpenSSL Eric A. Young ve Tim J. Hudson tarafından geliştirilen mükemmel SSLeay kütüphanesi temellidir. OpenSSL aracı sizin alıp ticari ve ticari olmayan özel amaçlarınız için kullanmakta özgür olduğunuz Apache-tarzı lisans ile lisanslanmıştır.
+          </div><div class="para">
+Yazarların görüşüne göre, açık kaynak kodlu yazılımlarla güvenli bir Unix sunucu kurmak için temeldir; mod_ssl, OpenSSH ve şifreli veri işlemeyi sağlayan ürünler gibi bütün ürünler buna ihtiyaç duyar.
+          </div><div class="attribution">    -- www.openssl.org</div></div><div class="para">
+OpenSSL yukarıda bahsedilen ürünlerin ihtiyaç duyduğu kütüphaneleri ve başlık dosyalarını sağlar, hemde istemci ve sunucu sertifikaları için uygulama sağlar.
+        </div></dd></dl> <div class="head4"><a name="id22" id="id22"></a>Kaynak paketini indirin</div><dl><dd><div class="para">
+Orjinal Site<a class="ulink" href="http://www.openssl.org" target="_top">http://www.openssl.org</a>
+        </div></dd></dl> <div class="head4"><a name="id32" id="id32"></a>Derleme ve Kurulum</div><dl><dd>
+<div class="para"><div align="right"><pre class="screen">
+cd /usr/local
+tar -xvzf openssl-0.9.7.tar.gz
+
+cd openssl-0.9.7
+
+./config shared
+
+make
+make test
+make install
+
+echo "/usr/local/ssl/lib" &gt;&gt; /etc/ld.so.conf
+ldconfig
+</pre></div></div>
+        <div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/tip.png" /></td><th class="admon">Hızı artırmak için işlemci türünü belirtin</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Öntanımlı <tt>Makefile</tt> i486 işlemcisi için kod üretir. Siz  <b><tt>config </tt></b><tt>shared</tt> yaptıktan sonra <tt>Makefile</tt>'ı düzenleyerek bunu değiştirebilirsiniz.  <tt>-m486</tt>'yı bulun ve onu <tt>-march=athlon</tt> ile değiştirin.
+        </div></td></tr></table></div></dd></dl></dd></dl> <div class="head3"><a name="id3" id="id3"></a>GNU Database System</div><dl><dd> <div class="head4"><a name="id13" id="id13"></a>gdbm nedir?</div><dl><dd><div class="blockquote"><div class="para">
+GNU dbm bir veritabanı kümesidir. Onun çalışması standart UNIX dbm'e benzer.
+  </div><div class="attribution">    -- www.gnu.org/software/gdbm</div></div><div class="para">
+GNU dbm hemen hemen bütün dağıtımlarda kullanılan çok önemli bir uygulamadır. Dolayısıyla bütün dağıtımlarda kurulu gelir.(Denedim.)
+        </div><div class="para">
+Büyük ihtimalle Apache'yi oluşturmak için gereken başlık dosyaları ile birlikte mod_rewrite ve PHP kurulu gelmez.Lütfen dağıtımınızın CD/DVD'sine bakınız ve geliştirici paketi kurunuz (Sürüm değişebilir).
+        </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>rpm -i gdbm-devel-1.8.0-546</tt></b></pre></div></div>
+        <div class="para">
+Bu işlem SuSE ve Red Hat için doğrulandı. Lütfen siz de Mandrake gibi RPM temelli sistemler için doğrulayın. Debian için aşağıda anlatılacaktır.
+        </div><div class="para">
+Debian temelli sistem kullanıcıları gdbm'i aşağıdaki gibi kurabilirler:
+        </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>apt-get install libgdbmg1-dev</tt></b>
+</pre></div></div>
+        </dd></dl> <div class="head4"><a name="id23" id="id23"></a>Kaynak paketinden derleme ve kurulum</div><dl><dd><div class="para">
+ İstenmeyen bir durum olarak sizin dağıtımınız gdbm'i içermeyebilir. Kurmak için komutlar:
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+$ <b><tt>./configure</tt></b>
+
+$ <b><tt>make</tt></b>
+# <b><tt>make install</tt></b>
+
+# <b><tt>ldconfig</tt></b>
+</pre></div></div>
+        </dd></dl></dd></dl> <div class="head3"><a name="id4" id="id4"></a>MySQL</div><dl><dd> <div class="head4"><a name="id14" id="id14"></a>MySQL nedir?</div><dl><dd><div class="para">
+MySQL çok hızlı, güçlü ve yönetimi çok hoş bir veritabanıdır.
+        </div><div class="para">
+Özellikle çok okuma yapılıp az yazma yapılan web uygulamaları için, MySQL birinci seçimdir. Hemde en yeni versiyonu iş(transaction) yeteneğine sahiptir. Veritabanına çok fazla veri yazacak bir Web uygulaması planlıyorsanız sizin projeniz için <a href="../howto/apache-compile-howto-php.html#apache-compile-howto-postgresql" class="xref" title="PostgreSQL">PostgreSQL</a> bölümünde kurulumunu göreceğimiz PostgreSQL daha uygun olabilir.
+        </div><div class="para">
+Eğer PHP'ye MySQL desteği verirseniz, PHP derlemek için MySQL'den C-API 'ye ihtiyaç var. Eğer mod_authmysql'de kullanmak istiyorsanız, <a href="../howto/apache-compile-howto-modules.html#apache-compile-howto-authmysql" class="xref" title="mod_auth_mysql">mod_auth_mysql</a> bölümüne bakınız.
+        </div></dd></dl> <div class="head4"><a name="id24" id="id24"></a>Kaynak paketini indirin</div><dl><dd><div class="para">
+Adres: <a class="ulink" href="http://www.mysql.com/downloads/" target="_top">http://www.mysql.com/downloads/</a>
+        </div></dd></dl> <div class="head4"><a name="id34" id="id34"></a>Derleme ve Kurulum</div><dl><dd>
+<div class="para"><div align="right"><pre class="screen">
+$ <b><tt>cd /usr/local</tt></b>
+$ <b><tt>tar -xvzf mysql-3.23.55.tar.gz</tt></b>
+$ <b><tt>cd mysql-3.23.55</tt></b>
+
+$ <b><tt>./configure \</tt></b>
+<b><tt>--prefix=/usr/local/mysql \</tt></b>
+<b><tt>--enable-assembler \</tt></b>
+<b><tt>--with-innodb \</tt></b>
+<b><tt>--without-debug</tt></b>
+
+$ <b><tt>make</tt></b>
+# <b><tt>make install</tt></b>
+
+# <b><tt>/usr/local/mysql/bin/mysql_install_db</tt></b>
+# <b><tt>echo /usr/local/mysql/lib/mysql &gt;&gt; /etc/ld.so.conf</tt></b>
+# <b><tt>ldconfig</tt></b>
+</pre></div></div>
+      <div class="para">
+Güvenli bir geliştirme için MySQL sisteminize MySQL kullanıcısı ekleyin.
+      </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>chown -R mysql /usr/local/mysql/var</tt></b></pre></div></div>
+      <div class="para">
+MySQL'i başlangıçta otomatik olarak başlatmak için, <tt>/usr/local/mysql/share/mysql/mysql.server</tt>'ı <tt>/etc/init.d/</tt> altına veya başlatma betikleriniz neredeyse oraya kopyalayın. Ana çalışma seviyesi dizininde uygun bir sembolik bağ oluşturun:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>cp /usr/local/mysql/share/mysql/mysql.server /etc/init.d/</tt></b>
+
+# <b><tt>ln -s /etc/init.d/mysql.server /etc/init.d/rc3.d/S20mysql</tt></b>
+# <b><tt>ln -s /etc/init.d/mysql.server /etc/init.d/rc3.d/K20mysql</tt></b>
+</pre></div></div>
+      </dd></dl> <div class="head4"><a name="id44" id="id44"></a>MySQL güvenliği</div><dl><dd><div class="para">
+Bu bölüm seçimliktir ve MySQL'in yerel sunucu IP'sine nasıl bağlanacağını gösterir.
+      </div><div class="para">
+MySQL'i 127.0.0.1 geridönüş arayüzüne bağlamanızı öneririm. Böylece MySQL'e ağ yoluyla kimse bağlanamaz. Ancak tabii ki bu durumda MySQL ve web sunucu aynı makinada çalışmalıdırlar.
+      </div><div class="para">
+<tt>/etc/init.d/mysql.server</tt> dosyasını açın ve 107. satırı aşağıdaki gibi düzenleyin:
+      </div><div class="para">
+Orijinal satır:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$bindir/safe_mysqld --datadir=$datadir --pid-file=$pid_file&amp;
+</pre></div></div>
+      <div class="para">
+Değişmiş hali:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$bindir/safe_mysqld --datadir=$datadir --pid-file=$pid_file \
+--bind-address=127.0.0.1&amp; <a name="apache-compile-howto-bind" id="apache-compile-howto-bind"></a><b style="background: transparent url(&quot;../images/xsl/callouts/1.png&quot;) no-repeat left 40%;">  </b>
+</pre></div></div>
+      <div class="para">
+<div class="calloutlist"><table border="0" summary="Dikkat edilecek hususlar" cellspacing="0" cellpadding="3" width="100%"><tr><td width="15" valign="top" align="left" class="coimage"><a href="#apache-compile-howto-bind"><img src="../images/xsl/callouts/1.png" alt="1" border="0" /></a> </td><td valign="top" align="left"><div class="para">Burada hangi arayüzün MySQL'e bağlanması gerektiğini tanımlayabilirsiniz.</div></td></tr></table></div>
+      </div><div class="para">
+Seçenek olarak MySQL'in bütün ağ işlevlerini devre dışı bırakabilirsiniz:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$bindir/safe_mysqld --datadir=$datadir --pid-file=$pid_file \
+--skip-networking &amp;
+</pre></div></div>
+      </dd></dl></dd></dl> <div class="head3"><a name="id5" id="id5"></a>mm kurulumu</div><dl><dd> <div class="head4"><a name="id15" id="id15"></a>mm nedir?</div><dl><dd><div class="blockquote"><div class="para">
+MM kütüphanesi Unix platformu altında çatallanan işler arasında paylaşımlı belleğin kullanımını basitleştiren 2 katmanlı soyutlama kütüphanesidir. Birinci katmanda paylaşımlı bellek parçasıyla ilgilenildiğinde, bütün platform bağımlı uygulama ayrıntılarını gizler. İkinci katmanda, paylaşımlı bellek parçasında veri yapıları ile çalışmak için yüksek seviyeli malloc tarzı bir arayüz sağlar.
+      </div><div class="attribution">    -- www.engelschall.com</div></div><div class="para">
+Unix programcılarının paylaşımlı belleğe (shm) kolay erişimini sağlayan genel bir kütüphanedir. PHP ve mod_ssl gibi birçok ürün tarafından kullanılır.
+      </div></dd></dl> <div class="head4"><a name="id25" id="id25"></a>Kaynak paketini indirin</div><dl><dd><div class="para">
+Adres: <a class="ulink" href="ftp://ftp.ossp.org/pkg/lib/mm/mm-1.2.2.tar.gz" target="_top">ftp://ftp.ossp.org/pkg/lib/mm/mm-1.2.2.tar.gz</a>
+      </div></dd></dl> <div class="head4"><a name="id35" id="id35"></a>Derleme ve Kurulum</div><dl><dd>
+<div class="para"><div align="right"><pre class="screen">
+$ <b><tt>cd /usr/local</tt></b>
+
+$ <b><tt>tar -xvzf mm-1.2.2.tar.gz</tt></b>
+
+$ <b><tt>cd mm-1.2.2</tt></b>
+
+$ <b><tt>./configure</tt></b>
+$ <b><tt>make</tt></b>
+$ <b><tt>make test</tt></b>
+# <b><tt>make install</tt></b>
+
+# <b><tt>ldconfig</tt></b>
+</pre></div></div>
+      </dd></dl></dd></dl><div class="footnotes"><br /><hr width="100" align="left" /><div class="footnote"><div class="para"><sup>[<a name="ftn.id25" href="#id25" id="ftn.id25">25</a>] </sup>Bu RPM php için gereken başlık dosyalarını içerir.</div></div><div class="footnote"><div class="para"><sup>[<a name="ftn.id26" href="#id26" id="ftn.id26">26</a>] </sup>Sadece, eğer PHP CVS ağacından oluşturuluyorsa gerekiyor.</div></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/apache-compile-howto-intro.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/apache-compile-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/apache-compile-howto-apache.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Giriş </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Apache'yi Temel Modülleriyle Elde Etme, Derleme ve Kurma</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

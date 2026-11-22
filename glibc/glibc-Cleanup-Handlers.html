@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:43+03:00" /><title>Temizlik İşleyicileri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-POSIX-Threads.html" title="POSIX Evreleri" /><link rel="previous" href="../glibc/glibc-Cancellation.html" title="İptaletme" /><link rel="next" href="../glibc/glibc-Mutexes.html" title="Muteksler" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Temizlik İşleyicileri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Cancellation.html">Önceki</a> </td><th width="60%" align="center">POSIX Evreleri</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Mutexes.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Cleanup-Handlers" id="glibc-Cleanup-Handlers"></a>Temizlik İşleyicileri</div><dl><dd><div class="para">
+Temizlik işleyicileri, <b><tt>pthread_exit</tt></b> çağrılarak veya iptal nedeniyle bir evre sonlandığında çağrılan işlevlerdir. Temizlik işleyicileri yığıta benzer bir disiplinde kurulurlar ve kaldırılırlar.
+   </div><div class="para">
+Temizlik işleyicilerinin amacı bir evrenin tuttuğu kaynakları evre sonlandığı zaman serbest bırakmaktır. Eğer bir evre kilitli bir karşılıklı red nesnesine (mutex)<sup>[<a name="id103" href="#ftn.id103" id="id103">103</a>]</sup> sahipken çıkarsa veya iptal edilirse, nesne sonsuza kadar kilitli kalır ve diğer evrelerin normal işletilmesini engeller.
+Bundan kaçınmanın en iyi yolu, karşılıklı red nesnesini kilitlemeden az önce, nesnenin kilidini kaldıracak bir temizlik işleyicisinin kurulmasıdır. Temizlik işleyicileri <b><tt>malloc</tt></b> ile ayrılmış blokların serbest bırakılmasında veya evre sonlandırıldığında dosya tanımlayıcılarının kapatılmasında da kullanılabilir.
+   </div><div class="para">
+Burada <i><tt>mut</tt></i> kilitliyken evre iptal edilirse, kilidinin kaldırılmasında gerektiği gibi bir <i><tt>mut</tt></i> nesnesinin nasıl kilitlenebileceğini görüyoruz.
+   </div>
+<div class="para"><div align="right"><pre class="screen">
+pthread_cleanup_push(pthread_mutex_unlock, (void *) &amp;mut);
+pthread_mutex_lock(&amp;mut);
+/* biraz çalış */
+pthread_mutex_unlock(&amp;mut);
+pthread_cleanup_pop(0);
+</pre></div></div>
+   <div class="para">Son iki satır</div>
+<div class="para"><div align="right"><pre class="screen">
+pthread_cleanup_pop(1);
+</pre></div></div><div class="para">ile değiştirilebilir.
+   </div><div class="para">
+Unutmayınız ki yukarıdaki kod sadece ertelenmiş iptal kipinde güvenlidir (bkz. <a class="link" href="../glibc/glibc-Cancellation.html#glibc-pthread_setcanceltype"><b><tt>pthread_setcanceltype</tt></b></a>). Zamanuyumsuz iptal kipinde, bir iptal <b><tt>pthread_cleanup_push</tt></b> ve <b><tt>pthread_mutex_lock</tt></b> arasında veya <b><tt>pthread_mutex_unlock</tt></b> ve <b><tt>pthread_cleanup_pop</tt></b> arasında oluşur, evrenin her iki durumunda muteksin kilidini açmayı deneyen geçerli evre tarafından kilitlenmez. Bu zamanuyumsuz iptalin kullanımının neden zor olduğunun ana sebebidir.
+   </div><div class="para">
+Eğer yukarıdaki kodun zamanuyumsuz iptal kipinde de çalışması gerekiyorsa,
+muteksi kilitlemek ve kilidi açmak için ertelenmiş iptal kipine çevrilmelidir:
+   </div>
+<div class="para"><div align="right"><pre class="screen">
+pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, &amp;oldtype);
+pthread_cleanup_push(pthread_mutex_unlock, (void *) &amp;mut);
+pthread_mutex_lock(&amp;mut);
+/* Birşeyler yap */
+pthread_cleanup_pop(1);
+pthread_setcanceltype(oldtype, NULL);
+</pre></div></div>
+   <div class="para">
+Yukarıdaki kod taşınabilir değildir. <b><tt>pthread_cleanup_push_defer_np</tt></b> ve <b><tt>pthread_cleanup_pop_restore_np</tt></b> işlevlerinin kullanılmasıyla daha kısa ve verimli bir şekilde tekrar yazılabilir:
+   </div>
+<div class="para"><div align="right"><pre class="screen">
+pthread_cleanup_push_defer_np(pthread_mutex_unlock, (void *) &amp;mut);
+pthread_mutex_lock(&amp;mut);
+/* Birşeyler yap */
+pthread_cleanup_pop_restore_np(1);
+</pre></div></div>
+      
+<a class="indexterm" name="idx2916" id="idx2916"></a>
+<a name="glibc-pthread_cleanup_push" id="glibc-pthread_cleanup_push"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>pthread_cleanup_push</tt></b></tt></td><td valign="top"><pre class="paramdef">(void (*<i><tt>işlev</tt></i>) (void *),
+ void  *<i><tt>arg</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_cleanup_push</tt></b> <i><tt>işlev</tt></i> işlevini <i><tt>arg</tt></i> argümanıyla bir temizlik işleyicisi olarak yükler. Bu noktadan itibaren <b><tt>pthread_cleanup_pop</tt></b> ile ilişkili <i><tt>işlev</tt></i> işlevi, ne zaman evre <b><tt>pthread_exit</tt></b> veya iptal ile sonlansa, <i><tt>arg</tt></i> argümanlarıyla çağrılacaktır. Eğer bu noktada çok sayıda temizlik işleyicileri etkinse, LIFO sırasıyla çağrılırlar: en son yüklenen ilk çağrılır.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2917" id="idx2917"></a>
+<a name="glibc-pthread_cleanup_pop" id="glibc-pthread_cleanup_pop"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>pthread_cleanup_pop</tt></b></tt></td><td valign="top"><pre class="paramdef">(int <i><tt>çalıştır</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_cleanup_pop</tt></b> en son yüklenen temizlik işleyicisini kaldırır. Eğer <i><tt>çalıştır</tt></i> argümanı 0 değilse, aynı zamanda <i><tt>işlev</tt></i> işlevini <i><tt>arg</tt></i> argümanlarıyla çağırarak işleyiciyi de işletir. Eğer <i><tt>çalıştır</tt></i> argümanı 0 ise, işleyici sadece kaldırılır, işletilmez.
+      </div></dd></dl><div style="padding:5px"></div><div class="para">
+<b><tt>pthread_cleanup_push</tt></b> ve <b><tt>pthread_cleanup_pop</tt></b> işlevlerinin eşleşen çiftleri aynı işlev içinde aynı blok yuvalama seviyesinde gerçekleşmelidir. Aslında, <b><tt>pthread_cleanup_push</tt></b> ve <b><tt>pthread_cleanup_pop</tt></b> birer makrodur,
+ve <b><tt>pthread_cleanup_push</tt></b> bir bloğu başlatan kaşlı ayraca <b><tt>{</tt></b>, <b><tt>pthread_cleanup_pop</tt></b> ise bunun kapatan kaşlı ayraca <b><tt>}</tt></b> karşılık gelir.
+   </div>
+<a class="indexterm" name="idx2918" id="idx2918"></a>
+<a name="glibc-pthread_cleanup_push_defer_np" id="glibc-pthread_cleanup_push_defer_np"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>pthread_cleanup_push_defer_np</tt></b></tt></td><td valign="top"><pre class="paramdef">(void (*<i><tt>işlev</tt></i>) (void *),
+ void  *<i><tt>arg</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_cleanup_push_defer_np</tt></b>,  <b><tt>pthread_cleanup_push</tt></b> ile <b><tt>pthread_setcanceltype</tt></b>'ı birleştiren taşınabilir olmayan bir oluşumdur. Sadece <b><tt>pthread_cleanup_push</tt></b>'un yaptığı gibi bir temizlik işleyicisi iter, fakat aynı zamanda geçerli iptal türünü kaydeder ve onu ertelenmiş iptale ayarlar. Bu temizleme mekanizmasının ilk başta zamanuyumsuz iptal kipinde olsa bile verimli olduğunu temin eder.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2919" id="idx2919"></a>
+<a name="glibc-pthread_cleanup_pop_restore_np" id="glibc-pthread_cleanup_pop_restore_np"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>pthread_cleanup_pop_restore_np</tt></b></tt></td><td valign="top"><pre class="paramdef">(int <i><tt>çalıştır</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>pthread_cleanup_pop_restore_np</tt></b>, <b><tt>pthread_cleanup_push_defer_np</tt></b> ile tanıştırılan bir temizlik işleyicisini çeker ve iptal türünü <b><tt>pthread_cleanup_push_defer_np</tt></b> çağrıldığında olan değerine geri yükler.
+      </div></dd></dl><div style="padding:5px"></div><div class="para">
+<b><tt>pthread_cleanup_push_defer_np</tt></b> ve <b><tt>pthread_cleanup_pop_restore_np</tt></b> eşleşen çiftlerde aynı blok yuvalama seviyesinde gerçekleşmelidir.
+   </div>
+<div class="para"><div align="right"><pre class="screen">
+pthread_cleanup_push_defer_np(routine, arg);
+...
+pthread_cleanup_pop_defer_np(execute);
+</pre></div></div>
+   <div class="para">sıralaması</div>
+<div class="para"><div align="right"><pre class="screen">
+{
+  int oldtype;
+  pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, &amp;oldtype);
+  pthread_cleanup_push(routine, arg);
+  ...
+  pthread_cleanup_pop(execute);
+  pthread_setcanceltype(oldtype, NULL);
+}
+</pre></div></div>
+  ile işlevsel olarak denktir.(fakat daha kısa ve verimlidir)
+    <div class="footnotes"><br /><hr width="100" align="left" /><div class="footnote"><div class="para"><sup>[<a name="ftn.id103" href="#id103" id="ftn.id103">103</a>] </sup>[Ç.N.] mutex (mutual exclusion'dan kısaltma): Bir karşılıklı red (muteks) nesnesi paylaşımlı özkaynaklara erişimi eşzamanlayan çoklu evreleri mümkün kılar. Bir muteks iki durumda olabilir: kilitli, kilitsiz. Bir muteks bir evre tarafından bir kere kilitlendi mi onu kilitlemeye çalışan diğer evreler engellenir. Kilitli evre muteksi bıraktığında (kilidini kaldırdığında) engellenen bloklardan biri onu kilitler ve işlem böyle sürüp gider.</div></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Cancellation.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-POSIX-Threads.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Mutexes.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">İptaletme </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Muteksler</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

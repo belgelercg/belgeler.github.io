@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:26:32+03:00" /><title>Değişken İkamesi Hakkında</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Word-Expansion.html" title="Kabuk Usulü Sözcük Yorumlama" /><link rel="previous" href="../glibc/glibc-Tilde-Expansion.html" title="Yaklaşık (~) Yorumlaması Hakkında" /><link rel="next" href="../glibc/glibc-I-O-Overview.html" title="XI. Oylum - Girdi/Çiktı İşlemlerine Giriş" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Değişken İkamesi Hakkında</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Tilde-Expansion.html">Önceki</a> </td><th width="60%" align="center">Kabuk Usulü Sözcük Yorumlama</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-I-O-Overview.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Variable-Substitution" id="glibc-Variable-Substitution"></a>Değişken İkamesi Hakkında</div><dl><dd><div class="para">
+Kabuk sözdiziminin bir parçası da bir kabuk değişkeninin değerini bir komutta kullanırken <b><tt>$</tt></b><i><tt>değişken</tt></i> şeklinde kullanmaktır. Buna <span class="wordasword"><i>değişken ikamesi</i></span> denir ve yapılan sözcük yorumlamanın bir parçasıdır.
+    </div><div class="para">
+Bir ikame yapmak için bir değişken iki yöntemle kullanılabilir:
+    </div><dl><dt><span class="glossterm"><b><tt>${</tt></b><i><tt>değişken</tt></i><b><tt>}</tt></b></span></dt><dd class="halfpara"><div class="para">
+Eğer değişken ismi kaşlı ayraçlar içine alınırsa, değişken isminin bittiği yerin belirsizliği tamamen ortadan kalkar. Böylece değişken ismine sözcük eklenebilir. Örneğin, <tt>${foo}</tt> değişkeninin değeri <tt>traktör</tt> ise <tt>${foo}ler</tt> ifadesinin sonucu <tt>traktörler</tt> olur.
+       </div></dd><dt><span class="glossterm"><b><tt>$</tt></b><i><tt>değişken</tt></i></span></dt><dd class="halfpara"><div class="para">
+Değişken ismi kaşlı ayraçlar içine alınmazsa, değişken ismi <b><tt>$</tt></b> ile başlar ve alfanümerik karakterler ve altçizgi karakterinden oluşabilir. İsimden sonra gelen herhangi bir noktalama işareti değişken ismini sonlandırır. Örneğin,
+<tt>$foo-pulluk</tt> ifadesinin sonucu <tt>traktör-pulluk</tt> olur.
+       </div></dd></dl><div class="para">
+Kaşlı ayraçlar kullanıldığında değeri değiştirmek için çeşitli oluşumları kullanmak ya da bazı sınamalar yapmak mümkün olur.
+    </div><dl><dt><span class="glossterm">
+    <b><tt>${</tt></b><i><tt>değişken</tt></i><b><tt>:-</tt></b><i><tt>öntanımlı</tt></i><b><tt>}</tt></b>
+    </span></dt><dd class="halfpara"><div class="para">
+<i><tt>değişken</tt></i>'e değer atanmamışsa ya da tanımsızsa değer olarak <i><tt>öntanımlı</tt></i> kullanılır, aksi takdirde <i><tt>değişken</tt></i>'in değeri kullanılır.
+       </div></dd><dt><span class="glossterm">
+       <b><tt>${</tt></b><i><tt>değişken</tt></i><b><tt>:=</tt></b><i><tt>öntanımlı</tt></i><b><tt>}</tt></b>
+       </span></dt><dd class="halfpara"><div class="para">
+<i><tt>değişken</tt></i>'e değer atanmamışsa ya da tanımsızsa değer olarak <i><tt>öntanımlı</tt></i> kullanılır ve <i><tt>değişken</tt></i>'e <i><tt>öntanımlı</tt></i> değeri atanır.
+       </div></dd><dt><span class="glossterm">
+       <b><tt>${</tt></b><i><tt>değişken</tt></i><b><tt>:?</tt></b><i><tt>ileti</tt></i><b><tt>}</tt></b>
+       </span></dt><dd class="halfpara"><div class="para">
+<i><tt>değişken</tt></i>'e değer atanmışsa ya da tanımlıysa, değeri kullanılır. Aksi takdirde, sözcük ikamesinin başarısız olduğu kabulüyle standart hata akımına bir hata iletisi olarak <i><tt>ileti</tt></i> basılır.
+       </div></dd><dt><span class="glossterm">
+       <b><tt>${</tt></b><i><tt>değişken</tt></i><b><tt>:+</tt></b><i><tt>sözcük</tt></i><b><tt>}</tt></b>
+       </span></dt><dd class="halfpara"><div class="para">
+Sadece, <i><tt>değişken</tt></i>'e değer atanmışsa ya da tanımlıysa, değeri kullanılır. Aksi takdirde sonuç hiçbir şey olur.
+       </div></dd><dt><span class="glossterm">
+       <b><tt>${#</tt></b><i><tt>değişken</tt></i><b><tt>}</tt></b>
+       </span></dt><dd class="halfpara"><div class="para">
+Bu ifadenin değeri, değişkenin değerindeki karakter sayısıdır. Sonuç onluk tabandadır. Örneğin, <tt>${#foo}</tt> ifadesinin sonucu 7'dir, çünkü <tt>traktör</tt> 7 karakter uzunluktadır.
+       </div></dd></dl><div class="para">
+Aşağıdaki değişken ikamelerinde, değişkene bir değer ikame etmeden önce değeri kısmen kaldırılır. <i><tt>önek</tt></i> ve <i><tt>sonek</tt></i> basitçe birer dizge olmayabilir; dosyaismi kalıpları kullanılabilir. Ancak bu bağlamda bu kalıplar dosya isimleri ile değil, değişkenin değerinin parçaları ile eşleştirilirler.
+    </div><dl><dt><span class="glossterm">
+    <b><tt>${</tt></b><i><tt>değişken</tt></i><b><tt>%%</tt></b><i><tt>sonek</tt></i><b><tt>}</tt></b>
+    </span></dt><dd class="halfpara"><div class="para">
+<i><tt>değişken</tt></i>'in değeri, değerin sonunda <i><tt>sonek</tt></i> kalıbı ile eşleşen kısmı iptal edilerek kullanılır.
+       </div><div class="para">
+<i><tt>sonek</tt></i> ile eşleşen çok sayıda parça varsa en uzun eşleşme iptal edilir.
+       </div><div class="para">
+Örneğin, <tt>${foo%%r*}</tt> ifadesinin sonucu <tt>t</tt> olur, çünkü <b><tt>r*</tt></b> kalıbı ile değerin sonunda eşleşen en uzun parça <tt>raktör</tt>'dür.
+       </div></dd><dt><span class="glossterm">
+       <b><tt>${</tt></b><i><tt>değişken</tt></i><b><tt>%</tt></b><i><tt>sonek</tt></i><b><tt>}</tt></b>
+       </span></dt><dd class="halfpara"><div class="para">
+<i><tt>değişken</tt></i>'in değeri, değerin sonunda <i><tt>sonek</tt></i> kalıbı ile eşleşen kısmı iptal edilerek kullanılır.
+        </div><div class="para">
+<i><tt>sonek</tt></i> ile eşleşen çok sayıda parça varsa en kısa eşleşme iptal edilir.
+       </div><div class="para">
+Örneğin, <tt>${foo%r*}</tt> ifadesinin sonucu <tt>traktö</tt> olur, çünkü <b><tt>r*</tt></b> kalıbı ile değerin sonunda eşleşen en kısa parça <tt>r</tt>'dir.
+       </div></dd><dt><span class="glossterm">
+       <b><tt>${</tt></b><i><tt>değişken</tt></i><b><tt>##</tt></b><i><tt>önek</tt></i><b><tt>}</tt></b>
+       </span></dt><dd class="halfpara"><div class="para">
+<i><tt>değişken</tt></i>'in değeri, değerin başlangıcında <i><tt>önek</tt></i> kalıbı ile eşleşen kısmı iptal edilerek kullanılır.
+       </div><div class="para">
+<i><tt>önek</tt></i> ile eşleşen çok sayıda parça varsa en uzun eşleşme iptal edilir.
+       </div><div class="para">
+Örneğin, <tt>${foo##*t}</tt> ifadesinin sonucu <tt>ör</tt> olur, çünkü <b><tt>*t</tt></b> kalıbı ile değerin başlangıcında eşleşen en uzun parça <tt>trakt</tt>'tır.
+       </div></dd><dt><span class="glossterm">
+       <b><tt>${</tt></b><i><tt>değişken</tt></i><b><tt>#</tt></b><i><tt>önek</tt></i><b><tt>}</tt></b>
+       </span></dt><dd class="halfpara"><div class="para">
+<i><tt>değişken</tt></i>'in değeri, değerin başlangıcında <i><tt>önek</tt></i> kalıbı ile eşleşen kısmı iptal edilerek kullanılır.
+       </div><div class="para">
+<i><tt>önek</tt></i> ile eşleşen çok sayıda parça varsa en kısa eşleşme iptal edilir.
+       </div><div class="para">
+Örneğin, <tt>${foo#*t}</tt> ifadesinin sonucu <tt>raktör</tt> olur, çünkü <b><tt>*t</tt></b> kalıbı ile değerin başlangıcında eşleşen en kısa parça <tt>t</tt>'dir.
+       </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Tilde-Expansion.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Word-Expansion.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-I-O-Overview.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Yaklaşık (~) Yorumlaması Hakkında </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> XI. Oylum - Girdi/Çiktı İşlemlerine Giriş</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

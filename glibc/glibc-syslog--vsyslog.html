@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:08+03:00" /><title>syslog, vsyslog</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Submitting-Syslog-Messages.html" title="Syslog İletilerinin Teslim Edilmesi" /><link rel="previous" href="../glibc/glibc-openlog.html" title="openlog" /><link rel="next" href="../glibc/glibc-closelog.html" title="closelog" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">syslog, vsyslog</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-openlog.html">Önceki</a> </td><th width="60%" align="center">Syslog İletilerinin Teslim Edilmesi</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-closelog.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-syslog--vsyslog" id="glibc-syslog--vsyslog"></a>syslog, vsyslog</div><dl><dd><div class="para">
+Bu bölümdeki semboller <tt>syslog.h</tt> dosyasında bildirilmiştir.
+<a class="indexterm" name="idx1838" id="idx1838"></a>
+    </div><a name="glibc-func-syslog" id="glibc-func-syslog"></a>
+<a class="indexterm" name="idx1839" id="idx1839"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>syslog</tt></b></tt></td><td valign="top"><pre class="paramdef">(int   <i><tt>oluşum_öncelik</tt></i>,
+ char *<i><tt>biçim</tt></i>,
+ ...)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>syslog</tt></b> bir iletiyi Syslog'a teslim eder. Bunu Unix alan soketi olan <b><tt>/dev/log</tt></b>'a yazarak yapar.
+    </div><div class="para">
+<b><tt>syslog</tt></b> iletiyi <i><tt>oluşum_öncelik</tt></i> ile belirtilen oluşum ve öncelikle teslim eder. Bir oluşum ve öncelikten bir oluşum/öncelik değeri <b><tt>LOG_MAKEPRI</tt></b> makrosu ile şöyle üretilir:
+    </div>
+<div class="para"><div align="right"><pre class="screen">LOG_MAKEPRI(LOG_USER, LOG_WARNING)</pre></div></div>
+    <div class="para">
+Oluşum kodu için olası değerler (makrolar):
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>LOG_USER</tt></span></dt><dd class="varlist"><div class="para">
+Bir kullanıcı süreci
+       </div></dd><dt><span class="term"><tt>LOG_MAIL</tt></span></dt><dd class="varlist"><div class="para">
+Posta
+       </div></dd><dt><span class="term"><tt>LOG_DAEMON</tt></span></dt><dd class="varlist"><div class="para">
+Bir sistem artalan süreci
+       </div></dd><dt><span class="term"><tt>LOG_AUTH</tt></span></dt><dd class="varlist"><div class="para">
+Güvenlik (kimlik denetimi)
+       </div></dd><dt><span class="term"><tt>LOG_SYSLOG</tt></span></dt><dd class="varlist"><div class="para">
+Syslog
+       </div></dd><dt><span class="term"><tt>LOG_LPR</tt></span></dt><dd class="varlist"><div class="para">
+Merkezi yazıcı
+       </div></dd><dt><span class="term"><tt>LOG_NEWS</tt></span></dt><dd class="varlist"><div class="para">
+Ağ haberleri (yani, Usenet)
+       </div></dd><dt><span class="term"><tt>LOG_UUCP</tt></span></dt><dd class="varlist"><div class="para">
+UUCP
+       </div></dd><dt><span class="term"><tt>LOG_CRON</tt></span></dt><dd class="varlist"><div class="para">
+Cron ve At
+       </div></dd><dt><span class="term"><tt>LOG_AUTHPRIV</tt></span></dt><dd class="varlist"><div class="para">
+Özel güvenlik (kimlik denetimi)
+       </div></dd><dt><span class="term"><tt>LOG_FTP</tt></span></dt><dd class="varlist"><div class="para">
+Ftp sunucu
+       </div></dd><dt><span class="term"><tt>LOG_LOCAL0</tt></span></dt><dt><span class="term"><tt>LOG_LOCAL1</tt></span></dt><dt><span class="term"><tt>LOG_LOCAL2</tt></span></dt><dt><span class="term"><tt>LOG_LOCAL3</tt></span></dt><dt><span class="term"><tt>LOG_LOCAL4</tt></span></dt><dt><span class="term"><tt>LOG_LOCAL5</tt></span></dt><dt><span class="term"><tt>LOG_LOCAL6</tt></span></dt><dt><span class="term"><tt>LOG_LOCAL7</tt></span></dt><dd class="varlist"><div class="para">
+Yerel olarak tanımlı
+       </div></dd></dl></div><div class="para">
+Oluşum kodu bunların dışında bir değerse sonuç tanımsızdır.
+    </div>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para"><b><tt>syslog</tt></b> başka bir oluşum kodunu daha tanır: bu çekirdektir. Ama onun oluşum kodunu bu işlevlerle belirtemezsiniz. Eğer denerseniz <b><tt>syslog</tt></b> öntanımlı oluşum isteği yapılmış gibi davranır. Fakat bunu hiçbir şekilde denememelisiniz, çünkü çekirdek GNU C kütüphanesini kullanan bir yazılım değildir.</div></td></tr></table></div>
+    <div class="para">
+<i><tt>oluşum_öncelik</tt></i> olarak bir öncelik kodu da belrtebilirsiniz. Bu durumda, <b><tt>syslog</tt></b> çağrısı Syslog bağlantısı açıldığında öntanımlı oluşum kurulmuş kabul eder. Bkz.  <a href="../glibc/glibc-Syslog-Example.html" class="xref" title="Syslog Örneği">Syslog Örneği</a>.
+    </div><div class="para">
+Öncelik kodu için olası değerler (makrolar):
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>LOG_EMERG</tt></span></dt><dd class="varlist"><div class="para">
+İleti, sistem işe yaramaz diyor.
+       </div></dd><dt><span class="term"><tt>LOG_ALERT</tt></span></dt><dd class="varlist"><div class="para">
+İleti hemen birşeyler yapılmasını istiyor.
+       </div></dd><dt><span class="term"><tt>LOG_CRIT</tt></span></dt><dd class="varlist"><div class="para">
+İleti ölümcül bir durumu belirtiyor.
+       </div></dd><dt><span class="term"><tt>LOG_ERR</tt></span></dt><dd class="varlist"><div class="para">
+İleti, bir hatanın açıklaması
+       </div></dd><dt><span class="term"><tt>LOG_WARNING</tt></span></dt><dd class="varlist"><div class="para">
+İleti, bir uyarı.
+       </div></dd><dt><span class="term"><tt>LOG_NOTICE</tt></span></dt><dd class="varlist"><div class="para">
+İleti, bir normal ama önamli bir olayı bildiriyor.
+       </div></dd><dt><span class="term"><tt>LOG_INFO</tt></span></dt><dd class="varlist"><div class="para">
+İleti sadece bilgilendirme amaçlı.
+       </div></dd><dt><span class="term"><tt>LOG_DEBUG</tt></span></dt><dd class="varlist"><div class="para">
+İleti sadece hata ayıklama ile ilgili.
+       </div></dd></dl></div><div class="para">
+Öncelik kodu bunların dışında bir değerse sonuç tanımsızdır.
+    </div><div class="para">
+Eğer süreç açık bir Syslog bağlantısına sahip değilse (yani <b><tt>openlog</tt></b> çağrısı yapılmamışsa), <b><tt>syslog</tt></b> işlevi <b><tt>openlog</tt></b>'un yaptığı gibi hemen bağlantıyı açar. Bağlantıyı açarken, aksi sadece bir <b><tt>openlog</tt></b> çağrısı ile belirtilebilecek bilgi için şu öntanımlıları kullanır: Öntanımlı kimliklendirme dizgesi yazılımın ismidir. Öntanımlı oluşum <b><tt>LOG_USER</tt></b>'dır. <i><tt>seçenek</tt></i> ile belirtilen bitlerin hepsi sıfırdır. <b><tt>syslog</tt></b> bağlantıyı açık bırakır.
+    </div><div class="para">
+Eğer <b><tt>dev/log</tt></b> soketi açık ve bağlı değilse, <b><tt>syslog</tt></b>, <b><tt>openlog</tt></b> işlevinin <b><tt>LOG_NDELAY</tt></b> seçeneğiyle yaptığı gibi onu açar ve bağlanır.
+    </div><div class="para">
+<b><tt>syslog</tt></b> iletiyi göndermeye çalışırkan başarısız olmazsa, <b><tt>/dev/log</tt></b>'u açık ve bağlı bırakır, aksi takdirde  <b><tt>syslog</tt></b> onu kapatır (ileride bir örtük açılışın Syslog bağlantısını kullanışlı bir durumda açacağını umarak).
+    </div><div class="para">
+Örnek:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+#include &lt;syslog.h&gt;
+  syslog (LOG_MAKEPRI(LOG_LOCAL1, LOG_ERROR),
+          "Unable to make network connection to %s.  Error=%m", host);
+</pre></div></div></dd></dl><div style="padding:5px"></div><a name="glibc-func-vsyslog" id="glibc-func-vsyslog"></a>
+<a class="indexterm" name="idx1840" id="idx1840"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>vsyslog</tt></b></tt></td><td valign="top"><pre class="paramdef">(int     <i><tt>oluşum_öncelik</tt></i>,
+ char   *<i><tt>biçim</tt></i>,
+ va_list <i><tt>arglist</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+BSD tarzı değişken sayıda argümanlı olarak <b><tt>syslog</tt></b>'un benzeridir.
+    </div></dd></dl><div style="padding:5px"></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-openlog.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Submitting-Syslog-Messages.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-closelog.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">openlog </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> closelog</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

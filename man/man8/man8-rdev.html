@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:25:35+03:00" /><title>rdev</title><link rel="icon" type="image/png" href="../../images/belgeler-logo.png" /><link rel="stylesheet" href="../../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../../man/man8/man8.html" title="Sistem Yönetim Komutları" /><link rel="previous" href="../../man/man8/man8-parted.html" title="parted" /><link rel="next" href="../../man/man8/man8-rmmod.html" title="rmmod" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">rdev</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../../man/man8/man8-parted.html">Önceki</a> </td><th width="60%" align="center">Sistem Yönetim Komutları</th><td width="20%" align="right"> <a accesskey="n" href="../../man/man8/man8-rmmod.html">Sonraki</a></td></tr></table></td></tr></table><div class="refentry"><a name="tr-man8-rdev" id="tr-man8-rdev"></a><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="25%"><b>rdev(8)</b></td><td class="mheadfoot" align="center" width="50%"><b>Linux Yazılımcısının Kılavuzu</b> </td><td class="mheadfoot" align="right" width="25%"><b>rdev(8)</b></td></tr></table></div><dl><dt class="head3">İSİM</dt><dd>rdev — kök aygıt biteşlemini, RAM disk boyutunu veya video kipini ayarlar/sorgular<br /></dd><dd>ramsize — RAM disk boyutunu ayarlar<br /></dd><dd>vidmode — video kipini ayarlar<br /></dd><dd>rootflags — kök aygıt seçeneklerini ayarlar<br /></dd><dd><div class="para"></div></dd><dt class="head3">KULLANIM</dt><dd><div class="para"><div class="para"><div align="center"><pre class="synopsis"><b><tt>rdev</tt></b>      [ <b><tt>-rhV</tt></b> ] [ <b><tt>-o </tt></b><i>konum</i> ] [ <i>biteşlem</i> [ <i>değer</i> [<i>konum</i> ]]]
+<b><tt>rdev</tt></b>      [ <b><tt>-o </tt></b><i>konum</i> ] [ <i>biteşlem</i> [ <i>kök_aygıt</i> [<i>konum</i> ]]]
+<b><tt>ramsize</tt></b>   [ <b><tt>-o </tt></b><i>konum</i> ] [ <i>biteşlem</i> [ <i>boyut</i> [<i>konum</i> ]]]
+<b><tt>vidmode</tt></b>   [ <b><tt>-o </tt></b><i>konum</i> ] [ <i>biteşlem</i> [ <i>kip</i> [<i>konum</i> ]]]
+<b><tt>rootflags</tt></b> [ <b><tt>-o </tt></b><i>konum</i> ] [ <i>biteşlem</i> [ <i>seçenekler</i> [<i>konum</i> ]]]
+</pre></div></div></div></dd><dt class="head3">AÇIKLAMA</dt><dd><div class="para">
+Herhangi bir argüman verilmemişse, <b><tt>rdev</tt></b>, geçerli kök dosya sistemi için bir <tt>/etc/mtab</tt> satırı görüntüler. <b><tt>ramsize</tt></b>, <b><tt>vidmode</tt></b> ve <b><tt>rootflags</tt></b> komutları argümansız kullanıldığında kullanım bilgileri görüntülenir.
+    </div><div class="para">
+Bir i386 üzerindeki Linux çekirdeğinin önyükleme biteşlemi, kök aygıtını, video kipini ve RAM disk boyutunu tanımlayan pek çok bayt çifti içerir. Bu bayt çiftleri, çekirdek biteşlemi içinde öntanımlı olarak, 504. (onluk tabanda) bayttan başlar:
+    </div>
+<div class="para"><pre class="literallayout">
+498 kök seçenekleri
+(500 ve 502 yedek)
+504 RAM Disk boyutu
+506 VGA kipi
+508 kök aygıt
+(510 önyükleme imzası)
+</pre></div>
+    <div class="para">
+<b><tt>rdev</tt></b> işte bu değerleri değiştirir.
+    </div><div class="para">
+<i><tt>biteşlem</tt></i> parametresinin değeri, Linux çekirdeğinin önyükleme biteşlemidir ve şunlar veya benzerleri olabilir:
+    </div>
+<div class="para"><pre class="literallayout">
+/vmlinux
+/vmunix
+/boot/bzImage-2.4.0
+/dev/fd0
+/dev/fd1
+</pre></div>
+    <div class="para">
+<b><tt>rdev</tt></b> komutunu kullanırken, <i><tt>kök_aygıt</tt></i> parametresinin değeri şunlar veya benzerleri olabilir:
+    </div>
+<div class="para"><pre class="literallayout">
+/dev/hda1
+/dev/hdf13
+/dev/sda2
+/dev/sdc4
+/dev/ida/c0d0p1
+</pre></div>
+    <div class="para">
+Kök aygıtı tanımlamak için virgülle ayrılmış ana ve alt aygıt numaraları da <tt>ana,alt</tt> biçiminde kullanılabilir.
+    </div><div class="para">
+<b><tt>ramsize</tt></b> komutu için, <i><tt>boyut</tt></i> parametresinde RAM disk boyu kB cinsinden belirtilmelidir.
+    </div><div class="para">
+<b><tt>rootflags</tt></b> komutu için, <i><tt>seçenekler</tt></i> parametresi kök bağlanırken kullanılan ek bilgileri içermelidir. <i><tt>seçenekler</tt></i> parametresinin şu an için tek etkisi, sıfırdan farklı bir değer ise; çekirdeği, kök dosya sistemini salt okunur kipte bağlanmaya zorlamaktır.
+    </div><div class="para">
+<b><tt>vidmode</tt></b> komutu için, <i><tt>kip</tt></i> parametresi video kipini tanımlar:
+    </div>
+<div class="para"><pre class="literallayout">
+-3 = Prompt
+-2 = yayılmış VGA
+-1 = Normal VGA
+ 0 = istemde sanki 0 basılmış gibi
+ 1 = istemde sanki 1 basılmış gibi
+ 2 = istemde sanki 2 basılmış gibi
+ n = istemde sanki n basılmış gibi
+</pre></div>
+    <div class="para">
+Şayet bir değer belirtilmemişse, geçerli ayarları bulabilmek için biteşleme bakılır.
+    </div></dd><dt class="head3">SEÇENEKLER</dt><dd><dl><dt><span class="glossterm"><b><tt>-r</tt></b></span></dt><dd class="halfpara"><div class="para"><b><tt>rdev</tt></b>’in <b><tt>ramsize</tt></b> gibi davranmasını sağlar.
+        </div></dd><dt><span class="glossterm"><b><tt>-R</tt></b></span></dt><dd class="halfpara"><div class="para"><b><tt>rdev</tt></b>’in <b><tt>rootflags</tt></b> gibi davranmasını sağlar.
+        </div></dd><dt><span class="glossterm"><b><tt>-v</tt></b></span></dt><dd class="halfpara"><div class="para"><b><tt>rdev</tt></b>’in <b><tt>vidmode</tt></b> gibi davranmasını sağlar.
+        </div></dd><dt><span class="glossterm"><b><tt>-h</tt></b></span></dt><dd class="halfpara"><div class="para">Kullanım bilgilerini gösterir.
+        </div></dd></dl></dd><dt class="head3">YAZILIM HATALARI</dt><dd><div class="para">
+<b><tt>rdev</tt></b> aracı, geçerli kök aygıt için isim bulmaktan başka bir şey için kullanıldığında, çekirdek biteşlemini, sihirli bir konumunda sihirli sayılar ile yamayan antik bir kotarımdır. i386 dışındaki platformlarda çalışmaz. Kullanımı gerçekten göz korkutucudur. Bunun yerine <b><tt>syslinux</tt></b>, <b><tt>grub</tt></b> veya <b><tt>lilo</tt></b> gibi bir önyükleyici kullanın.
+    </div></dd><dt class="head3">GEÇMİŞ</dt><dd><div class="para">
+502. bayt konumu takas aygıtının (Linux 0.12) aygıt numarası olarak kullanıldı ve  <b><tt>rdev -s</tt></b> veya <b><tt>swapdev</tt></b> bunu ayarlardı. Bununla birlikte, Linux 0.95’ten beri, bu sabit kullanılmıyor ve takas aygıtı, <b><tt>swapon</tt></b>() sistem çağrısı kullanılarak tanımlanıyor.
+    </div></dd><dt class="head3">YAZANLAR</dt><dd><div class="para">
+ilk defa Werner Almesberger <span class="email">&lt;almesber (at) nessie.cs.id.ethz.ch&gt;</span> tarafından yazılmıştır.<br />
+Peter MacDonald <span class="email">&lt;pmacdona (at) sanjuan.UVic.CA&gt;</span> tarafından değiştirildi.
+<b><tt>rootflags</tt></b> desteği Stephen Tweedie <span class="email">&lt;sct (at) dcs.ed.ac.uk&gt;</span> tarafından eklendi.
+    </div></dd><dt class="head3">ÇEVİREN</dt><dd><div class="para">Yalçın Kolukısa <span class="email">&lt;yalcink01 (at) yahoo.com&gt;</span>, Şubat 2004</div></dd></dl><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="30%"><b>Linux 0.99</b></td><td class="mheadfoot" align="center" width="40%"><b>20 Kasım 1993</b></td><td class="mheadfoot" align="right" width="30%"><b>rdev(8)</b></td></tr></table></div></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../../man/man8/man8-parted.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../../man/man8/man8.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../../man/man8/man8-rmmod.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">parted </td><td width="20%" align="center"><a accesskey="h" href="../../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> rmmod</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

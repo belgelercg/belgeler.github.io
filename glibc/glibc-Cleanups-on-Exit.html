@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:40+03:00" /><title>Çıkışta Temizlik</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Program-Termination.html" title="Yazılımın Sonlandırılması" /><link rel="previous" href="../glibc/glibc-Exit-Status.html" title="Çıkış Durumu" /><link rel="next" href="../glibc/glibc-Aborting-a-Program.html" title="Anormal Sonlanma" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Çıkışta Temizlik</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Exit-Status.html">Önceki</a> </td><th width="60%" align="center">Yazılımın Sonlandırılması</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Aborting-a-Program.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Cleanups-on-Exit" id="glibc-Cleanups-on-Exit"></a>Çıkışta Temizlik</div><dl><dd><div class="para">
+Yazılımınız normal sonlandırma sırasında kendi temizlik işlevlerini çalıştıracak düzenlemeyi yapabilir. Çeşitli uygulama yazılımlarında kullanılan bir kütüphane yazıyorsanız, tüm uygulamaların çıkış sırasında kütüphanenin temizlik işlevlerini çağırmasında ısrar etmek güvenilir olmazdı. Temizlik işlevlerinin uygulamaya görünmez yapmanın kesin yolu <b><tt>atexit</tt></b> veya <b><tt>on_exit</tt></b> işlevlerini kullanarak bir temizlik işlevini belirtmektir.
+    </div>
+<a class="indexterm" name="idx2830" id="idx2830"></a>
+<a name="glibc-atexit" id="glibc-atexit"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>atexit</tt></b></tt></td><td valign="top"><pre class="paramdef">(void (*<i><tt>işlev</tt></i>) (void))</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>atexit</tt></b> işlevi <i><tt>işlev</tt></i> işlevini normal yazılım sonlanması sırasında çağrılmak üzere kaydeder. <i><tt>işlev</tt></i> argümansız çağrılır.
+    </div><div class="para">
+<b><tt>atexit</tt></b> işlevinin normal dönüş değeri sıfırdır, eğer işlev kaydedilemezse sıfırdan farklı bir değerle döner.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2831" id="idx2831"></a>
+<a name="glibc-on_exit" id="glibc-on_exit"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>on_exit</tt></b></tt></td><td valign="top"><pre class="paramdef">(void (*<i><tt>işlev</tt></i>)(int <i><tt>durum</tt></i>, void  *<i><tt>arg</tt></i>),
+ void  *<i><tt>arg</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev <b><tt>atexit</tt></b> işlevinin biraz daha güçlü bir sürümüdür. İki argüman kabul eder: <i><tt>işlev</tt></i> işlevi ve bir argümana gösterici. Normal yazılım sonlanması sırasında işlev iki argümanlar çağrılır: <b><tt>exit</tt></b> işlevine aktarılan <i><tt>durum</tt></i> ve bir <i><tt>arg</tt></i> argümanı.
+    </div><div class="para">
+Bu işlev GNU kütüphanesine sadece SunOS uyumluluğu için dahil edilmiştir. Diğer gerçeklemeler tarafından desteklenmeyebilir.
+</div></dd></dl><div style="padding:5px"></div><div class="para">
+Burada, <b><tt>exit</tt></b> ve <b><tt>atexit</tt></b> işlevlerinin kullanımını gösteren göstermelik bir yazılıma yer verilmiştir:
+    </div>
+<div class="para"><div align="right"><pre class="screen">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+void
+elveda (void)
+{
+  puts ("Elveda, zalim Dünya....");
+}
+
+int
+main (void)
+{
+  atexit (elveda);
+  exit (EXIT_SUCCESS);
+}
+</pre></div></div><div class="para">
+Bu yazılım çalıştırıldığında bir ileti basar ve çıkar.
+  </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Exit-Status.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Program-Termination.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Aborting-a-Program.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Çıkış Durumu </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Anormal Sonlanma</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

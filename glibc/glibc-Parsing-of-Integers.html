@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:20+03:00" /><title>Tamsayıların Çözümlenmesi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Parsing-of-Numbers.html" title="Dizgelerdeki Sayıların Çözümlenmesi" /><link rel="previous" href="../glibc/glibc-Parsing-of-Numbers.html" title="Dizgelerdeki Sayıların Çözümlenmesi" /><link rel="next" href="../glibc/glibc-Parsing-of-Floats.html" title="Gerçek Sayıların Çözümlenmesi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Tamsayıların Çözümlenmesi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Parsing-of-Numbers.html">Önceki</a> </td><th width="60%" align="center">Dizgelerdeki Sayıların Çözümlenmesi</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Parsing-of-Floats.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Parsing-of-Integers" id="glibc-Parsing-of-Integers"></a>Tamsayıların Çözümlenmesi</div><dl><dd><div class="para">
+<a class="indexterm" name="idx2303" id="idx2303"></a>
+<a class="indexterm" name="idx2304" id="idx2304"></a>
+<b><tt>str</tt></b> işlevleri <tt>stdlib.h</tt> dosyasında, <b><tt>wcs</tt></b> ile başlayanlar ise <tt>wchar.h</tt> dosyasında bildirilmiştir.  Bu bölümdeki işlevlerin prototiplerinde <b><tt>restrict</tt></b> kullanımı şaşırtıcı olabilir. Kullanışsız görünür ama ISO C standardı onu kullandığı için (burada tanımlı işlevler için) biz de kullandık.
+    </div>
+<a class="indexterm" name="idx2305" id="idx2305"></a>
+<a name="glibc-strtol" id="glibc-strtol"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>long int <b><tt>strtol</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *restrict <i><tt>dizge</tt></i>,
+ char **restrict      <i><tt>kalan-dizge</tt></i>,
+ int                  <i><tt>taban</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>strtol</tt></b> ("string-to-long" kısaltması) işlevi <i><tt>dizge</tt></i> dizgesinin baştarafını bir işaretli tamsayıya dönüştürür ve sonucu <b><tt>long int</tt></b> türünde bir değer olarak döndürür.
+    </div><div class="para">
+İşlev <i><tt>dizge</tt></i>'yi şu şekilde analiz etmeye çalışır:
+    </div><ul type="disc" class="itemizedlist"><li><div class="para">
+Boşluk karakterlerinden oluşan bir dizge (muhtemelen boş). Boşluk karakterleri <b><tt>isspace</tt></b> işlevi ile saptanır ve bunlar iptal edilir (bkz. <a href="../glibc/glibc-Classification-of-Characters.html" class="xref" title="Karakterlerin Sınıflandırılması">Karakterlerin Sınıflandırılması</a>).
+      </div></li><li><div class="para">
+İsteğe bağlı artı ya da eksi işareti (<b><tt>+</tt></b> veya <b><tt>-</tt></b>).
+      </div></li><li><div class="para">
+Tabanı <i><tt>taban</tt></i> ile belirtilen aralarında boşluk olmayan rakamlar.
+      </div><div class="para">
+<i><tt>taban</tt></i> sıfırsa, rakam dizgesi <b><tt>0</tt></b> (sekizlik taban belirtir) ile ya da <b><tt>0x</tt></b> veya <b><tt>0X</tt></b> (onaltılık taban belirtir)ile başlamıyorsa rakamların onluk tabanda verildiği varsayılır; yani C'deki tamsayı sabit sözdizimi kullanılır.
+      </div><div class="para">
+Aksi takdirde <i><tt>taban</tt></i>, <b><tt>2</tt></b> ile <b><tt>36</tt></b> arasında olmalıdır. Eğer <i><tt>taban</tt></i> olarak <b><tt>16</tt></b> verilmişse, rakam dizgesi isteğe bağlı olarak <b><tt>0x</tt></b> veya <b><tt>0X</tt></b> ile başlayabilir.  Eğer taban olarak kuraldışı bir değer belirtilmişse <b><tt>0l</tt></b> değeri dömer ve <b><tt>errno</tt></b> değişkenine <b><tt>EINVAL</tt></b> atanır.
+      </div></li><li><div class="para">
+Dizgede kalan karakterler. Eğer <i><tt>kalan-dizge</tt></i> bir boş gösterici değilse işlev bu artıkları <i><tt>*kalan-dizge</tt></i> içine yerleştirir.
+      </div></li></ul><div class="para">
+Eğer dizge boşsa, sadece boşluk karakterleri içeriyorsa ya da başlangıçtaki altdizge <i><tt>taban</tt></i> ile belirtilen bir tamsayı için umulan sözdizimine sahip değilse hiçbir dönüşüm yapılmaz. Bu durumda, işlev sıfırla döner ve <i><tt>dizge</tt></i> değeri <i><tt>*kalan-dizge</tt></i> içine yerleştirir.
+    </div><div class="para">
+Yerel, standart <b><tt>"C"</tt></b> yerelinden farklıysa, bu işlev gerçeklemeye bağlı olarak ek sözdizimini tanıyabilir.
+    </div><div class="para">
+Eğer dizge geçerli sözdizimine sahip olduğu halde taşmadan dolayı değer gösterilemiyorsa, değerin işaretine bağlı olarak <b><tt>LONG_MAX</tt></b> ya da <b><tt>LONG_MIN</tt></b> döner (bkz. <a href="../glibc/glibc-Data-Type-Measurements.html#glibc-Range-of-Type" class="xref" title="Bir Tamsayı Türün Aralığı">Bir Tamsayı Türün Aralığı</a>).  Ayrıca taşmayı belirtmek üzere <b><tt>errno</tt></b> değişkenine <b><tt>ERANGE</tt></b> atanır.
+    </div><div class="para">
+<b><tt>strtol</tt></b> işlevinin döndürdüğü değere bakarak hata sınaması yapmayın, çünkü dizge  <b><tt>0l</tt></b>, <b><tt>LONG_MAX</tt></b> veya <b><tt>LONG_MIN</tt></b> gibi sözdizimsel olarak geçerli bir sayı olabilir. Bunun yerine <i><tt>kalan-dizge</tt></i>'nin gösterdiği dizgenin sayıdan sonra umduğunuz dizgeyi içerip içermediğine bakın. Örneğin dizge sayıdan sonra başka bir karakter içermiyorsa dönüş değerinde <b><tt>'\0'</tt></b> varlığına bakarsınız. Ayrıca çağrı öncesi <i><tt>errno</tt></i> değişkenine sıfır atayıp çağrıdan sonra değişkenin değerine bakarak taşma durumu olup olmadığını saptayabilirsiniz.
+    </div><div class="para">
+Bu bölümün sonunda bir örnek bulacaksınız.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2306" id="idx2306"></a>
+<a name="glibc-wcstol" id="glibc-wcstol"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>long int <b><tt>wcstol</tt></b></tt></td><td valign="top"><pre class="paramdef">(const wchar_t *restrict <i><tt>dizge</tt></i>,
+ wchar_t **restrict      <i><tt>kalan-dizge</tt></i>,
+ int                     <i><tt>taban</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>wcstol</tt></b> işlevi geniş karakter kabul etmesi dışında hemen herşeyiyle <b><tt>strtol</tt></b> işlevine benzer.
+    </div><div class="para">
+<b><tt>wcstol</tt></b> işlevi ISO C90'ın 1. düzeltmesinde vardı.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2307" id="idx2307"></a>
+<a name="glibc-strtoul" id="glibc-strtoul"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>unsigned long int <b><tt>strtoul</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *retrict <i><tt>dizge</tt></i>,
+ char **restrict     <i><tt>kalan-dizge</tt></i>,
+ int                 <i><tt>taban</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>strtoul</tt></b> ("string-to-unsigned-long" kısaltması) işlevi sonucu bir <b><tt>unsigned long int</tt></b> değer olarak döndürmesi dışında  <b><tt>strtol</tt></b> işlevi gibidir. Sözdizimi <b><tt>strtol</tt></b> işlevindeki gibidir.  Taşma durumunda dönüş değeri <b><tt>ULONG_MAX</tt></b>'tır (bkz. <a href="../glibc/glibc-Data-Type-Measurements.html#glibc-Range-of-Type" class="xref" title="Bir Tamsayı Türün Aralığı">Bir Tamsayı Türün Aralığı</a>).
+    </div><div class="para">
+<i><tt>dizge</tt></i> içinde bir negatif sayı varsa, <b><tt>strtoul</tt></b> işlevi <i><tt>strtol</tt></i> işlevi gibi davranır ama sonucu bir işaretsiz tamsayıya dönüştürür. Örneğin, işlev <b><tt>"-1"</tt></b> dizgesi için <b><tt>ULONG_MAX</tt></b> ile, girdi <b><tt>LONG_MIN</tt></b>'den daha negatifse (<b><tt>ULONG_MAX</tt></b> + 1) / 2 ile döner.
+    </div><div class="para">
+Eğer <i><tt>taban</tt></i> kapsamdışı ise işlev <i><tt>errno</tt></i> değişkenine <b><tt>EINVAL</tt></b> değerini, taşma durumunda ise <b><tt>ERANGE</tt></b> değerini atar.
+</div></dd></dl><div style="padding:5px"></div>
+
+<a class="indexterm" name="idx2308" id="idx2308"></a>
+<a name="glibc-wcstoul" id="glibc-wcstoul"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>unsigned long int <b><tt>wcstoul</tt></b></tt></td><td valign="top"><pre class="paramdef">(const wchar_t *restrict <i><tt>dizge</tt></i>,
+ wchar_t **restrict      <i><tt>kalan-dizge</tt></i>,
+ int                     <i><tt>taban</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>wcstoul</tt></b> işlevi geniş karakteleri kabul etmesi dışında hemen herşeyiyle <b><tt>strtoul</tt></b> işlevinin benzeridir.
+    </div><div class="para">
+<b><tt>wcstoul</tt></b> işlevi ISO C90'ın 1. düzeltmesinde vardı.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2309" id="idx2309"></a>
+<a name="glibc-strtoll" id="glibc-strtoll"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>long long int <b><tt>strtoll</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *restrict <i><tt>dizge</tt></i>,
+ char **restrict      <i><tt>kalan-dizge</tt></i>,
+ int                  <i><tt>taban</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>strtoll</tt></b> işlevi daha büyük değer kabul ederek sonucu <b><tt>long long int</tt></b> türünde bir değer olarak döndürmesi dışında <b><tt>strtol</tt></b> gibidir.
+    </div><div class="para">
+Eğer dizge geçerli sözdizimine sahip olduğu halde taşmadan dolayı değer gösterilemiyorsa, değerin işaretine bağlı olarak <b><tt>LONG_LONG_MAX</tt></b> ya da <b><tt>LONG_LONG_MIN</tt></b> döner (bkz. <a href="../glibc/glibc-Data-Type-Measurements.html#glibc-Range-of-Type" class="xref" title="Bir Tamsayı Türün Aralığı">Bir Tamsayı Türün Aralığı</a>).  Ayrıca taşmayı belirtmek üzere <b><tt>errno</tt></b> değişkenine <b><tt>ERANGE</tt></b> atanır.
+    </div><div class="para">
+<b><tt>strtoll</tt></b> işlevi ISO C99'da tanıtıldı.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2310" id="idx2310"></a>
+<a name="glibc-wcstoll" id="glibc-wcstoll"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>long long int <b><tt>wcstoll</tt></b></tt></td><td valign="top"><pre class="paramdef">(const wchar_t *restrict <i><tt>dizge</tt></i>,
+ wchar_t **restrict      <i><tt>kalan-dizge</tt></i>,
+ int                     <i><tt>taban</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>wcstoll</tt></b> işlevi geniş karakter kabul etmesi dışında hemen herşeyiyle <b><tt>strtoll</tt></b> işlevine benzer.
+    </div><div class="para">
+<b><tt>wcstoll</tt></b> işlevi ISO C90'ın 1. düzeltmesinde vardı.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2311" id="idx2311"></a>
+<a name="glibc-strtoq" id="glibc-strtoq"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>long long int <b><tt>strtoq</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *restrict <i><tt>dizge</tt></i>,
+ char **restrict      <i><tt>kalan-dizge</tt></i>,
+ int                  <i><tt>taban</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>strtoq</tt></b> ("string-to-quad-word" kısaltması) işlevi<b><tt>strtoll</tt></b> işlevinin BSD ismidir.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2312" id="idx2312"></a>
+<a name="glibc-wcstoq" id="glibc-wcstoq"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>long long int <b><tt>wcstoq</tt></b></tt></td><td valign="top"><pre class="paramdef">(const wchar_t *restrict <i><tt>dizge</tt></i>,
+ wchar_t **restrict      <i><tt>kalan-dizge</tt></i>,
+ int                     <i><tt>taban</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>wcstoq</tt></b> işlevi geniş karakter kabul etmesi dışında hemen herşeyiyle <b><tt>strtoq</tt></b> işlevine benzer.
+    </div><div class="para">
+<b><tt>wcstoq</tt></b> işlevi bir GNU oluşumdur.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2313" id="idx2313"></a>
+<a name="glibc-strtoull" id="glibc-strtoull"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>unsigned long long int <b><tt>strtoull</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *restrict <i><tt>dizge</tt></i>,
+ char **restrict      <i><tt>kalan-dizge</tt></i>,
+ int                  <i><tt>taban</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>strtoul</tt></b> işlevinin <b><tt>strtol</tt></b> işlevine ilgisi gibi <b><tt>strtoull</tt></b> işlevi de <b><tt>strtoll</tt></b> işleviyle benzer ilgiye sahiptır.
+    </div><div class="para">
+<b><tt>strtoull</tt></b> işlevi ISO C99'da tanıtıldı.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2314" id="idx2314"></a>
+<a name="glibc-wcstoull" id="glibc-wcstoull"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>unsigned long long int <b><tt>wcstoull</tt></b></tt></td><td valign="top"><pre class="paramdef">(const wchar_t *restrict <i><tt>dizge</tt></i>,
+ wchar_t **restrict      <i><tt>kalan-dizge</tt></i>,
+ int                     <i><tt>taban</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>wcstoull</tt></b> işlevi geniş karakter kabul etmesi dışında hemen herşeyiyle <b><tt>strtoull</tt></b> işlevine benzer.
+    </div><div class="para">
+<b><tt>wcstoull</tt></b> işlevi ISO C90'ın 1. düzeltmesinde vardı.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2315" id="idx2315"></a>
+<a name="glibc-strtouq" id="glibc-strtouq"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>unsigned long long int <b><tt>strtouq</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *restrict <i><tt>dizge</tt></i>,
+ char **restrict      <i><tt>kalan-dizge</tt></i>,
+ int                  <i><tt>taban</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>strtouq</tt></b> işlevi <b><tt>strtoull</tt></b> işlevinin BSD ismidir.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2316" id="idx2316"></a>
+<a name="glibc-wcstouq" id="glibc-wcstouq"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>unsigned long long int <b><tt>wcstouq</tt></b></tt></td><td valign="top"><pre class="paramdef">(const wchar_t *restrict <i><tt>dizge</tt></i>,
+ wchar_t **restrict      <i><tt>kalan-dizge</tt></i>,
+ int                     <i><tt>taban</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>wcstouq</tt></b> işlevi geniş karakter kabul etmesi dışında hemen herşeyiyle <b><tt>strtouq</tt></b> işlevine benzer.
+    </div><div class="para">
+<b><tt>wcstouq</tt></b> işlevi bir GNU oluşumdur.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2317" id="idx2317"></a>
+<a name="glibc-strtoimax" id="glibc-strtoimax"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>intmax_t <b><tt>strtoimax</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *restrict <i><tt>dizge</tt></i>,
+ char **restrict      <i><tt>kalan-dizge</tt></i>,
+ int                  <i><tt>taban</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>strtoimax</tt></b> işlevi daha büyük değerler kabul ederek sonucu <b><tt>intmax_t</tt></b> türünde döndürmesi dışında <b><tt>strtol</tt></b> gibidir.
+    </div><div class="para">
+Eğer dizge geçerli sözdizimine sahip olduğu halde taşmadan dolayı değer gösterilemiyorsa, değerin işaretine bağlı olarak <b><tt>INTMAX_MAX</tt></b> ya da <b><tt>INTMAX_MIN</tt></b> döner (bkz. <a href="../glibc/glibc-Data-Type-Measurements.html#glibc-Range-of-Type" class="xref" title="Bir Tamsayı Türün Aralığı">Bir Tamsayı Türün Aralığı</a>).  Ayrıca taşmayı belirtmek üzere <b><tt>errno</tt></b> değişkenine <b><tt>ERANGE</tt></b> atanır.
+    </div><div class="para">
+<b><tt>intmax_t</tt></b> türü hakkında daha fazla bilgi için <a href="../glibc/glibc-Integers.html" class="xref" title="Tamsayılar">Tamsayılar</a> bölümüne bakınız. <b><tt>strtoimax</tt></b> işlevi ISO C99'da tanıtıldı.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2318" id="idx2318"></a>
+<a name="glibc-wcstoimax" id="glibc-wcstoimax"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>intmax_t <b><tt>wcstoimax</tt></b></tt></td><td valign="top"><pre class="paramdef">(const wchar_t *restrict <i><tt>dizge</tt></i>,
+ wchar_t **restrict      <i><tt>kalan-dizge</tt></i>,
+ int                     <i><tt>taban</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>wcstoimax</tt></b> işlevi geniş karakter kabul etmesi dışında hemen herşeyiyle <b><tt>strtoimax</tt></b> işlevine benzer.
+    </div><div class="para">
+<b><tt>wcstoimax</tt></b> işlevi ISO C99'da tanıtıldı.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2319" id="idx2319"></a>
+<a name="glibc-strtoumax" id="glibc-strtoumax"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>uintmax_t <b><tt>strtoumax</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *restrict <i><tt>dizge</tt></i>,
+ char **restrict      <i><tt>kalan-dizge</tt></i>,
+ int                  <i><tt>taban</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>strtoul</tt></b> işlevinin <b><tt>strtol</tt></b> işlevine ilgisi gibi <b><tt>strtoul</tt></b> işlevi  <b><tt>strtoumax</tt></b> işleviyle de benzer ilgiye sahiptır.
+    </div><div class="para">
+<b><tt>intmax_t</tt></b> türü hakkında daha fazla bilgi için <a href="../glibc/glibc-Integers.html" class="xref" title="Tamsayılar">Tamsayılar</a> bölümüne bakınız. <b><tt>strtoumax</tt></b> işlevi ISO C99'da tanıtıldı.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2320" id="idx2320"></a>
+<a name="glibc-wcstoumax" id="glibc-wcstoumax"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>uintmax_t <b><tt>wcstoumax</tt></b></tt></td><td valign="top"><pre class="paramdef">(const wchar_t *restrict <i><tt>dizge</tt></i>,
+ wchar_t **restrict      <i><tt>kalan-dizge</tt></i>,
+ int                     <i><tt>taban</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>wcstoumax</tt></b> işlevi geniş karakter kabul etmesi dışında hemen herşeyiyle <b><tt>strtoumax</tt></b> işlevine benzer.
+    </div><div class="para">
+<b><tt>wcstoumax</tt></b> işlevi ISO C99'da tanıtıldı.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2321" id="idx2321"></a>
+<a name="glibc-atol" id="glibc-atol"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>long int <b><tt>atol</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *<i><tt>dizge</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev <i><tt>taban</tt></i> argümanı <b><tt>10</tt></b> olarak belirtilen <b><tt>strtol</tt></b> işlevine benzer, ancak taşma hatalarının saptanmasını gerektirmez. <b><tt>atol</tt></b> işlevi mevcut kodla uyumluluk adına vardır; <b><tt>strtol</tt></b> kullanım bakımından daha güçlüdür.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2322" id="idx2322"></a>
+<a name="glibc-atoi" id="glibc-atoi"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>atoi</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *<i><tt>dizge</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev <b><tt>int</tt></b> türünde bir değer döndürmesi dışında <b><tt>atol</tt></b> işlevi gbidir. Ayrıca, <b><tt>atoi</tt></b> işlevinin atıl olduğu varsayılır; yerine <b><tt>strtol</tt></b> kullanın.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2323" id="idx2323"></a>
+<a name="glibc-atoll" id="glibc-atoll"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>long long int <b><tt>atoll</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char *<i><tt>dizge</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Sonucu <b><tt>long long int</tt></b> türünde döndürmesi dışında <b><tt>atol</tt></b> işlevine benzer.
+    </div><div class="para">
+<b><tt>atoll</tt></b> işlevi ISO C99'da tanıtıldı.  Tamamen atıldır; yerine <b><tt>strtoll</tt></b> kullanın.
+</div></dd></dl><div style="padding:5px"></div><div class="para">
+Buraya kadar bahsedilen işlevler artık yerel veride tanımlanan diğer gösterimleri tanımamaktadır. Bazı yereller çok büyük sayıların daha rahat okunabilmesi için binler ayracı kullanmaktadır. Böyle sayıları okutmak için <b><tt>scanf</tt></b> işlevini <b><tt>'</tt></b> imi ile kullanın.
+    </div><div class="para">
+Bu örnekte bir işlev bir dizgeyi çözümleyip elde ettiği tamsayıların toplamı ile dönmektedir:
+    </div><div class="para"><div align="right"><pre class="screen">
+int
+sum_ints_from_string (char *string)
+{
+  int sum = 0;
+
+  while (1) {
+    char *tail;
+    int next;
+
+    /* Baştaki boşlukları atlayalım.  */
+    while (isspace (*string)) string++;
+    if (*string == 0)
+      break;
+
+    /* Artık boşluk karakeri kalmadı,  */
+    /* rakamlara bakabiliriz.  */
+    errno = 0;
+    /* Çözümle.  */
+    next = strtol (string, &amp;tail, 0);
+    /* Taşmamışsa, ekle.  */
+    if (errno)
+      printf ("Taştı\n");
+    else
+      sum += next;
+    /* Kalan dizgeyi tekrar işleme sokalım.  */
+    string = tail;
+  }
+
+  return sum;
+}</pre></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Parsing-of-Numbers.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Parsing-of-Numbers.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Parsing-of-Floats.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Dizgelerdeki Sayıların Çözümlenmesi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Gerçek Sayıların Çözümlenmesi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

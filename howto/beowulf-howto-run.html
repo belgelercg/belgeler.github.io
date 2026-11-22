@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:37+03:00" /><title>Program Çalıştırma</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/beowulf-howto.html" title="Beowulf NASIL" /><link rel="previous" href="../howto/beowulf-howto-verify.html" title="Doğrulama" /><link rel="next" href="../howto/bind-ile-dns-howto.html" title="BIND 8 ile DNS NASIL" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Program Çalıştırma</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/beowulf-howto-verify.html">Önceki</a> </td><th width="60%" align="center">Beowulf NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/bind-ile-dns-howto.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="beowulf-howto-run" id="beowulf-howto-run"></a>Program Çalıştırma</div><dl><dd><div class="para">
+Yukarıda gösterilen denemeleri yaptıktan sonra, artık program çalıştırabiliyor olmalısınız. Şu andan sonraki komutlar LAM için özeldir.
+    </div><div class="para">
+Ana düğüme geri dönün, wolf olarak oturum açın ve şu komutları verin:
+    </div>
+<div class="para"><div align="right"><pre class="screen">cat &gt; /nnt/wolf/lamhosts
+wolf01
+wolf02
+wolf03
+wolf04
+&lt;control d&gt;
+</pre></div></div>
+    <div class="para">
+LAM örneklerinin bulunduğu dizinine gidin ve <tt>hello.c</tt> dosyasını derleyin:
+    </div>
+<div class="para"><div align="right"><pre class="screen">mpicc -o hello hello.c
+cp hello /mnt/wolf
+</pre></div></div>
+    <div class="para">
+Sonra, LAM kılavuzunda belirtildiği gibi LAM'i başlatın:
+    </div>
+<div class="para"><div align="right"><pre class="screen">[wolf@wolf00 wolf]$ <b><tt>lamboot -v lamhosts</tt></b>
+LAM 7.0/MPI 2 C++/ROMIO - Indiana University
+n0&lt;2572&gt; ssi:boot:base:linear: booting n0 (wolf00)
+n0&lt;2572&gt; ssi:boot:base:linear: booting n1 (wolf01)
+n0&lt;2572&gt; ssi:boot:base:linear: booting n2 (wolf02)
+n0&lt;2572&gt; ssi:boot:base:linear: booting n3 (wolf04)
+n0&lt;2572&gt; ssi:boot:base:linear: finished
+</pre></div></div>
+    <div class="para">
+Böylece, artık uygulama çalıştırmaya hazırız. (Unutmayın ben LAM kullanıyorum, siz başka bir yazılım kullanıyorsanız söz dizimi değişebilir.)
+    </div>
+<div class="para"><div align="right"><pre class="screen">[wolf@wolf00 wolf]$ <b><tt>mpirun n0-3 /mnt/wolf/hello</tt></b>
+Merhaba dünya! I am 0 of 4
+Merhaba dünya! I am 3 of 4
+Merhaba dünya! I am 2 of 4
+Merhaba dünya! I am 1 of 4
+[wolf@wolf00 wolf]$
+</pre></div></div>
+    <div class="para">
+Hatırlayın yukarıda NFS kullanımından bahsetmiştim. Bütün düğümlere paylaşımlı dizini kullanmalarını söylüyorum. Çalıştırılabilir dosyaları kolayca her bir düğüme kopyalayabilirsiniz ve <b><tt>mpirun</tt></b> komutlarıyla, düğüm yerel dizinlerini belirtebilirsiniz.
+    </div>
+<div class="para"><div align="right"><pre class="screen">mpirun n0-3 /home/wolf/hello</pre></div></div>
+    <div class="para">
+gibi. Bunun için ön şart bütün dosyaların yerel erişilebilir olmasıdır. Gerçekten bunu yaptım ve nfs, paylaşımlıçalıştırılabilir dosya kullanmaktan daha iyi çalıştı. Tabii ki, benim küme uygulamam, kümeleme yoluyla paylaşılmış dosyayı düzenleme ihtiyacı duyuyorsa bu teori çöker...
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/beowulf-howto-verify.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/beowulf-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/bind-ile-dns-howto.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Doğrulama </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> BIND 8 ile DNS NASIL</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

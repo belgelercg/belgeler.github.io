@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:47+03:00" /><title>İşlerin Durdurulması ve Sonlandırılması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Implementing-a-Shell.html" title="Bir İş Denetim kabuğunun Gerçeklenmesi" /><link rel="previous" href="../glibc/glibc-Foreground-and-Background.html" title="Önalan ve Artalan" /><link rel="next" href="../glibc/glibc-Continuing-Stopped-Jobs.html" title="Duran İşlerin Sürdürülmesi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">İşlerin Durdurulması ve Sonlandırılması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Foreground-and-Background.html">Önceki</a> </td><th width="60%" align="center">Bir İş Denetim kabuğunun Gerçeklenmesi</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Continuing-Stopped-Jobs.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Stopped-and-Terminated-Jobs" id="glibc-Stopped-and-Terminated-Jobs"></a>İşlerin Durdurulması ve Sonlandırılması</div><dl><dd><div class="para">
+<a class="indexterm" name="idx2987" id="idx2987"></a>
+<a class="indexterm" name="idx2988" id="idx2988"></a>
+<a class="indexterm" name="idx2989" id="idx2989"></a>
+<a class="indexterm" name="idx2990" id="idx2990"></a>
+Bir önalan işi başlatıldığında, kabuk, işteki tüm süreçler durana ya da sonlanana kadar beklemelidir. Bunu <b><tt>waitpid</tt></b> çağrısı ile yapabilir; bkz. <a href="../glibc/glibc-Process-Completion.html" class="xref" title="Süreç Tamamlama">Süreç Tamamlama</a>.  Süreçlerin durması ya da sonlanması halinde durumu raporlamaları için <b><tt>WUNTRACED</tt></b> seçeneği kullanılır.
+    </div><div class="para">
+Kabuk bir artalan işinin kullanıcı tarafından durdurulması ya da sonlandırılmasının da raporlanmasını ayrıca beklemelidir; bu <b><tt>waitpid</tt></b> işlevinin <b><tt>WNOHANG</tt></b> seçeneği ile çağrılması ile yapılabilir. Bu sınamanın yapılacağı en iyi yer yeni bir komut isteminin hemen öncesidir.
+    </div><div class="para">
+<a class="indexterm" name="idx2991" id="idx2991"></a>
+Kabuk ayrıca, <b><tt>SIGCHLD</tt></b> sinyallerine bir <a class="link" href="../glibc/glibc-Signal-Handling.html" title="XXIV. Oylum - Sinyal İşleme">sinyal eylemci</a> kurmuş bir alt süreç için durum bilgisi içeren bir eşzamansız uyarı alabilir.
+    </div><div class="para">
+Örnek kabuk yazılımında, <b><tt>SIGCHLD</tt></b> sinyalleri normal olarak yoksayılmaktadır. Bu, kabuğun zaman zaman değiştirdiği genel veri yapılarından kaynaklanan evresellik (reentrancy) sorunlarında kaçınmak içindir. Fakat belirli zamanlarda, kabuğun bu veri yapılarını kullanmadığı zamanlarda ( örneğin, uçbirimden girdi beklerken), <b><tt>SIGCHLD</tt></b> sinyali için bir eylemciyi etkinleştirmeye ihtiyaç duyar. Eşzamanlı durum sınamaları yapmak için kullanılan işlev (bu durumda <b><tt>do_job_notification</tt></b> işlevi), bu eylemci tarafından ayrıca çağrılabilir.
+    </div><div class="para">
+Burada, örnek kabuk yazılımından işlerin durumunu sınayıp durumu kullanıcıya bildiren parçası görülmektedir:
+    </div>
+<div class="para"><div align="right"><pre class="screen">/* waitpid tarafından döndürülen  süreç kimliğinin durumunu
+   saklayalım. İstenen yapıldıysa 0 yoksa sıfırdan farklı
+   bir değerle dönelim..  */
+
+int
+mark_process_status (pid_t pid, int status)
+{
+  job *j;
+  process *p;
+
+  if (pid &gt; 0)
+    {
+      /* Süreç için kaydı güncelleyelim.  */
+      for (j = first_job; j; j = j-&gt;next)
+        for (p = j-&gt;first_process; p; p = p-&gt;next)
+          if (p-&gt;pid == pid)
+            {
+              p-&gt;status = status;
+              if (WIFSTOPPED (status))
+                p-&gt;stopped = 1;
+              else
+                {
+                  p-&gt;completed = 1;
+                  if (WIFSIGNALED (status))
+                    fprintf (stderr, "%d: %d sinyali ile sonlandırıldı.\n",
+                              (int) pid, WTERMSIG (p-&gt;status));
+                }
+              return 0;
+              }
+      fprintf (stderr, "%d kimlikli bir süreç yok.\n", pid);
+      return -1;
+    }
+  else if (pid == 0 || errno == ECHILD)
+    /* Rapor verecek süreç yok.  */
+    return -1;
+  else {
+    /* Diğer tuhaf hatalar.  */
+    perror ("waitpid");
+    return -1;
+  }
+}
+
+/* Süreçleri beklemeden durum bilgilerinin varlığını sınayalım.  */
+
+void
+update_status (void)
+{
+  int status;
+  pid_t pid;
+
+  do
+    pid = waitpid (WAIT_ANY, &amp;status, WUNTRACED|WNOHANG);
+  while (!mark_process_status (pid, status));
+}
+
+/* Belirtilen işteki tüm süreçleri beklerken
+   durum bilgilerinin varlığını sınayalım.  */
+
+void
+wait_for_job (job *j)
+{
+  int status;
+  pid_t pid;
+
+  do
+    pid = waitpid (WAIT_ANY, &amp;status, WUNTRACED);
+  while (!mark_process_status (pid, status)
+          &amp;&amp; !job_is_stopped (j)
+          &amp;&amp; !job_is_completed (j));
+}
+
+/* İş durumu ile ilgili bilgileri kullanıcıya sunmak için biçimleyelim.  */
+
+void
+format_job_info (job *j, const char *status)
+{
+  fprintf (stderr, "%ld (%s): %s\n", (long)j-&gt;pgid, status, j-&gt;command);
+}
+
+/* Durmuş ya da sonlandılılmış işler hakkında kullanıcıyı uyaralım.
+   Sonlanmış işleri etkin iş listesinden kaldıralım.  */
+
+void
+do_job_notification (void)
+{
+  job *j, *jlast, *jnext;
+  process *p;
+
+  /* Alt sürecin durum bilgisini güncelleyelim.  */
+  update_status ();
+
+  jlast = NULL;
+  for (j = first_job; j; j = jnext)
+    {
+      jnext = j-&gt;next;
+
+      /* Tüm süreçler tamamlanmışsa, kullanıcıya işin tamamlandığını
+         bildirelim ve onu etkin işler listesinden silelim.  */
+      if (job_is_completed (j)) {
+        format_job_info (j, "iş tamamdır");
+        if (jlast)
+          jlast-&gt;next = jnext;
+        else
+          first_job = jnext;
+        free_job (j);
+      }
+
+      /* Duran işleri kullanıcıya bildirelim ve
+         bunu bir daha yapmamak için onları imleyelim.  */
+      else if (job_is_stopped (j) &amp;&amp; !j-&gt;notified) {
+        format_job_info (j, "iş durdu");
+        j-&gt;notified = 1;
+        jlast = j;
+      }
+
+      /* Hala sürmekte olan işler için bir şey söylemek gerekmez.  */
+      else
+        jlast = j;
+    }
+}
+</pre></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Foreground-and-Background.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Implementing-a-Shell.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Continuing-Stopped-Jobs.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Önalan ve Artalan </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Duran İşlerin Sürdürülmesi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

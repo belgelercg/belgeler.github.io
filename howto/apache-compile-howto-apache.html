@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:25+03:00" /><title>Apache'yi Temel Modülleriyle Elde Etme, Derleme ve Kurma</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/apache-compile-howto.html" title="Apache Derleme NASIL" /><link rel="previous" href="../howto/apache-compile-howto-prereqs.html" title="Ön Gereksinimler" /><link rel="next" href="../howto/apache-compile-howto-modules.html" title="Ek Modüller" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Apache'yi Temel Modülleriyle Elde Etme, Derleme ve Kurma</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/apache-compile-howto-prereqs.html">Önceki</a> </td><th width="60%" align="center">Apache Derleme NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/apache-compile-howto-modules.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="apache-compile-howto-apache" id="apache-compile-howto-apache"></a>Apache'yi Temel Modülleriyle Elde Etme, Derleme ve Kurma</div><dl><dd> <div class="head3"><a name="id1" id="id1"></a>Apache kaynak paketini indirin ve paketi açın</div><dl><dd> <div class="head4"><a name="id11" id="id11"></a>Apache nedir?</div><dl><dd><div class="blockquote"><div class="para">
+Apache projesi güvenliği, ticari dereceli, özellikli ve kaynak koduna bedava ulaşılabilir bir web sunucu uygulamasını amaçlayan işbirlikçi yazılım geliştirme çabasıdır. Proje dünya üzerinde iletişim, plan ve geliştirme için Web ve interneti kullanan gönüllüler grubu tarafından yönetiliyor. Bu gönüllüler Apache grubu olarak bilinirler. Buna ek olarak yüzlerce insanda bu projeye düşünce, kod ve belge katkısı yapar. Bu belge Apache Grubunun tarihini tanımlamak ve katılımcılarını tanımayı hedefler.
+        </div><div class="attribution">    -- www.apache.org</div></div><div class="para">
+Apache, en iyi web sunucu yazılımıdır. İhtiyaçlarınıza uymak için çok esnek yapılıdır ve son derece tutarlıdır, kararlıdır. Kişisel olarak hiçbir zaman üretim ortamında sorun yaşattığına şahit olmadım.
+        </div></dd></dl> <div class="head4"><a name="id21" id="id21"></a>Kaynak paketini indirin</div><dl><dd><div class="para">
+Adres: <a class="ulink" href="http://www.apache.org/dist/httpd/" target="_top">http://www.apache.org/dist/httpd/</a>
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+$ <b><tt>cd /usr/local/</tt></b>
+
+$ <b><tt>tar -xvzf apache_1.3.27.tar.gz</tt></b>
+</pre></div></div>
+        </dd></dl> <div class="head4"><a name="id31" id="id31"></a>Geniş ölçekli siteler için yama</div><dl><dd><div class="para">
+Eğer web sunucunuz aynı anda bir çok isteğe cevap vermek zorundaysa ve makinanız çok isteğe cevap verebilecek yeteri güce sahipse, çalışan azami süreç sayısı sınırını değiştirebilirsiniz.
+        </div><div class="para">
+Yamayı indirin:: <a class="ulink" href="http://www.delouw.ch/linux/apache-patch_HARD_SERVER_LIMIT.txt" target="_top">http://www.delouw.ch/linux/apache-patch_HARD_SERVER_LIMIT.txt</a>
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+--- httpd.h     Thu Mar 21 18:07:34 2002
++++ httpd.h-new Sun Apr  7 13:34:11 2002
+@@ -320,7 +320,7 @@
+ #elif defined(NETWARE)
+ #define HARD_SERVER_LIMIT 2048
+ #else
+-#define HARD_SERVER_LIMIT 256
++#define HARD_SERVER_LIMIT 512
+ #endif
+ #endif
+</pre></div></div>
+        <div class="para">
+Bu yama aynı anda erişim yapabilecek istemci erişim sayısını 512'ye çıkarır. Eğer çekirdeğinizin kaynak kodundaki <tt>/etc/security/limits.conf</tt> dosyanızı düzenlerseniz daha da arttırabilirsiniz.
+        </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/caution.png" /></td><th class="admon">Görev dışı çalışmadan kaçının</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Bu ayar yanlış yapılırsa "kendi kendine saldırı" uyarısıyla sonlanır. Yönetici için yeterli süreç bıraktığınıza emin olun.
+        </div></td></tr></table></div><div class="para">Yamanın uygulanması:
+        </div>
+<div class="para"><div align="right"><pre class="screen">$ <b><tt>cd /usr/local/apache_1.3.27/src/include</tt></b>
+
+$ <b><tt>patch -p0 &lt; apache-patch_HARD_SERVER_LIMIT.txt</tt></b>
+</pre></div></div></dd></dl></dd></dl> <div class="head3"><a name="id2" id="id2"></a><tt>mod_ssl</tt></div><dl><dd> <div class="head4"><a name="id12" id="id12"></a><tt>mod_ssl</tt> nedir?</div><dl><dd><div class="blockquote"><div class="para">Bu modül Eric A.Young ve Tim J.Hudson tarafından geliştirilen SSLeay temelli OpenSSL yardımıyla, Güvenli Soket Katmanı (SSL v2/v3) ve İletim Katmanı Güvenliği (TLS v1) protokolleri yoluyla Apache 1.3 web sunucu için güçlü bir şifreleme sağlar.</div><div class="attribution">    -- www.modssl.org</div></div><div class="para">
+Bu modüle, web sunucuya yapılan HTTPS isteklerini gerçekleştirmek için ihtiyaç duyulur. Apache kaynak koduna yama yapar ve onun uygulama geliştirme arayüzünü (API),  EAPI (genişlemiş uygulama geliştirme arayüzü) denen arayüze genişletir.
+        </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/caution.png" /></td><th class="admon">Modülleri derlerken derleyici seçeneklerini kullanın</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Apache sunucu için, her modülün <tt>-DEAPI</tt> derleyici seçeneği ile derlenmiş olmasına dikkat edin, aksi takdirde sunucunuz başlatılamayabilir, hatta çökebilir.
+        </div></td></tr></table></div><div class="para">
+<b><tt>mod_jserv</tt></b> ve <b><tt>mod_jk</tt></b> hariç hemen hemen bildiğim bütün modüller kendileri <tt>-DEAPI</tt> derleyici seçeneğini eklerler.
+        </div></dd></dl> <div class="head4"><a name="id22" id="id22"></a>Kaynak paketini indirin</div><dl><dd><div class="para">Adres: <a class="ulink" href="http://www.modssl.org" target="_top">http://www.modssl.org</a></div></dd></dl> <div class="head4"><a name="id32" id="id32"></a>Apache kaynak koduna yamayı uygulayın</div><dl><dd>
+<div class="para"><div align="right"><pre class="screen">
+$ <b><tt>cd /usr/local/</tt></b>
+
+$ <b><tt>tar -xvzf mod_ssl-2.8.12-1.3.27.tar.gz</tt></b>
+$ <b><tt>cd mod_ssl-2.8.12-1.3.27/</tt></b>
+
+$ <b><tt>./configure --with-apache=../apache_1.3.27</tt></b>
+</pre></div></div>
+        </dd></dl></dd></dl> <div class="head3"><a name="id3" id="id3"></a><tt>mod_perl</tt></div><dl><dd> <div class="head4"><a name="id13" id="id13"></a><tt>mod_perl</tt> nedir?</div><dl><dd><div class="blockquote"><div class="para"><b><tt>mod_perl</tt></b> ile bütün Apache modüllerini Perl'de yazmak mümkündür. Buna ek olarak sunucunun içine dahili bir yorumlayıcı gömülmüştür, bu da harici bir yorumlayıcının başlatılmasını ve Perl'in başlatılması sırasındaki gecikmeleri önler.</div><div class="attribution">    -- perl.apache.org</div></div><div class="para">
+<b><tt>mod_perl</tt></b> cgi-bin'ler için bir çeşit vekildir. cgi'ler her bir istek için yeni bir süreç çatallar ve aşırı yük oluştururlar.<b><tt>mod_perl</tt></b> ile Perl yorumlayıcısı Apache sunucusuna kalıcı olarak yüklenir ve böylece her bir istek için yeni sürecin çatallanmasına gerek kalmaz.
+        </div></dd></dl> <div class="head4"><a name="id23" id="id23"></a>Kaynak paketini indirin</div><dl><dd><div class="para">Adres: <a class="ulink" href="http://www.apache.org/dist/perl" target="_top">http://www.apache.org/dist/perl</a></div></dd></dl> <div class="head4"><a name="id33" id="id33"></a>Derleme ve Kurulum</div><dl><dd>
+<div class="para"><div align="right"><pre class="screen">
+$ <b><tt>cd /usr/local</tt></b>
+
+$ <b><tt>tar -xvzf mod_perl-1.27.tar.gz</tt></b>
+
+$ <b><tt>cd mod_perl-1.27</tt></b>
+
+$ <b><tt>perl Makefile.PL \</tt></b>
+<b><tt>EVERYTHING=1 \</tt></b>
+<b><tt>APACHE_SRC=../apache_1.3.27/src \</tt></b>
+<b><tt>USE_APACI=1 \</tt></b>
+<b><tt>PREP_HTTPD=1 \</tt></b>
+<b><tt>DO_HTTPD=1</tt></b>
+
+$ <b><tt>make</tt></b>
+# <b><tt>make install</tt></b>
+</pre></div></div>
+        
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/caution.png" /></td><th class="admon">mod_perl DSO olarak derlenemez</th></tr><tr><td align="left" valign="top" class="admon"><div class="para"><b><tt>mod_perl</tt></b>'i dinamik paylaşımlı nesne (DSO - Dynamic Shared Object) olarak derlemeyin! Çeşitli kaynaklar Apache'nin çökebileceğini söylüyor! (ben hiç denemedim).</div></td></tr></table></div></dd></dl></dd></dl> <div class="head3"><a name="id4" id="id4"></a>Apache'yi yapılandırın ve derleyin</div><dl><dd><div class="para">
+İki statik modülü mod_ssl ve mod_perl'i yapılandırdık ve Apache kaynak kodunu yamadık. Artık Apache'yi derlemeye başlayabiliriz.
+      </div> <div class="head4"><a name="id14" id="id14"></a>Derleme ve Kurulum</div><dl><dd>
+<div class="para"><div align="right"><pre class="screen">
+$ <b><tt>EAPI_MM="/usr/local/mm-1.2.2" SSL_BASE="/usr/local/ssl" \</tt></b>
+<b><tt>./configure \</tt></b>
+<b><tt>--enable-module=unique_id \</tt></b>
+<b><tt>--enable-module=rewrite \</tt></b>
+<b><tt>--enable-module=speling \</tt></b>
+<b><tt>--enable-module=expires \</tt></b>
+<b><tt>--enable-module=info \</tt></b>
+<b><tt>--enable-module=log_agent \</tt></b>
+<b><tt>--enable-module=log_referer \</tt></b>
+<b><tt>--enable-module=usertrack \</tt></b>
+<b><tt>--enable-module=proxy \</tt></b>
+<b><tt>--enable-module=userdir \</tt></b>
+<b><tt>--enable-module=so \</tt></b>
+<b><tt>--enable-shared=ssl \</tt></b>
+<b><tt>--enable-module=ssl \</tt></b>
+<b><tt>--activate-module=src/modules/perl/libperl.a \</tt></b>
+<b><tt>--enable-module=perl</tt></b>
+
+$ <b><tt>make</tt></b>
+# <b><tt>make install</tt></b>
+</pre></div></div></dd></dl> <div class="head4"><a name="id24" id="id24"></a>Kendinden imzalı  SSL sertifikasını oluşturun</div><dl><dd>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>cd /usr/local/ssl/bin</tt></b>
+
+# <b><tt>./openssl req -new &gt; new.cert.csr</tt></b>
+# <b><tt>./openssl rsa -in privkey.pem -out new.cert.key</tt></b>
+# <b><tt>./openssl x509 -in new.cert.csr -out new.cert.cert \</tt></b>
+<b><tt>-req -signkey new.cert.key -days 999</tt></b>
+
+# <b><tt>cp new.cert.key /usr/local/apache/conf/ssl.key/server.key</tt></b>
+# <b><tt>cp new.cert.cert /usr/local/apache/conf/ssl.crt/server.crt</tt></b>
+</pre></div></div>
+        <div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/tip.png" /></td><th class="admon">Genel isim</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">OpenSSL farklı şeyler sorar. Genellikle yapılan yanlışlardan biri yanlış bir "Common name" girmektir. Bu sunucunuzun tam nitelikli konak ismi (Fully Qualified HostName) olmalıdır, örneğin: falan.filan.org.</div></td></tr></table></div></dd></dl></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/apache-compile-howto-prereqs.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/apache-compile-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/apache-compile-howto-modules.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Ön Gereksinimler </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Ek Modüller</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

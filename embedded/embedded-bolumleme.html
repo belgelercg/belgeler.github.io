@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:30+03:00" /><title>Diskin Hazırlanması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../embedded/embedded-onyukleme.html" title="Sistemin Boot Edilmesi ve Diskin Hazırlanması" /><link rel="previous" href="../embedded/embedded-onyukleme-floppy.html" title="Disketten Açılış" /><link rel="next" href="../embedded/embedded-ayarlamalar.html" title="Temel Ayarlamalar" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Diskin Hazırlanması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../embedded/embedded-onyukleme-floppy.html">Önceki</a> </td><th width="60%" align="center">Sistemin Boot Edilmesi ve Diskin Hazırlanması</th><td width="20%" align="right"> <a accesskey="n" href="../embedded/embedded-ayarlamalar.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="embedded-bolumleme" id="embedded-bolumleme"></a>Diskin Hazırlanması</div><dl><dd><div class="para">
+Sistem boot edildikten sonra diskimizi istediğimiz gibi bölümlendirebilir ve bölümleri istediğimiz dosya sistemine göre biçimlendirebiliriz. Burada kullanılan disk teknolojisi nedeniyle sistemde bazı kısıtlamalara gitmemiz gerekebilir. Flash disk teknolojilerine kısaca değinelim.
+  </div><div class="para">
+Flash bellek tabanlı diskler gömülü sistemler için düşük fiyatına karşın sağladığı olanaklar sayesinde her geçen gün daha fazla kullanılır olmuştur. Flash bellekler elektrik ile silinebilir ve tekrar yazılabilirler (Electrically Erasable Read Only Memory, EEPROM). Kendi içerisinde farklı tipleri olsa da günümüzde yaygın olarak NOR Flash bellekler kullanılmaktadır. NOR Flash bellekler 128 kB büyüklüğündeki bloklar halinde üretilir. Dolayısıyla bu tip belleklerde en küçük elemanın aslında 128 kB olduğunu söyleyebiliriz. Diskten 1 bayt dahi silmek isteseniz, bu işlem silmek istediğiniz baytın bulunduğu 128 kB'lık blokun tamamen silinmesini gerektirir. Flash belleklerin ömrünü de işte bu yazma işlemlerin sayısı belirler. Tipik bir flash bellek ömrü blok başına ortalama 100.000 yazma işlemini  gerçekleştirebilecek kadardır. İlk başta 100.000 ulaşılması zor bir rakam gibi gözükebilir, ancak 1 bayt için dahi bloklar halinde bu işlemin gerçekleştirileceği hesaba katılacak olunursa aslında bu değere hiç de uzun olmayacak bir zaman diliminde erişilmesi olasılığının bulunduğu anlaşılacaktır.
+  </div><div class="para">
+Kısıtlamaların aşılabilmesi için sürekli yeni yöntemler geliştirilmeye çalışılmaktadır. Örneğin  "wear levelling" adı verilen bir teknik ile herhangi bir blokun diskteki diğer bloklardan çok daha önce bu 100.000 değerine ulaşması önlenebilmektedir. Bu sayede diskte yoğun olarak kullanılan bir blok yüzünden kısa zamanda diskin tamamının kullanılamaz hale gelmesinin önüne geçilebilmektedir.
+  </div><div class="figure"><div class="formaltitle"><b>Şekil 3.1. Disk On Module</b></div><div class="mediaobject"><img src="images/dom.jpg" class="imagedata" alt="" /></div></div><div class="para">
+Yazma ömrü konusundaki kısıtlamalar nedeniyle Flash bellek teknolojilerini kullanan diskler üzerinde takas alanı kullanımından kesinlikle kaçınılmalıdır. Gömülü sistemler zaten önceden belirlenmiş amaçlara hizmet edeceklerinden, bellek kullanımı belirli değerler arasında sabit kalacaktır. Dolayısıyla sistem iyi tasarlandığı müddetçe takas alanı kullanımına zaten ihtiyaç olmayacaktır.
+  </div><div class="para">
+Gerçekleştirilecek sistemde eğer yazma işlemleri sayıca yüksek olacaksa bu durumda salt-okunur bir sistem tasarlanması mantıklı olabilir. Sistem açılışında belleğin bir bölümünün disk bölümü olarak kullanılması, gerçek diskin ise tamamen salt-okunur kipe geçirilmesiyle yazma ömrü ciddi oranda artırılabilir. Ancak bu durumda veri kayıplarını engellemek için ramdisk üzerindeki bilgilerin güvenliğini sağlayıcı önlemler getirilmelidir (Belirli aralıklarla disk üzerindeki sistemi salt-okunur kipten çıkarıp veriler ramdisk'den diske yazıldıktan sonra tekrar salt-okunur kipe geçirmek gibi).
+  </div><div class="para">
+Disk üzerinde kullanılacak dosya sisteminin seçimi de oldukça önemlidir. Çoğu gömülü sistem için ext2 kadar karmaşık bir dosya sistemine ihtiyaç duyulmayacaktır. İhtiyaç olmadığı halde ext2 dosya sistemi kullanıldığı takdirde gereksiz yere dosya sistemi tarafından bir yük oluşturulacaktır. İleride dosya sistemleri konusuna ayrıntılı olarak değineceğiz. Biz geliştireceğimiz gömülü sistem için <b><tt>minix</tt></b> dosya sistemini kullanalım. Minix dosya sisteminde bir disk bölümü maksimum 64 MB, dosya adları maksimum 31 karakter olabilir. Kullanılacak dosya sistemi seçilmeden önce bu gibi özelliklerinin araştırılıp, geliştirilecek olan sistemin yapısını etkileyip etkilemeyeceği önceden belirlenmelidir.
+  </div><div class="para">
+Son olarak SBC sistemimizi disketler ile açmış ve <b><tt>Alt - F2</tt></b> tuşları ile 2. sanal konsola geçiş yapmıştık. Diskimizin Linux çekirdeği tarafından nasıl tanındığını öğrenelim:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>dmesg | grep -i disk</tt></b>
+RAM disk driver initialized:  16 RAM disks of 16384K size
+hda:  64MB ATA Flash Disk, ATA DISK drive
+...
+</pre></div></div>
+  <div class="para">
+Diskimizin <tt>/dev/hda </tt>olarak Linux tarafından tanındığını gördük. Şimdi <b><tt>fdisk </tt></b>programı ile diski bölümlendirelim.
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>fdisk /dev/hda</tt></b>
+
+Command (m for help): <b><tt>n</tt></b>
+Command action
+     e    extended
+     p    primary partition (1-4)
+<b><tt>p</tt></b>
+Partition number (1-4): <b><tt>1</tt></b>
+First cylinder (1-489, default 1): <b><tt>1</tt></b>
+Last cylinder or +size or +sizeM or +sizeK (1-489, default 489): <b><tt>489</tt></b>
+
+Command (m for help): <b><tt>a</tt></b>
+Partition number (1-4): <b><tt>1</tt></b>
+
+Command (m for help): <b><tt>w</tt></b>
+The partition table has been altered!
+
+Calling ioctl() to re-read partition table.
+Syncing disks.
+<tt># </tt>
+</pre></div></div>
+  <div class="para">
+Yukarıda örnekte görüldüğü gibi disk üzerinde 64 MB'lık bir Linux disk bölümü yarattık. Debian açılış disketlerinde (ve büyük olasılıkla diğer dağıtımların kullandığı disketlerde de) minix dosya sistemi yaratmak için gereken <b><tt>mkfs.minix </tt></b> programı bulunmamaktadır. Dolayısıyla bu programı çalışan bir Linux sisteminden disket ile SBC üzerine taşımalıyız. Bunun için bir Linux bilgisayardan gerekli dosya diskete kopyalanır. Ardından disket SBC'ye bağlı disket sürücüye takılır (Açılış tamamlandıktan sonra, açılış için kullanılan disketlerin sürücüde kalmasına gerek yoktur). Disketi SBC'ye taktıktan sonra,
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>mount /dev/fd0 /floppy</tt></b>
+<tt># </tt><b><tt>ls /floppy</tt></b>
+mkfs~1.min
+<tt># </tt>
+</pre></div></div>
+  <div class="para">
+Dosyayı taşımak için kullandığım disket üzerindeki dosya sistemi <tt>vfat </tt> idi. Ancak SBC'nin açılışında kullandığım  sistemde <tt>vfat </tt> desteği yok, bu nedenle disket <tt>msdos </tt> dosya sistemi ile bağlandı. <b><tt>ls </tt></b> komutunun çıktısında görülen <tt>mkfs~1.min</tt> bundan kaynaklanmaktadır. Şimdi dosyayı disketten <tt>/tmp </tt> dizini altına olması gerektiği ad ile kopyalayıp disketi çıkartalım:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>cp /floppy/mkfs~1.min /tmp/mkfs.minix</tt></b>
+<tt># </tt><b><tt>umount /floppy</tt></b>
+<tt># </tt>
+</pre></div></div>
+  <div class="para">
+Şimdi artık <b><tt>mkfs.minix </tt></b> ile hazırlamış olduğumuz disk bölümü üzerinde <tt>minix </tt> dosya sistemi oluşturabiliriz:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>/tmp/mkfs.minix /dev/hda1</tt></b>
+20864 inodes
+62576 blocks
+Firstdatazone=665 (665)
+Zonesize=1024
+Maxsize=268966912
+
+<tt># </tt>
+</pre></div></div>
+  <div class="para">
+Şimdi dosya sistemi de oluştuğuna göre diski bağlayabiliriz. Bunun için <tt>/hedef </tt> ismiyle bir dizin açıp disk bölümünü bu dizine bağladıktan sonra, geliştirmelerimizi burada yapalım.
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>mkdir /hedef</tt></b>
+<tt># </tt><b><tt>mount /dev/hda1 /hedef</tt></b>
+<tt># </tt><b><tt>mount</tt></b>
+/dev/ram0 on / type ext2 (rw)
+/proc on /proc type proc (rw)
+/dev/hda1 on /hedef type minix (rw)
+<tt># </tt>
+</pre></div></div>
+  <div class="para">
+Artık diskimiz üzerindeki bölüm ve dosya sistemi <tt>/hedef </tt> dizini altında kullanımımız için hazır bulunuyor.
+  </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../embedded/embedded-onyukleme-floppy.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../embedded/embedded-onyukleme.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../embedded/embedded-ayarlamalar.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Disketten Açılış </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Temel Ayarlamalar</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

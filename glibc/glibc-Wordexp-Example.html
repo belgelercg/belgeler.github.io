@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:26:32+03:00" /><title>wordexp Örneği</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Word-Expansion.html" title="Kabuk Usulü Sözcük Yorumlama" /><link rel="previous" href="../glibc/glibc-Flags-for-Wordexp.html" title="Sözcük Yorumlama Seçenekleri" /><link rel="next" href="../glibc/glibc-Tilde-Expansion.html" title="Yaklaşık (~) Yorumlaması Hakkında" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">wordexp Örneği</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Flags-for-Wordexp.html">Önceki</a> </td><th width="60%" align="center">Kabuk Usulü Sözcük Yorumlama</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Tilde-Expansion.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-Wordexp-Example" id="glibc-Wordexp-Example"></a><tt>wordexp</tt> Örneği</div><dl><dd><div class="para">
+Bu örnekte <b><tt>wordexp</tt></b> işlevi muhtelif dizgeleri yorumlayıp sonuçlarını birer kabuk komutu olarak kullanmaktadır. Ayrıca, <b><tt>WRDE_APPEND</tt></b> seçeneği ile <b><tt>wordfree</tt></b> işlevinin kullanımı da gösterilmiştir.
+    </div>
+<div class="para"><div align="right"><pre class="screen">int
+yorumla_ve_calistir (const char *komut, const char **secenekler)
+{
+  wordexp_t sonuc;
+  pid_t pid
+  int durum, i;
+
+  /* Çalıştırılacak komut için dizgeyi yorumlayalım.  */
+  switch (wordexp (komut, &amp;sonuc, 0))
+    {
+    case 0:                     /* Başarılı.  */
+      break;
+    case WRDE_NOSPACE:
+      /* WRDE_NOSPACE hatası varsa, sonuç kısmende olsa
+         ayrılmıştır. Onu serbest bırakalım.  */
+      wordfree (&amp;sonuc);
+    default:                    /* Bazı başka hatalar.  */
+      return -1;
+    }
+
+  /* Argümanları elde etmek için dizgeyi yorumlayalım.  */
+  for (i = 0; secenekler[i] != NULL; i++)
+    {
+      if (wordexp (secenekler[i], &amp;sonuc, WRDE_APPEND))
+        {
+          wordfree (&amp;sonuc);
+          return -1;
+        }
+    }
+
+  pid = fork ();
+  if (pid == 0)
+    {
+      /* Burada bir alt süreç oluşturup komutu çalıştırıyoruz. */
+      execv (sonuc.we_wordv[0], sonuc.we_wordv);
+      exit (EXIT_FAILURE);
+    }
+  else if (pid &lt; 0)
+    /* Çatallama başarısız oldu, durumu raporlayalım.  */
+    durum = -1;
+  else
+    /* Bu üst süreç, alt sürecin bitmesini bekleyecek.  */
+    if (waitpid (pid, &amp;status, 0) != pid)
+      durum = -1;
+
+  wordfree (&amp;sonuc);
+  return durum;
+}
+</pre></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Flags-for-Wordexp.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Word-Expansion.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Tilde-Expansion.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Sözcük Yorumlama Seçenekleri </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Yaklaşık (~) Yorumlaması Hakkında</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

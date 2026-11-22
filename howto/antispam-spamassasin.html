@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:32+03:00" /><title>Spamassasin</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/antispam.html" title="Posta Sunucuları için Spam Önleme Araçları" /><link rel="previous" href="../howto/antispam-giris.html" title="Giriş" /><link rel="next" href="../howto/antispam-razor.html" title="Razor" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Spamassasin</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/antispam-giris.html">Önceki</a> </td><th width="60%" align="center">Posta Sunucuları için Spam Önleme Araçları</th><td width="20%" align="right"> <a accesskey="n" href="../howto/antispam-razor.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="antispam-spamassasin" id="antispam-spamassasin"></a>Spamassasin</div><dl><dd><div class="para">
+Spamassassin kural tabanlı bir spam önleme aracıdır. Spamassassin 800 den fazla kuralı içinde barındırır. Bu kurallara göre bir postanın spam olup olmadığına karar verebilir. Esnek ve gelişmiş programlama arabirimi sayesinde hemen hemen tüm posta sunucuları ile çalışabilr. Ayrıca birçok spam öneleme aracı ile de birlikte bir bütünlük içinde çalışabilir.Bunların başında Razor, Pyzor, Dcc gelir. Ayrıca RBL'leri (kara listeleri) kontrol edebilir ve MX kaydı sorgulaması yapabilir.
+  </div><div class="para">
+Çalışma mantığı kısaca, iletinin başlık bilgisi, konu kısmı ve iletinin gövde kısmı spam denetiminden geçiriliyor. Denetim sırasında her bir adım için puanlar veriliyor. Örneğin iletinin konu kısmı boşsa veya büyük harfler içeriyorsa, ileti gövdesi çok fazla HTML etiketi içeriyorsa ya da ileti birden çok kişiye gönderilmişse gibi kriterler gözönünde bulunduruluyor. Bir de bunlara RBL ve MX kontrolu ekleniyor. Bunların sonucunda yapılan puanlama bizim belirlediğimiz değere göre spam ya da değil şeklinde sonuçlanıyor.
+  </div> <div class="head3"><a name="id1" id="id1"></a>Spamassassin Kurulumu</div><dl><dd><div class="para">
+Kurulum için <a class="ulink" href="http://spamassassin.apache.org/downloads.cgi" target="_top">http://spamassassin.apache.org/downloads.cgi</a> adresinden en son sürümü indirebilirsiz. Paketler <tt>.tar.gz</tt>, <tt>.tar.bz2</tt>, <tt>.zip</tt> biçiminde temin edilebilir. Tar paketlerini RPM haline getirdikten sonrada kurulum yapmayı tercih edebilirsiniz. <tt>.tar.gz</tt> paketi için,
+  </div>
+<div class="para"><div align="right"><pre class="screen">rpmbuild -tb Mail-SpamAssassin-3.0.2.tar.gz</pre></div></div>
+  <div class="para"><tt>.tar.bz2</tt> paketi için,</div>
+<div class="para"><div align="right"><pre class="screen">rpmbuild -tb --define "srcext .bz2" Mail-SpamAssassin-3.0.2.tar.bz2</pre></div></div>
+  <div class="para">ile RPM paketini oluşturduktan sonra</div>
+<div class="para"><div align="right"><pre class="screen">rpm -ivh <i>paketismi</i>.rpm</pre></div></div>
+  <div class="para">
+Ya da tar paketini açıp;
+  </div>
+<div class="para"><div align="right"><pre class="screen">tar -zxvf Mail-SpamAssassin-3.0.2.tar.gz</pre></div></div>
+  <div class="para">
+paketin açıldığı dizine geçip;
+  </div>
+<div class="para"><div align="right"><pre class="screen">perl Makefile.PL
+make
+su -c 'make install'
+</pre></div></div>
+  <div class="para">
+komutları ile kurulumu gerçekleştirebilirsiniz. <b><tt>spamassassin</tt></b> Perl dilinde yazılmıştır.Bu yüzden sistemde <b><tt>perl</tt></b> kurulu olmalıdır. Perl modüllerinin bağımlılıklarıyla uğraşmak istemiyorsanız ve de sisteminizde <b><tt>apt-get</tt></b> kurulu ise:
+  </div>
+<div class="para"><div align="right"><pre class="screen">apt-get install spamassassin</pre></div></div>
+  <div class="para">
+komutuyla kurulumu yapabilirsiniz. Böylece paket bağımlılıkları ile uğraşmak zorunda kalmazsınız. <b><tt>apt-get</tt></b> gerekli olan tüm paketleri bağımlılıklarına bakarak sisteminize kurar. Kurulumdan hemen sonra <b><tt>spamassassin</tt></b>'i sınayabilirsiniz. Sınamak için <tt>ornek.txt</tt> adlı boş bir dosya oluşturun ve aşağıdaki komutu kullanın.
+  </div>
+<div class="para"><div align="right"><pre class="screen">spamassassin -t &lt; ornek.txt &gt; ornek.out</pre></div></div>
+  <div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/warning.png" /></td><th class="admon">Uyarı</th></tr><tr><td align="left" valign="top" class="admon"><div class="para"><b><tt>spamassassin</tt></b>'in 2.6x serisi bir sürümünü kullanıyorsanız <b><tt>apt-get</tt></b> kullanarak en çok 2.64 sürümünü yükleyebilirsiniz. Eğer <b><tt>spamassassin</tt></b>'i 3.x sürümüne yükseltmek istiyorsanız 2.64 sürümünü kaldırmanız gerekir:
+  </div>
+<div class="para"><div align="right"><pre class="screen">rpm -e spamassassin</pre></div></div>
+  <div class="para">
+Daha sonra <b><tt>spamassassin</tt></b>'in 3.02 sürümünü yükleyebilmek için ilk önce <tt>perl-mail-spamassassin</tt> paketini yüklemeleyiz:
+  </div>
+<div class="para"><div align="right"><pre class="screen">rpm -ivh perl-mail-spamassassin-3.0.2.1.i386.rpm
+rpm -ivh spamassassin-3.0.2.1.i386.rpm
+</pre></div></div>
+  </td></tr></table></div><div class="para">
+Şimdi <b><tt>spamassassin</tt></b> hizmetini başlatabirsiniz. Eğer <b><tt>perl</tt></b> ile derleyerek kurmak istiyorsanız, yine işe 2.6 sürümünü kaldırmakla başlayın. <b><tt>spamassassin</tt></b> 3.x sürümüyle bazı yeni yetenekler kazanmış ve 2.6x sürümünde kullandığı bazı özellikleri değiştirmiştir. Biz her iki sürümün ortak özelliklerinden de bahsetmeye çalışacağız. Daha ayrıntılı bilgi için <a class="ulink" href="http://spamassassin.apache.org/full/3.0.x/dist/UPGRADE" target="_top">http://spamassassin.apache.org/full/3.0.x/dist/UPGRADE</a> adresine bakın.
+  </div><div class="para">
+Kurulum sonrasında <b><tt>spamassassin</tt></b>'in yapılandırma dosyası <tt>/etc/mail/spammassassin</tt> dizininin altında bulunur. Bu dosyanın adı <tt>local.cf</tt>'dir. Örnek bir <tt>local.cf</tt> oluşturmak için <a class="ulink" href="http://www.yrex.com/spam/spamconfig.php" target="_top">http://www.yrex.com/spam/spamconfig.php</a> adresinde bir yazılım mevcuttur. Yanlız bu yazılım <b><tt>spamassassin</tt></b>'in 2.5 serisi için yapılandırma dosyası üretmektedir. Üretilen <tt>local.cf</tt> dosyaları 2.6 ve 3.0 sürümlerinde doğru çalışmayabilir. <b><tt>spamassassin</tt></b>'in ayarlarını şu şekilde sınayabilirsiniz:
+  </div>
+<div class="para"><div align="right"><pre class="screen">spamassassin --lint -D</pre></div></div>
+  <div class="para">
+Bu komut <tt>local.cf</tt> dosyasındaki kabul edilmeyen girdileri bize listeler. Bu şekilde yapılandırmamızı sınayabiliriz. <b><tt>-D</tt></b> seçeneği hata ayıklama yapabilmeyi sağlar. Aşağıda <b><tt>spamassassin</tt></b>'in 3.x sürümü için bir <tt>local.cf</tt> örneği verilmiştir.
+  </div>
+<div class="para"><pre class="literallayout"># Bu dosya 3.x versiyonu için düzenlenmiştir.
+# Kullandığınız Spamassassin versiyonuna ve sisteminizin durumuna
+# göre yapılması gereken değişiklikler olabilir.
+
+# How many hits before a message is considered spam. required_hits 5.0
+# Text to prepend to subject if rewrite_subject is used
+rewrite_header Subject ****SPAM(_SCORE_)****
+# Encapsulate spam in an attachment
+report_safe 1
+# Enable the Bayes system
+use_bayes 1
+# Enable Bayes auto-learning
+bayes_auto_learn 1
+# Enable or disable network checks
+skip_rbl_checks 0
+use_razor2 1
+use_pyzor 1
+# Allows users to create rules
+allow_user_rules 1
+# Mail using languages used in these country codes will not be marked
+# as being possibly spam in a foreign language.
+ok_languages all
+# Mail using locales used in these country codes will not be marked
+# as being possibly spam in a foreign language.
+ok_locales all
+</pre></div>
+  <div class="para">
+Şimdi yapılandırma dosyasından bazı satırları açıklamaya çalışalım:
+  </div><dl><dt><span class="glossterm"><b><tt>required_hits</tt></b><tt> 5.0</tt></span></dt><dd class="halfpara"><div class="para">
+Bir iletini <tt>5.0</tt> puanı aştıktan sonra spam olarak değerlendirileceği anlamına gelir. Bu sayıyı arttırmak spam yakalama ihtimalini azaltır.
+  </div></dd><dt><span class="glossterm"><b><tt>rewrite_header</tt></b><tt> Subject ****SPAM(_SCORE_)****</tt></span></dt><dd class="halfpara"><div class="para">
+Spam olarak işaretlenen iletinin konu kısmına spam skoru ile birlikte spam yazar. <tt>_SCORE_</tt> özelliği 3.0 sürümü ile birlikte gelmiştir. Bu özellik iletinin kaç puanla spam olarak işaretlendiğini belirtir. Daha önceki sürümlerde bu özellik kullanılamaz. Daha önceki sürümlerde bu satırın yerine
+  </div>
+<div class="para"><pre class="literallayout">rewrite_subject 1
+subject_tag ****SPAM****
+</pre></div>
+  <div class="para">
+satırları vardı.
+  </div></dd><dt><span class="glossterm"><b><tt>report_safe</tt></b><tt> 1</tt></span></dt><dd class="halfpara"><div class="para">
+Eğer ileti spam olarak işaretlenmişse, orjinal iletinin kullanıcıya bir eklenti olarak gönderilmesini sağlar. Bu özellik kullanıcının iletiyi doğrudan görmesini engeller.
+  </div></dd><dt><span class="glossterm"><b><tt>use_bayes</tt></b><tt> 1</tt></span></dt><dt><span class="glossterm"><b><tt>bayes_auto_learn</tt></b><tt> 1</tt></span></dt><dd class="halfpara"><div class="para">
+Bu iki satır Bayes öğrenme yöntemi ile ilgili olan satırlardır. Temeli <a class="ulink" href="http://www.bayesian.org/bayesian/bayes.html" target="_top">Thomas Bayesian</a> adlı matamatikçi tarafından geliştirilren bu yöntem, <i>eğer spam olan bir ileti içerisindeki karakterler ve işaretler bir başka ileti içerisinde de geçiyorsa muhtemelen o ileti de spamdır</i>, ilkesine göre çalışır. Bu yöntem daha önce gelen iletileri esas alarak, olasılık hesaplarıyla, bir sonraki iletinin spam olup olmadığını tahmin ederek işler.
+  </div></dd><dt><span class="glossterm"><b><tt>skip_rbl_checks</tt></b><tt> 0</tt></span></dt><dt><span class="glossterm"><b><tt>use_razor2</tt></b><tt> 1</tt></span></dt><dt><span class="glossterm"><b><tt>use_pyzor</tt></b><tt> 1</tt></span></dt><dd class="halfpara"><div class="para">
+Bu satırlar daha sonra ayrıntılı olarak değineceğimiz, <b><tt>spamassassin</tt></b>'in <b><tt>razor</tt></b>, <b><tt>pyzor</tt></b> ve <b><tt>dcc</tt></b> gibi uygulamalarla bir bütünlük içinde çalışmasını sağlıyacak satırlardır.
+  </div><div class="para">
+<b><tt>skip_rbl_checks</tt></b> değerini <tt>1</tt> yaparsanız karaliste (RBL) denetimi yapılmaz.
+  </div></dd><dt><span class="glossterm"><b><tt>allow_user_rules</tt></b><tt> 1</tt></span></dt><dd class="halfpara"><div class="para">
+Bu satır kullanıcıların kendilerine özel kurallar oluşturmalarına izin verir. Bu kurallar kullanıcıların ev dizini altındaki <tt>~/.spamassassin/user_prefs</tt> adlı dosyada tutulmalıdır. Kullanıcılara özel kurallar uygulamak istiyorsanız bu dosyayı muhakkak oluşturmanız gerekir. Bu dosyanın içeriği de <tt>local.cf</tt> dosyası gibi olacaktır.
+  </div></dd><dt><span class="glossterm"><b><tt>ok_languages</tt></b><tt> all</tt></span></dt><dt><span class="glossterm"><b><tt>ok_locales</tt></b><tt> all</tt></span></dt><dd class="halfpara"><div class="para">
+Bu satırlarda ise belirtilen diller ve karakter kümeleri iel yazılmış iletilerin spam potansiyeli taşımadığını belirtiyoruz. Örneğin <tt>ok_languages turkish</tt> yazmış olsaydık, türkçe olan iletilerin spam olamayacağını belirtmiş olurduk. <tt>ok_locales chinese</tt> yazarsak çince karakter içeren iletiler spam değildir demiş oluruz. Öntanımlı olarak tüm diller ve karakter kümeleri seçilmiştir.
+  </div></dd></dl>
+  <div class="para">
+Şimdi bazı ek özelliklerede göz atabiliriz. Bir alan adından gelen tüm iletileri spam olarak işaretlemek istiyorsak,
+  </div>
+<div class="para"><pre class="literallayout">blacklist_from *@spamcı.dom
+blacklist_from *@budaspamcı.dom
+</pre></div>
+  <div class="para">
+satırlarını eklemeliyiz. Benzer bir şekilde yukarıdaki adreslerden gelen iletilerin hiçbir zaman spam olarak değerlendirilmemelerini istiyorsak,
+  </div>
+<div class="para"><pre class="literallayout">whitelist_from *@spamcı.dom
+whitelist_from *@budaspamcı.dom
+</pre></div>
+  <div class="para">
+satırlarını eklemeliyiz. Bir iletinin içine kullanıcıları bilgilendirmek amacı ile ileti ekleyebiriz. Bu ileti özgün iletiye eklenir. Bunu için yine <tt>local.cf</tt> dosyasına aşağıdaki satırları eklememiz gerekir.
+  </div>
+<div class="para"><pre class="literallayout">clear_report_template
+report bu ileti  spam olabilir.
+report eger spam olmadıgını düsünüyorsanız
+report destek@linuxegitim.com adresine iletiniz.
+</pre></div>
+  <div class="para">
+Anlaşılacağı üzere <b><tt>report</tt></b> deyimi ekleyeceğimiz iletiyi satırlar halinde   oluşturmamızı sağlıyor. Bir de bu özelliğin etkin olabilmesi için yukarıdaki satırlara ek olarak <tt>report_safe 0</tt> satırı
+  </div>
+<div class="para"><pre class="literallayout">report_safe 1</pre></div>
+  <div class="para">
+haline getirilmelidir.
+  </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a><tt>sa-learn</tt> Komutu ile Postaların Spamassassin'e Öğretilmesi</div><dl><dd><div class="para">
+Kullanıcılar <b><tt>sa-learn</tt></b> komutunu kullanarak gelen iletileri sisteme spam ya da spam değil (ham) diyerek tanıtabilirler. Bu özellik, o zamana kadar spamassasin'e tanıtılan iletileri temel alarak, daha sonra gelecek olan iletilerin değerlendirilmesinde yardımcı olur.
+  </div>
+<div class="para"><div align="right"><pre class="screen">sa-learn --ham "iletilerin_bulunduğu_dizin_veya_dosya"</pre></div></div>
+  <div class="para">
+Bu komut ile <b><tt>spamassassin</tt></b>'e, bu dizin ya da dosyada bulunan ileti ya da iletilerin spam olmadığını bildiriyoruz. Sisteme bildirdiğimiz iletilerin benzerleri alındığında spam olarak algılanmıyacaklardır.
+  </div>
+<div class="para"><div align="right"><pre class="screen">sa-learn --spam "iletilerin_bulunduğu_dizin_veya_dosya"</pre></div></div>
+  <div class="para">
+Bu komut ile <b><tt>spamassassin</tt></b>'e, bu dizin ya da dosyada bulunan ileti ya da iletilerin spam olduğunu bildiriyoruz. Sisteme bildirdiğimiz iletilerin benzerleri alındığında spam olarak algılanacaklardır.
+  </div><div class="para">Örnek:</div>
+<div class="para"><div align="right"><pre class="screen">$ <b><tt>sa-learn --spam –mbox /root/evolution/local/Spam/mbox</tt></b>
+Learned from 6 message(s) (7 message(s) examined).
+</pre></div></div>
+  <div class="para">
+<b><tt>--box</tt></b> seçeneği bu dosyanın bir <tt>mailbox</tt> olduğunu bildiriyor.
+  </div>
+<div class="para"><div align="right"><pre class="screen">$ <b><tt>sa-learn --ham --mbox /root/evolution/local/Sent/mbox</tt></b>
+Learned from 42 message(s) (43 message(s) examined).
+</pre></div></div>
+  <div class="para">
+Gerçekte spam olan fakat <b><tt>spamassassin</tt></b> tarafından bazı iletilerin spam olarak algılanmadığı ya da gerçekte spam olmayan fakat <b><tt>spammassassin</tt></b> tarafından spam olarak algılanan iletilerin varlığı durumunda kullanılması çok etkilidir. Belli bir zaman sonra, postalar <b><tt>spamassassin</tt></b>'e tanıdıldıkça <b><tt>spamassassin</tt></b> çok daha verimli bir şekilde çalışmaya başlıyacaktır.
+  </div></dd></dl> <div class="head3"><a name="id3" id="id3"></a>SpamAssassin ve ProcMail</div><dl><dd><div class="para">
+Procmail ve Maildrop Linux dünyasının en popüler eposta süzücüleridir. Eposta süzücüler daha önceden belirlediğimiz kriterlere göre epostalar teslim edilmeden önce onlar üzerinde işlem yapabilmemize olanak veririler. Örneğin, ileti boyutu bizim belirlediğimiz sınırın üzerinde ise reddedilsin ya da bir kullanıcıya gelen ileti bir başka kullanıcıya yönlendirilsin ya da iletinin gövde ya da konu kısmında kriterlere uyan anahtarlar varsa ileti silinsin gibi. Spamassassin bir iletiyi spam sınamasından geçirir fakat sonuç ne olursa olsun o ileti üzerinde kendi başına işlem yapamaz. Bunun için bir eposta süzücüsüne ihtiyaç duyar, dolayısıyla SpamAssassin'i bir eposta süzücüsüyle çalışacak şekilde yapılandırmalıyız. Bunun için ProcMail'i tercih ediyorum. Dilerseniz MailDrop ile de yapabilirsiniz. SpamAssassin'i ProcMail ile çalışacak şekilde ayarlamak için
+  </div><div class="para">
+<tt>/etc/procmailrc</tt> dosyasının içine aşağıdaki satırları yazmanız gerekir.
+  </div>
+<div class="para"><pre class="literallayout">DROPPRIVS=yes
+:0fw
+| /usr/bin/spamassassin
+</pre></div>
+  <div class="para">
+Bu satırlar ProcMail'e SpamAssasin'le birlikte çalışması gerektiğini söyleyecektir. Peki daha fazla ne yapabiliriz. Örneğin konu kısmında <tt>*****SPAM*****</tt> olan iletilerin tümünü silebiliriz. Bunun için aşağıdaki satırları <tt>procmailrc</tt> dosyasına eklemeliyiz.
+  </div>
+<div class="para"><pre class="literallayout">:0w
+* ^Subject:.*\*\*\*\*SPAM\*\*\*\*\*
+/dev/null
+</pre></div>
+  <div class="para">
+Fakat bu durumda silinen iletileri geri getirmenin bir yolu yoktur. Bu yapılandırmanın tehlikeli olduğu açıktır, spam olmayan iletiler silinebileceği gibi ileti kayıplarına da sebep olabilir. Spam iletileri bir dosyaya da taşıyabiliriz bunun için <tt>procmailrc</tt> dosyasına,
+  </div>
+<div class="para"><pre class="literallayout">:0w
+* ^Subject:.*\*\*\*\*SPAM\*\*\*\*\*
+/Spam/mbox
+</pre></div>
+  <div class="para">
+eklemeliyiz. Anadizin altında <tt>/Spam/mbox</tt> adlı spam dosyada spam iletileri biriktirebiliriz.
+  </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/antispam-giris.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/antispam.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/antispam-razor.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Giriş </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Razor</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

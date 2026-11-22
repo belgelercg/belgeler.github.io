@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:26:24+03:00" /><title>glibc iconv Gerçeklemesi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Generic-Charset-Conversion.html" title="Soysal Karakter Kümesi Dönüşümü" /><link rel="previous" href="../glibc/glibc-Other-iconv-Implementations.html" title="Diğer iconv Gerçeklemeleri" /><link rel="next" href="../glibc/glibc-Locales.html" title="VII. Oylum - Yereller ve Uluslararasılaştırma" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">glibc iconv Gerçeklemesi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Other-iconv-Implementations.html">Önceki</a> </td><th width="60%" align="center">Soysal Karakter Kümesi Dönüşümü</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Locales.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="glibc-glibc-iconv-Implementation" id="glibc-glibc-iconv-Implementation"></a>glibc <tt>iconv</tt> Gerçeklemesi</div><dl><dd><div class="para">
+Bir önceki bölümde <b><tt>iconv</tt></b> gerçeklemelerinin sorunlarını okuduktan sonra GNU C kütüphanesindeki gerçeklemenin bu sorunlardan hiçbirine yol açmadığını söylemek elbette iyi olacaktır. Geliştirme şimdiki durumuna göre (Ocak 1999) genişletilerek sürdürülmektedir. <b><tt>iconv</tt></b> işlevlerinin geliştirmesi henüz bitmemiş olmakla birlikte temel işlevsellik değişmeyecektir.
+    </div><div class="para">
+GNU C kütüphanesinin <b><tt>iconv</tt></b> gerçeklemesi dönüşümleri gerçekleştirmek için paylaşımlı yüklenebilir modülleri kullanır. Kütüphanenin kendi içinde yerleşik olan dönüşümlerin sayısı çok azdır fakat bunlar oldukça önemsiz dönüşümlerdir.
+    </div><div class="para">
+Yüklenebilir modüllerin tüm faydalarından GNU C kütüphanesindeki gerçeklemede yararlanılmıştır. Arayüz iyi belgelendiğinden (aşağıya bakınız), bu özellikle cezbedicidir ve bundan dolayı yeni dönüşüm modüllerini yazmak kolaydır. Yüklenebilir modüllerin kullanımından kaynaklanan sakıncalar GNU C kütüphanesinde en azından ELF sistemlerde sorun çıkarmaz. Durağan olarak ilintili çalıştırılabilir nesneler olsalar bile, kütüphane, paylaşımlı nesneleri yükleyebildiğinden, durağan ilintilemenin <b><tt>iconv</tt></b> kullanılmak istendiğinde yasak olmaması gerekir.
+    </div><div class="para">
+Bahsi geçen sorunlardan ikicisi desteklenen dönüşümlerin sayısı ile ilgiliydi. Şu anda GNU C kütüphanesi yüzelliden fazla karakter kümesini desteklemektedir. Bu karakter kümeleri arasında deteklenen dönüşümlerin sayısı ise 22350'den (150 çarpı 149) fazladır. Bir karakter kümesinden diğerinde dönüşüm eksikse kolayca eklenebilir.
+    </div><div class="para">
+Bu yüksek sayıdan dolayı kısmen etkileyici olmakla birlikte GNU C kütüphanesindeki <b><tt>iconv</tt></b> gerçeklemesi önceki bölümde bahsedilen üçüncü sorundan da muaftır (A’dan B’ye ve B’den C’ye dönüşüm mümkünse A’dan C’ye doğrudan dönüşüm de daima mümkün olmalıdır da mümkün mü acaba sorunu). <b><tt>iconv_open</tt></b> işlevi bir hata ile dönerse ve <b><tt>errno</tt></b> değişkenine <b><tt>EINVAL</tt></b> değerini atarsa bu, istenen dönüşümün doğrudan ya da dolaylı olarak mümkün olmadığı anlamına gelir.
+    </div><div class="para">
+<a class="indexterm" name="idx659" id="idx659"></a>
+Üçgenlere bölme her karakter kümesinin diğerine dönüşümü arada UCS-4 kodlu ISO-10646 dönüşümü kullanılarak gerçekleştirilir. Ara dönüşüm için ISO 10646 karakter kümesinin kullanılmasıyla üçgenlere bölmek mümkün olur.
+    </div><div class="para">
+Yeni bir karakter kümesi için ISO 10646 kümesinde dönüşümün gerekliliğinden bahsetmek mümkün olmadığı gibi diğer karakter kümelerine dönüşümde ISO 10646'nın ne kaynak ne de hedef karakter kümesi olarak kullanılmasının gerekliliğinden bahsetmek mümkündür. Mevcut dönüşümlerin tamamı basitçe birbiriyle alakalı dönüşümlerdir.
+    </div><div class="para">
+<a class="indexterm" name="idx660" id="idx660"></a>
+<a class="indexterm" name="idx661" id="idx661"></a>
+Şu an mevcut olan tüm dönüşümler dönüşümü gereksiz yere yavaşlatan yukarıda bahsedilen üçgenlere bölme yöntemini kullanırlar. Eğer örneğin, ISO-2022-JP ve EUC-JP gibi bazı karakter kümeleri arasındaki dönüşümün hızlı olması istenirse aradan ISO 10646 çıkarılıp iki karakter kümesi arasında doğrudan bir dönüşüm yaptırılabilir. Bu iki karakter kümesi ISO 10646 ya nazaran birbirine daha benzer karakter kümeleridir.
+    </div><div class="para">
+Böyle bir durumda yeni bir dönüşümü yazmak ve daha iyi bir seçenek üretmek kolaydır. GNU C kütüphanesinin <b><tt>iconv</tt></b> gerçeklemesi eğer daha verimli olacağı belirtilirse dönüşümü gerçekleştiren modülü özdevinimli olarak kullanacaktır.
+    </div> <div class="head3"><a name="id1" id="id1"></a> <b><tt>gconv-modules</tt></b> dosyalarının biçimi</div><dl><dd><div class="para">
+Kullanılabilir dönüşümler hakkındaki bilgilerin tamamı <b><tt>gconv-modules</tt></b> adı verilen bir dosyanın içinde yeralır. Bu dosyanın yeri <b><tt>GCONV_PATH</tt></b> ortam değişkeninde kayıtlıdır. <b><tt>gconv-modules</tt></b> dosyaları satırlardan oluşan metin dosyalarıdır. Dosyadaki her satır şöyle yorumlanır:
+     </div><ul type="disc" class="itemizedlist"><li><div class="para">
+Bir satırdaki boşluk olmayan ilk karakter bir <b><tt>#</tt></b> karakteri ise bu satırın sadece açıklamaları içerdiği varsayılır ve içeriği yorumlanmaz.
+       </div></li><li><div class="para">
+<b><tt>alias</tt></b> ile başlayan satırlar karakter kümesi için bir takma ad tanımlar. Bu satırlar üzerinde iki sözcük olması beklenir. İlk sözcük takma adı, ikinci sözcük ise karakter kümesinin gerçek adını belirtir. Bu satırlarda belirtilen takma adları <b><tt>iconv_open</tt></b> işlevinin <i><tt>kaynak_kod</tt></i> veya <i><tt>hedef_kod</tt></i> parametrelerinde kullanırsanız gerçek karakter kümesi ismi kullanılmış gibi işlem yapılır.
+       </div><div class="para">
+Bir karakter kümesinin birçok farklı isim aldığı duruma sıkça rastlanır. Genelde karakter kümesinin resmi ismi yerine halk dilindeki ismi kullanılır. Bundan başka bir karakter kümesinin çeşitli nedenlerle oluşturulmuş özel isimleri de olabilir. Örneğin ISO tarafından belirtilen tüm karakter kümeleri <i><tt>nnn</tt></i> kayıt numarası olmak üzere <b><tt>ISO-IR-<i><tt>nnn</tt></i></tt></b> biçiminde bir takma isme sahiptir. Bu, yazılımlarca karakter kümesi isimlerini oluşturan kayıt numaralarının bilinmesini ve bunların <b><tt>iconv_open</tt></b> çağrılarında kullanılabilmesini mümkün kılar. Bir karakter kümesi ile ilintili tüm takma isimler altalta ayrı satırlarda belirtilebilir.
+       </div></li><li><div class="para">
+<b><tt>module</tt></b> ile başlayan satırlar mevcut dönüşüm modüllerini içerir. Bu satırlar üç veya dört sözcük içermelidir.
+       </div><div class="para">
+İlk sözcük kaynak karakter kümesini, ikincisi hedef karakter kümesini, üçüncüsü ise bu dönüşümde yüklenecek olan modülün dosya ismini belirtir. Dosya ismi paylaşımlı nesne dosyalarının uzantısını (normalde <b><tt>.so</tt></b>) içermemelidir. Bu dosyaların <b><tt>gconv-modules</tt></b> dosyasının bulunduğu dizinde olduğu varsaylır. Satırdaki son sözcük isteğe bağlıdır. Dönüşüm bedelini gösteren bir tamsayıdır ve belirtilmemişse öntanımlı değeri olan 1 olduğu varsayılır. Dönüşümü gerçekletirecek alt dönüşümlerin sayısını belirtir. Bedel değerinin kullanımını bir örnekle açıklayalım.
+       </div></li></ul><div class="para">
+Yukarıdaki örneğe dönersek, ISO-2022-JP ile EUC-JP karakter kümeleri arasında doğrudan dönüşüm için bir modülün varlığından sözetmiştik. Her iki yönde de dönüşüm tek bir modül tarafından yapılır ve bu modülün dosya ismi ISO2022JP-EUCJP.so'dur. Dosyanın bulunduğu dizindeki <b><tt>gconv-modules</tt></b> dosyasının içeriğinde bu modülün tanımı şöyle olurdu:
+     </div>
+<div class="para"><div align="right"><pre class="screen">
+module  ISO-2022-JP//   EUC-JP//        ISO2022JP-EUCJP    1
+module  EUC-JP//        ISO-2022-JP//   ISO2022JP-EUCJP    1
+</pre></div></div><div class="para">
+Bu iki satırın neden yeterli olduğunu anlamak için <b><tt>iconv</tt></b> tarafından bunların nasıl kullanıldığını anlamak gerekir. Bu soruna yaklaşım oldukça basittir.
+     </div><div class="para">
+<b><tt>iconv_open</tt></b> işlevinin ilk çağrısında yazılım tüm <b><tt>gconv-modules</tt></b> dosyalarını okur ve iki tablo oluşturur: Biri bilinen takma adları diğeri dönüşümler ve bunları gerçekleştiren paylaşımlı nesneyi içerir.
+     </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a><b><tt>iconv</tt></b>'de dönüşüm yolunun bulunması</div><dl><dd><div class="para">
+Olası dönüşümlerin listesi önemli kenarların oluşturduğu bir çizge şeklinde tarif edilebilir. Kenarların önemini <b><tt>gconv-modules</tt></b> dosyalarında belirtilen bedeller belirler. <b><tt>iconv_open</tt></b> işlevi kaynak ve hedef karakter kümeleri arasındaki en kısa yolu bulmak için böyle bir çizgeyle çalışan bir algoritma kullanır.
+     </div><div class="para">
+<b><tt>iconv</tt></b> gerçeklemesinin neden örneğin ISO-2022-JP ve EUC-JP karakter kümeleri arasındaki dönüşümlerde kütüphane ile gelen dönüşümler yerine <b><tt>gconv-modules</tt></b> dosyalarında belirtilen dönüşüm modülünü kullandığını açıklamak artık kolaydır. Kütüphane ile gelen dönüşümler, dönüşümü iki adımda gerçekleştirir (ISO-2022-JP -&gt; ISO 10646 ve ISO 10646 -&gt; EUC-JP). Bu durumda bedel = 1 + 1 = 2 olur. Yukarıda ise <b><tt>gconv-modules</tt></b> dosyasında bu dönüşümün bedeli 1 olan bir dönüşüm modülü ile gerçekleştirilebileceği belirtilmiştir.
+     </div><div class="para">
+Yukarıdaki (ve ayrıca GNU C kütüphanesi ile gelen) <b><tt>gconv-modules</tt></b> dosyası ile ilgili gizemli bir öğe <b><tt>module</tt></b> satırlarında belirtilmiş karakter kümesi isimleridir. Bu isimlerin bazıları neden <b><tt>//</tt></b> ile biter? Bu şekilde biten isimler birer düzenli ifade olduklarından öyle biterler. Heceleme ile ilgilenmiyorsanız bu size bir şey ifade etmeyecektir. Kusura bakmayın! <i>Gerçeklenimin bu kısmı henüz bitmedi. Şimdilik sadece örnekleri izlemekle yetinin, lütfen. Gerçeklenim tamamlanınca herşey daha iyi olacak. -drepper</i>
+     </div><div class="para">
+<b><tt>gconv-modules</tt></b> hakkındaki son düşünceler <b><tt>//</tt></b> ile bitmeyen isimlerle ilgilidir. <b><tt>INTERNAL</tt></b>  diye bir karakter kümesi ismi sık sık geçer. Bu karakter kümesi ismi yukarıdaki dönüşüm tartışmasında üçlemenin ara adımını oluşturan karakter kümesini nitelemek için seçilmiştir. Bunun aslında UCS-4 olduğundan bahsetmişsek de bu tamamen doğru değildir. UCS-4 belirtimi, kendi içinde bayt sıralaması için kullanılan bir belirtim daha içerir. Bir UCS-4 değeri 4 bayttan oluştuğundan saklanan değer bayt sıralamasından etkilenir. Eğer işlemcinin (en azından çalışan sürecin) bayt sıralaması UCS-4 için gerekenle aynı değilse, değerin dahili gösterimi UCS-4’teki ile aynı olmayacaktır. Dönüşüm sırasında ara dönüşüm ürününün durumu ile ilgilenmeyen biri için bayt takaslama işlemlerine zaman harcamanın gereği yoktur. Bayt sıralama sorunlarından kaçınmak için, en kıymetli baytın en düşük adrese yerleştirildiği bayt sıralamasını kullanan sistemlerle aynı bayt sıralamasına sahip dahili karakter kümesine <b><tt>INTERNAL</tt></b> ismi verilmiştir.
+     </div></dd></dl> <div class="head3"><a name="id3" id="id3"></a><tt>iconv</tt> modülü veri yapıları</div><dl><dd><div class="para">
+Bu bölüme kadar modüllerin yerlerinin kullanımı açıklandı. Burada yeni bir modül yazmak için kullanılacak arayüz açıklanacaktır. Bu bölümde açıklanacak arayüz Ocak 1999'dan beri kullanılmaktadır. Arayüz gelecekte biraz değişecekse de bu değişiklik uyumluluk korunarak yapılacaktır.
+     </div><div class="para">
+Yeni bir modülü yazmak için gerekli tanımlar standartdışı bir başlık dosyası olan <tt>gconv.h</tt> içindedir. Aşağıda, bu dosyada bulunan tanımlar şimdilik sadece bir önbilgi verecek kadar açıklanmıştır.
+     </div><div class="para">
+<b><tt>iconv</tt></b> kullanıcısının bakış açısından arayüz basittir: <b><tt>iconv_open</tt></b> işlevi <b><tt>iconv</tt></b> çağrılarında kullanılabilen bir tanıtıcı ile döner. Bu tanıtıcının görevi sona erdiğinde  bir <b><tt>iconv_close</tt></b> çağrısı ile tanıtıcı serbest bırakılır. Burada sorun, tanıtıcı <b><tt>iconv</tt></b> işlevine aktarılan herşey olduğundan tanıtıcının tüm dönüşüm adımlarını ve ayrıca her dönüşümün durum bilgisini tutması zorunluluğudur. Bu nedenle, gerçeklemeyi anlamak için en önemi elemanlar aslında bu veri yapılarıdır.
+     </div><div class="para">
+İki farklı veri yapısına ihtiyacımız var. İlki dönüşümü, ikincisi da durumu, v.s. yi açıklamak için. Aslında <tt>gconv.h</tt> dosyasında bunun gibi iki tanım vardır.
+<a class="indexterm" name="idx662" id="idx662"></a>
+    </div><a name="glibc-struct__gconv_step" id="glibc-struct__gconv_step"></a>
+<a class="indexterm" name="idx663" id="idx663"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct <b><tt>__gconv_step</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+Bu veri yapısı bir modülün gerçekleştirdiği bir dönüşümü açıklar. Dönüşüm işlevleri ile yüklenen bir modüldeki her işlev için bu türde tek bir nesne vardır (bu nesne asıl dönüşüme ilişkin bir bilgi içermez, sadece dönüşümün kendisini tanımlar).
+     </div>
+       <dl><dt><span class="glossterm">
+         <tt>struct __gconv_loaded_object *</tt><b><tt>__shlib_handle</tt></b>
+       </span></dt><dt><span class="glossterm">
+         <tt>const char *</tt><b><tt>__modname</tt></b>
+       </span></dt><dt><span class="glossterm">
+         <tt>int </tt><b><tt>__counter</tt></b>
+       </span></dt><dd class="halfpara"><div class="para">
+Yapının bu elemanları C kütüphanesi tarafından dahili olarak kullanılır ve paylaşımın yüklenmesini ve kaldırılmasını yönetirler.  Birinin kullanılmış olması diğerlerinin kullanılmasını ya da ilklendirilmesini gerektirmez.
+       </div></dd><dt><span class="glossterm">
+         <tt>const char *</tt><b><tt>__from_name</tt></b>
+       </span></dt><dt><span class="glossterm">
+         <tt>const char *</tt><b><tt>__to_name</tt></b>
+       </span></dt><dd class="halfpara"><div class="para">
+<b><tt>__from_name</tt></b> ve <b><tt>__to_name</tt></b> alanları kaynak ve hedef karakter kümelerinin isimlerini içerir. Bir modül birden fazla karakter kümesi ve yönde dönüşüm için kullanılabildiğinden asıl dönüşümü tanımlamakta kullanılır.
+       </div></dd><dt><span class="glossterm">
+         <tt>gconv_fct </tt><b><tt>__fct</tt></b>
+       </span></dt><dt><span class="glossterm">
+         <tt>gconv_init_fct </tt><b><tt>__init_fct</tt></b>
+       </span></dt><dt><span class="glossterm">
+         <tt>gconv_end_fct </tt><b><tt>__end_fct</tt></b>
+       </span></dt><dd class="halfpara"><div class="para">
+Bu alanlar yüklenebilir modüldeki işlevlere göstericileri içerir. Arayüz aşağıda açıklanacaktır.
+       </div></dd><dt><span class="glossterm">
+         <tt>int </tt><b><tt>__min_needed_from</tt></b>
+       </span></dt><dt><span class="glossterm">
+         <tt>int </tt><b><tt>__max_needed_from</tt></b>
+       </span></dt><dt><span class="glossterm">
+         <tt>int </tt><b><tt>__min_needed_to</tt></b>
+       </span></dt><dt><span class="glossterm">
+         <tt>int </tt><b><tt>__max_needed_to;</tt></b>
+       </span></dt><dd class="halfpara"><div class="para">
+Bu değerler modülün ilklendirme işleviyle atanmalıdır. <b><tt>__min_needed_from</tt></b> değeri kaynak karakter kümesinin en az kaç bayt gerektirdiğini belirtir. <b><tt>__max_needed_from</tt></b> değeri azami değer ile ayrıca olası öteleme dizilimlerini belirtir.
+        </div><div class="para">
+The <b><tt>__min_needed_to</tt></b> ve <b><tt>__max_needed_to</tt></b> ise benzer değerleri hedef karakter kümesi için içerir.
+        </div><div class="para">
+Bu değerlerin doğruluğu son derece önemlidir, çünkü aksi takdirde dönüşüm işlevleri sorun çıkaracak ve bekleneni yapmayacaktır.
+       </div></dd><dt><span class="glossterm">
+         <tt>int </tt><b><tt>__stateful</tt></b>
+       </span></dt><dd class="halfpara"><div class="para">
+Bu eleman da ilklendirme işlevi ile ilklendirilmelidir. Kaynak karakter kümesi durumsal ise bu elemanın değeri sıfırdan farklı olacaktır.
+       </div></dd><dt><span class="glossterm">
+         <tt>void *</tt><b><tt>__data</tt></b>
+       </span></dt><dd class="halfpara"><div class="para">
+Bu eleman modüldeki dönüşüm işlevleri tarafından serbestçe kullanılabilir. <b><tt>void *__data</tt></b> bir çağrıdan diğerine fazladan bilgi aktarmak için kullanılabilir. Gerekmedikçe ilklendirilmesi gerekmez. Elemana özdevimli ayrılmış bir bellek alanının göstericisi atanmışsa (büyük ihtimalle ilklendirme işlevi tarafından), kullanılacak son işlevin bu alanı serbest bırakması sağlanmalıdır. Aksi takdirde uygulama bellek kaçağına sebep olur.
+        </div><div class="para">
+Bu veri yapısının bu belirtim dönüşümünün tüm kullanıcıları tarafından paylaşılmasının sağlanması önemlidir. Bu nedenle, <b><tt>__data</tt></b> elemanının, dönüşüm işlevinin belli bir kullanımına özgü veri içermemesi gerekir.
+       </div></dd></dl>
+</dd></dl><div style="padding:5px"></div><a name="glibc-struct__gconv_step_data" id="glibc-struct__gconv_step_data"></a>
+<a class="indexterm" name="idx664" id="idx664"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct <b><tt>__gconv_step_data</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+Bu veri türü dönüşüm işlevlerinin kullanımına özel bilgileri içerir.
+   </div>
+     <dl><dt><span class="glossterm">
+       <tt>char *</tt><b><tt>__outbuf</tt></b>
+     </span></dt><dt><span class="glossterm">
+       <tt>char *</tt><b><tt>__outbufend</tt></b>
+     </span></dt><dd class="halfpara"><div class="para">
+Bu elemanlar dönüşüm adımında kullanılan çıktı tamponuna ilişkin veriyi içerir. <b><tt>__outbuf</tt></b> elemanı tamponun başlangıcını, <b><tt>__outbufend</tt></b> elemanı ise  tamponun son baytını belirtir. Dönüşüm işlevi tamponun boyutunun herşeye yeterli olduğunu varsaymamalı, ancak en azından tam bir karakter için tamponda yeterli yer olduğunu varsaymalıdır.
+        </div><div class="para">
+Dönüşüm bittikten sonra, eğer dönüşüm son adımdaysa, son bayt tampona yazıldıktan sonra ne kadar mevcut çıktı olduğunu belirtmek için <b><tt>__outbuf</tt></b> elemanı değiştirilmelidir, <b><tt>__outbufend</tt></b> elemanı değiştirilmemelidir.
+     </div></dd><dt><span class="glossterm">
+       <tt>int </tt><b><tt>__is_last</tt></b>
+     </span></dt><dd class="halfpara"><div class="para">
+Dönüşüm işlemi son adımdaysa bu elemanın değeri sıfırdan farklıdır. Bu bilgi yineleme için gereklidir. Aşağıdaki dönüşüm işlevlerinin iç yapıları ile ilgili açıklamalara bakınız. Bu eleman asla değiştirilmemelidir.
+     </div></dd><dt><span class="glossterm">
+       <tt>int </tt><b><tt>__invocation_counter</tt></b>
+     </span></dt><dd class="halfpara"><div class="para">
+Dönüşüm işlevi bu elemanı kaç defa çağrıldığı bilgisini tutmak için kullanabilir. Bazı karakter kümeleri dönüşüm işlevinin ilk adımında bazı çıktılar üretirler. Bu alan bu ilk adımın belirlenmesi için kullanılabilir. Bu eleman asla değiştirilmemelidir.
+     </div></dd><dt><span class="glossterm">
+       <tt>int </tt><b><tt>__internal_use</tt></b>
+     </span></dt><dd class="halfpara"><div class="para">
+Bu eleman belli bazı durumlar için kullanılabilen alanlardan biridir. Dönüşüm işlevleri <b><tt>mbsrtowcs</tt></b> işlevini gerçeklemekte kullanılmışsa (yani, işlev <b><tt>iconv</tt></b> gerçeklemesi üzerinden doğrudan kullanılmamışsa) bu alana sıfırdan farklı bir değer atanır.
+        </div><div class="para">
+<b><tt>mbsrtowcs</tt></b> işlevlerinin normalde bütün metni dönüştürmek için tek tek dizgeleri dönüştürmek üzere defalarca çağrılmasına karşın <b><tt>iconv</tt></b> işlevlerinin metnin tamamını dönüştürmekte kullanılması gibi bir fark oluşur.
+        </div><div class="para">
+Fakat bu durumda karakter kümesinin belirtimindeki bazı kuralların yerine getirilmesiyle ilgili bazı sorunlarla karşılaşılır. Bazı karakter kümeleri metnin tamamı için bir defalığına ilk adımda bir çıktı verilmesini gerektirir. Eğer metni dönüştürme işlemi <b><tt>mbsrtowcs</tt></b> işlevinin defalarca çağrılmasını gerektiriyorsa, ilk çağrıda bu çıktı verilmelidir. Bununla birlikte, <b><tt>mbsrtowcs</tt></b> işlevinin çağrıları arasında iletişim olmadığından dönüşüm işlevlerinin bu çıktıyı vermesi mümkün olmaz. Bu durum tanıtıcı sayesinde bu bilgiye erişebilen <b><tt>iconv</tt></b> çağrılarından farklı bir durumdur.
+        </div><div class="para">
+<b><tt>int __internal_use</tt></b> elemanı çoğunlukla <b><tt>__invocation_counter</tt></b> elemanı ile birlikte ağağıdaki gibi kullanılır:
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+if (!data-&gt;__internal_use
+      &amp;&amp; data-&gt;__invocation_counter == 0)
+  /* İlk adım çıktısını bas.  */
+  …
+</pre></div></div>
+        <div class="para">
+Bu elemanın değeri asla değiştirilmemelidir.
+     </div></dd><dt><span class="glossterm">
+       <tt>mbstate_t *</tt><b><tt>__statep</tt></b>
+     </span></dt><dd class="halfpara"><div class="para">
+<b><tt>__statep</tt></b> elemanı  <b><tt>mbstate_t</tt></b> (bkz. <a href="../glibc/glibc-Keeping-the-state.html" class="xref" title="Durumun saklanması">Durumun saklanması</a>) türünde bir nesneye göstericidir. Durumsal bir karakter kümesi dönüşüm durumu hakkındaki bilgileri saklamak için <b><tt>__statep</tt></b> ile gösterilen alanı kullanmalıdır. <b><tt>__statep</tt></b> elemanı kendini asla değiştirmemelidir.
+     </div></dd><dt><span class="glossterm">
+       <tt>mbstate_t </tt><b><tt>__state</tt></b>
+     </span></dt><dd class="halfpara"><div class="para">
+Bu eleman <i>asla</i> doğrudan değiştirilmemelidir.  Yapının kullandığı alanın belirtildiği bir elemandır.
+     </div></dd></dl>
+   </dd></dl><div style="padding:5px"></div></dd></dl> <div class="head3"><a name="id4" id="id4"></a><tt>iconv</tt> modül arayüzleri</div><dl><dd><div class="para">
+Veri yapıları hakkında bilgi edindikten sonra dönüşüm işlevlerinin açıklamalarına girebiliriz. Arayüzü anlayabilmek için dönüşüm nesnelerini yükleyen C kütüphanesindeki işlevsellik hakkında biraz önbilgi vermek gerekir.
+     </div><div class="para">
+Bir dönüşümün defalarca kullanıldığı duruma sıklıkla rastlanır (yazılımın çalışması esnasında aynı karakter kümesi için çok sayıda <b><tt>iconv_open</tt></b> çağrısı yapılması). GNU C kütüphanesindeki <b><tt>mbsrtowcs</tt></b> ve benzeri işlevler de aynı işlevin kullanım sayısını arttıran <b><tt>iconv</tt></b> işlevselliğini kullanırlar.
+     </div><div class="para">
+Dönüşümlerin böyle defalarca kullanılabilmesinden dolayı modüller her dönüşüm için tekrar yüklenmezler. Modül bir kere yüklendikten sonra aynı <b><tt>iconv</tt></b> veya <b><tt>mbsrtowcs</tt></b> çağrıları defalarca yapılabilir. Bilgilerin işleve özel dönüşüm bilgileri ve dönüşüm verisi bilgileri olarak ayrılabilmesi sayesinde bu mümkün olur. Bunun yapılmasını sağlayan iki veri yapısından bir önceki bölümde bahsedilmişti.
+     </div><div class="para">
+Bu ayrıca, modül tarafından sağlanan işlevlerin sözdiziminde ve arayüzün kendisinde de yansıtılır. Aşağıdaki isimlere sahip olması zorunlu üç işlev vardır:
+     </div><div class="variablelist"><dl><dt><span class="term"><tt>gconv_init</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>gconv_init</tt></b> işlevi, dönüşüm işlevine özel veri yapısını ilklendirir. Bu nesne bu dönüşümü kullanan tüm dönüşümlerce paylaşılır ve bu nedenle, dönüşümün kendisi ile ilgili durum bilgisi burada saklanmaz. Bir modül birden fazla dönüşümü gerçekleştirebiliyorsa <b><tt>gconv_init</tt></b> işlevi defalarca çağrılabilir.
+        </div></dd><dt><span class="term"><tt>gconv_end</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>gconv_end</tt></b> işlevi, <b><tt>gconv_init</tt></b> işlevi ile ayrılan tüm özkaynakları serbest bırakmak için kullanılır. Böle bir işlem gerekmiyorsa bu işlev tanımlanmayabilir. Modül birden fazla dönüşümü gerçekleştirebiliyorsa ve <b><tt>gconv_init</tt></b> işlevi her dönüşüm için aynı özkaynakları ayırmıyorsa bu işlevi tanımlarken dikkatli olunmalıdır.
+        </div></dd><dt><span class="term"><tt>gconv</tt></span></dt><dd class="varlist"><div class="para">
+Asıl dönüşüm işlevidir. Bir metin bloğunu dönüştürmekte kullanılır. Dönüşüm işlevlerinin bu amaca yönelik dönüşüm verisi ve <b><tt>gconv_init</tt></b> ile ilklendirilen dönüşüm adım bilgisi işleve aktarılmalıdır.
+        </div></dd></dl></div><div class="para">
+Bu üç modül arayüz işlevi için tanımlanmış üç veri türü vardır ve bunlar arayüzü tanımlar:
+     </div><a name="glibc__gconv_init_fct" id="glibc__gconv_init_fct"></a>
+<a class="indexterm" name="idx665" id="idx665"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>(*__gconv_init_fct)</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct __gconv_step *)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Modülün gerçekleştirdiği her dönüşüm için sadece bir kere çağrılan ilklendirme işlevinin arayüzünü belirler.
+     </div><div class="para">
+<b><tt>struct __gconv_step</tt></b> veri yapısının açıklamasında değinildiği gibi ilklendirme işlevi bu veri yapısının elemanlarını ilklendirir.
+     </div>
+     <div class="variablelist"><dl><dt><span class="term"><tt>__min_needed_from</tt></span></dt><dt><span class="term"><tt>__max_needed_from</tt></span></dt><dt><span class="term"><tt>__min_needed_to</tt></span></dt><dt><span class="term"><tt>__max_needed_to</tt></span></dt><dd class="varlist"><div class="para">
+Bu elemanlar kaynak ve hedef karakter kümelerindeki bir karakteri oluşturan bayt sayısının azami ve asgari değerleri ile ilklendirilmelidir. Karakaterlerin hepsi aynı bayt sayısı ile ifade ediliyorsa azami ve asgari değerler aynı olacaktır.
+     </div></dd><dt><span class="term"><tt>__stateful</tt></span></dt><dd class="varlist"><div class="para">
+Bu eleman kaynak karaker kümesinin durumsal olması halinde sıfırdan farklı, aksi takdirde sıfır olmalıdır.
+     </div></dd></dl></div>
+     <div class="para">
+İlklendirme işlevinin dönüşüm işlevi ile bilgi alışverişi yapması gerekliyse, bu iletişim <b><tt>__gconv_step</tt></b> yapısının <b><tt>__data</tt></b> elemanı kullanılarak yapılabilir. Ancak, bu veri tüm dönüşümlerce paylaşılacağından dönüşüm işlevleri bu veriyi değiştirmemelidir. Bunun yapılışına bir örnek:
+     </div>
+<div class="para"><div align="right"><pre class="screen">
+#define MIN_NEEDED_FROM         1
+#define MAX_NEEDED_FROM         4
+#define MIN_NEEDED_TO           4
+#define MAX_NEEDED_TO           4
+
+int
+gconv_init (struct __gconv_step *step)
+{
+  /* Dönüşüm yönünü belirleyelim.  */
+  struct iso2022jp_data *new_data;
+  enum direction dir = illegal_dir;
+  enum variant var = illegal_var;
+  int result;
+
+  if (__strcasecmp (step-&gt;__from_name, "ISO-2022-JP//") == 0)
+    {
+      dir = from_iso2022jp;
+      var = iso2022jp;
+    }
+  else if (__strcasecmp (step-&gt;__to_name, "ISO-2022-JP//") == 0)
+    {
+      dir = to_iso2022jp;
+      var = iso2022jp;
+    }
+  else if (__strcasecmp (step-&gt;__from_name, "ISO-2022-JP-2//") == 0)
+    {
+      dir = from_iso2022jp;
+      var = iso2022jp2;
+    }
+  else if (__strcasecmp (step-&gt;__to_name, "ISO-2022-JP-2//") == 0)
+    {
+      dir = to_iso2022jp;
+      var = iso2022jp2;
+    }
+
+  result = __GCONV_NOCONV;
+  if (dir != illegal_dir)
+    {
+      new_data = (struct iso2022jp_data *)
+        malloc (sizeof (struct iso2022jp_data));
+
+      result = __GCONV_NOMEM;
+      if (new_data != NULL)
+        {
+          new_data-&gt;dir = dir;
+          new_data-&gt;var = var;
+          step-&gt;__data = new_data;
+
+          if (dir == from_iso2022jp)
+            {
+              step-&gt;__min_needed_from = MIN_NEEDED_FROM;
+              step-&gt;__max_needed_from = MAX_NEEDED_FROM;
+              step-&gt;__min_needed_to = MIN_NEEDED_TO;
+              step-&gt;__max_needed_to = MAX_NEEDED_TO;
+            }
+          else
+            {
+              step-&gt;__min_needed_from = MIN_NEEDED_TO;
+              step-&gt;__max_needed_from = MAX_NEEDED_TO;
+              step-&gt;__min_needed_to = MIN_NEEDED_FROM;
+              step-&gt;__max_needed_to = MAX_NEEDED_FROM + 2;
+            }
+
+          /* Evet, bu durumsal bir kodlama.  */
+          step-&gt;__stateful = 1;
+
+          result = __GCONV_OK;
+        }
+    }
+
+  return result;
+}
+</pre></div></div><div class="para">
+İşlev önce hangi dönüşümün istendiğine bakar. Bu işlev ile ele alınan modül dört farklı dönüşümü gerçekleştirmektedir; hangisinin kullanılmak istendiği isimlere bakarak saptanabilir. Karşılaştırma daima harf büyüklüğünden bağımsız olarak yapılmalıdır.
+     </div><div class="para">
+Sonra, seçilen dönüşüm için gerekli bilgileri içeren veri yapısına sıra geliyor ve buna yer ayrılıyor. <b><tt>struct iso2022jp_data</tt></b> yerel olarak modülün dışında tanımlandığından bu veri işlev dışında kullanılamaz. Eğer modülün desteklediği dört dönüşümün tamamı için dönüşüm istenseydi, dört veri bloğu olacaktı.
+     </div><div class="para">
+İlginç olan veri nesnesinin <b><tt>__min_</tt></b> ve <b><tt>__max_</tt></b> elemanlarının ilklendirme adımıdır. Tek bir ISO-2022-JP karakteri bir bayttan dört bayta kadar uzunlukta olabilir. Bundan dolayı burada <b><tt>MIN_NEEDED_FROM</tt></b> ve <b><tt>MAX_NEEDED_FROM</tt></b> makroları kullanılmıştır. Çıktı daima dahili karakter kümesi (UCS-4) olacağından her karakter daima dört bayt uzunlukta olacaktır. Dahili karakter kümesinden ISO-2022-JP karakter kümesine dönüşüm için önceleme dizilimlerinin karakter kümeleri arasında geçiş yapmak için gerekli olduğunu hesaba katmak zorundayız. Bu nedenle, bu yön için <b><tt>__max_needed_to</tt></b> elemanına <b><tt>MAX_NEEDED_FROM + 2</tt></b> değeri atanmaktadır. Böylece diğer karakter kümesine geçiş için gekeli olan önceleme dizilimleri hesaba katılmış olur.  İki yöndeki azami değerler arasındaki dengesizlik kolayca açıklanabilir: ISO-2022-JP metin okunurken önceleme dizilimleri tek başlarına elde edilebilir (yani, önceleme diziliminin etkisi durum bilgisi içinde kaydedilmiş olacağından önceleme dizilimi bir gerçek karakterin işlenmesinde gerekli değildir).  Diğer yönde durum farklıdır.  Hangi karakter kümesinin sonra geleceği genelde bilinmediğinden durumu değiştirecek önceleme dizilimleri ileriye dönük hesaba katılamaz. Bu, önceleme dizilimlerinin sonraki karakter ile birlikte ele alınması zorunluluğu demektir. Bu nedenle karakterin gerektirdiğinden daha fazla alan gereklidir.
+     </div><div class="para">
+İlklendirme işlevinin olası dönüş değerleri şunlardır:
+     </div><div class="variablelist"><dl><dt><span class="term"><b><tt>__GCONV_OK</tt></b></span></dt><dd class="varlist"><div class="para">
+İlklendirme başarılı.
+        </div></dd><dt><span class="term"><tt>__GCONV_NOCONV</tt></span></dt><dd class="varlist"><div class="para">
+İstenen dönüşümü bu modül desteklemiyor. Bu durum, <b><tt>gconv-modules</tt></b> dosyası hatalıysa oluşabilir.
+        </div></dd><dt><span class="term"><tt>__GCONV_NOMEM</tt></span></dt><dd class="varlist"><div class="para">
+Ek bilginin saklanacağı bellek ayrılamadı.
+        </div></dd></dl></div>
+</dd></dl><div style="padding:5px"></div><div class="para">
+Modül yüklenmeden işlevin çağrılması önemce daha kolaydır. Çoğunlukla hiçbir şeye sebep olmaz; tamamen ihmal edilebilir.
+    </div><a name="glibc__gconv_end_fct" id="glibc__gconv_end_fct"></a>
+<a class="indexterm" name="idx666" id="idx666"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>void <b><tt>(*__gconv_end_fct)</tt></b></tt></td><td valign="top"><pre class="paramdef">(struct gconv_step *)</pre></td></tr></table></div><div class="sagsutun">işlav</div></div></div><dl><dd><div class="para">
+Bu işlevin görevi ilklendirme işlevinin ayırdığı tüm özkaynakları serbest bırakmaktır. Bu nedenle argüman olarak nesnenin sadece <b><tt>__data</tt></b> elemanını kullanır. İlklendirme işlevi ile ilgili örneğe devam edersek dönüşümü sonlandıran işlev şöyle olurdu:
+     </div>
+<div class="para"><div align="right"><pre class="screen">
+void
+gconv_end (struct __gconv_step *data)
+{
+  free (data-&gt;__data);
+}
+</pre></div></div>
+</dd></dl><div style="padding:5px"></div><div class="para">
+En önemli işlev, karmaşık karakter kümeleri için oldukça karışık olabilen dönüşüm işlevinin kendisidir. Daha fazlası gerekli olmadığından burada işlevin sadece iskeletinden bahsedilecektir.
+     </div><a name="glibc__gconv_fct" id="glibc__gconv_fct"></a>
+<a class="indexterm" name="idx667" id="idx667"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>(*__gconv_fct)</tt></b></tt></td><td valign="top"><pre class="paramdef">
+(struct __gconv_step *,
+ struct __gconv_step_data *,
+ const char **,
+ const char *,
+ size_t *,
+ int)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Dönüşüm işlevinin çağrılmasını gerektiren iki sebep olabilir: Metni dönüştürmek ya da durumu sıfırlamak. <b><tt>iconv</tt></b> işlevinin açıklamasına bakılırsa boşaltma kipinin neden gerekli olduğu görülebilir. Hangi kipin seçilmiş olduğu bir tamsayı olan altıncı argümana bakılarak saptanır. Boşaltma kipi seçilmişse bu argümanın değeri sıfırdan farklı olacaktır.
+     </div><div class="para">
+Çıktı tamponunun yerinin her iki kip için ortak olduğu görülür. Bu tampon hakkındaki bilgi dönüşüm adım verisinde saklanır. Bu bilgiye ilişkin gösterici işleve ikinci argüman olarak aktarılır. <b><tt>struct __gconv_step_data</tt></b> yapısının açıklaması dönüşüm adım verisi hakkında daha fazla bilgi içerir.
+     </div><div class="para">
+<a class="indexterm" name="idx668" id="idx668"></a>
+Boşaltma için ne yapılacağı kaynak karakter kümesine bağlıdır. Eğer kaynak karakter kümesi durumsal değilse birşey yapmak gerekmez. Aksi takdirde, işlev durum nesnesini ilk duruma getirecek bir bayt dizilimini göndermek zorundadır. Bu yapıldıktan sonra dönüşüm zincirindeki diğer dönüşüm işlevlerine de bu imkan tanınmalıdır. Bu işlevi başka bir adımın izleyip izlemeyeceği ilk argümana adım verisinin <b><tt>__is_last</tt></b> elemanındaki bilgi aktarılarak saptanabilir.
+     </div><div class="para">
+Metnin dönüştürüldüğü kip daha ilginçtir. Bu kipteki ilk adımda girdi tamponundaki metnin olabildiğince büyük bir kısmı dönüştürülür ve sonuç çıktı tamponunda saklanır. Girdi tamponunun başlangıcı, tamponun başlangıcını gösteren bir göstericiye gösterici olan üçüncü argümandan saptanır. Dördüncü argüman tampondaki son bayttan sonraki bayta bir göstericidir.
+     </div><div class="para">
+Dönüşüm, eğer karakter kümesi durumsal ise mevcut duruma bağlı olarak uygulanır. Durum bilgisi adım verisinin <b><tt>__statep</tt></b> elemanı tarafından gösterilen bir nesnede saklanır (ikinci argüman). Girdi tamponu boşsa ya da çıktı tamponu dolmuşsa dönüşüm durdurulur. Bu durumda üçüncü parametredeki gösterici değişkeni son işlenen bayttan sonraki baytı göstermelidir (eğer tüm girdi tüketilmişse, bu gösterici ve dördüncü parametre aynı değerde olur).
+     </div><div class="para">
+Sonra ne yapılacağı bu adımın son adım olup olmamasına bağlıdır. Eğer bu adım son adımsa yapılacak tek şey, adım verisi yapısının <b><tt>__outbuf</tt></b> elemanının son yazılan bayttan sonraki baytı gösterecek şekilde güncellenmesidir. Ek olarak, beşinci parametre tarafından gösterilen <b><tt>size_t</tt></b> türündeki değişken geri dönüşümsüz olarak dönüştürülen karakter sayısı (bayt sayısı değil) kadar arttırılmalıdır. Bundan sonra işlev dönebilir.
+     </div><div class="para">
+Eğer bu adım son adım değilse, sonraki dönüşüm işlevlerine kendi görevlerini yerine getirebilmeleri imkanı sağlanmalıdır. Bu nedenle uygun dönüşüm işlevi çağrısı yapılmalıdır. İşlevler hakkındaki bilgiler dönüşüm veri yapılarında saklanır ve ilk parametre olarak aktarılır. Bu bilgi ve adım verisi dizilerde saklanır, bu durumda sonraki eleman her iki halde de basit olarak gösterici aritmetiği ile bulunabilir:
+     </div>
+<div class="para"><div align="right"><pre class="screen">
+int
+gconv (struct __gconv_step *step, struct __gconv_step_data *data,
+       const char **inbuf, const char *inbufend, size_t *written,
+       int do_flush)
+{
+  struct __gconv_step *next_step = step + 1;
+  struct __gconv_step_data *next_data = data + 1;
+  …
+</pre></div></div><div class="para">
+<b><tt>next_step</tt></b> göstericisi sonraki adım bilgisini içerirken, <b><tt>next_data</tt></b> sonraki veri kaydını içerir. Sonraki işlev çağrısı bu nedenle şöyle görünecektir:
+     </div>
+<div class="para"><div align="right"><pre class="screen">
+  next_step-&gt;__fct (next_step, next_data, outerr, outbuf,
+                    written, 0)
+</pre></div></div><div class="para">
+Fakat henüz bu yeterli değildir. İşlev çağrısı döndükten sonra dönüşüm işlevi biraz daha işlem yapmak zorunda kalabilir. İşlevin dönüş değeri <b><tt>__GCONV_EMPTY_INPUT</tt></b> ise, çıktı tamponunda hala yer var demektir. Girdi tamponu boş olmadıkça dönüşüm, işlevi girdi tamponunun kalanını işlemek üzere tekrar çağırır. Eğer dönüş değeri <b><tt>__GCONV_EMPTY_INPUT</tt></b> değilse bazı şeyler yanlış gitmiştir ve bunun kurtarılması gerekir.
+     </div><div class="para">
+Dönüşüm işlevi için bir gereklilik de, girdi tamponu göstericisinin (üçüncü argüman) daima çıktı tamponuna konulan dönüştürülmüş son karakteri göstermesidir. Dönüşümün uygulandığı adımda eğer daha alt adımları gerçekleştiren dönüşüm işlevleri hata verip durmazsa, çıktı tamponundaki karakterlerin tümü tüketilmemişse ve bu nedenle girdi tamponu göstericileri doğru konumu gösterecek duruma getirilmemişse bu zaten gerçekleşir.
+     </div><div class="para">
+Girdi tamponunun düzeltilmesi, eğer girdi ve çıktı karakter kümelerindeki tüm karakterler sabit genişlikteyse kolaydır. Bu durumda, çıktı tamponunda kaç karakter kaldığını hesaplayabilir ve bu sonuçtan hareketle girdi tampon göstericisini benzer bir hesaplamayla elde edebiliriz. Zor olan, karakter kümelerinin değişken genişlikte karakterler içermesi ve dönüşüm bir de durumsal ise işlemin daha da karmaşıklaşmasıdır. Bu durumlarda dönüşüm, ilk dönüşümden önceki bilinen durumdan bir daha başlatılır (gerekliyse, dönüşüm durumu sıfırlanmalı ve dönüşüm döngüsü tekrar çalıştırılmalıdır). Burada farklı olan ne kadar girdi oluşturulması gerektiğinin bilinmesi ve dönüşümün ilk işe yaramaz karakterden önce durdurulabilmesidir. Bu yapıldıktan sonra girdi tamponu göstericileri tekrar güncellenmelidir. Bundan sonra işlev dönebilir.
+     </div><div class="para">
+Üstünde durulması gereken son bir şey daha var. Dönüşümün ilk çağrısında bir iletinin çıktılanması gerektiği durumlar için çağrının ilk çağrı olup olmadığının bilinmesi için dönüşüm işlevi adım verisi yapısının <b><tt>__invocation_counter</tt></b> elmanının değerini çağrıcıya dönmeden önce arttırmalıdır. Bunun nasıl kullanıldığı hakkında daha fazla bilgi edinmek isterseniz <b><tt>struct __gconv_step_data</tt></b> yapısının açıklamasına bakınız.
+     </div><div class="para">
+Dönüş değeri şunlardan biri olmalıdır:
+     </div><div class="variablelist"><dl><dt><span class="term"><tt>__GCONV_EMPTY_INPUT</tt></span></dt><dd class="varlist"><div class="para">
+Tüm girdi tüketildi ve çıktı taponunda yer kaldı.
+        </div></dd><dt><span class="term"><tt>__GCONV_FULL_OUTPUT</tt></span></dt><dd class="varlist"><div class="para">
+Çıktı tamponunda yer kalmadı. Bu değer son adımda alınmamışsa zincirdeki sonraki işlev çağrısında bu değere uygun işlem yapılmalıdır.
+        </div></dd><dt><span class="term"><tt>__GCONV_INCOMPLETE_INPUT</tt></span></dt><dd class="varlist"><div class="para">
+Bozuk bir karakter dizilimi içerdiğinden girdi tamponu tüketilememiştir.
+        </div></dd></dl></div><div class="para">
+Aşağıda bir dönüşüm işlevinin çerçevesi çizilmeye çalışılmıştır. Yeni bir dönüşüm işlevi yazılacaksa, burada boş bırakılmış yerler doldurulmalıdır.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+int
+gconv (struct __gconv_step *step, struct __gconv_step_data *data,
+      const char **inbuf, const char *inbufend, size_t *written,
+      int do_flush)
+{
+  struct __gconv_step *next_step = step + 1;
+  struct __gconv_step_data *next_data = data + 1;
+  gconv_fct fct = next_step-&gt;__fct;
+  int status;
+
+  /* İşlev girdisiz çağrılmışsa bu ilk duruma getirme anlamındadır.
+     Girdinin bir kısmı işlendikten sonra bu yapılmışsa girdi atlanır. */
+  if (do_flush)
+    {
+      status = __GCONV_OK;
+
+      /* Durum nesnesini ilk duruma getiren bayt dizilimi gerekebilir. */
+
+      /* Call the steps down the chain if there are any but only
+        if we successfully emitted the escape sequence.  */
+      if (status == __GCONV_OK &amp;&amp; ! data-&gt;__is_last)
+        status = fct (next_step, next_data, NULL, NULL,
+                      written, 1);
+    }
+  else
+    {
+      /* Gösterici değişkenlerinin ilk değerlerini saklayalım.  */
+      const char *inptr = *inbuf;
+      char *outbuf = data-&gt;__outbuf;
+      char *outend = data-&gt;__outbufend;
+      char *outptr;
+
+      do
+        {
+          /* Bu adımın başlangıç değerini hatırlayalım.  */
+          inptr = *inbuf;
+          /* The outbuf buffer is empty.  */
+          outptr = outbuf;
+
+          /* Durumsal kodlamalar için durum burada güvenceye alınmalı.  */
+
+          /* Dönüşüm döngüsü çalıştır ve durumu uygun değere ayarla.  */
+
+          /* Bu son adımsa, döngüden çık. Yapacak birşey kalmamış.  */
+          if (data-&gt;__is_last)
+            {
+              /* Kullanılabilir kaç bayt kaldı bilgisini sakla.  */
+              data-&gt;__outbuf = outbuf;
+
+            /* geri dönüşümsüz dönüşüm yapılmışsa numarasını
+               *written'a ekle.  */
+
+            break;
+          }
+
+          /* Üretilen tüm çıktıyı yaz.  */
+          if (outbuf &gt; outptr)
+            {
+              const char *outerr = data-&gt;__outbuf;
+              int result;
+
+              result = fct (next_step, next_data, &amp;outerr,
+                            outbuf, written, 0);
+
+              if (result != __GCONV_EMPTY_INPUT)
+                {
+                  if (outerr != outbuf)
+                    {
+                      /* Girdi tampon göstericisini sıfırla.
+                         Burada karmaşık durumu belgeleyelim.  */
+                      size_t nstatus;
+
+                      /* Göstericileri yeniden yükle.  */
+                      *inbuf = inptr;
+                      outbuf = outptr;
+
+                      /* Durum sıfırlanacaksa sıfırla.  */
+
+                      /* Dönüşümü tekrar yap, ama bu sefer çıktı
+                         tamponunun sonu outerr de.  */
+                    }
+
+                  /* urumu değiştir.  */
+                  status = result;
+                }
+              else
+                /* Çıktı tamamlandı, herşey tamamsa
+                   sonraki adıma geçelim.  */
+                if (status == __GCONV_FULL_OUTPUT)
+                  status = __GCONV_OK;
+          }
+        }
+      while (status == __GCONV_OK);
+
+      /* Bu adımdaki işimiz bitti.  */
+      ++data-&gt;__invocation_counter;
+    }
+
+  return status;
+}
+</pre></div></div>
+</dd></dl><div style="padding:5px"></div><div class="para">
+Yeni modül yazmak için bu kadar bilgi yeterlidir. Bunu yapmak isteyenler GNU C kütüphanesinin kaynak koduna da bakabilirler. Pek çok çalışan ve eniyilenmiş örnek bulunmaktadır.
+     </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Other-iconv-Implementations.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Generic-Charset-Conversion.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Locales.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Diğer iconv Gerçeklemeleri </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> VII. Oylum - Yereller ve Uluslararasılaştırma</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:25+03:00" /><title>Bir Alarmın Ayarlanması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Date-and-Time.html" title="XXI. Oylum - Tarih ve Zaman" /><link rel="previous" href="../glibc/glibc-Time-Functions-Example.html" title="Zaman İşlevleri Örneği" /><link rel="next" href="../glibc/glibc-Sleeping.html" title="Uyku" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Bir Alarmın Ayarlanması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Time-Functions-Example.html">Önceki</a> </td><th width="60%" align="center">XXI. Oylum - Tarih ve Zaman</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Sleeping.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="glibc-Setting-an-Alarm" id="glibc-Setting-an-Alarm"></a>Bir Alarmın Ayarlanması</div></div></div><dl><dd><div class="para">
+<b><tt>alarm</tt></b> ve <b><tt>setitimer</tt></b> işlevleri bir sürecin kendisine gelecekte bir kesme göndermesini sağlar. Bunu bir zamanlayıcıyı ayarlayarak yaparlar; zamanlayıcının süresi dolduğunda süreç bir sinyal alır.
+   </div><div class="para">
+<a class="indexterm" name="idx2429" id="idx2429"></a>
+<a class="indexterm" name="idx2430" id="idx2430"></a>
+<a class="indexterm" name="idx2431" id="idx2431"></a>
+<a class="indexterm" name="idx2432" id="idx2432"></a>
+Her süreç üç bağımsız zamanlayıcı kullanabilir:
+   </div><ul type="disc" class="itemizedlist"><li><div class="para">
+Bir gerçek zamanlı zamanlayıcı kalan süreyi sayar. Bu zamanlayıcı zamanaşımına uğradığında sürece bir <b><tt>SIGALRM</tt></b> sinyali gönderir.
+<a class="indexterm" name="idx2433" id="idx2433"></a>
+   </div></li><li><div class="para">
+Bir sanal zamanlayıcı süreç tarafından kullanılan işlemci süresini sayar. Bu zamanlayıcı zamanaşımına uğradığında sürece bir <b><tt>SIGVTALRM</tt></b> sinyali gönderir.
+<a class="indexterm" name="idx2434" id="idx2434"></a>
+   </div></li><li><div class="para">
+Bir profil zamanlayıcı hem süreç tarafından kullanılan işlemci süresini hem de sistemin süreç adına kullandığı işlemci süresini sayar. Bu zamanlayıcı zamanaşımına uğradığında sürece bir <b><tt>SIGPROF</tt></b> sinyali gönderir.
+<a class="indexterm" name="idx2435" id="idx2435"></a>
+     </div><div class="para">
+Bu zamanlayıcı yorumlayıcılarda profil çıkarma için kullanışlıdır. Zamanlayıcı mekanizmasının birim sayma süresi doğal kodun profilinin çıkarılması için gereken hassasiyete sahip değildir.
+     </div></li></ul><div class="para">
+Herhangi bir anda bu üç zamanlayıcıdan sadece birini kullanabilirsiniz. Henüz zamanaşımına uğramamış bir zamanlayıcıyı tekrar kullanmaya çalışırsanız, zamanlayıcıyı basitçe yeni değerle yeniden başlatmış olursunuz.
+   </div><div class="para">
+Bir <b><tt>setitimer</tt></b> veya <b><tt>alarm</tt></b> işlevini çağırmadan önce <b><tt>signal</tt></b> veya <b><tt>sigaction</tt></b> işlevini kullanarak ilgili alarm sinyali için bir sinyal eylemci oluşturmalısınız. Aksai takdirde, bir olağandışı olaylar zinciri yazılımınız daha bir sinyal eylemci kurmaya fırsat bulamadan zamanlayıcının zamanaşımına uğramasına sebep olabilir. Bu durumda, alarm sinyalleri için öntanımlı eylem sürecin sonlandırılması olduğundan yazılımınız sonlanırdı. Bkz. <a href="../glibc/glibc-Signal-Handling.html" class="xref" title="XXIV. Oylum - Sinyal İşleme">Sinyal İşleme</a>.
+   </div><div class="para">
+Durdurulmadığı takdirde sonsuza kadar engelleme yapabilecek bir sistem çağrısını durdurmak amacıyla alarm işlevinin kullanılmasını mümkün kılmak için sinyal eylemcinin <b><tt>sigaction</tt></b> ile <b><tt>SA_RESTART</tt></b> seçeneği atanmadan oluşturulması önemlidir. <b><tt>sigaction</tt></b> kullanılmadığı durumda işler biraz daha karışıktır, çünkü <b><tt>signal</tt></b> işlevinin yeniden başlatma açısından işleyiş mantığı sabittir: BSD mantığına göre bu seçenek atanır. Dolayısıyla herhangi bir nedenle <b><tt>sigaction</tt></b> kullanılamazsa <b><tt>signal</tt></b> değil <b><tt>sysv_signal</tt></b> kullanmak gerekir.
+   </div><div class="para">
+Bir alarm ayarlanmak istendiğinde ilk akla gelen <b><tt>setitimer</tt></b> işlevidir. Bu oluşum <tt>sys/time.h</tt> başlık dosyasında bildirilmiştir. Gerçek zamanlı bir zamanlayıcıyı etkinleştirmek için biraz daha basit bir arayüz sunan <b><tt>alarm</tt></b> işlevi ise <tt>unistd.h</tt> dosyasında bildirilmiştir.
+<a class="indexterm" name="idx2436" id="idx2436"></a>
+<a class="indexterm" name="idx2437" id="idx2437"></a>
+   </div>
+<a class="indexterm" name="idx2438" id="idx2438"></a>
+<a name="glibc-itimerval" id="glibc-itimerval"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct <b><tt>itimerval</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+Bu yapı bir zamanlayıcıyı ayarlamak için kullanılır. Şu üyeleri içerir:
+   </div><dl><dt><span class="glossterm">
+   <tt>struct timeval <b><tt>it_interval</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+Zamanlayıcı kesmeleri arasındaki süredir. Sıfırsa alarm sadece bir kere gönderilir.
+   </div></dd><dt><span class="glossterm">
+   <tt>struct timeval <b><tt>it_value</tt></b></tt>
+   </span></dt><dd class="halfpara"><div class="para">
+İlk zamanlayıcı kesmesine kadar geçen süredir. Sıfırsa alarm iptal edilir.
+   </div></dd></dl><div class="para">
+The <b><tt>struct timeval</tt></b> data type is described in <a href="../glibc/glibc-Elapsed-Time.html" class="xref" title="Süre">Süre</a>.
+</div></dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2439" id="idx2439"></a>
+<a name="glibc-setitimer" id="glibc-setitimer"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>setitimer</tt></b></tt></td><td valign="top"><pre class="paramdef">(int               <i><tt>tür</tt></i>,
+ struct itimerval *<i><tt>yeni</tt></i>,
+ struct itimerval *<i><tt>eski</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>setitimer</tt></b> işlevi <i><tt>tür</tt></i> türündeki zamanlayıcıyı <i><tt>yeni</tt></i> değere ayarlarlar. <i><tt>tür</tt></i> argümanı <b><tt>ITIMER_REAL</tt></b>, <b><tt>ITIMER_VIRTUAL</tt></b> ve <b><tt>ITIMER_PROF</tt></b> değerlerinden biri olabilir.
+   </div><div class="para">
+<i><tt>eski</tt></i> bir boş gösterici değilse, işlev henüz zamanaşımına uğramamış aynı türde bir zamanlayıcı varsa onunla ilgili yapıyı bu gösterici ile döndürür.
+   </div><div class="para">
+İşlev başarılı ise dönüş değeri <b><tt>0</tt></b>, değilse <b><tt>-1</tt></b>'dir. Aşağıdaki <b><tt>errno</tt></b> hata değeri bu işlev için tanımlanmıştır:
+   </div><div class="variablelist"><dl><dt><span class="term"><tt>EINVAL</tt></span></dt><dd class="varlist"><div class="para">
+Zamanlayıcının süresi çok uzun.
+   </div></dd></dl></div>
+</dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2440" id="idx2440"></a>
+<a name="glibc-getitimer" id="glibc-getitimer"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>getitimer</tt></b></tt></td><td valign="top"><pre class="paramdef">(int               <i><tt>tür</tt></i>,
+ struct itimerval *<i><tt>eski</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>getitimer</tt></b> işlevi <i><tt>tür</tt></i> türündeki zamanlayıcı ile ilgili bilgileri <i><tt>eski</tt></i> ile gösterilen yapı içinde döndürür.
+   </div><div class="para">
+Dönüş değeri ve hata durumları <b><tt>setitimer</tt></b> ile aynıdır.
+      </div><div class="variablelist"><dl><dt><span class="term"><tt>ITIMER_REAL</tt></span></dt><dd class="varlist"><div class="para">
+Bu sabit <b><tt>setitimer</tt></b> ve <b><tt>getitimer</tt></b> işlevlerinin <i><tt>tür</tt></i> argümanında kullanıldığında gerçek zamanlı bir zamanlayıcı belirtir.
+      </div></dd><dt><span class="term"><tt>ITIMER_VIRTUAL</tt></span></dt><dd class="varlist"><div class="para">
+Bu sabit <b><tt>setitimer</tt></b> ve <b><tt>getitimer</tt></b> işlevlerinin <i><tt>tür</tt></i> argümanında kullanıldığında sanal bir zamanlayıcı belirtir.
+      </div></dd><dt><span class="term"><tt>ITIMER_PROF</tt></span></dt><dd class="varlist"><div class="para">
+Bu sabit <b><tt>setitimer</tt></b> ve <b><tt>getitimer</tt></b> işlevlerinin <i><tt>tür</tt></i> argümanında kullanıldığında gerçek bir profil zamanlayıcı belirtir.
+      </div></dd></dl></div>
+</dd></dl><div style="padding:5px"></div>
+<a class="indexterm" name="idx2441" id="idx2441"></a>
+<a name="glibc-alarm" id="glibc-alarm"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>unsigned int <b><tt>alarm</tt></b></tt></td><td valign="top"><pre class="paramdef">(unsigned int <i><tt>saniye</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>alarm</tt></b> işlevi gerçek zamanlı zamanlayıcıyı <i><tt>saniye</tt></i> saniyede zamanaşımına uğrayacak şekilde ayarlar. Mevcut bir alarmı iptal etmek isterseniz, işlevi <i><tt>saniye</tt></i> argümanında sıfır değerini aktararak çağırmanız yeterlidir.
+   </div><div class="para">
+Dönüş değeri, önceki alarmın kalan süresidir. Daha önce bir alarm yoksa işlev sıfır ile döner.
+</div></dd></dl><div style="padding:5px"></div><div class="para">
+<b><tt>alarm</tt></b> işlevi <b><tt>setitimer</tt></b> kuralları ile şöyle tanımlanabilirdi:
+   </div><div class="para"><div align="right"><pre class="screen">
+unsigned int
+alarm (unsigned int seconds)
+{
+  struct itimerval old, new;
+  new.it_interval.tv_usec = 0;
+  new.it_interval.tv_sec = 0;
+  new.it_value.tv_usec = 0;
+  new.it_value.tv_sec = (long int) seconds;
+  if (setitimer (ITIMER_REAL, &amp;new, &amp;old) &lt; 0)
+    return 0;
+  else
+    return old.it_value.tv_sec;
+}
+</pre></div></div><div class="para">
+<b><tt>alarm</tt></b> işlevinin kullanım örneğini  <a href="../glibc/glibc-Handler-Returns.html" class="xref" title="Dönen Sinyal Yakalayıcılar">Dönen Sinyal Yakalayıcılar</a> bölümünde bulabilirsiniz.
+   </div><div class="para">
+Sürecinizin belli bir süre beklemesini isterseniz <b><tt>sleep</tt></b> işlevini kullanmalısınız. Bkz. <a href="../glibc/glibc-Sleeping.html" class="xref" title="Uyku">Uyku</a>.
+   </div><div class="para">
+Zamanlayıcı zamanaşımına uğrar uğramaz sinyalin gelmesini beklememelisiniz. Çok işlemcili ortamlarda genellikle biraz gecikme olur.
+   </div>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Taşınabilirlik Bilgisi</th></tr><tr><td align="left" valign="top" class="admon"><div class="para"><b><tt>setitimer</tt></b> ve <b><tt>getitimer</tt></b> işlevlerinin BSD Unix'den türetilmiş olmasına karşın  <b><tt>alarm</tt></b> işlevi POSIX.1 standardında belirtilmiştir. <b><tt>setitimer</tt></b> işlevi daha güçlü olduğu halde <b><tt>alarm</tt></b> işlevi daha yaygın olarak kullanılır.</div></td></tr></table></div>
+   </dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Time-Functions-Example.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Date-and-Time.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Sleeping.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Zaman İşlevleri Örneği </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Uyku</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

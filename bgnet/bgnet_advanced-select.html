@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:25+03:00" /><title>select() -- Eşzamanlı G/Ç Çoğullama</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../bgnet/bgnet_advanced.html" title="İleri Teknikler" /><link rel="previous" href="../bgnet/bgnet_advanced-blocking.html" title="Bloklama" /><link rel="next" href="../bgnet/bgnet_advanced-sendall.html" title="Sorunlu send() Durumları" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">select() -- Eşzamanlı G/Ç Çoğullama</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../bgnet/bgnet_advanced-blocking.html">Önceki</a> </td><th width="60%" align="center">İleri Teknikler</th><td width="20%" align="right"> <a accesskey="n" href="../bgnet/bgnet_advanced-sendall.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="bgnet_advanced-select" id="bgnet_advanced-select"></a><tt>select()</tt> -- Eşzamanlı G/Ç Çoğullama</div><dl><dd><div class="para">
+      Biraz garip olmakla birlikte bu işlevin epey faydalı olduğu
+      söylenebilir. Şu durumu ele alalım: siz bir sunucu programsınız ve
+      bir yandan gelen bağlantıları dinlerken öte yandan da açık olan
+      bağlantılardan akmakta olan verileri okumak istiyorsunuz.
+    </div><div class="para">
+      Sorun değil, diyorsunuz, bir <tt>accept()</tt> ve birkaç
+      tane de <tt>recv()</tt> işimizi görür. Ağır ol dostum!
+      Ya çağırdığın <tt>accept()</tt> işlevi bloklayan durumda
+      ise? O zaman aynı anda <tt>recv()</tt> ile nasıl oluyor
+      da veri okumayı düşünebiliyorsun? "O halde bloklamayan soketleri
+      kullanırım!" Hiç yakıştıramadım senin gibi bir programcıya! İşlemci
+      zamanını deliler gibi harcamak mı istiyorsun? E peki nasıl yapacağız
+      öyleyse?
+    </div><div class="para">
+      <tt>select()</tt> aynı anda birden fazla soketi gözetleme
+      imkânı sunar. Bununla kalmaz aynı zamanda hangi soketin okumak için
+      hazır olduğunu, hangisine yazabileceğiniz, hangisinde istisnai durumlar
+      oluştuğunu da söyler.
+    </div><div class="para">
+      Laf kalabalığını kesip hemen işleve geçiyorum,
+      <tt>select()</tt>:
+    </div>
+<div class="para"><div align="right"><pre class="programlisting">
+#include &lt;sys/time.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;unistd.h&gt;
+
+int select(int numfds, fd_set *readfds, fd_set *writefds,
+           fd_set *exceptfds, struct timeval *timeout); 
+</pre></div></div>
+    <div class="para">
+      Bu işlev dosya tanımlayıcı kümelerini gözlemler. Özel olarak
+      ilgilendikleri ise <i><tt>readfds</tt></i>,
+      <i><tt>writefds</tt></i> ve <i><tt>exceptfds</tt></i>'dir.
+      Mesela standart girdiden ve <i><tt>sockfd</tt></i> gibi bir
+      soket tanımlayıcıdan veri okuyup okuyamayacağınızı merak ediyorsanız
+      tek yapmanız gereken <tt>0</tt> ve
+      <i><tt>sockfd</tt></i>'yi <i><tt>readfds</tt></i>
+      kümesine eklemek. <i><tt>numfds</tt></i> parametresi azami
+      dosya tanımlayıcı artı bir olarak ayarlanmalıdır. Bu örnekte
+      <i><tt>sockfd+1</tt></i> olmalıdır. Çünkü açıktır ki yukarıdaki
+      değer standart girdiden (<tt>0</tt>) daha büyük olacaktır.
+    </div><div class="para">
+      <tt>select()</tt> çalıştırıldıktan sonra <i><tt>readfds</tt></i>
+      seçmiş olduğunuz dosya tanımlayıcılardan hangisinin okumak için hazır
+      olduğunu yansıtacak şekilde güncellenir. Bunları aşağıdaki
+      <tt>FD_ISSET()</tt> makrosu ile test edebilirsiniz.
+    </div><div class="para">
+      Daha fazla ilerlemeden bu kümeler ile nasıl başa çıkacağınızı anlatayım.
+      Her küme <tt>fd_set</tt> türündedir. Bu tür üzerinde aşağıdaki
+      makroları kullanabilirsiniz:
+    </div>
+      <ul type="disc" class="itemizedlist"><li><div class="para">
+          <tt>FD_ZERO(fd_set *set)</tt> -- dosya tanımlayıcı
+          kümesini temizler.
+        </div></li><li><div class="para">
+          <tt>FD_SET(int fd, fd_set *set)</tt> -- kümeye
+          <i><tt>fd</tt></i>'yi ekler.
+        </div></li><li><div class="para">
+          <tt>FD_CLR(int fd, fd_set *set)</tt> --
+          <i><tt>fd</tt></i>'yi kümeden çıkarır.
+        </div></li><li><div class="para">
+          <tt>FD_ISSET(int fd, fd_set *set)</tt> --
+           <i><tt>fd</tt></i>'ni küme içinde olup olmadığına bakar.
+        </div></li></ul>
+    <div class="para">
+      Son olarak, nedir bu <tt>struct timeval</tt>? Bazen birilerinin
+      size veri göndermesini sonsuza dek beklemek istemezsiniz. Belki de her
+      96 saniyede bir ekrana "Hala çalışıyor..." mesajı basmak istersiniz
+      (program o esnada bir şey yapmıyor olsa bile). Bu zaman yapısı sizin bir
+      sonlandırma süresi ("timeout period") belirlemenizi sağlar. Eğer bu süre
+      geçildi ise ve <tt>select()</tt> hala hazır bir dosya
+      tanımlayıcı bulamadı ise o zaman işlev (select) döner ve böylece de siz
+      de işinize devam edebilirsiniz.
+    </div><div class="para">
+      <tt>struct timeval</tt> yapısının elemanları aşağıdaki gibidir:
+    </div>
+<div class="para"><div align="right"><pre class="programlisting">
+struct timeval {
+    int tv_sec;     // seconds
+    int tv_usec;    // microseconds
+}; 
+</pre></div></div>
+    <div class="para">
+      Tek yapmanız gereken <i><tt>tv_sec</tt></i>'i kaç saniye
+      bekleneceğine ayarlamak ve <i><tt>tv_usec</tt></i>'i de kaç
+      mikrosaniye bekleneceğine ayarlamak. Evet, doğru okudunuz,
+      mikrosaniye, milisaniye değil. Bir milisaniye içinde 1,000
+      mikrosaniye vardır ve bir saniye içinde de 1,000 milisaniye vardır.
+      Yani bir saniye içinde 1,000,000 mikrosaniye vardır. Tamam da neden
+      "usec"? Buradaki "u" harfinin Yunan alfabesindeki Mü harfine benzediği
+      düşünülmüştür ve bu yüzden "mikro"yu temsilen kullanılmıştır.
+      Bunlara ek olarak işlev döndüğünde <i><tt>timeout</tt></i>
+      ne kadar zaman kaldığını gösterecek şekilde güncellenmiş olabilir.
+      Bu hangi tür UNIX kullandığınıza bağlıdır.
+    </div><div class="para">
+      Vay canına! Mikrosaniye hassasiyetinde bir zamanlayıcımız var! Gene de
+      siz buna çok güvenmeyin. Standart Unix zamandilimi yaklaşık 100
+      milisaniyedir, yani <tt>struct timeval</tt> yapısını nasıl
+      ayarlarsanız ayarlayın en az bu kadar beklemek durumunda kalabilirsiniz.
+    </div><div class="para">
+      Meraklısına not: Eğer <tt>struct timeval</tt> yapısındaki
+      değişkeninizin alanlarınız <tt>0</tt> yaparsanız,
+      <tt>select()</tt> işlevi anında sonlanacak ve böyle kümenizin
+      içindeki tüm dosya tanımlayıcıları taramış olacaktır. Eğer
+      <i><tt>timeout</tt></i> parametresini NULL yaparsanız bu sefer
+      de işlev asla zaman aşımına uğramayacak ve ilk dosya tanımlayıcı hazır
+      olana dek bekleyecektir. Son olarak: Eğer belli bir küme için beklemek
+      sorun teşkil etmiyorsa o zaman <tt>select()</tt> işlevini
+      çağırırken onu NULL olarak ayarlayabilirsiniz.
+    </div><div class="para">
+      <a class="ulink" href="http://www.ecst.csuchico.edu/~beej/guide/net/examples/select.c" target="_top">Aşağıdaki kod parçası</a> standart girdiden bir veri gelmesi için
+      2.5 saniye bekler:
+    </div>
+<div class="para"><div align="right"><pre class="programlisting">
+/*
+** select.c -- bir select() örneği
+*/
+
+#include &lt;stdio.h&gt;
+#include &lt;sys/time.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;unistd.h&gt;
+
+#define STDIN 0  // standart girdi için dosya tanımlayıcı
+
+int main(void)
+{
+    struct timeval tv;
+    fd_set readfds;
+
+    tv.tv_sec = 2;
+    tv.tv_usec = 500000;
+
+    FD_ZERO(&amp;readfds);
+    FD_SET(STDIN, &amp;readfds);
+
+    // writefds ve exceptfds ile ilgilenmiyoruz:
+    select(STDIN+1, &amp;readfds, NULL, NULL, &amp;tv);
+
+    if (FD_ISSET(STDIN, &amp;readfds))
+        printf("Bir tusa basildi!\n");
+    else
+        printf("Zaman doldu.\n");
+
+    return 0;
+} 
+</pre></div></div>
+    <div class="para">
+      Üzerinde çalıştığınız uçbirim türüne bağlı olarak bir tuşa bastıktan
+      sonra bunun algılanması için ENTER tuşuna basmanız gerekebilir. Aksi
+      takdirde "Zaman doldu." mesajı alırsınız.
+    </div><div class="para">
+      Şimdi bazılarınız bir veripaketi soketi üzerinden veri beklemek için
+      bu yöntemin mükemmel bir yöntem olduğunu düşünebilir -- evet haklısınız:
+      bu yötem gerçekten de mükemmel olabilir . Ancak bazı UNIX türevleri
+      <tt>select</tt>'i bu şekilde kullanabilirken bazıları
+      kullanamaz. Bu yüzden de pratik olarak kullanmaya başlamadan önce
+      sisteminizde bu konu ile ilgili man sayfalarını okuyun.
+    </div><div class="para">
+      Bazı UNIX türevleri de <tt>struct timeval</tt> yapısındaki
+      değişkeninizi, zamanaşımına ne kadar süre kaldığını gösterecek şekilde
+      güncelleyebilir. Bazıları ise bunu yapmaz. Eğer taşınabilir programlar
+      yazmak istiyorsanız buna güvenmeyin. (<tt>gettimeofday()</tt>
+      işlevinden faydalanın. Saçma geliyor değil mi evet ama böyle ben ne
+      yapabilirim.)
+    </div><div class="para">
+      Peki ya okuma kümesindeki soketlerden biri bağlantıyı kesmiş ise? Bu
+      durumda <tt>select()</tt> bu soket için "okumaya hazır"
+      mesajı verir ve siz <tt>recv()</tt> ile okumaya
+      kalktığınızda da <tt>recv()</tt> size <tt>0</tt>
+      değerini döndürür. Böylece istemcinin bağlantıyı kesmiş olduğunu
+      anlarsınız.
+    </div><div class="para">
+      Meraklısına <tt>select()</tt> ile ilgili bir bilgi daha: eğer
+      <tt>listen()</tt> ile dinlemekte olan bir soketiniz varsa
+      bu soketin dosya tanımlayıcısını <i><tt>readfds</tt></i> kümesine
+      yerleştirerek yeni bir bağlantı olup olmadığını öğrenebilirsiniz.
+    </div><div class="para">
+      İşte dostlarım, süper güçlü <tt>select()</tt> işlevinin özeti
+      bu kadar.
+    </div><div class="para">
+      Ancak gelen yoğun istek üzerine yukarıdaki bilgileri pratiğe dökeceğimiz
+      bir örnek sizi bekliyor.
+    </div><div class="para">
+      <a class="ulink" href="http://www.ecst.csuchico.edu/~beej/guide/net/examples/selectserver.c" target="_top">Bu program</a>  basit bir çok kullanıcılı "chat" sunucu olarak
+      davranır. Derledikten sonra bunu bir pencerede çalıştırın ve ardından
+      <b><tt>telnet</tt></b> ile programa bağlanın
+      ("<b><tt>telnet  hostname  9034</tt></b>"). Farklı farklı
+      pencerelerden programa aynı anda birden fazla sayıda bağlantı
+      açabilirsiniz. Bir kere bağlanıp da bulunduğunuz <b><tt>telnet</tt></b>
+      ortamından bir şeyler yazıp yolladığınızda, mesajınız diğer bağlı
+      <b><tt>telnet</tt></b> pencerelerinde de görünmeli.
+    </div>
+<div class="para"><div align="right"><pre class="programlisting">
+/*
+** selectserver.c -- keyifli bir cok kullanicili chat sunucu
+*/
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;netinet/in.h&gt;
+#include &lt;arpa/inet.h&gt;
+
+#define PORT 9034   // dinledigimiz port
+
+int main(void)
+{
+    fd_set master;    // na dosya tanimlayici listesi
+    fd_set read_fds;  // select() icin gecici dosya tanimlayici listesi
+    struct sockaddr_in myaddr;     // sunucu adresi
+    struct sockaddr_in remoteaddr; // istemci adresi
+    int fdmax;        // azami dosya tanimlayici numarası
+    int listener;     // dinlenen soket tanımlayıcı
+    int newfd;        // yeni accept()lenecek soket tanımlayıcı
+    char buf[256];    // istemci verisi için tampon
+    int nbytes;
+    int yes=1;        // setsockopt() SO_REUSEADDR için, aşağıda
+    int addrlen;
+    int i, j;
+
+    FD_ZERO(&amp;master);    // ana listeyi ve gecici listeyi temizle
+    FD_ZERO(&amp;read_fds);
+
+    // dinleyiciyi yarat
+    if ((listener = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
+        perror("socket");
+        exit(1);
+    }
+
+    // "adres zaten kullanımda" mesajından kurtul
+    if (setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &amp;yes,
+                                                        sizeof(int)) == -1) {
+        perror("setsockopt");
+        exit(1);
+    }
+
+    // bind
+    myaddr.sin_family = AF_INET;
+    myaddr.sin_addr.s_addr = INADDR_ANY;
+    myaddr.sin_port = htons(PORT);
+    memset(&amp;(myaddr.sin_zero), '\0', 8);
+    if (bind(listener, (struct sockaddr *)&amp;myaddr, sizeof(myaddr)) == -1) {
+        perror("bind");
+        exit(1);
+    }
+
+    // listen
+    if (listen(listener, 10) == -1) {
+        perror("listen");
+        exit(1);
+    }
+
+    // dinleyici soketi ana listeye ekle
+    FD_SET(listener, &amp;master);
+
+    // en büyük dosya tanimlayicisi hatirla
+    fdmax = listener; // so far, it's this one
+
+    // ana döngü
+    for(;;) {
+        read_fds = master; // copy it
+        if (select(fdmax+1, &amp;read_fds, NULL, NULL, NULL) == -1) {
+            perror("select");
+            exit(1);
+        }
+
+        // mevcut baglantilari tarayip okumaya hazir olanlari tespit et
+        for(i = 0; i &lt;= fdmax; i++) {
+            if (FD_ISSET(i, &amp;read_fds)) { // bir tane yakaladik!!
+                if (i == listener) {
+                    // handle new connections
+                    addrlen = sizeof(remoteaddr);
+                    if ((newfd = accept(listener, (struct sockaddr *)&amp;remoteaddr,
+                                                             &amp;addrlen)) == -1) {
+                        perror("accept");
+                    } else {
+                        FD_SET(newfd, &amp;master); // ana listeye ekle
+                        if (newfd &gt; fdmax) {    // azami miktarı güncelle
+                            fdmax = newfd;
+                        }
+                        printf("selectserver: new connection from %s on "
+                            "socket %d\n", inet_ntoa(remoteaddr.sin_addr), newfd);
+                    }
+                } else {
+                    // istemciden gelen veri icin gerekeni yap
+                    if ((nbytes = recv(i, buf, sizeof(buf), 0)) &lt;= 0) {
+                        // bir hata var ya da istemci baglantiyi kesti
+                        if (nbytes == 0) {
+                            // baglanti kesilmis
+                            printf("selectserver: socket %d hung up\n", i);
+                        } else {
+                            perror("recv");
+                        }
+                        close(i); // bye!
+                        FD_CLR(i, &amp;master); // ana listeden cikar
+                    } else {
+                        // istemciden bir miktar veri geldi
+                        for(j = 0; j &lt;= fdmax; j++) {
+                            // gelen veriyi herkese yolla!
+                            if (FD_ISSET(j, &amp;master)) {
+                                // dinleyici ve kendimiz haric
+                                if (j != listener &amp;&amp; j != i) {
+                                    if (send(j, buf, nbytes, 0) == -1) {
+                                        perror("send");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } // O KADAR CIRKIN ki!
+            }
+        }
+    }
+
+    return 0;
+} 
+</pre></div></div>
+    <div class="para">
+      Lütfen dikkat edin: Yukarıdaki kod içinde iki dosya tanımlayıcı
+      listem var: <i><tt>master</tt></i> ve <i><tt>read_fds</tt></i>.
+      Birincisi yani, <i><tt>master</tt></i> o esnada bağlı olan
+      tüm soket tanımlayıcılarını tutuyor ve buna ek olarak bir de
+      dinleme görevini üstlenmiş olan soketi de bünyesinde barındırıyor.
+    </div><div class="para">
+      <i><tt>master</tt></i> diye bir liste oluşturmamın sebebi
+      <tt>select()</tt> işlevinin sizin ona verdiğiniz soket
+      listesini değiştirmesi ve hangilerinin okunmaya hazır olduğunu
+      gösterecek şekilde güncellemesi. <tt>select()</tt>
+      çağrıları arasında bağlantı kümesinin bozulmamış bir kopyasına
+      ihtiyacım olduğu için böyle bir şey yaptım. Yani son anda
+      <i><tt>master</tt></i> kümesini <i><tt>read_fds</tt></i>
+      kümesine kopyalıyor ve <tt>select()</tt> işlevini
+      çağırıyorum.
+    </div><div class="para">
+      İyi de bu aynı zamanda her yeni bağlantı talebinde bu bağlantıyı
+      <i><tt>master</tt></i> listesine eklemem gerektiği anlamına
+      gelmiyor mu? Tabii ki! Ve her bağlantı kesilmesinde de kesilen
+      bağlantı ile ilgili tanımlayıcıyı da <i><tt>master</tt></i>
+      listesinden çıkarmam gerekmiyor mu? Elbette!.
+    </div><div class="para">
+      Farkında iseniz <i><tt>listener</tt></i> soketinin ne zaman
+      hazır olduğunu kontrol ediyorum. Hazır olduğunda bu demek oluyor ki
+      yeni bir bağlantı talebi var ve ben de bunu görünce bağlantıyı
+      <tt>accept()</tt> ile kabul ediyor ve <i><tt>master</tt></i>
+      listesine ekliyorum. Benzer şekilde bir istemci bağlantısı hazır
+      olduğunda ve <tt>recv()</tt> işlevi <tt>0</tt>
+      döndürdüğünde anlıyorum ki istemci bağlantıyı kapatmış ve bu yüzden onu
+      <i><tt>master</tt></i> listesinden çıkarmalıyım.
+    </div><div class="para">
+      Ancak eğer istemci <tt>recv()</tt> işlevi ile sıfırdan
+      farklı bir değer döndürdüğünde de biliyorum ki okunmuş olan bir veri
+      yığını var. Bu veriyi alıyorum ve sonra da <i><tt>master</tt></i>
+      listesi üzerindeki elemanlar üzerinden tek tek dolaşıp almış olduğum
+      veriyi diğer istemcilere yolluyorum.
+    </div><div class="para">
+      Ve dostlarım işte size süper güçlü <tt>select()</tt> işlevinin
+      o kadar da basit olmayan açıklaması.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../bgnet/bgnet_advanced-blocking.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../bgnet/bgnet_advanced.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../bgnet/bgnet_advanced-sendall.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Bloklama </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Sorunlu send() Durumları</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:37+03:00" /><title>getopt_long Kullanım Örneği.</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Getopt.html" title="getopt" /><link rel="previous" href="../glibc/glibc-Getopt-Long-Options.html" title="getopt_long ile Uzun Seçeneklerin Çözümlenmesi" /><link rel="next" href="../glibc/glibc-Argp.html" title="Argp" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">getopt_long Kullanım Örneği.</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Getopt-Long-Options.html">Önceki</a> </td><th width="60%" align="center">getopt</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Argp.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="glibc-Getopt-Long-Option-Example" id="glibc-Getopt-Long-Option-Example"></a><tt>getopt_long</tt> Kullanım Örneği.</div><dl><dd>
+<div class="para"><div align="right"><pre class="screen">
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;getopt.h&gt;
+
+/* --verbose için tanımlanan bayrak. */
+static int verbose_flag;
+
+int
+main (argc, argv)
+      int argc;
+      char **argv;
+{
+  int c;
+
+  while (1)
+    {
+      static struct option long_options[] =
+        {
+        /* Bu seçenekler bir bayrak tanımlar. */
+          {"verbose", no_argument,       &amp;verbose_flag, 1},
+          {"brief",   no_argument,       &amp;verbose_flag, 0},
+        /* Bu seçenekler bayraksız. Onları indislerine bakıp bulacağız. */
+          {"add",     no_argument,       0, 'a'},
+          {"append",  no_argument,       0, 'b'},
+          {"delete",  required_argument, 0, 'd'},
+          {"create",  required_argument, 0, 'c'},
+          {"file",    required_argument, 0, 'f'},
+          {0, 0, 0, 0}
+        };
+      /* getopt_long seçenek indisini burada saklar. */
+      int option_index = 0;
+
+      c = getopt_long (argc, argv, "abc:d:f:",
+                        long_options, &amp;option_index);
+
+      /* Seçeneklerin sonu mu, bakalım. */
+      if (c == -1)
+        break;
+
+      switch (c)
+        {
+        case 0:
+          /* Bu seçenek bir bayrak tanımlamamışsa,
+             şimdilik birşey yapmayacağız. */
+          if (long_options[option_index].flag != 0)
+            break;
+          if (optarg)
+            printf ("%s argümanı ile ", optarg);
+          printf ("%s seçeneği", long_options[option_index].name);
+
+          printf ("\n");
+          break;
+
+        case 'a':
+          puts ("-a seçeneği\n");
+          break;
+
+        case 'b':
+          puts ("-b seçeneği\n");
+          break;
+
+        case 'c':
+          printf ("`%s' değeri ile -c seçeneği\n", optarg);
+          break;
+
+        case 'd':
+          printf ("`%s' değeri ile -d seçeneği\n", optarg);
+          break;
+
+        case 'f':
+          printf ("`%s' değeri ile -f seçeneği\n", optarg);
+          break;
+
+        case '?':
+          /* getopt_long bir hata iletisi basmış oldu. */
+          break;
+
+        default:
+          abort ();
+        }
+    }
+
+  /* --verbose ve --brief seçeneklerine rastlandığında onları
+     raporlamak yerine onların sonucu olan son durumu raporlayalım. */
+  if (verbose_flag)
+    puts ("ayrıntı bayrağı etkinleştirildi");
+
+  /* Kalan komut satırı argümanlarını (seçenek olmayan) basalım. */
+  if (optind &lt; argc)
+    {
+      printf ("seçenek olmayan ARGV elemanları: ");
+      while (optind &lt; argc)
+        printf ("%s ", argv[optind++]);
+      putchar ('\n');
+    }
+
+  exit (0);
+}
+</pre></div></div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Getopt-Long-Options.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Getopt.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Argp.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">getopt_long ile Uzun Seçeneklerin Çözümlenmesi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Argp</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

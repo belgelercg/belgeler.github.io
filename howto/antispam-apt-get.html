@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2006-09-29T18:57:23+03:00" /><title>A. apt-get</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/antispam.html" title="Posta Sunucuları için Spam Önleme Araçları" /><link rel="previous" href="../howto/antispam-clamav.html" title="Clamav Antivirus" /><link rel="next" href="../howto/antispam-refs.html" title="B. Kaynakça" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">A. apt-get</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/antispam-clamav.html">Önceki</a> </td><th width="60%" align="center">Posta Sunucuları için Spam Önleme Araçları</th><td width="20%" align="right"> <a accesskey="n" href="../howto/antispam-refs.html">Sonraki</a></td></tr></table></td></tr></table><div class="appendix"> <div class="titlepage"><div><div class="head2"><a name="antispam-apt-get" id="antispam-apt-get"></a>A. apt-get</div></div></div><dl><dd><div class="para">
+Red Hat Linux'un RPM paket yönetim sisteminin bir benzeri Debian Linux'ta da vardır. Fakat bu paketlerin uzantıları <tt>.deb</tt> biçimindedir. Debian bu paketlerin kurulumunu ve yönetimini kolaylaştırmak için <b><tt>apt-get</tt></b> paket yönetim sistemini kullanmaktadır. <b><tt>apt-get</tt></b> gerçekte Red Hat Linux'taki <b><tt>yum</tt></b> ya da <b><tt>up2date</tt></b> benzeri bir araçtır. Debian Linux'un <tt>.deb</tt> paketleri için tasarlanan <b><tt>apt-get</tt></b>'i <tt>.rpm</tt> paketlerine uyarlayan yine bir Linux dağıtıcısı olan <a class="ulink" href="http://www.conectiva.com/" target="_top">Conectiva</a>'dır.
+  </div><div class="para">
+Günümüzde bir çok dağıtım <b><tt>apt-get</tt></b> kullanmaya başlamıştır. Popülaritesi giderek artmaktadır. Temel kullanım şekli, <b><tt>apt-get</tt></b> komutundan sonra <b><tt>install</tt></b> seçeneği ile kurmak istediğiniz paketin ismini giriyorsunuz. <b><tt>apt-get</tt></b> kurmak istediğiniz paketin tüm gerekli kütüphane bağımlılıklarını çözdükten sonra, gerekli olanlarını yüklüyor. Daha sonra da kurulmasını istediğimiz paketin kendisini yüklüyor. Böylece yazılım kurarken paket bağımlılıklarını düşünmemiz gerekmiyor. Şimdi sistemimize <b><tt>apt-get</tt></b> kuralım. Dağıtımınız için gerekli olan paketleri RPM depolarından temin edebilirsiniz: <a class="ulink" href="http://dag.wieers.com/" target="_top">http://dag.wieers.com/</a>,  <a class="ulink" href="http://www.freshrpms.net/" target="_top">http://www.freshrpms.net/</a>
+  </div><div class="para">
+Şimdi Fedora Core 2 için gerekli paketleri indirip kuralım.
+  </div>
+<div class="para" align="right"><pre class="screen">wget http://dag.wieers.com/packages/apt/apt-0.5.15cnc6-3.1.fc2.dag.i386.rpm
+wget http://dag.wieers.com/packages/apt/apt-devel-0.5.15cnc6-3.1.fc2.dag.i386.rpm
+</pre></div>
+  <div class="para">
+İndirdiğimiz paketleri kuralım:
+  </div>
+<div class="para" align="right"><pre class="screen">rpm -ivh apt-0.5.15cnc6-3.1.fc2.dag.i386.rpm
+rpm -ivh apt-devel-0.5.15cnc6-3.1.fc2.dag.i386.rpm
+</pre></div>
+  <div class="para">
+Kurulumdan hemen sonra ilk yapmamız gereken depolardaki paketlerin listelerini sistemimize yüklemek. Sistemimize bu listeleri yüklemeden önce <b><tt>apt-get</tt></b>'in öntanımlı RPM depoları hakkında biraz konuşalım. <b><tt>apt-get</tt></b> RPM depolarının adreslerini <tt>/etc/apt/sources.list.d/</tt> dizininin altında tutar. Her deponun adresi <tt>.list</tt> uzantılı bir metin dosyasının içinde tutulur. <b><tt>apt-get</tt></b> ilk olarak yüklendiğinde toplam altı adet depo adresi ile gelir. Standart bir kullanıcı için bunlar yeterli olabilir. Fakar etkili bir kullanın için depo sayısı ne kadar arttırılırsa, <b><tt>apt-get</tt></b> ile yüklenecek olan yazılımların sayısı o kadar artar. Örnek olarak ilk yüklemeden sonra Xine Player'ı yüklemeye kalkarsanız "böyle bir paket bulunamadı" diye bir uyarı alırsınız. Fakat depo listenize <tt>rpm http://rpm.livna.org</tt> eklerseniz Xine Player'ın yüklenebileceğini göreceksiniz. Pyzor, Razor, Clamav ve daha birçok yazılım için de durum böyledir. Livna için <tt>livna.list</tt> adlı dosyayı oluşturun. Daha sonra dosyanın içine aşağıdaki şekilde deponun adresini girin ve kaydedin.
+  </div>
+<div class="para"><pre class="literallayout">rpm http://rpm.livna.org/ fedora/2/i386 stable unstable testing</pre></div>
+  <div class="para">
+evet artık bir deponuz daha oldu. Konunun sonunda ek depo adresleri verilmiştir.Şimdi Depolardan listeleri almak için
+  </div>
+<div class="para" align="right"><pre class="screen">apt-get update</pre></div>
+  <div class="para">
+komutunu vermemiz yeterli olacaktır. Listelerin alınması tamamlandıktan sonra yazılımlarımızı yüklemeye başlayabiliriz.
+  </div>
+<div class="para" align="right"><pre class="screen">apt-get install xine</pre></div>
+  <div class="para">
+komutu ile sistemimize Xine Player'ın kurulmasını sağlayabiliriz.
+  </div>
+<div class="para" align="right"><pre class="screen">apt-get remove xine</pre></div>
+  <div class="para">
+ise sistemimizden Xine Player' ı kaldırır.Eğer tüm sistemimizi güncellemek istiyorsak
+  </div>
+<div class="para" align="right"><pre class="screen">apt-get upgrade</pre></div>
+  <div class="para">
+moutunu vermemiz yeterli olacaktır. Eğer komut satırı hoşumuza gitmiyorsa bunun içinde iyi bir çözüm mevcut. Synaptic bize kullanımı çok kolay olan bir grafik arabirim sağlar.
+  </div>
+<div class="para" align="right"><pre class="screen">apt-get install synaptic</pre></div>
+  <div class="para">
+Aşağıda <b><tt>apt-get</tt></b> için ek depo adresleri verilmiştir. Her bir depo adresini <tt>.list</tt> adıyla ayrı bir dosyaya kaydedin. Daha fazla depo için <a class="ulink" href="http://www.fedora.us/" target="_top">http://www.fedora.us/</a> sitesi ile forumlara bakın.
+  </div>
+<div class="para"><pre class="literallayout">
+rpm http://ftp-stud.fht-esslingen.de/fedora/fedora fedora/2/i386/os/updates/stable
+rpm http://wftp.tu-chemnitz.de/pub/linux/fedora fedora/2/i386/os/updates/stable
+rpm http://sunsite.informatik.rwth-aachen.de/ftp/pub/Linux/fedora fedora/2/i386 os updates stable
+rpm ftp://mirror.saintlaurent.hemes.be/fedora.us/fedora fedora/2/i386 os updates stable
+rpm http://download.fr.fedora.us/fedora fedora/2/i386 os updates stable
+rpm http://fedora.mirror.sdv.fr/fedora fedora/2/i386 os updates stable
+rpm http://fedora.quicknet.nl/fedora fedora/2/i386 os updates stable
+rpm http://fedora.multikabel.nl/fedora fedora/2/i386 os updates stable
+rpm http://sunsite.rediris.es/mirror/fedora.us/fedora fedora/2/i386 os updates stable
+rpm http://download.fedora.us/fedora fedora/2/i386 os updates stable
+rpm http://ftp.iasi.roedu.net/mirrors/fedora.us/fedora fedora/2/i386 os updates stable
+rpm ftp://apt.kde-redhat.org/apt fedora/2 stable
+rpm ftp://apt.kde-redhat.org/apt fedora/all stable
+rpm ftp://apt.kde-redhat.org/apt fedora/2 testing
+rpm ftp://apt.kde-redhat.org/apt fedora/all testing
+rpm http://rpm.livna.org/ fedora/2/i386 stable unstable testing
+</pre></div>
+  </dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/antispam-clamav.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/antispam.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/antispam-refs.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Clamav Antivirus </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> B. Kaynakça</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

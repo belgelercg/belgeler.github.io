@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:25+03:00" /><title>Sorunlu send() Durumları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../bgnet/bgnet_advanced.html" title="İleri Teknikler" /><link rel="previous" href="../bgnet/bgnet_advanced-select.html" title="select() -- Eşzamanlı G/Ç Çoğullama" /><link rel="next" href="../bgnet/bgnet_advanced-sonofdataencap.html" title="Veri Paketlemesi Hazretleri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Sorunlu send() Durumları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../bgnet/bgnet_advanced-select.html">Önceki</a> </td><th width="60%" align="center">İleri Teknikler</th><td width="20%" align="right"> <a accesskey="n" href="../bgnet/bgnet_advanced-sonofdataencap.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="bgnet_advanced-sendall" id="bgnet_advanced-sendall"></a>Sorunlu <tt>send()</tt> Durumları</div><dl><dd><div class="para">
+      Hatırlarsanız <a href="../bgnet/bgnet_syscalls-sendrecv.html" class="xref" title="&#10;      send() ve recv() --&#10;      Konuş Benimle Bebeğim!&#10;    ">send() ve recv() -- Konuş Benimle Bebeğim!</a> bölümünde <tt>send()</tt>
+      işlevinin sizin istediğiniz kadar veriyi bir anda gönderemeyebileceğinden
+      bahsetmiştim. Tam olarak böyle yani siz ondan 512 byte göndermesini
+      istersiniz ama o sadece 412 tanesini yollar. Peki geriye kalan 100
+      bayta ne oldu?
+    </div><div class="para">
+      Bu veriler hala bizim küçük tampon bölgemizde gönderilmeyi bekliyorlar.
+      Kontrolünüz dışındaki bir takım sebeplerden ötürü işletim sistemi
+      çekirdeği mevcut veriyi bir seferde göndermemeye karar verdi ve iş
+      başa düştü.
+    </div><div class="para">
+      Sorunu halletmek için şöyle bir işlev kullanabilirsiniz:
+    </div>
+<div class="para"><div align="right"><pre class="programlisting">
+#include &lt;sys/types.h&gt;
+#include &lt;sys/socket.h&gt;
+
+int sendall(int s, char *buf, int *len)
+{
+    int total = 0;        // gönderdigimiz byte miktari
+    int bytesleft = *len; // eksik kalan byte miktari
+    int n;
+
+    while(total &lt; *len) {
+        n = send(s, buf+total, bytesleft, 0);
+        if (n == -1) { break; }
+        total += n;
+        bytesleft -= n;
+    }
+
+    *len = total; // gönderilen toplam bayt miktarı
+
+    return n==-1?-1:0; // sorun varsa -1, işlem tamamsa 0 döner
+} 
+</pre></div></div>
+    <div class="para">
+      Bu örnekte, <i><tt>s</tt></i> üzerinden veriyi göndermek
+      istediğimiz soketi, <i><tt>buf</tt></i> veriyi barındıran bellek
+      bölgesini (buffer) ve <i><tt>len</tt></i> de tampondaki byte
+      sayısını gösteren sayıya işaret eden <tt>int</tt> türünde
+      bir göstergedir.
+    </div><div class="para">
+      Hata durumunda işlev <tt>-1</tt> değerini döndürür (ve
+      <i><tt>errno</tt></i> hata değişkeni de <tt>send()</tt>
+      işlevi sayesinde gerekli hata kodunu barındırır.) Ayrıca gönderilebilmiş
+      olan byte sayısı da <i><tt>len</tt></i> parametresinden depolanır.
+      Bu sayı sizin göndermek istediğiniz sayıya eşit olacaktır (hata oluşması
+      durumu haricinde). <tt>sendall()</tt> işlevi verinin
+      tamamını yollamak için elinden geleni yapacaktır ancak bir hata ile
+      karşılaşırsa size geri dönecektir.
+    </div><div class="para">
+      Hemen bir örnek verelim:
+    </div>
+<div class="para"><div align="right"><pre class="programlisting">
+char buf[10] = "Beej!";
+int len;
+
+len = strlen(buf);
+if (sendall(s, buf, &amp;len) == -1) {
+    perror("sendall");
+    printf("We only sent %d bytes because of the error!\n", len);
+} 
+</pre></div></div>
+    <div class="para">
+      Peki ya verinin sadece bir kısmı diğer tarafa erişebildiğinde diğer
+      tarafta ne olup biter? Eğer gelen paketlerin boyu değişken ise bunları
+      alan taraf bir paketin ne zaman bittiğini, diğerinin ne zaman
+      başladığını nasıl anlar? Evet, gerçek dünya senaryoları insanları biraz
+      düşünmeye zorlar. Büyük ihtimalle yukarıdaki problemlerle başa
+      çıkabilmek için yapmanız gereken veriyi paketlemek (encapsulate)
+      olacaktır (<a class="link" href="../bgnet/bgnet_theory-lowlevel.html" title="Düşük Seviye Duyarsızlığı ve Ağ Teorisi">veri paketleme bölümü</a>nü
+      hatırladınız mı?) Ayrıntılar için okumaya devam edin!
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../bgnet/bgnet_advanced-select.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../bgnet/bgnet_advanced.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../bgnet/bgnet_advanced-sonofdataencap.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">select() -- Eşzamanlı G/Ç Çoğullama </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Veri Paketlemesi Hazretleri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

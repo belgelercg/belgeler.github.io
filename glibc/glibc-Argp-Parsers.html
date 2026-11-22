@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:27:38+03:00" /><title>Argp Çözümleyicisinin Belirtilmesi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../glibc/glibc-Argp.html" title="Argp" /><link rel="previous" href="../glibc/glibc-Argp-Global-Variables.html" title="Argp Genel Değişkenleri" /><link rel="next" href="../glibc/glibc-Argp-Option-Vectors.html" title="Seçenekler" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Argp Çözümleyicisinin Belirtilmesi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../glibc/glibc-Argp-Global-Variables.html">Önceki</a> </td><th width="60%" align="center">Argp</th><td width="20%" align="right"> <a accesskey="n" href="../glibc/glibc-Argp-Option-Vectors.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="glibc-Argp-Parsers" id="glibc-Argp-Parsers"></a>Argp Çözümleyicisinin Belirtilmesi</div><dl><dd><div class="para">
+<b><tt>argp_parse</tt></b> işlevinin ilk argümanı <span><i>argp çözümleyici</i></span> olarak bilinen bir <b><tt>struct argp</tt></b> yapısına bir göstericidir:
+    </div>
+<a class="indexterm" name="idx2773" id="idx2773"></a>
+<a name="glibc-struct-argp" id="glibc-struct-argp"></a><div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct <b><tt>argp</tt></b></tt></td><td valign="top"><pre class="paramdef"></pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+Bu yapı, belirtilen seçenek ve argümanların nasıl çözümleneceğini belirtir. Şüphesiz bu işlem diğer argp çözümleyiciler ile birlikte yapılır. Yapı şu üyelere sahiptir:
+    </div><dl><dt><span class="glossterm">
+    <tt>const struct argp_option *<b><tt>options</tt></b></tt>
+    </span></dt><dd class="halfpara"><div class="para">
+Argp çözümleyiciye seçenekleri belirtmek için kullanılan <b><tt>argp_option</tt></b> yapılarının bir vektörüne göstericidir; çözümlenecek bir seçenek yoksa sıfır olabilir. Bkz. <a href="../glibc/glibc-Argp-Option-Vectors.html" class="xref" title="Seçenekler">Seçenekler</a>.
+    </div></dd><dt><span class="glossterm">
+    <tt>argp_parser_t <b><tt>parser</tt></b></tt>
+    </span></dt><dd class="halfpara"><div class="para">
+Bu çözümleyici için eylemleri tanımlayan bir işleve göstericidir; her seçeneğin çözümlenmesinde ve çözümleme sürecindeki diğer iyi tanımlanmış noktalarda bu işlev çağrılır. Değer olarak sıfır belirtilmişse bu, daima <b><tt>ARGP_ERR_UNKNOWN</tt></b> döndüren bir işleve göstericiymiş gibi ele alınır. Bkz. <a href="../glibc/glibc-Argp-Parser-Functions.html" class="xref" title="Argp Çözümleyici İşlevleri">Argp Çözümleyici İşlevleri</a>.
+    </div></dd><dt><span class="glossterm">
+    <tt>const char *<b><tt>args_doc</tt></b></tt>
+    </span></dt><dd class="halfpara"><div class="para">
+Sıfırdan farklıysa, bu çözümleyici tarafından çağrılan seçenek olmayan argümanları açıklayan bir dizgedir. Bu sadece <b><tt>Usage:</tt></b> (Kullanımı:) iletilerini basmak için kullanılır. İçinde satırsonu karakterleri varsa, onların diğer kullanım iletileri oldukları varsayılarak ayrı satırlara basılır. İlk satırdan sonraki satırların başına <b><tt>Usage:</tt></b> yerine <b><tt> or: </tt></b> ( veya: ) getirilir.
+    </div></dd><dt><span class="glossterm">
+    <tt>const char *<b><tt>doc</tt></b></tt>
+    </span></dt><dd class="halfpara"><div class="para">
+Sıfırdan farklıysa bir uzun yardım iletisinden önce ve sonra basılacak ek metinleri içeren bir dizgedir. Dizge içinde bu metinler bir düşey sekme (<b><tt>'\v'</tt></b>, <b><tt>'\013'</tt></b>) karakteri ile ayrılır. Uzlaşımsal olarak, seçeneklerden önceki bilgiler yazılımın ne yaptığını açıklayan bir dizgedir. Seçeneklerden sonra da yazılımın davranışını daha ayrıntılı açıklayan bilgiler basılır.
+    </div></dd><dt><span class="glossterm">
+    <tt>const struct argp_child *<b><tt>children</tt></b></tt>
+    </span></dt><dd class="halfpara"><div class="para">
+<b><tt>argp_children</tt></b> yapılarının vektörüne göstericidir. Gösterici hangi ek argp çözümleyecilerin birlikte kullanılacağını belirtir. Bkz. <a href="../glibc/glibc-Argp-Children.html" class="xref" title="Çocuk Çözümleyiciler">Çocuk Çözümleyiciler</a>.
+    </div></dd><dt><span class="glossterm">
+    <tt>char *(*help_filter)(int <i><tt>anahtar</tt></i>, const char *<i><tt>metin</tt></i>, void *<i><tt>girdi</tt></i>)</tt>
+    </span></dt><dd class="halfpara"><div class="para">
+Sıfırdan farklıysa, yardım iletilerinin çıktısını süzen bir işleve göstericidir. Bkz. <a href="../glibc/glibc-Argp-Help-Filtering.html" class="xref" title="Argp Yardım Çıktısının Özelleştirilmesi">Argp Yardım Çıktısının Özelleştirilmesi</a>.
+    </div></dd><dt><span class="glossterm">
+    <tt>const char *<b><tt>argp_domain</tt></b></tt>
+    </span></dt><dd class="halfpara"><div class="para">
+Sıfırdan farklıysa, bir dizgeye göstericidir. Argp kütüphanesi bu dizgeyi etki alanını değiştirmekte kullanır. Sıfırsa, öntanımlı etki alanı kullanılır.
+    </div></dd></dl><div class="para">
+Yukarıdaki grubun, <b><tt>options</tt></b>, <b><tt>parser</tt></b>, <b><tt>args_doc</tt></b> ve <b><tt>doc</tt></b> alanlarının hepsi gereklidir. Bir argp çözümleyici bir C değişkeni olarak tanımlanmışsa, değişken ilklendirilirken sadece bu alanların belirtilmesi yeterlidir. C yapılarının ilklendirilmeleri gereği olarak kalan üyelerin değerleri öntanımlı olarak sıfır olacaktır. Çoğu argp yapısında bu tasarım kullanılır; sık kullanılan alanlar bir arada gruplanır, kullanılmayanlar belirtilmeden bırakılır.
+  </div></dd></dl><div style="padding:5px"></div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../glibc/glibc-Argp-Global-Variables.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../glibc/glibc-Argp.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../glibc/glibc-Argp-Option-Vectors.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Argp Genel Değişkenleri </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Seçenekler</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>
