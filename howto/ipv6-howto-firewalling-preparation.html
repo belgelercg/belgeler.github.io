@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:43+03:00" /><title>Hazırlık</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/ipv6-howto-firewalling-security.html" title="Güvenlik Duvarı Oluşturmak" /><link rel="previous" href="../howto/ipv6-howto-firewalling-netfilter6.html" title="netfilter6 kullanarak güvenlik duvarı oluşturmak" /><link rel="next" href="../howto/ipv6-howto-firewalling-usage.html" title="Kullanım" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Hazırlık</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/ipv6-howto-firewalling-netfilter6.html">Önceki</a> </td><th width="60%" align="center">Güvenlik Duvarı Oluşturmak</th><td width="20%" align="right"> <a accesskey="n" href="../howto/ipv6-howto-firewalling-usage.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="ipv6-howto-firewalling-preparation" id="ipv6-howto-firewalling-preparation"></a>Hazırlık</div><dl><dd> <div class="head4"><a name="id12" id="id12"></a>Kaynak kodları alın</div><dl><dd><div class="para">
+En yeni çekirdek kaynak kodu: <a class="ulink" href="http://www.kernel.org/" target="_top">http://www.kernel.org/</a>
+  </div><div class="para">
+En yeni iptables paketinin kaynak kodu:
+  </div><ul type="disc" class="itemizedlist"><li>
+Kaynak tar paketi (çekirdek yamaları için): <a class="ulink" href="http://www.netfilter.org/" target="_top">http://www.netfilter.org/</a></li><li>
+Red Hat sistemlerinde RPM üretmek için SRPM: <a class="ulink" href="ftp://ftp.redhat.com/redhat/linux/rawhide/SRPMS/SRPMS/" target="_top">ftp://ftp.redhat.com/redhat/linux/rawhide/SRPMS/SRPMS/</a> veya <a class="ulink" href="http://www.netcore.fi/pekkas/linux/ipv6/" target="_top">http://www.netcore.fi/pekkas/linux/ipv6/</a></li></ul></dd></dl> <div class="head4"><a name="id22" id="id22"></a>Kodları açın</div><dl><dd><div class="para">
+Kodun bulunduğu dizine geçin:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>cd /path/to/src</tt></b>
+</pre></div></div><div class="para">
+Çekirdeğin kaynak kodunu açın ve oluşan dizinin adını değiştirin:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>tar z|jxf kernel-sürüm.tar.gz|bz2</tt></b>
+<tt># </tt><b><tt>mv linux linux-sürüm-iptables-sürüm+IPv6</tt></b>
+</pre></div></div><div class="para"><b><tt>iptables</tt></b> kaynak kodunu açın:</div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>tar z|jxf iptables-sürüm.tar.gz|bz2</tt></b>
+</pre></div></div></dd></dl> <div class="head4"><a name="id32" id="id32"></a>Çekirdeğin kaynak koduna en yeni iptables/IPv6 yamasını uygulayın</div><dl><dd><div class="para">
+<b><tt>iptables</tt></b> dizinine geçin:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>cd iptables-sürüm</tt></b></pre></div></div><div class="para">Yamayı uygulayın:</div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>make pending-patches KERNEL_DIR=/path/to/src/linux-sürüm-iptables-sürüm/</tt></b>
+</pre></div></div><div class="para">
+IPv6 ile ilgili ilave yamayı uygulayın (hala asıl çekirdeğe dahil edilmedi):
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>make patch-o-matic KERNEL_DIR=/path/to/src/linux-sürüm-iptables-sürüm/</tt></b>
+</pre></div></div><div class="para">
+Aşağıdaki seçeneklere evet deyin (<tt>iptables-1.2.2</tt>)
+  </div><ul type="disc" class="itemizedlist"><li>ah-esp.patch</li><li>masq-dynaddr.patch (sadece dinamik IP atanmış WAN bağlantılı (PPP veya PPPoE) sistemlerde ihtiyaç duyulur)</li><li>ipv6-agr.patch.ipv6</li><li>ipv6-ports.patch.ipv6</li><li>LOG.patch.ipv6</li><li>REJECT.patch.ipv6</li></ul><div class="para">
+IPv6 eklentilerini kontrol edin:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>make print-extensions</tt></b>
+Extensions found: IPv6:owner IPv6:limit IPv6:mac IPv6:multiport
+</pre></div></div></dd></dl> <div class="head4"><a name="id42" id="id42"></a>Yeni çekirdeği yapılandırın, derleyin ve kurun</div><dl><dd><div class="para">
+Çekirdek kaynak kodunun bulunduğu dizine geçin:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>cd /path/to/src/linux-sürüm-iptables-sürüm/</tt></b>
+</pre></div></div><div class="para">
+<tt>Makefile</tt> dosyasını düzenleyin:
+  </div><div class="para"><div align="right"><pre class="screen">
+- EXTRAVERSION =
++ EXTRAVERSION = -iptables-sürüm+IPv6-dnm
+</pre></div></div><div class="para">
+<b><tt>configure</tt></b> komutunu çalıştırın ve IPv6 ile ilgili yapılandırmayı yapın:
+  </div><div class="para"><div align="right"><pre class="screen">
+Code maturity level options
+  Prompt for development and/or incomplete code/drivers : yes
+Networking options
+  Network packet filtering: yes
+  The IPv6 protocol: module
+    IPv6: Netfilter Configuration
+      IP6 tables support: module
+      All new options like following:
+        limit match support: module
+        MAC address match support: module
+        Multiple port match support: module
+        Owner match support: module
+        netfilter MARK match support: module
+        Aggregated address check: module
+        Packet filtering: module
+          REJECT target support: module
+          LOG target support: module
+        Packet mangling: module
+        MARK target support: module
+</pre></div></div><div class="para">
+Sisteminizle ilgili diğer yapılandırmaları da yapın.
+  </div><div class="para">
+Derleme ve kurulum: buradaki çekirdekle ilgili bölüme veya diğer NASIL belgelerine bakın.
+  </div></dd></dl> <div class="head4"><a name="id52" id="id52"></a><tt>iptables</tt>'ın ikilik paketlerinin yeniden derlenip kurulması</div><dl><dd><div class="para">
+Çekirdek kod dizininin (<tt>/usr/src/linux</tt>) kullanılabilir olduğundan emin olun.
+  </div><div class="para">
+Eski dizinin adını değiştirin:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>mv /usr/src/linux /usr/src/linux.old</tt></b>
+</pre></div></div><div class="para">Yeni bir sembolik bağ oluşturun:</div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>ln -s /usr/src/linux-sürüm-iptables-sürüm /usr/src/linux</tt></b>
+</pre></div></div><div class="para">SRPM'leri yeniden oluşturun:</div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>rpm --rebuild /SRPM-dizini/iptables-sürüm-release.src.rpm</tt></b>
+</pre></div></div><div class="para">
+Yeni iptables paketlerini (<tt>iptables</tt> + <tt>iptables-ipv6</tt>) kurun.
+  </div><ul type="disc" class="itemizedlist"><li><div class="para">
+RH 7.1 sistemlerinde zaten eski sürümü kurulu olduğundan "tazele" (<tt>freshen</tt>) seçeneğini kullanın:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>rpm -Fhv /RPM-dizini/işlemci/iptables*-sürüm-sıra.işlemci.rpm</tt></b>
+</pre></div></div></li><li><div class="para">
+Eğer daha önce kurulmamışsa <tt>install</tt> seçeneğini kullanın:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>rpm -ihv /RPM-dizini/işlemci/iptables*-sürüm-sıra.işlemci.rpm</tt></b>
+</pre></div></div></li><li><div class="para">
+RH 6.2 sistemlerinde 2.4.x çekirdek kurulu olmadığından paket bağımlılıkları yerine getirilemez. Kurmak için <tt>--nodeps</tt> seçeneğini kullanın:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>rpm -ihv --nodeps /RPM-dizini/işlemci/iptables*-sürüm-sıra.işlemci.rpm</tt></b>
+</pre></div></div></li></ul><div class="para">
+<b><tt>iptables</tt></b> kütüphaneleri için bir sembolik bağ oluşturmak gerekebilir:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>ln -s /lib/iptables/ /usr/lib/iptables</tt></b>
+</pre></div></div></dd></dl></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/ipv6-howto-firewalling-netfilter6.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/ipv6-howto-firewalling-security.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/ipv6-howto-firewalling-usage.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">netfilter6 kullanarak güvenlik duvarı oluşturmak </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Kullanım</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

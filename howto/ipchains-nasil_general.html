@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:23+03:00" /><title>Genel</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/ipchains-nasil.html" title="Linux IPCHAINS NASIL" /><link rel="previous" href="../howto/ipchains-nasil_what.html" title="Nedir?" /><link rel="next" href="../howto/ipchains-nasil_expert.html" title="Uzman" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Genel</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/ipchains-nasil_what.html">Önceki</a> </td><th width="60%" align="center">Linux IPCHAINS NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/ipchains-nasil_expert.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="ipchains-nasil_general" id="ipchains-nasil_general"></a>Genel</div><dl><dd> <div class="head3"><a name="id1" id="id1"></a>Genel Olarak Ipchains</div><dl><dd><div class="para">
+        Ipchains'de öntanımlı gelen veya kullanıcının tanımlayabileceği kural
+        kümeleri (<tt>chain</tt> - burada küme diye bahsedilecek)
+        sorgulamaları yürütür. Bu kümeler gelen paketleri sorgular ve tanımlara
+        uyan paketleri yakalarlar. Öntanımlı olarak gelen 3 adet küme vardır:
+        </div><div class="variablelist"><dl><dt><span class="term">input</span></dt><dd class="varlist"><div class="para">
+                Makinanıza gelen paketler için geçerlidir. Bunun içine makinanın
+                kendi haberleşmesi de dahildir.
+              </div></dd><dt><span class="term">output</span></dt><dd class="varlist"><div class="para">
+                Makinanızdan çıkan paketler için.
+              </div></dd><dt><span class="term">forward</span></dt><dd class="varlist"><div class="para">
+                Makinanız maskeleme yapıyorsa.
+              </div></dd></dl></div><div class="para">
+        Bunlar haricinde kullanıcılar kendi kümelerini tanımlayabilirler veya
+        öntanımlı kümeleri kullanabilirler. Bu komut <tt>eth0-in</tt>
+        adlı bir küme oluşturur:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# ipchains -N eth0-in
+</pre></div></div>
+      <div class="para">
+        <tt>ipchains</tt> komutuyla kullanılabilecek parametreleri
+        3 kısma ayırabiliriz:
+        </div><ul type="disc" class="itemizedlist"><li><div class="para">
+              <tt>[-p|-s|-d ...]</tt> gibi sorguları düzenleyen
+              parametreler.
+            </div></li><li><div class="para">
+              <tt>[-N|-D|-X ...]</tt> gibi kümeler zerinde işlem
+              yapan parametreler.
+            </div></li><li><div class="para">
+              <tt>[--version] [-help] ...</tt> genel işlemler
+              yapan parametreler.
+            </div></li></ul></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Kural Koşul Tanımlamaları</div><dl><dd><div class="para">
+        Gelen / gönderilen / yönlendirilen her paket için kümeler ve kümeler
+        altında gruplanmış kurallar olduğunu belirtmiştik. Her paket durumuna
+        göre bu kurallarla karşılaştrılıyor ve yakalanırsa (kurallara uyarsa)
+        belirtilen yaptırımlar paket üzerinde uygulanıyordu. Yani ben istersem
+        <tt>155.223.3.202</tt> adresinin 21. portundan benim Linux
+        makinemdeki 1025. geçici (ephemeral karşılığı olarak) porta gelen ftp
+        isteğini reddedebilirim / kabul edebilirim / yerel herhangi başka bir
+        porta yönlendirebilirim.
+      </div><div class="para">
+        Şimdi paketi kabul etmeyen bir ipchains satırını inceleyelim:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>ipchains -A input -p tcp -s 155.223.3.202/32 -d 155.223.64.10/32 -j REJECT</tt></b>
+            |        |      |               |   |              |   | |
+            +---+    +--+   +-----------+   |   +----------+   |   | +-----+
+            |   |    |  |   |           |   |   |          |   |   | |     |
+              1        2          3         4          5       6   7    8
+</pre></div></div>
+      <ol class="orderedlist" start="ignore" type="1"><li><div class="listitem"><div class="para">
+              Burada <tt>input</tt> kümesi içinde (bu küme öntanımlı
+              bir kümedir kullanıcının herhangi bir küme tanımı yapmasına gerek
+              yoktur) kuralın nereye yerleştirileceği belirtilir.
+            </div><div class="para">
+              <tt>-A</tt>, kural kümenin sonuna eklenecek demektir.
+              Çoğu durumda kuralların diziliş sırası önemlidir.
+            </div></div></li><li><div class="listitem"><div class="para">
+              Hangi protokol için bu testin yapılacağı belirlenir. Burada
+              protokol <tt>tcp</tt> seçilmiştir.
+            </div></div></li><li><div class="listitem"><div class="para">
+              Kaynak makinanın adresidir. Bu adres bir ip olacağı gibi
+              bir alan adı da olabilir.
+            </div></div></li><li><div class="listitem"><div class="para">
+              Adresin ağ maskesidir. Buradaki sayı <tt>255.255.255.255</tt>
+              olan maskeyi ifade eder. <tt>255.255.255.255</tt> için soldan
+              itibaren aralıksız bit sayısı = 32.
+            </div></div></li><li><div class="listitem"><div class="para">
+              Paket için hedef makina tanımı; 3'deki gibidir.
+            </div></div></li><li><div class="listitem"><div class="para">
+              Hedef makinanın ağ maskesi.
+            </div></div></li><li><div class="listitem"><div class="para">
+              Şu ana kadar olan kısımlar paketin test edileceği şartlardı.
+              Eğer paket bu koşullara uyan paketse yani aranılan paketse bu
+              pakete ne gibi bir yaptırım (policy) uygulanacağı burada
+              belirtilir.
+            </div></div></li><li><div class="listitem"><div class="para">
+              Yakalanan paket kabul edilmeyecektir (ayrıntılı açıklama <a href="../howto/ipchains-nasil_general.html#ipchains-nasil_policies" class="xref" title="Yaptırımlar">Yaptırımlar</a> bölümünde bulunabilir).
+            </div></div></li></ol></dd></dl> <div class="head3"><a name="ipchains-nasil_policies" id="ipchains-nasil_policies"></a>Yaptırımlar</div><dl><dd><div class="para">
+        Yukarıdaki örnekte yakalanan paket reddedildi. Yani paketi gönderen
+        makinaya (155.223.3.202) gelen <tt>tcp</tt> paketinin
+        reddedildiğini belirten bir <tt>ICMP</tt> paketi geri
+        gönderildi; başka neler yapılabilirdi?
+        </div><div class="variablelist"><dl><dt><span class="term">DENY</span></dt><dd class="varlist"><div class="para">
+                Paket öldürülebilir. Yani paketin çıktığı makinaya hiçbir geri
+                bildirim yapılmaz. Bu biraz kabaca görünse de portlarınızı
+                tarayan bir <i>portscan</i> esnasında bu işlemi
+                karşıdaki için daha uzun bir hale getirir. Portlarınizı tarayan
+                bu <i>meraklı</i> her seferinde
+                <tt>timeout</tt> beklemek zorunda kalır.
+              </div></dd><dt><span class="term">REJECT</span></dt><dd class="varlist"><div class="para">
+                Paket reddedilir ve geriye bilgisi döner.
+              </div></dd><dt><span class="term">ACCEPT</span></dt><dd class="varlist"><div class="para">
+                Paket bir işleme tabi tutulmadan yoluna devam eder. Kabul edilir.
+              </div></dd><dt><span class="term">MASQ</span></dt><dd class="varlist"><div class="para">
+                Eğer makinanız arkada bir kaç sisteme maskeleme hizmeti veriyorsa
+                (masquerade-howto incelenebilir) makinanız ve dolayısıyla
+                ethernet kartlarınız üzerinden o sistemlere ait paketler
+                taşınmalıdır. Bu yaptırım kullanıcı tanımlı kümelerde veya
+                öntanımlı <tt>forward</tt> kümesinde kullanılabilir.
+                Çekirdekte ise <tt>CONFIG_IP_MASQUERADE</tt>
+                tanımlanmalıdır.
+              </div><div class="para">
+                <tt>155.223.3.0/255.255.255.0</tt> ağını elimizdeki
+                bir makina ile maskelediğimizi farzedersek maskeleme ayarları
+                şu şekilde yapılabilirdi:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# ipchains -A forward -p all -s 155.223.3.0/24 -d 0/0 -j MASQ
+                         |                               |
+                     tcp/udp/icmp                     yaptırım
+</pre></div></div>
+              </dd><dt><span class="term">REDIRECT</span></dt><dd class="varlist"><div class="para">
+                Eğer çekirdeğe <tt>CONFIG_IP_TRANSPARENT_PROXY</tt>
+                desteği verilmiş ise yakalanan paket bir başka YEREL porta
+                yönlendirilebir. Proxy kullanmak için web isteklerini proxy'ye
+                yöneltmek gerekir. Bu durumda yapılmasi gereken ise 80. port
+                isteklerini 8080 porta ve/veya 8081'i 8080'e yönlendirmektir.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# ipchains -A input -p tcp -s 0/0 -d 155.223.3.202 80 -j REDIRECT 8080
+</pre></div></div>
+              </dd></dl></div> <div class="head4"><a name="id13" id="id13"></a>Port Numaraları</div><dl><dd><div class="para">
+          Bu arada port numaralarına da değinmek gerek; port numarası için
+          iki tam sayı ayrılmıştır  <tt>port_a:port_b</tt> biçeminde.
+          Alabileceği değerler -doğal olarak- 0 ile 65536 arasındadır.
+          Belirtilmeyen port max veya min değer alır. Yani:
+</div>
+<div class="para"><pre class="literallayout">
+    1023:         --&gt;   1023 - 65535
+    :1023         --&gt;   0    - 1023   portları belirtir.
+</pre></div>
+        <div class="para">
+          <tt>!</tt> parametresi de geçerlidir:
+</div>
+<div class="para"><pre class="literallayout">
+    ! 6000:6010   --&gt;   1..5999 ve 6011..65536 portlar,
+    ! 22          --&gt;   22. port hariç tümü manasına gelir.
+</pre></div>
+<div class="para">
+          değer girilmezse tüm portlar ele alınır.
+        </div></dd></dl></dd></dl> <div class="head3"><a name="id4" id="id4"></a>Firewall Kurarken</div><dl><dd> <div class="head4"><a name="id14" id="id14"></a>Daha Neler Yapılabilir?</div><dl><dd><div class="para">
+          Güvenlik duvarı kurarken genel olarak izlenen yol belirli bir sınırın
+          altındaki portların tamamını kapatmak ve makinada verilecek servisler
+          gözönüne alınarak sadece gerekli portları açmaktır. Bu şekilde bir
+          ölçüde korunma sağlanır.
+        </div><div class="para">
+         Örnek:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# ipchains -F input
+# ipchains -F forward
+# ipchains -F output
+</pre></div></div>
+<div class="para">veya</div>
+<div class="para"><div align="right"><pre class="screen">
+# ipchains -F
+</pre></div></div>
+<div class="para">ve</div>
+<div class="para"><div align="right"><pre class="screen">
+# ipchains -P input ACCEPT
+# ipchains -P forward ACCEPT
+# ipchains -P output ACCEPT
+</pre></div></div>
+        <div class="para">
+          Bu şekilde daha önceden tanımlı olması muhtemel ipchains tanımlarını
+          silmiş olduk. Mutlaka güvenlik duvarı betiğinizin başında bulunması
+          gereklidir. Daha önceden kazara eklenen bir komut veya deneme amaçlı
+          açılan bir port güvenlik duvarı üzerinde önemli delik oluşturabilir.
+          Veya o an sizin dışarıyla olan bağlantınız kesebilir.
+          (<tt>output DENY</tt> gibi)
+        </div><div class="para">
+          Böyle bir yapıyı oluştururken temel olarak tamamen birbirinin tümleyeni
+          olan iki yöntemden biri kullanılabilir:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# ipchains -P input DENY
+# ipchains -P forward DENY
+# ipchains -P output ACCEPT
+</pre></div></div>
+        <div class="para">
+          Bütün öntanımlı kümeler için ana yaptırımları tanımladık. Burası paket
+          kurallardan geçip yakalanmadığında uygulanır. Yani şu anda elimizdeki
+          giriş portları kapalı durumda.Kullanacağımız her portu açmamız gerekli.
+        </div><div class="para">
+        VEYA
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# ipchains -P input ACCEPT
+# ipchains -P forward ACCEPT
+# ipchains -P output ACCEPT
+</pre></div></div>
+        <div class="para">
+          Şeklinde tanımlar yapıp belli portları kapatmak ve istemediğimiz
+          bağlantıları yakalamak gereklidir. Kolayca anlaşılacağı gibi
+          ikinci yol yakalanmayan paketleri kabul eder yani gözümüzden
+          kaçan bir durum olduğunda port açık kalır. Özellikle
+          <tt>ipfwadm</tt>'den kalma bir alışkanlıkla tanımlayacağınız
+          tablolar bu şekilde olabilir. AMA birinci yöntem her durumda ikinciden
+          daha emindir.
+        </div><div class="para">
+          Eğer gözümüzden kaçan bir durum varsa; hiç önemli değil; kabul
+          edilmeyecektir. Tabii ki bu bahisler çıkış kümesi olan output
+          için geçerli değildir.Yapının bu şekilde kurulması daha zor görünse
+          de güvenlik duvarı bir defa ayağa kalktıktan sonra da bir zorluk
+          çıkmaz.
+        </div><div class="para">
+          Şu durumda bütün öntanımlı yaptırımları DENY kabul ediyoruz.
+          Daha önce bahsettiğimiz üzere REJECT kullanmadık. Elimizde dışarıdan
+          hiçbir bağlantı kabul etmeyen ve hiçbir bağlantı yönlendirmeyen
+          (<tt>forward</tt>) bir güvenlik duvarı var.
+          <tt>Output</tt> için de özel ve çok geçerli bir sebep
+          olmadıkça <tt>ACCEPT</tt> kullanmak mantıklı olacaktır.
+          Aksi takdirde çoğu durumda kendimizi hapsetmiş oluruz.
+        </div></dd></dl> <div class="head4"><a name="id24" id="id24"></a>Hangi Portlar?</div><dl><dd><div class="para">
+         Makinanın (sunucu) ne tür hizmetler vereceğini saptamamız ve bu
+         hizmetler için hangi portlara ihtiyaç duyacağımızı belirlememiz
+         gerekir. Bunun için elimizde hazır olan kaynakları kullanabiliriz.
+         <tt>/etc/services</tt> dosyası bize yeterli bilgiyi
+         verecektir. Örnek olarak <tt>ftp</tt> hizmeti verebilmek
+         için hangi portlara ihtiyacımız olduğunu saptayalım:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# cat /etc/services | grep ftp
+
+  ftp-data    20 tcp
+  ftp         21 tcp
+</pre></div></div>
+        <div class="para">
+          Anlaşıldığı üzere <tt>ftp</tt> için 20. port ve 21.
+          portların açılması gerekli. Bu portları sadece <tt>tcp</tt>
+          protokolü için açmamız yeterli olacaktır.
+        </div><div class="para">
+          Böylece kullanılmayan <tt>udp</tt> protokolü için bir boş
+          port bırakmamış oluruz.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# ipchains -A input -p tcp -s 0/0 -d 155.223.3.202/32  20 -j ACCEPT
+# ipchains -A input -p tcp -s 0/0 -d 155.223.3.202/32  21 -j ACCEPT
+</pre></div></div>
+<div class="para">ya da</div>
+<div class="para"><div align="right"><pre class="screen">
+# ipchains -A input -p tcp -s 0/0 -d 155.223.3.202/32  20:21 -j ACCEPT
+</pre></div></div>
+<div class="para">
+          komutları <tt>input</tt> kümemize <i>herhangi bir
+          yerden <tt>tcp</tt> ile (doğal olarak) 20 ve 21. portlara
+          istek gelirse bu isteği yakala ve kabul et</i> manasına gelen
+          satırı ekler .(-A = küme sonuna ekle; append; bkz. <a href="../howto/ipchains-nasil_chains.html" class="xref" title="Kümeler">Kümeler</a>)
+        </div><div class="para">
+          Eğer e-posta alışverişini sağlamak istersek:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# ipchains -A input -p tcp -s 0/0 -d 155.223.3.202/32 25 -j ACCEPT
+</pre></div></div>
+<div class="para"><tt>ssh</tt> için:</div>
+<div class="para"><div align="right"><pre class="screen">
+# ipchains -A input -p tcp -s 0/0 -d 155.223.3.202/32 22 -j ACCEPT
+# ipchains -A input -p udp -s 0/0 -d 155.223.3.202/32 22 -j ACCEPT
+</pre></div></div>
+        <div class="para">
+          Dikkat edilirse <tt>ssh</tt> icin 22. port hem
+          <tt>tcp</tt> hem de <tt>udp</tt> olarak açıldı.
+        </div><div class="para">
+          Özel olarak bildiğimiz bir makinadan telnet kabul edelim:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# ipchains -A input -p udp -s 10.1.10.3/32 23 -d 155.223.3.202/32 23 -j ACCEPT
+</pre></div></div>
+        <div class="para">
+          Bizim de aynı şekilde çıkmamız gerekirse (şu durumda gerekmiyor çünkü
+          <tt>output</tt> yaptırımı <tt>accept</tt>) şu
+          satırı da eklememiz gerekir.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# ipchains -A input -p udp -d 155.223.3.202/32 23 -d 10.1.10.3/32 23 -j ACCEPT
+</pre></div></div>
+        <div class="para">
+          Bunun kısa yolu ise yukarıdaki komutlardan birini -b parametresiyle
+          kullanmaktır. (-b: [b]idirectional - iki yönlü kip).
+        </div><div class="para">
+          Benzer şekilde <tt>web</tt>, <tt>domain</tt>, vb.
+          portlar da ihtiyaca göre açıldıktan sonra rahatlayabiliriz. Tabii ki
+          bu onlarca komutu her sistem açılışında da yazmak işkence olur kaldı ki
+          çoğu zaman acil olarak güvenlik duvarının devreden çıkması gerekebilir.
+          Bir -F komutu sonrası kuralların tamamı (genel yaptırımlar hariç)
+          iptal edilir. Bu sebeple yaptığımız bu ayarları yani oluşturduğumuz
+          kural kümelerini saklamalıyız. Bunu bir betik yardımıyla da yapabiliriz.
+          Ama ipchains komutunun bu işi görebilecek işlevleri olduğunu bilmek de
+          yararlı olur.
+        </div></dd></dl> <div class="head4"><a name="id34" id="id34"></a>Betik Üzerinden Çalıştırma</div><dl><dd><div class="para">
+          Burada vereceğim basit bir betik size bu konuda yardımcı olabilir. Bu
+          betik <tt>/etc/firewall.conf/</tt> adlı tanım dosyanızdaki
+          komutları işletir.
+        </div><div class="para">
+          Gerekirse de -F (<tt>flush</tt>) ile iptal eder istenirse
+          yeniden çalıştırır:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+#!/bin/bash
+#ipchains yükleme betiğidir
+#/etc/firewall.conf dosyasını okur
+
+set -e
+
+case "$1" in
+
+        start)
+        echo "Güvenlik Duvarı çalıştırılıyor..."
+        /etc/firewall.conf
+        echo "TAMAM"
+        ;;
+        stop)
+        echo "Güvenlik Duvarı durduruluyor..."
+        /sbin/ipchains -F
+        /sbin/ipchains -P input ACCEPT
+        /sbin/ipchains -P forward ACCEPT
+        /sbin/ipchains -P output ACCEPT
+        echo "TAMAM"
+        ;;
+        restart)
+        echo "Güvenlik Duvarı yeniden çalıştırılıyor..."
+        /sbin/ipchains -F
+        /sbin/ipchains -P input ACCEPT
+        /sbin/ipchains -P forward ACCEPT
+        /sbin/ipchains -P output ACCEPT
+        /bin/sleep 1
+        /etc/firewall.conf
+        echo "TAMAM"
+        ;;
+        * )
+        echo "Kullanımı : $N {start|stop|restart}" &gt;&amp;2
+        exit 1
+        ;;
+esac
+
+exit 0
+</pre></div></div>
+        </dd></dl> <div class="head4"><a name="id44" id="id44"></a>Güvenlik Duvarı Çatısını Kurmak</div><dl><dd><div class="para">
+          <tt>firewall.conf</tt> dosyasını oluşturmak içinse 2
+          yolunuz var:
+          </div><ol class="orderedlist" start="ignore" type="1"><li><div class="listitem"><div class="para">
+                Yazdığınız komutları bir metin düzenleyici (pico, emacs) ile
+                <tt>/etc/firewall.conf</tt> dosyasına ekleyebilirsiniz.
+              </div></div></li><li><div class="listitem"><div class="para">
+                Tüm komutlar bellekteyken
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# ipchains-save &gt; firewall.conf
+</pre></div></div>
+<div class="para">
+                komutu ile dosyaya eklenir. Parametresiz girilen komut bütün
+                kümeleri ekler; istenirse
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# ipchains [<i>küme ismi</i>] &gt; firewall.conf
+</pre></div></div>
+<div class="para">ile istenilen küme yazılabilir.
+</div><div class="para">Sonra</div>
+<div class="para"><div align="right"><pre class="screen">
+# ipchains-restore &lt; firewall.conf
+</pre></div></div>
+<div class="para">
+                ile yeniden yüklenebilir. Burada bellekte halihazırda kullanımda
+                olan <tt>ipchains</tt> kümeleri varsa bunları silmek
+                için sizden onay bekler. Eğer <tt>-f</tt> parametresini
+                de eklerseniz bu uyarıyı almazsınız.
+              </div></div></li></ol></dd></dl></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/ipchains-nasil_what.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/ipchains-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/ipchains-nasil_expert.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Nedir? </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Uzman</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

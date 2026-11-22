@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:23+03:00" /><title>Kümeler</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/ipchains-nasil.html" title="Linux IPCHAINS NASIL" /><link rel="previous" href="../howto/ipchains-nasil_expert.html" title="Uzman" /><link rel="next" href="../howto/ipchains-nasil_biblio.html" title="Kaynakça" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Kümeler</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/ipchains-nasil_expert.html">Önceki</a> </td><th width="60%" align="center">Linux IPCHAINS NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/ipchains-nasil_biblio.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="ipchains-nasil_chains" id="ipchains-nasil_chains"></a>Kümeler</div><dl><dd>
+<div class="para"><pre class="literallayout">
+|======================================================================|
+|                               IPCHAINS                               |
+|======================================================================|
+|     |                                                                |
+|     +---------------+--------------+-----------------+               |
+|     |               |              |                 |               |
+|  =============   =============  ============  =====================  |
+|  |   input   |   |   output  |  |  forward |  | kullanıcı tanımlı |  |
+|  =============   =============  ============  =====================  |
+|  | sorgu 1   |   |  sorgu 1  |  | sorgu 1  |  |                   |  |
+|  | sorgu 2   |   |  sorgu 2  |  | sorgu 2  |  |  sorgulamalar     |  |
+|  | sorgu 3   |   |  sorgu 3  |  | sorgu 3  |  |                   |  |
+|  |  ...      |   |   ...     |  |  ...     |  |                   |  |
+|  =============   =============  ============  =====================  |
+|======================================================================|
+</pre></div>
+<div class="para">
+      Ipchains ile sorgulanacak kurallar birbirinden farklı 4 tip küme içinde
+      bulunabilirler. Kullanıcı tanımlı bir küme olması zorunlu değildir ama
+      kullanıldığında hiyerarşik bir yapı oluşturulup daha sonraki incelemelerde
+      kolaylık sağlanabilir.
+    </div> <div class="head3"><a name="id1" id="id1"></a>Küme işlemleri</div><dl><dd><div class="para">
+        Şimdi ağ üzerinden ethernet kartı ile gelen bir paket için olası bir
+        senaryo düzenleyelim:
+      </div><div class="para">
+        Ulaşan paket önce <tt>input</tt> kümesi tarafından
+        sorgulanacaktır. Sorgulamalar içinde kullanıcı tanımlı bir kümeye
+        bağ varsa; bağ üzerinden kullanıcı tanımlı küme de işlenir, bu küme
+        sonlandığında (<tt>RETURN</tt> veya kural sonu) kümeyi
+        çağıran sorguya geri dönüp bir sonraki <tt>input</tt> kümesi
+        sorgusuyla devam edecektir (bir program kodunda alt yordam çağrılması
+        gibi). Eğer paket hiçbir sorguyla uyuşmadı ise o zaman <tt>input</tt>
+        kümesinin genel yaptırımıyla işlenecektir (<i>input chain
+        policy</i>). Paket ise iki türlü yakalanabilir:
+        </div><ol class="orderedlist" start="ignore" type="1"><li><div class="listitem"><div class="para">
+              Küme sorgusu ile
+            </div></div></li><li><div class="listitem"><div class="para">
+              Kullanıcı tanımlı bir küme sorgusuna bağ ile
+            </div></div></li></ol><div class="para">
+        1. durumda koşulun içeriğinde belirtilen, paketin yakalanması sonucu
+        uygulanacak yaptırım işlenir. (paketi kabulet, redddet, yönlendir gibi).
+        2. durumda ise koşulun bulunduğu kümeyi çağıran 1. türde bir yakalama
+        söz konusu olur ve çağıran koşulun yaptırımı uygulanır.
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Kümeler üzerinde işlem yapan komutlar</div><dl><dd><div class="para">
+        Görüldüğü gibi kullanıcı kendisi bir kural kümesi tanımlayabilir. Bu
+        tanımlarda ise şu komutlar geçerlidir:
+        </div><div class="variablelist"><dl><dt><span class="term">-N [<i>küme ismi</i>]</span></dt><dd class="varlist"><div class="para">
+                Yeni bir küme tanımlamak için kullanılır.Yalnız küme
+                isminin 8 karakteri geçmemesi gerekir. Örneğin:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# ipchains -N input_eth0
+# ipchains -N input_eth1
+</pre></div></div>
+<div class="para">
+                komutları <tt>input_et</tt> adlı <b>bir</b> tane küme açarlar.
+              </div></dd><dt><span class="term">-L [<i>küme ismi</i>]</span></dt><dd class="varlist"><div class="para">
+                Verilen kümenin içerdiği koşulları listeler. Eğer parametresiz
+                kullanılırsa tüm tanımlı kümeleri gösterir.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# ipchains -L input
+# ipchains -L eth0-in
+</pre></div></div>
+              </dd><dt><span class="term">-F [<i>küme ismi</i>]</span></dt><dd class="varlist"><div class="para">
+                Verilen kümenin kurallarını iptal eder. Tüm kümenin kurallarını
+                tek tek silmek gibidir. Parametresiz kullanılırsa öntanımlı
+                ve kullanıcı tanımlı tüm kümeleri / kuralları iptal eder. Eğer
+                bir betik yazılacaksa en başta kuralları sıfırlamak için
+                bulunması çok mantıklı olacaktır.
+              </div></dd><dt><span class="term">-Z [<i>küme ismi</i>]</span></dt><dd class="varlist"><div class="para">
+                Her koşulun çekirdekte tutulan iki adet sayacı vardır. Birisi
+                koşulu tutan yani yakalanan paket sayısını, diğeri ise bu şekilde
+                geçen bayt sayısını tutar. -Z (= zero) parametresi ise tutulan
+                sayaçları sıfırlamaya yarar.
+              </div></dd><dt><span class="term">-X [<i>küme ismi</i>]</span></dt><dd class="varlist"><div class="para">
+                Bir kümenin tamamını silmeye yarar. Parametre girilmezse
+                kullanıcı tanımlı bütün kümeleri siler. Yalnız bir kümenin
+                silinebilmesi için içinin boş olması yani kural içermemesi
+                gerekir (<i>rm komutuyla dizin silmek gibi</i>).
+              </div></dd></dl></div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/ipchains-nasil_expert.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/ipchains-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/ipchains-nasil_biblio.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Uzman </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Kaynakça</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

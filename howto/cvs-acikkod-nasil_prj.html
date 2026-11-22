@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:59+03:00" /><title>Proje Başlatmak</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/cvs-acikkod-nasil.html" title="CVS ile Açık Kod Yazılım Geliştirme" /><link rel="previous" href="../howto/cvs-acikkod-nasil_ayar.html" title="CVS Sunucunun Kurulması ve Yapılandırılması" /><link rel="next" href="../howto/cvs-acikkod-nasil_dcmd.html" title="Geliştirici Komutları" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Proje Başlatmak</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/cvs-acikkod-nasil_ayar.html">Önceki</a> </td><th width="60%" align="center">CVS ile Açık Kod Yazılım Geliştirme</th><td width="20%" align="right"> <a accesskey="n" href="../howto/cvs-acikkod-nasil_dcmd.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="cvs-acikkod-nasil_prj" id="cvs-acikkod-nasil_prj"></a>Proje Başlatmak</div><dl><dd><div class="para">
+CVS sunucusuna bağlanmadan önce <tt>CVSROOT</tt> ortam değişkenine projeyi başlatacağımız sunucu ile ilgili atama yapılmalıdır:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>export CVSROOT=':pserver:simsek@cvs.acikkod.org:/var/cvsroot'</tt></b></pre></div></div>
+    <div class="para">
+İlk adım, sunucuya bağlanıp bağlanamadığımızı görelim:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cvs login</tt></b>
+CVS password:
+</pre></div></div>
+    <div class="para">
+Parolanızı girdiğinizde hata vermiyorsa her şey yolunda demektir. Hata veriyorsa <tt>/var/cvsroot</tt> dizininin kullanıcı haklarının <tt>cvs</tt> kullanıcısına ait olup olmadığını, <tt>/etc/inetd.conf</tt>'da <b><tt>cvs</tt></b>'nin yolunun doğru verildiğine emin olun.
+    </div><div class="para">
+Parolanızı girdiğinizde hata vermiyorsa her şey yolunda demektir. Şimdi bir projeye başlayabiliriz. Proje yöneticisi (proje yöneticisi olmak <tt>root</tt> olmak demek değildir. Bu işlemkeri yapmak için önce kendi kullanıcı adınıza geçin) olarak projeyi açalım. Bunun için bir kaç yol var.
+    </div> <div class="head3"><a name="id1" id="id1"></a>Başlamış Bir Projeyi CVS'ye Yerleştirmek</div><dl><dd><div class="para">
+Eğer daha önce başladığımız bir projeyi CVS sunucuya yerleştirmek istiyorsak bu projeyi <tt>import</tt> etmemiz gerekir. Projenin <tt>/home/simsek/test</tt> altında yer aldığını varsayıyoruz.
+    </div>
+<div class="para"><div align="right"><pre class="screen">$ <b><tt>cd /home/simsek/test</tt></b>
+$ <b><tt>cvs import -m "CVS e tasiniyoruz" test AcikkodORG ikincisurum</tt></b>
+N test/6
+N test/orig.sh
+N test/rsync-cron.sh
+
+No conflicts created by this import
+</pre></div></div>
+      <div class="para">
+Kodlarımız <tt>$CVSROOT/test</tt> dizinine yerleştirilmiş oldu. Eğer <tt>CVSROOT</tt> ortam değişkeni belirlenmemişse <b><tt>-d</tt></b> seçeneği ile <tt>CVSROOT</tt>'u belirtmemiz gerekirdi. Burada <tt>test</tt> proje adı, <tt>AcikkodORG</tt> dağıtıcı ismi, <tt>ikincisurum</tt> ise sürüm bilgisidir. Kodlarınız <tt>$CVSROOT</tt> altında proje ismi ile aynı dizin içerisine yerleştirilir.
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Sıfırdan Projeye Başlamak</div><dl><dd><div class="para">
+Eğer CVS sunucusuna uzakten erişiyorsanız sıfırdan projeye başlamakla başlamış bir projeyi CVS'ye yerleştirmek arasında bir fark yoktur. Ama CVS sunucusuna doğrudan erişiminiz varsa <tt>$CVSROOT</tt> altında o dizini açmak yeterlidir.
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>mkdir -p /var/cvsroot/test</tt></b></pre></div></div>
+    <div class="para">
+Yalnız dizin haklarını ayarlamayı unutmayın. İşlerimizi <tt>root</tt> olarak yaptığımızdan açtığımız dizin ve dosyalar bu kullanıcı hakları ile açılıyor. CVS, yalnızca çalıştığı kullanıcının dizinlerine ulaşabilir.
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>chown -R cvs.cvs /var/cvsroot/test</tt></b></pre></div></div>
+      </dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/cvs-acikkod-nasil_ayar.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/cvs-acikkod-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/cvs-acikkod-nasil_dcmd.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">CVS Sunucunun Kurulması ve Yapılandırılması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Geliştirici Komutları</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

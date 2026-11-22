@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:25:53+03:00" /><title>Python Etki ve İsim Alanları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../uygulamalar/python-tutorial_siniflar.html" title="Sınıflar" /><link rel="previous" href="../uygulamalar/python-tutorial_terminoloji.html" title="Terminoloji hakkında..." /><link rel="next" href="../uygulamalar/python-tutorial_siniflar-ilk.html" title="Sınıflara İlk Bakış" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Python Etki ve İsim Alanları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../uygulamalar/python-tutorial_terminoloji.html">Önceki</a> </td><th width="60%" align="center">Sınıflar</th><td width="20%" align="right"> <a accesskey="n" href="../uygulamalar/python-tutorial_siniflar-ilk.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="python-tutorial_isimalani" id="python-tutorial_isimalani"></a>Python Etki ve İsim Alanları</div><dl><dd><div class="para">
+        Sizi sınıflar ile tanışmadan önce, biraz da Python'un etki alanı kurallarından
+        bahsetmem gerek. Sınıf tanımlamalarını tam olarak anlamak için etki ve isim
+        alanlarının nasıl çalıştığını bilmeniz gerek. Bu konudaki bilgiler ileri
+        seviyedeki her Python programcısı için yaralıdır.
+      </div><div class="para">Birkaç tanım ile işe koyulalım.
+      </div><div class="para">
+        Bir <i>isim alanı</i> isimler ile nesnelerin eşleşmesidir.
+        Çoğu isim alanı şu anda Python sözlükleri olarak kodlanmışlardır, fakat bu
+        hiçbir şekilde fark edilmez ve gelecekte değiştirilebilir. İsim alanlarına
+        örnekler: yerleşik isimler kümesi (<tt>abs()</tt> gibi işlevler
+        ve yerleşik istisna isimleri vs.), bir modül içindeki global isimler ve
+        bir işlev çağrısındaki yerel isimler. Bir nesnenin özellikler kümesi de
+        bir isim alanıdır. İsim alanlarına ilişkin bilinecek önemli şey farklı
+        isim alanlarındaki isimlerin birbirileri ile hiçbir ilişkisi olmadığıdır.
+        Örneğin, iki farklı modül karışıklık yaratmadan “maksimize” adlı birer
+        işlev tanımlayabilir; kullanıcılar bu işlevleri önlerine modül adını
+        ekleyerek kullanırlar.
+      </div><div class="para">
+        Bu arada, bir noktadan sonra yazılan her herhangi bir isim için <i>öznitelik</i>
+        sözcüğünü kullanıyorum. Örneğin, <tt>z.real</tt> ifadesinde
+        <tt>real</tt>, <tt>z</tt> nesnesinin bir özniteliğidir.
+        Modül içindeki isimlere atıflar da öznitelik atıflarıdır:
+        <tt>modulAdi.fonkAdi</tt> ifadesinde <tt>modulAdi</tt>
+        bir modül nesnesidir ve <tt>fonkAdi</tt> bunun bir özniteliğidir.
+        Bir modülün öznitelikleri ile içinde tanımlı global değişkenler aynı isim
+        alanını paylaşırlar.<sup>[<a name="id88" href="#ftn.id88" id="id88">88</a>]</sup>
+      </div><div class="para">
+        öznitelikler salt okunur veya yazılabilir olabilirler. Yazılabilir oldukları
+        durumda özniteliklere atama yapmak mümkündür. Modül öznitelikleri yazılabilirdir:
+        <tt>modulAdi.sonuc = 42</tt> gibi bir ifade kullanabilirsiniz.
+        Yazılabilir öznitelikleri <tt>del</tt> deyimini kullanarak silmek de
+        mümkündür. Örneğin <tt>del modulAdi.sonuc</tt> ifadesi
+        <tt>modulAdi</tt> nesnesinden sonuc isimli özniteliği siler.
+      </div><div class="para">
+        Farklı anlarda yaratılan isim alanlarının farklı ömürleri olur. Yerleşik
+        isimleri içeren isim alanı Python yorumlayıcısı çalıştırıldığında yaratılır
+        ve asla silinmez. Bir modüle ait global isim alanı modül tanımı okunduğunda
+        yaratılır ve genellikle yorumlayıcı çalıştığı sürece silinmez. Yorumlayıcının
+        bir dosyadan veya etkileşimli olarak çalıştırdığı deyimler de
+        <tt>__main__</tt> isimli bir modüle ait kabul edilir ve bunların
+        da kendi global isim alanı vardır. Yerleşik isimler de <tt>__builtin__</tt>
+        isimli bir modülde bulunurlar.
+      </div><div class="para">
+        Bir işleve ait yerel isim alanı işlev çağırıldığında yaratılır ve işlevden
+        dönüldüğünde veya işlev içinde ele alınmamış bir istisna gerçekleştiğinde
+        silinir. Tabii ki özyinelemeli çağrıların herbiri kendi yerel isim alanına
+        sahiptir.
+      </div><div class="para">
+        Bir <i>etki alanı</i> bir isim alanının doğrudan erişilebildiği bir
+        metin bölgesidir. Burada “doğrudan erişilebilir” ifadesinin anlamı, yetersiz bir
+        isim atfının isim alanında isim bulmaya teşebbüs etmesidir.
+      </div><div class="para">
+        Etki alanları statik olarak belirlenmelerine rağmen, dinamik olarak
+        kullanılırlar. İcranın herhangi bir anında isim alanlarına doğrudan
+        erişilebilen iç içe geçmiş en az üç etki alanı vardır: ilk aranan ve yerel
+        isimleri içeren en iç etki alanı; en yakın olanından başlanarak aranan
+        çevreleyen işlevlerin isim alanları; daha sonra aranan ve o andaki modülün
+        global değişkenlerini içeren orta etki alanı; ve yerleşik isimlerin bulunduğu
+        isim alanı olan en dış etki alanı (en son aranır).
+      </div><div class="para">
+        Eğer bir isim global olarak tanımlanmış ise tüm atıflar ve atamalar doğrudan
+        modülün global isimlerini barındıran orta etki alanına giderler. Zaten,
+        en iç etki alanının dışındaki tüm isimler salt okunurdur.
+      </div><div class="para">
+        Genellikle yerel etki alanı o an içinde bulunulan (program metninde) işlevin
+        yerel isimlerine atıfta bulunur. İşlevlerin dışında yerel etki alanı global
+        etki alanı ile aynı isim alanıdır: modülün isim alanı. Sınıf tanımlamaları
+        ayrıca yerel etki alanı içerisine bir başka isim alanı daha eklerler.
+      </div><div class="para">
+        Etki alanlarının metne bağlı olarak belirlendiğini anlamak önemlidir. Bir
+        modül içinde tanımlı bir işlevin global etki alanı o modülün isim alanıdır;
+        nereden çağırıldığı ya da hangi farklı isim ile çağırıldığı bir fark yaratmaz.
+        Diğer yandan, asıl isim araması icra anında dinamik olarak yapılır; ancak
+        dilin tanımı “derleme” sırasında yapılan statik isim çözümlemeye doğru
+        değişmektedir ve dinamik isim çözümlemeye güvenmemelisiniz! Örneğin, yerel
+        değişkenler şu anda statik olarak belirlenmektedir.
+      </div><div class="para">
+        Python'a özgü bir tuhaflık da atamaların her zaman en iç etki alanına gitmesidir.
+        Atamalar veri kopyalamaz; sadece nesnelere isimler bağlarlar. Aynı şey silme
+        işlemleri için de geçerlidir: <tt>del x </tt> ifadesi <tt>x</tt>'in
+        yerel etki alanı tarafından atfedilen isim alanındaki bağını kaldırır.
+        Aslında, yeni isimler yaratan tüm işlemler yerel etki alanını kullanırlar.
+        İşlev tanımları ve <tt>import</tt> deyimleri modül veya işlev adını
+        yerel etki alanına bağlarlar. Bir değişkenin global etki alanında bulunduğunu
+        belirtmek için <tt>global</tt> deyimi kullanılabilir.
+      </div><div class="footnotes"><br /><hr width="100" align="left" /><div class="footnote"><div class="para"><sup>[<a name="ftn.id88" href="#id88" id="ftn.id88">88</a>] </sup>Buna bir istisna: modül nesnelerinin,
+        modülün isim alanını oluşturmada kullanılan sözlüğü oluşturan
+        <tt>__dict__</tt>isimli salt okunur ve gizli bir özniteliği vardır.
+        <tt>__dict__</tt> bir özniteliktir fakat global bir isim değildir.
+        </div></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../uygulamalar/python-tutorial_terminoloji.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../uygulamalar/python-tutorial_siniflar.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../uygulamalar/python-tutorial_siniflar-ilk.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Terminoloji hakkında... </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Sınıflara İlk Bakış</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

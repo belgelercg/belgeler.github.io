@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:25:40+03:00" /><title>Görsel ve İşitsel Dosyaların Biçim Dönüşümü</title><link rel="icon" type="image/png" href="../../images/belgeler-logo.png" /><link rel="stylesheet" href="../../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../../uygulamalar/ffmpeg/ffmpeg-qstart.html" title="Hızlı Başlangıç" /><link rel="previous" href="../../uygulamalar/ffmpeg/ffmpeg-X11-grabbing.html" title="X11 Görüntüsünün Yakalanması" /><link rel="next" href="../../uygulamalar/ffmpeg/ffmpeg-Invocation.html" title="Komut Satırı" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Görsel ve İşitsel Dosyaların Biçim Dönüşümü</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../../uygulamalar/ffmpeg/ffmpeg-X11-grabbing.html">Önceki</a> </td><th width="60%" align="center">Hızlı Başlangıç</th><td width="20%" align="right"> <a accesskey="n" href="../../uygulamalar/ffmpeg/ffmpeg-Invocation.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="ffmpeg-AV-file-format-conversion" id="ffmpeg-AV-file-format-conversion"></a>Görsel ve İşitsel Dosyaların Biçim Dönüşümü</div><dl><dd><ul type="disc" class="itemizedlist"><li><div class="para">
+FFmpeg girdi olarak desteklenen herhangi bir dosya biçimini kullanabilir:
+</div><div class="para">
+Örnek:
+</div></li><li><div class="para">
+YUV dosyalarını girdi olarak kullanabilirsiniz:
+</div><div class="para"><div align="right"><pre class="screen">ffmpeg -i /tmp/test%d.Y /tmp/out.mpg
+</pre></div></div><div class="para">
+Bu, şu dosyaları kullanacaktır:
+</div><div class="para"><div align="right"><pre class="screen">/tmp/test0.Y, /tmp/test0.U, /tmp/test0.V,
+/tmp/test1.Y, /tmp/test1.U, /tmp/test1.V, vs...
+</pre></div></div><div class="para">
+Y dosyaları U ve V dosyalarının 2 katı çözünürlük kullanır. Bunlar başlıkları olmayan ham dosyalardır. Bütün yeterli görüntü çözücüler tarafından oluşturulabilirler. Eğer FFmpeg tahmin edemezse, siz resim boyutunu <tt>-s</tt> seçeneği ile belirleyin.
+</div></li><li><div class="para">
+Girdi olarak bir ham YUV420P dosyasını kullanabilirsiniz:
+</div><div class="para"><div align="right"><pre class="screen">ffmpeg -i /tmp/test.yuv /tmp/out.avi
+</pre></div></div><div class="para">
+Buradaki <tt>test.yuv</tt> düzlemsel ham YUV verisi içeren bir dosyadır. Her resim karesi ardından yatay ve düşeyde yarım çözünürlüklü U ve V düzlemleri gelen Y düzleminden oluşur.
+</div></li><li><div class="para">
+Bir ham YUV420P dosyasını çıktı alabilirsiniz:
+</div><div class="para"><div align="right"><pre class="screen">ffmpeg -i mydivx.avi hugefile.yuv
+</pre></div></div></li><li><div class="para">
+Birkaç girdi ve çıktı dosyası belirtebilirsiniz:
+</div><div class="para"><div align="right"><pre class="screen">ffmpeg -i /tmp/a.wav -s 640x480 -i /tmp/a.yuv /tmp/a.mpg
+</pre></div></div><div class="para">
+Bu komut satırı <tt>a.wav</tt> ses dosyasını ve <tt>a.yuv</tt> ham YUV video dosyasını <tt>a.mpg</tt> MPEG dosyasına çevirir.
+</div></li><li><div class="para">
+Ayrıca görsel ve işitsel dönüşümleri aynı anda yapabilirsiniz:
+</div><div class="para"><div align="right"><pre class="screen">ffmpeg -i /tmp/a.wav -ar 22050 /tmp/a.mp2
+</pre></div></div><div class="para">
+Bu komut satırı <tt>a.wav</tt> ses dosyasını 22050Hz örnekleme hızıyla MPEG ses dosyasına çevirir.
+</div></li><li><div class="para">
+Duraksız görüntü girişinden duraksız görüntü çıkışına bir yol belirterek birkaç biçimi aynı anda kodlayabilirsiniz:
+</div><div class="para"><div align="right"><pre class="screen">ffmpeg -i /tmp/a.wav -ab 64k /tmp/a.mp2 -ab 128k /tmp/b.mp2 -map 0:0 -map 0:0
+</pre></div></div><div class="para">
+Bu komut, <tt>a.wav</tt> ses dosyasını 64 kilobitlik <tt>a.mp2</tt> dosyasına ve 128 kilobitlik <tt>b.mp2</tt> dosyasına dönüştürür. <tt>-map</tt> <i><tt>dosya:sıra</tt></i> ile duraksız görüntü çıktıları için sırasıyla hangi duraksız görüntü girişlerinin kullanılacağı (akım numarası olarak) belirtilir.
+</div></li><li><div class="para">
+Çözülmüş VOB'ları dönüştürebilirsiniz:
+</div><div class="para"><div align="right"><pre class="screen">ffmpeg -i snatch_1.vob -f avi -vcodec mpeg4 -b 800k -g 300 -bf 2 -acodec libmp3lame -ab 128k snatch.avi
+</pre></div></div><div class="para">
+Bu bir tipik DVD güzelleştirme örneğidir; giriş bir VOB dosyasıdır, çıkış MP3 sesli ve MPEG-4 görüntülü AVI dosyasıdır. Bu komutta MPEG-4 duraksız görüntüsünün DivX5 uyumlu olması için B-karelerini kullandığımıza ve GOP boyutunu, 29.97 kare/s görüntü girdisi için 10 saniyede bir, bir iç kare anlamına gelen 300 değeriyle belirttiğimize dikkat ediniz. Ek olarak, duraksız ses akışının MP3 olarak kodlanmasını istiyorsanız FFmpeg paketini LAME desteği sağlamak için <tt>--enable-libmp3lame</tt> seçeneği ile yapılandırarak derlemelisiniz. Eşleme işlemi (<tt>-map</tt>) DVD kodlarken istediğiniz ses dilini elde etmek için önemlidir.
+</div></li></ul><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Desteklenen girdi biçimlerini ögrenmek için <tt>ffmpeg -formats</tt> komutunu kullanınız.
+</div></td></tr></table></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../../uygulamalar/ffmpeg/ffmpeg-X11-grabbing.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../../uygulamalar/ffmpeg/ffmpeg-qstart.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../../uygulamalar/ffmpeg/ffmpeg-Invocation.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">X11 Görüntüsünün Yakalanması </td><td width="20%" align="center"><a accesskey="h" href="../../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Komut Satırı</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

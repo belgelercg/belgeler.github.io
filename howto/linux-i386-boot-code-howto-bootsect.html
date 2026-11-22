@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:12+03:00" /><title>linux/arch/i386/boot/bootsect.S</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/linux-i386-boot-code-howto.html" title="Linux i386 Önyükleme Kodu NASIL" /><link rel="previous" href="../howto/linux-i386-boot-code-howto-makefiles.html" title="Linux Makefile'lar" /><link rel="next" href="../howto/linux-i386-boot-code-howto-setup.html" title="linux/arch/i386/boot/setup.S" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">linux/arch/i386/boot/bootsect.S</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/linux-i386-boot-code-howto-makefiles.html">Önceki</a> </td><th width="60%" align="center">Linux i386 Önyükleme Kodu NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/linux-i386-boot-code-howto-setup.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="linux-i386-boot-code-howto-bootsect" id="linux-i386-boot-code-howto-bootsect"></a>linux/arch/i386/boot/bootsect.S</div><dl><dd><div class="para">
+Verildiği gibi <tt>bbootsect</tt>, <tt>bsetup</tt> ve <tt>bvmlinux</tt>'dan oluşan (<tt>head.o, misc.o, piggy.o</tt>),<tt>bzImage</tt>'ı yüklüyoruz. İlk floppy sektörü, <tt>bbootsect</tt> (512 bytes) <tt>linux/arch/i386/boot/bootsect.S</tt>'dan derlenmiştir. BIOS tarafından 07C0:0'a yüklenir. <tt>bzImage</tt>'ın sıfırlaması (<tt>bsetup</tt> ve <tt>bvmlinux</tt>) henüz yüklenmiş değildir.
+    </div> <div class="head3"><a name="linux-i386-boot-code-howto-move_bootsect" id="linux-i386-boot-code-howto-move_bootsect"></a>Bootsect'i Taşı</div><dl><dd>
+<div class="para"><div align="right"><pre class="programlisting">
+SETUPSECTS = 4                     /*varsayılan kurulum sektörü sayısı*/
+BOOTSEG    = 0x07C0                /*önyükleme sektörünün orjinal adresi*/
+INITSEG    = DEF_INITSEG  (0x9000) /*önyüklemeyi buraya taşıyoruz;yolun dışına*/
+SETUPSEG   = DEF_SETUPSEG (0x9020) /*kurulum buradan başlar*/
+SYSSEG     = DEF_SYSSEG   (0x1000) /*sistem 0x10000 (65536) adresine yüklendi*/
+SYSSIZE    = DEF_SYSSIZE  (0x7F00) /*sistem boyutu: 16-bayt sayısı*/
+                                   /*yüklenecek*/
+ROOT_DEV   = 0                     /*ROOT_DEV şimdi "build" tarafından yazıldı*/
+SWAP_DEV   = 0                     /*SWAP_DEV şimdi "build" tarafından yazıldı*/
+
+.code16
+.text
+
+///////////////////////////////////////////////////////////////////////////////
+_start:
+{
+        // kendimizi 0x7C00'den 0x90000'e taşıdık ve oraya sıçradık.
+        move BOOTSEG:0 to INITSEG:0 (512 bytes);
+        goto INITSEG:go;
+}
+</pre></div></div>
+      <div class="para">
+<tt>bbootsect INITSEG:0</tt> (0x9000:0)'a taşınmıştır. Artık <tt>BOOTSEG</tt>'i unutabiliriz.
+      </div></dd></dl> <div class="head3"><a name="linux-i386-boot-code-howto-get_disk_para" id="linux-i386-boot-code-howto-get_disk_para"></a>Disk parametrelerini Al</div><dl><dd>
+<div class="para"><div align="right"><pre class="programlisting">
+///////////////////////////////////////////////////////////////////////////////
+// yığıtı ve disk parametre tablosunu hazırla
+go:
+{
+  SS:SP = INITSEG:3FF4;   // yığıtı INITSEG:0x4000-12'ye koy
+  /* 0x4000 keyfi bir değerdir &gt;=
+    *   bootsect boyutu + setup boyutu + yığıt için oda;
+    * 12 disk parametre boyutudur. */
+  disk parametresini (0:0078'deki gösterici) \
+  INITSEG:3FF4 adresine kopyala (12 bytes);
+  // <a class="ulink" href="http://www.ctyme.com/intr/rb-2445.htm" target="_top">int1E: SYSTEM DATA - DISKETTE PARAMETERS</a>
+  yama sektör sayısı 36'ya (parametre tablosunda 4. konum, 1 byte);
+  disk parametre tablosu göstericisine (0:0078, int1E) INITSEG:3FF4 ata;
+}
+</pre></div></div>
+      <div class="para">
+SS kaydedicisinden hemen sonra SP'nin başlatıldığından emin olun. SS'nin tavsiye edilen değişiklik yöntemi <tt>lss</tt> komutunu kullanmaktır (<a class="ulink" href="http://developer.intel.com/design/pentium4/manuals/" target="_top">IA-32 Intel Architecture Software Developer's Manual</a>, (Vol.3. Ch.5.8.3. Masking Exceptions and Interrupts When Switching Stacks).
+      </div>
+İtme ve çekme gibi yığıt işlemleri artık kabul edilebilir. Önce disk parametrelerinin 12 byte'ı <tt>INITSEG:3FF4</tt>'e kopyalanmıştı.
+<div class="para"><div align="right"><pre class="programlisting">///////////////////////////////////////////////////////////////////////////////
+// disk sürücü parametrelerini al, özellikle sektör/iz sayısı.
+  char disksizes[] = {36, 18, 15, 9};
+  int sectors;
+{
+  SI = disksizes;                         // i = 0;
+  do {
+probe_loop:
+    sectors = DS:[SI++];            // sectors = disksizes[i++];
+    if (SI&gt;=disksizes+4) break;     // if (i&gt;=4) break;
+    int13/AH=02h(AL=1, ES:BX=INITSEG:0200, CX=sectors, DX=0);
+    // <a class="ulink" href="http://www.ctyme.com/intr/rb-0607.htm" target="_top">int13/AH=02h: DISK - READ SECTOR(S) INTO MEMORY</a>
+  } while (sektör okuma hatası);
+}
+</pre></div></div>
+      <div class="para">
+"<tt>lodsb</tt>" <tt>DS:[SI]</tt>'dan <tt>AL</tt>'ye baytları yükler ve <tt>SI</tt>'yı otomatik olarak arttırır.
+      </div><div class="para">
+İz başına düşen sektör sayısı <tt>sectors</tt> değişkenine kaydedilir.
+      </div></dd></dl> <div class="head3"><a name="linux-i386-boot-code-howto-load_setup" id="linux-i386-boot-code-howto-load_setup"></a>Kurulum Kodunu Yükle</div><dl><dd><div class="para">
+<tt>bsetup</tt> (<tt>setup_sects</tt> sektörü) <tt>bbotsect</tt>'den hemen sonra yüklenecektir, örn. <tt>SETUPSEG:0</tt>. Dikkat ederseniz <tt>INITSEG:0200==SETUPSEG:0</tt> ve <tt>setup_sects</tt> <b><tt>tools/build</tt></b> tarafından <tt>bsetup</tt> boyutunun <a href="../howto/linux-i386-boot-code-howto-makefiles.html#linux-i386-boot-code-howto-i386_tools_build.c" class="xref" title="linux/arch/i386/tools/build.c">linux/arch/i386/tools/build.c</a>'dekiyle eşleşmesi için değiştirilmiştir.
+      </div>
+<div class="para"><div align="right"><pre class="programlisting">
+///////////////////////////////////////////////////////////////////////////////
+got_sectors:
+  word sread;             // geçerli iz için sektörlerin okunması
+  char setup_sects;       // tools/build tarafından üzerine yazılmış
+{
+  print out "Loading";
+  /* <a class="ulink" href="http://www.ctyme.com/intr/rb-0088.htm" target="_top">int10/AH=03h(BH=0): VIDEO - İMLEÇ KONUMUNU VE BOYUTUNU AL</a>
+    * <a class="ulink" href="http://www.ctyme.com/intr/rb-0210.htm" target="_top">int10/AH=13h(AL=1, BH=0, BL=7, CX=9, DH=DL=0, ES:BP=INITSEG:$msg1):</a>
+    *   <a class="ulink" href="http://www.ctyme.com/intr/rb-0210.htm" target="_top">VIDEO - DİZGEYİ YAZ</a> */
+
+  // kurulum-sektörlerini taşınan (0x90200 adresine) önyükleme bloğundan
+  // (bootblock) sonra doğrudan yükle.
+  SI = &amp;sread;        // sread, head ve track indekslemek için SI kullanımı
+  sread = 1;              // önyükleme sektörü okundu
+
+  int13/AH=00h(DL=0);     // <a class="ulink" href="http://www.ctyme.com/intr/rb-0605.htm" target="_top">reset FDC</a>
+
+  BX = 0x0200;            // bsetup'ı bbootsect'den (512 bytes) hemen sonra oku
+  do {
+next_step:
+    /* silindir çapraz okumayı (cylinder crossing reading) engellemek için,
+      * bu sefer kaç tane sektörün oknacağını hesapla */
+    uint16 pushw_ax = AX = MIN(sectors-sread, setup_sects);
+no_cyl_crossing:
+    read_track(AL, ES:BX);          // AX değiştirilmez
+    // ES:BX, sread, head and track'e read_track()için değer ata
+    set_next(AX);
+    setup_sects -= pushw_ax;        // kalanlar - sonraki adım
+  } while (setup_sects);
+}
+</pre></div></div>
+      <div class="para">
+SI <tt>sread, head</tt> ve <tt>track</tt> değişkenlerini indekslemek için  <tt>sread</tt> adresine atanmıştır. Onlar bellekte art arda bulunur. <tt>read_track()</tt> ve <tt>set_next()</tt> yöntemlerinin ayrıntıları için bakınız <a href="../howto/linux-i386-boot-code-howto-bootsect.html#linux-i386-boot-code-howto-read_disk" class="xref" title="Diski Oku">Diski Oku</a>
+      </div></dd></dl> <div class="head3"><a name="linux-i386-boot-code-howto-load_compressed" id="linux-i386-boot-code-howto-load_compressed"></a>Sıkıştırılmış İmgeyi Yükle</div><dl><dd><div class="para">
+<tt>bvmlinux</tt> (<tt>head.o, misc.o, piggy.o</tt>) 0x100000 adresine yüklenecektir, <tt>syssize*16</tt> bayt.
+      </div>
+<div class="para"><div align="right"><pre class="programlisting">
+///////////////////////////////////////////////////////////////////////////////
+// vmlinux/bvmlinux'u yükle (head.o, misc.o, piggy.o)
+{
+  read_it(ES=SYSSEG);
+  kill_motor();                           // disket sürücü motorunu kapat
+  print_nl();                             // CR LF yazar
+}
+</pre></div></div>
+      <div class="para">
+<tt>read_it()</tt> ayrıntıları için bakınız <a href="../howto/linux-i386-boot-code-howto-bootsect.html#linux-i386-boot-code-howto-read_disk" class="xref" title="Diski Oku">Diski Oku</a>. Eğer <tt>zImage</tt>'ı yüklüyorsak, <tt>vmlinux</tt> 0x10000 (<tt>SYSSEG:0</tt>) adresine yüklenir.
+      </div><div class="para">
+<tt>bzImage</tt> (<tt>bbootsect, bsetup, bvmlinux</tt>) artık tümüyle bellekte bulunuyor.
+      </div></dd></dl> <div class="head3"><a name="linux-i386-boot-code-howto-go_setup" id="linux-i386-boot-code-howto-go_setup"></a>Ayarlara Git</div><dl><dd>
+<div class="para"><div align="right"><pre class="programlisting">
+///////////////////////////////////////////////////////////////////////////////
+// hangi kök aygıtın kullanılacağına bak ve setup.S'e sıçra
+  int root_dev;                     // tools/build tarafından üzerine yazılır
+{
+  if (!root_dev) {
+    switch (sectors) {
+    case 15: root_dev = 0x0208;     // /dev/ps0 - 1.2Mb
+        break;
+    case 18: root_dev = 0x021C;     // /dev/PS0 - 1.44Mb
+        break;
+    case 36: root_dev = 0x0220;     // /dev/fd0H2880 - 2.88Mb
+        break;
+    default: root_dev = 0x0200;     // /dev/fd0 - auto detect
+        break;
+    }
+  }
+
+  // önyükleme bloğundan sonra doğrudan yüklenen ayar yordamına sıçra
+  goto SETUPSEG:0;
+}
+</pre></div></div>
+      <div class="para">
+Denetimi <tt>bsetup</tt>'a geçirir. <a href="../howto/linux-i386-boot-code-howto-setup.html" class="xref" title="linux/arch/i386/boot/setup.S">linux/arch/i386/boot/setup.S</a> bölümündeki <tt>linux/arch/i386/boot/setup.S:start</tt>'a bakınız.</div></dd></dl> <div class="head3"><a name="linux-i386-boot-code-howto-read_disk" id="linux-i386-boot-code-howto-read_disk"></a>Diski Oku</div><dl><dd><div class="para">
+Aşağıdaki işlev <tt>bsetup</tt> ve <tt>bvmlinux</tt>'u diskten yüklemek için kullanılır. Dikkat ederseniz <tt>syssize</tt> <a href="../howto/linux-i386-boot-code-howto-makefiles.html#linux-i386-boot-code-howto-i386_tools_build.c" class="xref" title="linux/arch/i386/tools/build.c">linux/arch/i386/tools/build.c</a> içindeki <b><tt>tools/build</tt></b> tarafından değiştirilmiştir.
+      </div>
+<div class="para"><div align="right"><pre class="programlisting">
+sread:  .word 0                         # geçerli iz'in (track) sektör okuması
+head:   .word 0                         # geçerli kafa
+track:  .word 0                         # geçerli iz
+///////////////////////////////////////////////////////////////////////////////
+// load the system image at address SYSSEG:0
+read_it(ES=SYSSEG)
+  int syssize;                    /* 16-bayt türünden sistem boyutu
+                                   * tools/build tarafından üzerine yazıldı */
+{
+  if (ES &amp; 0x0fff) die;           // hizalama 64KB değil
+
+  BX = 0;
+  for (;;) {
+rp_read:
+#ifdef __BIG_KERNEL__
+    bootsect_helper(ES:BX);
+    /* INITSEG:0220==SETUPSEG:0020 - bootsect_kludge,
+      *   SETUPSEG:bootsect_helper() gösterici içerir.
+      * Bu işlev bazı veriyapılarını başlangıç durumuna getirir
+      *   ilk sefer çağırımda,
+      *   ve SYSSEG:0'dan 0x100000'a taşır, her seferinde 64KB,
+      *   aşağıdaki çağırımda.
+      * Bakınız <a href="../howto/linux-i386-boot-code-howto-bootsect.html#linux-i386-boot-code-howto-bootsect_helper" class="xref" title="Bootsect Yardımcısı">Bootsect Yardımcısı</a>. */
+#else
+    AX = ES - SYSSEG + ( BX &gt;&gt; 4);  // kaç tane 16-bayt okuma
+#endif
+    if (AX &gt; syssize) return;       // herşey yüklendi
+ok1_read:
+    /* bu sefer uygun AL (okunacak sektörler) al
+     * çapraz silindir okumasını ve BX taşmasını önlemek için. */
+    AX = sectors - sread;
+    CX = BX + (AX &lt;&lt; 9);            // 1 sector = 2^9 bytes
+    if (CX overflow &amp;&amp; CX!=0) {     // &gt; 64KB
+      AX = (-BX) &gt;&gt; 9;
+    }
+ok2_read:
+    read_track(AL, ES:BX);
+    set_next(AX);
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// diski parametrelerle oku (sread, track, head)
+read_track(AL sektörler, ES:BX hedef)
+{
+  for (;;) {
+    printf(".");
+    // <a class="ulink" href="http://www.ctyme.com/intr/rb-0106.htm" target="_top">int10/AH=0Eh: VIDEO - TELETYPE ÇIKTI</a>
+
+    // sread, track, head) değerlerine göre CX, DX değerlerini ata
+    DX = track;
+    CX = sread + 1;
+    CH = DL;
+
+    DX = head;
+    DH = DL;
+    DX &amp;= 0x0100;
+
+    int13/AH=02h(AL, ES:BX, CX, DX);
+    // <a class="ulink" href="http://www.ctyme.com/intr/rb-0607.htm" target="_top">int13/AH=02h: DISK - SEKTÖRLERİ BELLEĞE OKU</a>
+    if (disk okuma başarılı) return;
+    // "addw $8, %sp" önceki 4 "pushw" işlemini iptal etmek için.
+bad_rt:
+    print_all();            // yazma hata kodu, AX, BX, CX ve DX
+    int13/AH=00h(DL=0);     // <a class="ulink" href="http://www.ctyme.com/intr/rb-0605.htm" target="_top">reset FDC</a>
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// set ES:BX, sread, head and track for next read_track()
+set_next(AX sectors_read)
+{
+  CX = AX;                        // sektörleri oku
+  AX += sread;
+  if (AX==sectors) {
+    head = 1 ^ head;        // head'i 0 ve 1 arasında değiştir
+    if (head==0) track++;
+ok4_set:
+    AX = 0;
+  }
+ok3_set:
+  sread = AX;
+  BX += CX &amp;&amp; 9;
+  if (BX overflow) {              // &gt; 64KB
+    ES += 0x1000;
+    BX = 0;
+  }
+set_next_fn:
+}
+</pre></div></div></dd></dl> <div class="head3"><a name="linux-i386-boot-code-howto-bootsect_helper" id="linux-i386-boot-code-howto-bootsect_helper"></a>Bootsect Yardımcısı</div><dl><dd><div class="para">
+<tt>setup.S:bootsect_helper()</tt> sadece <tt>bootsect.S:read_it()</tt> tarafından kullanılır.
+      </div><div class="para">
+<tt>bbootsect</tt> ve <tt>bsetup</tt> yarı ayrı bağlandıkları için kendi kod/veri bölütlerine bağlı konumlar kullanırlar. Değişik bölütlerde <tt>bootsect_helper()</tt> için "call far" (lcall) çağırmak zorundayız ve "return far" dönmeli. Bu çağırma, CS!=DS durumunu yaratan CS değişikliği ile sonuçlanır ve <tt>setup.S</tt> içindeki değişkenleri belirtmek için bölütü niteleyici kullanmak zorundayız.
+      </div>
+<div class="para"><div align="right"><pre class="programlisting">
+///////////////////////////////////////////////////////////////////////////////
+// bzImage yüklendiğinde bootsect yükleyici tarafından çağırılır
+bootsect_helper(ES:BX)
+  bootsect_es = 0;                // setup.S içinde tanımlı
+  type_of_loader = 0;             // setup.S içinde tanımlı
+{
+  if (!bootsect_es) {             // ilk sefer için çağırılır
+    type_of_loader = 0x20;  // bootsect-yükleyici, version 0
+    AX = ES &gt;&gt; 4;
+    *(byte*)(&amp;bootsect_src_base+2) = AH;
+    bootsect_es = ES;
+    AX = ES - SYSSEG;
+    return;
+  }
+bootsect_second:
+  if (!BX) {                      // 64KB full
+    // SYSSEG:0'dan hedefe taşı, her seferinde 64KB
+    int15/AH=87h(CX=0x8000, ES:SI=CS:bootsect_gdt);
+    // <a class="ulink" href="http://www.ctyme.com/intr/rb-1527.htm" target="_top">int15/AH=87h: SİSTEM - GENİŞLETİLMİŞ BELLEĞE KOPYALA</a>
+    if (kopyalama hatası) {
+      bootsect_panic() {
+        prtstr("INT15 refuses to access high mem, giving up.");
+bootsect_panic_loop:            goto bootsect_panic_loop;   // never return
+      }
+    }
+    ES = bootsect_es;       // ES'i daima 0x10000 noktasına ata
+    *(byte*)(&amp;bootsect_dst_base+2)++;
+  }
+bootsect_ex:
+  // AX içindeki taşınmış çerçeveler (16-bayt)
+  AH = *(byte*)(&amp;bootsect_dst_base+2) &lt;&lt; 4;
+  AL = 0;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// data used by bootsect_helper()
+bootsect_gdt:
+  .word   0, 0, 0, 0
+  .word   0, 0, 0, 0
+
+bootsect_src:
+  .word   0xffff
+
+bootsect_src_base:
+  .byte   0x00, 0x00, 0x01                # base = 0x010000
+  .byte   0x93                            # typbyte
+  .word   0                               # limit16,base24 =0
+
+bootsect_dst:
+  .word   0xffff
+
+bootsect_dst_base:
+  .byte   0x00, 0x00, 0x10                # base = 0x100000
+  .byte   0x93                            # typbyte
+  .word   0                               # limit16,base24 =0
+  .word   0, 0, 0, 0                      # BIOS CS
+  .word   0, 0, 0, 0                      # BIOS DS
+
+bootsect_es:
+  .word   0
+
+bootsect_panic_mess:
+  .string "INT15 refuses to access high mem, giving up."
+</pre></div></div>
+      <div class="para">
+<tt>type_of_loader</tt> değerinin değiştiğine dikkat edin. Bu konu <a href="../howto/linux-i386-boot-code-howto-setup.html#linux-i386-boot-code-howto-check_loader" class="xref" title="Yükleyici Türünü Kontrol Et">Yükleyici Türünü Kontrol Et</a> bölümünde açıklanmıştır.
+      </div></dd></dl> <div class="head3"><a name="linux-i386-boot-code-howto-bootsect_misc" id="linux-i386-boot-code-howto-bootsect_misc"></a>Muhtelif</div><dl><dd><div class="para">
+Kalanlar destek işlevleridir; değişkenler ve "gerçek kip çekirdek başlığı" parçaları. Dikkat ederseniz <tt>.text</tt> bölütündeki veri kod olarak bulunur, böylece yüklendiğinde uygun bir şekilde başlangıç durumuna getirilebilir.
+      </div>
+<div class="para"><div align="right"><pre class="programlisting">
+///////////////////////////////////////////////////////////////////////////////
+// bazı küçük işlevler
+print_all();  /* hata kodu yaz, AX, BX, CX and DX */
+print_nl();   /* CR LF yaz*/
+print_hex();  /* SS:BP tarafından gösterilen kelimeyi onaltılık olarak yaz*/
+kill_motor()  /* disket sürücü motorunu kapat */
+{
+#if 1
+  int13/AH=00h(DL=0);     // <a class="ulink" href="http://www.ctyme.com/intr/rb-0605.htm" target="_top">reset FDC</a>
+#else
+  outb(0, 0x3F2);         // outb(val, port)
+#endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+sectors:        .word 0
+disksizes:      .byte 36, 18, 15, 9
+msg1:           .byte 13, 10
+                .ascii "Loading"
+</pre></div></div>
+      <div class="para">
+"gerçek kip çekirdek başlığı"nın bir parçası olan bootsect taşıyıcı 497. konumdan başlar.
+      </div>
+<div class="para"><div align="right"><pre class="programlisting">
+.org 497
+setup_sects:    .byte SETUPSECS       // tools/build tarafından üzerine yazılır
+root_flags:     .word ROOT_RDONLY
+syssize:        .word SYSSIZE         // tools/build tarafından üzerine yazılır
+swap_dev:       .word SWAP_DEV
+ram_size:       .word RAMDISK
+vid_mode:       .word SVGA_MODE
+root_dev:       .word ROOT_DEV        // tools/build tarafından üzerine yazılır
+boot_flag:      .word 0xAA55
+</pre></div></div>
+      <div class="para">
+Bu "başlık" <tt>linux/Documentation/i386/boot.txt</tt> içindeki yerleşim örneğiyle uyuşmalıdır.
+      </div>
+<div class="para"><pre class="literallayout">
+Konum   Proto   İsim            Anlam
+/Boyut
+01F1/1  ALL     setup_sects     setup'ın sektör cinsinden boyutu
+01F2/2  ALL     root_flags      Sıfırdan farklı ise, kök dizin salt okunur
+                                olarak bağlanır
+01F4/2  ALL     syssize         KULLANMAYIN - sadece bootsect.S kullanımı için
+01F6/2  ALL     swap_dev        KULLANMAYIN - atıl oldu
+01F8/2  ALL     ram_size        KULLANMAYIN - sadece bootsect.S kullanımı için
+01FA/2  ALL     vid_mode        Video kip kontrolü
+01FC/2  ALL     root_dev        Varsayılan kök aygıt sayısı
+01FE/2  ALL     boot_flag       0xAA55 sihirli numara
+</pre></div>
+      </dd></dl> <div class="head3"><a name="linux-i386-boot-code-howto-bootsect_ref" id="linux-i386-boot-code-howto-bootsect_ref"></a>Kaynakça</div><dl><dd><ul type="disc" class="itemizedlist"><li>
+THE LINUX/I386 BOOT PROTOCOL: <tt>linux/Documentation/i386/boot.txt</tt></li><li><a class="ulink" href="http://developer.intel.com/design/pentium4/manuals/" target="_top">IA-32 Intel Architecture Software Developer's Manual</a></li><li><a class="ulink" href="http://www.cs.cmu.edu/~ralf/files.html" target="_top">Ralf Brown's Interrupt List</a></li></ul>
+      <div class="para">
+&lt;IA-32 Intel Mimarisi Yazılım Geliştiricisinin Kılavuzu&gt; belgesine bu belgede bir çok kez başvurulduğundan kısaca "IA-32 Kılavuzu" diyeceğim.
+      </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/linux-i386-boot-code-howto-makefiles.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/linux-i386-boot-code-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/linux-i386-boot-code-howto-setup.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Linux Makefile'lar </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> linux/arch/i386/boot/setup.S</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

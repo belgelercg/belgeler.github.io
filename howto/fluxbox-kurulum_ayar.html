@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:54+03:00" /><title>FluxBox Ayarları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/fluxbox-kurulum.html" title="FluxBox Kurulumu ve Kullanımı" /><link rel="previous" href="../howto/fluxbox-kurulum_kur.html" title="Kurulum" /><link rel="next" href="../howto/fluxbox-kurulum_kullan.html" title="FluxBox Kullanımı" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">FluxBox Ayarları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/fluxbox-kurulum_kur.html">Önceki</a> </td><th width="60%" align="center">FluxBox Kurulumu ve Kullanımı</th><td width="20%" align="right"> <a accesskey="n" href="../howto/fluxbox-kurulum_kullan.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="fluxbox-kurulum_ayar" id="fluxbox-kurulum_ayar"></a>FluxBox Ayarları</div><dl><dd><div class="para">
+      Kurulum tamamlandıktan sonra, herhangi bir kullanıcı için
+      aşağıdaki gibi bütün ayarları yapmanızda fayda vardır.
+    </div><div class="para">
+      Şimdi ilk önce bir kullanıcı dizinine fluxbox dizinini açıyoruz ve
+      gerekli olan diğer dosyaları bu dizin altına kopyalıyoruz:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+$ mkdir ~/.fluxbox
+$ cp /usr/share/fluxbox/init ~/.fluxbox/init
+$ cp /usr/share/fluxbox/keys ~/.fluxbox/keys
+$ cp /usr/share/fluxbox/menu ~/.fluxbox/menu
+</pre></div></div><div class="para">
+      FluxBox pencere yöneticisinin ayar dosyalarının kaydedildiği
+      dosya <tt>~/.fluxbox/menu</tt> dosyasıdır. Bu 'menu'
+      dosyasının ayarlanması ile kısa bir bilgiyi <a href="../howto/fluxbox-kurulum_kullan.html#fluxbox-kurulum_menu" class="xref" title="FluxBox Menüsü">FluxBox Menüsü</a>
+      bölümünde bulabilirsiniz.
+    </div><div class="para">
+      Bundan sonra yapacağımız ayar ise fluxbox penceresinini
+      çalıştırırlması ile ilgili olan ayarlar olacaktır.
+    </div><div class="para">
+      Şimdi sıra hangi çalışma seviyesi ile çalıştığımızı tespit etmeye
+      geldi. Bunu anlamak için aşağıdaki komutu veriyoruz:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+$ /sbin/runlevel
+N 3
+</pre></div></div><div class="para">
+      Görüldüğü gibi, benim çalıştığım çalışma seviyesi 3. Sizinkinde 5
+      veya daha değişik bir rakam çıkabilir (mesela suse de 2 gibi). Telaşa
+      kapılmayın. :-)
+    </div> <div class="head3"><a name="id1" id="id1"></a>X Giriş Penceresine FluxBox'ın Eklenmesi</div><dl><dd> <div class="head4"><a name="id11" id="id11"></a>GDM kullanıyorsanız</div><dl><dd><div class="para">
+          <tt>/etc/X11/gdm/Sessions/</tt> dizininde bir metin
+          düzenleyici ile <tt>fluxbox</tt> isimli bir dosya
+          oluşturup içine
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+#!/bin/bash
+exec /usr/bin/flusbox
+</pre></div></div><div class="para">
+        yazın ve kaydedin. Daha sonra bu dosyayı çalıştırılabilir yapın:
+</div><div class="para"><div align="right"><pre class="screen">
+chmod +x fluxbox
+</pre></div></div><div class="para">
+          Bir dahaki GDM açılışında FluxBoxt karşınıza çıkacaktır.
+          Çalıştırmak için seçebilirsiniz.
+        </div><div class="para">
+          Not: GDM'nin yeni sürümlerinde pencere yöneticisi doğrudan grafik arayüzden
+          eklenip çıkarılabilmektedir.
+        </div></dd></dl> <div class="head4"><a name="id21" id="id21"></a>KDM kullanıyorsanız</div><dl><dd><div class="para">
+          <tt>/etc/X11/xdm/Xsession</tt> dosyasını bir metin
+          düzenleyici ile açın. Bu dosya aşağıdaki gibi görünebilir.
+</div><div class="para"><div align="right"><pre class="screen">
+# now, we see if xdm/gdm/kdm has asked for a specific environment
+
+case $# in
+
+1)
+
+ if [ -x /usr/share/apps/switchdesk/Xclients.$1 ]; then
+
+ exec -l $SHELL -c "/usr/share/apps/switchdesk/Xclients.$1";
+
+ fi;
+
+ case $1 in
+
+ failsafe)
+
+ exec -l $SHELL -c "xterm -geometry 80x24-0-0"
+
+ ;;
+
+ gnome)
+
+ exec -l $SHELL -c "gnome-session"
+
+ ;;
+
+ kde|kde1|kde2)
+
+ exec -l $SHELL -c "/usr/share/apps/switchdesk/Xclients.kde"
+
+ ;;
+
+ twm)
+
+ # fall back to twm
+
+ exec -l $SHELL -c "/usr/share/apps/switchdesk/Xclients.twm"
+
+ ;;
+
+ esac
+
+esac
+</pre></div></div><div class="para">
+          Buraya eklemeniz gereken sadece fluxbox ile ilgili olan satır:
+</div><div class="para"><div align="right"><pre class="screen">
+....
+....
+
+ twm)
+
+ # fall back to twm
+
+ exec -l $SHELL -c "/usr/share/apps/switchdesk/Xclients.twm"
+
+ ;;
+
+ fluxbox)
+
+ exec -l $SHELL -c "/usr/bin/fluxbox"
+
+ ;;
+
+ esac
+
+esac
+</pre></div></div><div class="para">
+          Şimdi de <tt>/etc/kde/kdm/kdmrc</tt> dosyasını açın ve
+          <tt>SessionTypes=</tt> ile başlayan satının sonuna
+          <tt>fluxbox</tt> sözcüğünü ekleyin:
+</div><div class="para"><div align="right"><pre class="screen">
+[X-*-Greeter]
+
+# Session types the users can select. It is advisable to have "default" and
+# "failsafe" listed herein, which is also the default.
+# Note, that the meaning of this value is entirely up to your Session program.
+
+SessionTypes=default,kde,gnome,failsafe,fluxbox,
+</pre></div></div><div class="para">
+          Bir dahaki GDM açılışında FluxBox karşınıza çıkacaktır.
+          Çalıştırmak için seçebilirsiniz.
+        </div></dd></dl></dd></dl> <div class="head3"><a name="id2" id="id2"></a>X'i Linux Konsolundan Çalıştırıyorsanız</div><dl><dd><div class="para">
+        Şimdi biz sadece 3. çalışma seviyesinde çalışanların nasıl ayarlama
+        yapmaları gerektiğini anlatacağız. Bunun için yapmamız gereken, kullanıcı
+        ev dizini altında yoksa <tt>.xinitrc</tt> dosyasını oluşturmak
+        ve bu dosyanın içine  gerekli olan komutu yerleştirip, sonra
+        <tt>startx</tt> komutu ile fluxbox pencere yöneticisinin
+        başlamasını sağlamak. Aşağıdaki komutu aynen uyguluyoruz:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ echo "exec /usr/bin/fluxbox" &gt; ~/.xinitrc
+</pre></div></div><div class="para">Bu komuttan sona fluxbox pencere yöneticisi çalıştırmak için:</div><div class="para"><div align="right"><pre class="screen">$ startx</pre></div></div><div class="para">komutunu veriyoruz. Hepsi bu kadar.:-) Sempatik yapısı ile FluxBox
+        bize merhaba diyecektir.
+      </div><div class="para">Not: Eğer fare ile sağ tıkladığınızda menüler görülmez veya eksik
+        görülürse:
+      </div><div class="para"><div align="right"><pre class="screen">$ fluxbox-generate_menu</pre></div></div><div class="para">
+        komutunu uygulayıp, FluxBox Pencere yöneticisini tekrardan çalıştırın.
+      </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/fluxbox-kurulum_kur.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/fluxbox-kurulum.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/fluxbox-kurulum_kullan.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Kurulum </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> FluxBox Kullanımı</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

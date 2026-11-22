@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:25:52+03:00" /><title>Kullanıcı Tanımlı İstisnalar</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../uygulamalar/python-tutorial_hatalar.html" title="Hatalar ve İstisnalar" /><link rel="previous" href="../uygulamalar/python-tutorial_istisna-olusturma.html" title="İstisna Oluşturma" /><link rel="next" href="../uygulamalar/python-tutorial_try.html" title="Son İşlemlerin Belirlenmesi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Kullanıcı Tanımlı İstisnalar</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../uygulamalar/python-tutorial_istisna-olusturma.html">Önceki</a> </td><th width="60%" align="center">Hatalar ve İstisnalar</th><td width="20%" align="right"> <a accesskey="n" href="../uygulamalar/python-tutorial_try.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="python-tutorial_istisna-kull" id="python-tutorial_istisna-kull"></a>Kullanıcı Tanımlı İstisnalar</div><dl><dd><div class="para">
+        Programlar yeni bir istisna sınıfı yaratarak kendi istisnalarını
+        isimlendirebilirler. İstisnalar genellikle, doğrudan veya dolaylı olarak,
+        <tt>Exception</tt> sınıfından türetilirler. Örnek:
+</div><div class="para"><div align="right"><pre class="screen">
+&gt;&gt;&gt; class bizimHata(Exception):
+...     def __init__(self, deger):
+...         self.deger = deger
+...     def __str__(self):
+...         return `self.deger`
+...
+&gt;&gt;&gt; try:
+...     raise bizimHata(2*2)
+... except bizimHata, e:
+...     print 'İstisnamız oluştu, deger:', e.deger
+...
+İstisnamız oluştu, deger: 4
+&gt;&gt;&gt; raise bizimHata, 'aaah!'
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in ?
+__main__.bizimHata: 'aaah!'
+</pre></div></div><div class="para">
+        İstisna sınıfları diğer sınıfların yapabildiği her şeyi yapabilecek şekilde
+        tanımlanabilirler, fakat genellikle basit tutulurlar ve sıklıkla sadece
+        istisnayı işleyenlerin hata hakkında bilgi almasını sağlayacak birkaç
+        özellik sunarlar. Birkaç farklı istisna oluşturabilen bir modül yaratırken,
+        yaygın bir uygulama da bu modül tarafından tanımlanan istisnalar için bir
+        temel sınıf yaratıp ve farklı hata durumları için bundan başka istisna
+        sınıfları türetmektir:
+</div><div class="para"><div align="right"><pre class="screen">
+class Error(Exception):
+    """Bu modüldeki istisnalar için temel sınıf."""
+    pass
+
+class GirisHatasi(Error):
+    """Giriş hataları için oluşacak istisna.
+
+    Özellikler:
+        ifade -- hatanın oluştuğu giriş ifadesi
+        mesaj -- explanation of the error
+    """
+
+    def __init__(self, ifade, mesaj):
+        self.ifade = ifade
+        self.mesaj = mesaj
+
+class GecisHatasi(Error):
+    """İzin verilmeyen bir durum geçişine teşebbüs edildiğinde oluşacak istisna.
+
+    Özellikler:
+        onceki -- geçiş başlangıcındaki durum
+        sonraki -- istenen yeni durum
+        mesaj -- durum geçişine izin verilmemesinin sebebi
+    """
+
+    def __init__(self, onceki, sonraki, mesaj):
+        self.onceki = onceki
+        self.sonraki = sonraki
+        self.mesaj = mesaj
+</pre></div></div><div class="para">
+        Çoğu standart modül kendi tanımladıkları işlevlerde meydana gelen hataları
+        rapor etmek için kendi istisnalarını tanımlarlar.
+      </div><div class="para">
+        Sınıflar üzerine daha fazla bilgi sonraki bölümünde sunulacaktır.
+      </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../uygulamalar/python-tutorial_istisna-olusturma.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../uygulamalar/python-tutorial_hatalar.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../uygulamalar/python-tutorial_try.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">İstisna Oluşturma </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Son İşlemlerin Belirlenmesi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

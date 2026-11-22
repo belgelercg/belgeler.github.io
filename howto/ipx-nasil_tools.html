@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:46+03:00" /><title>IPX Araçlarına Daha Ayrıntılı Bir Bakış</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/ipx-nasil.html" title="IPX NASIL" /><link rel="previous" href="../howto/ipx-nasil_tools-greg.html" title="Greg Page Tarafından Hazırlanan IPX Araçları" /><link rel="next" href="../howto/ipx-nasil_router.html" title="Linux Makinanızı IPX Yönlendiricisi olarak Kullanmak" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">IPX Araçlarına Daha Ayrıntılı Bir Bakış</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/ipx-nasil_tools-greg.html">Önceki</a> </td><th width="60%" align="center">IPX NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/ipx-nasil_router.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="ipx-nasil_tools" id="ipx-nasil_tools"></a>IPX Araçlarına Daha Ayrıntılı Bir Bakış</div><dl><dd><div class="variablelist"><dl><dt><span class="term"><b><tt>ipx_interface</tt></b></span></dt><dd class="varlist"><div class="para">
+Bu araç, makinanızdaki ağ bağdaştırıcınıza, el ile IPX yeteneği
+eklemenizi, silmenizi ve bağdaştırıcıdaki IPX yapısını görmenizi
+sağlar. En azından bir ipx arayüzü eklemelisiniz ve bunu
+<tt>-p</tt> ile yapabilirsiniz. Örneğin
+<tt>eth0</tt> bağdaştırıcısına <tt>Ethernet II</tt>
+çerçevesi ve <tt>0x00000022</tt> adresi ile ipx
+yeteneği vermek için
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# ipx_interface add eth1 EtherII 0x00000022
+</pre></div></div>
+      <div class="para">
+yazmalısınız. Eğer bir hata oluşursa bu o aracın tcp/ip
+yapılandırılmasının yapılmadığını göstermektedir.
+<tt>eth1</tt> arayüzünü el ile başlatmanızda fayda
+olabilir:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# ifconfig eth1 up
+</pre></div></div>
+      <div class="para">
+Örnek olarak bu dökümanın yazıldığı makinada
+<tt>ifconfig</tt> çalıştırırsak ilgili arayüzde şu
+yapılandırmayı görürüz:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+eth1    Link encap:Ethernet  HWaddr 00:20:18:53:20:2E
+        inet addr:139.179.43.1  Bcast:139.179.43.255  Mask:255.255.255.0
+        IPX/Ethernet II addr:00000022:00201853202E
+        UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+        RX packets:14383225 errors:0 dropped:0 overruns:0
+        TX packets:14335334 errors:1971 dropped:0 overruns:0
+        Interrupt:11 Base address:0x6800
+</pre></div></div>
+      </dd><dt><span class="term"><b><tt>ipx_configure</tt></b></span></dt><dd class="varlist"><div class="para">
+Bu komut arayüzün ve ana arayüzün otomatik olarak saptanmasını
+sağlar veya devre dışı bırakır.
+      </div><div class="variablelist"><dl><dt><span class="term"><tt>--auto_interface</tt></span></dt><dd class="varlist"><div class="para">
+Yeni ağ bağdaştırıcının otomatik olarak IPX ile
+yapılandırıp yapılandırılmayacağını belirtir
+        </div></dd><dt><span class="term"><tt>--auto_primary</tt></span></dt><dd class="varlist"><div class="para">
+IPX yazılımının ana arayüz olup olmadığını otomatik
+belirtmek için kullanılır.
+        </div><div class="para">
+Her iki arayüzünde otomatik olarak ayarlanmasını
+sağlamak için tipik bir örnek vermek gerekirse:
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+# ipx_configure --auto_interface=on --auto_primary=on
+</pre></div></div>
+        </dd></dl></div></dd><dt><span class="term"><b><tt>ipx_internal_net</tt></b></span></dt><dd class="varlist"><div class="para">
+Bu komut iç ağ adresi vermenizi veya silmenizi sağlar. İç ağ
+adresi isteğe bağlıdır, fakat yapılandırıldığında her zaman
+ana arayüz olacaktır. (Ben bunu hiç yapmadım, yapanlar lütfen
+yorumlarını bildirsinler) Şimdi bir örnek:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# ipx_internal_net add 0xab000000 1
+</pre></div></div>
+      </dd><dt><span class="term"><b><tt>ipx_route</tt></b></span></dt><dd class="varlist"><div class="para">
+Bu komut IPX yönlendirme tablosunu eliniz ile değiştirmek için
+kullanılır. Örneğin <tt>39ab0222</tt> IPX ağını
+<tt>00608CC33C0F</tt> numaralı yönlendirici ile
+<tt>39ab0108</tt> ağına yönlendirmek istersek:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# ipx_route add 0x39ab0222 0x39ab0108 0x00608CC33C0F
+</pre></div></div>
+      <div class="para">
+(Bunu da hiç denemedim, yapanlar lütfen yorumlarını bildirsinler)
+      </div></dd></dl></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/ipx-nasil_tools-greg.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/ipx-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/ipx-nasil_router.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Greg Page Tarafından Hazırlanan IPX Araçları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Linux Makinanızı IPX Yönlendiricisi olarak Kullanmak</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:38+03:00" /><title>/service/tinydns/root/data Dosyasının Biçemi </title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/djbdns-kurulumu-nasil.html" title="djbDNS Kurulumu NASIL" /><link rel="previous" href="../howto/djbdns-kurulumu-nasil_tinydns.html" title="Tiny-dns Kurulumu" /><link rel="next" href="../howto/djbdns-kurulumu-nasil_zone.html" title="Bölge (zone) Transferi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">/service/tinydns/root/data Dosyasının Biçemi </th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/djbdns-kurulumu-nasil_tinydns.html">Önceki</a> </td><th width="60%" align="center">djbDNS Kurulumu NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/djbdns-kurulumu-nasil_zone.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="djbdns-kurulumu-nasil_data" id="djbdns-kurulumu-nasil_data"></a><tt>/service/tinydns/root/data</tt> Dosyasının Biçemi </div><dl><dd><div class="para">
+Yukarıda da belirtildiği gibi <tt>data</tt> dosyasından
+<tt>tinydns</tt>'in okuyabileceği biçeme (data.cdb) dönüştürülür.
+Peki <tt>data</tt> dosyasının biçemi nasıldır:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+.fqdn:ip:x:ttl:timestamp:lo
+</pre></div></div>
+    <div class="para">
+      Teker teker yukarıdaki ifadenin ne anlamlara geldiğini açıklayayım.
+      </div><div class="variablelist"><dl><dt><span class="term">.fqdn</span></dt><dd class="varlist"><div class="para">
+Girdiyi simgeler. Bu girdi yetkili bir isim sunucusunun başlangıçı
+(SOA = Start Of Authority) olabilir. Nitekim data dosyasinda "." ile
+başlayanlar SOA kaydını belirtir. Üstteki örneğimize bakarsak en üst
+iki satir "." ile başlamaktadır. Bunlar SOA'ları oluşturur. "." dan
+başka karakterler de vardır:
+              </div><ul type="disc" class="itemizedlist"><li><tt>.</tt> ile başlayanlar SOA'yı belirtir.Mutlaka
+olmalıdır.
+                </li><li><tt>@</tt> ile başlayan satır bunun bir mx girdisi
+olduğunu gösterir.
+                </li><li><tt>=</tt> ile başlayanlar A kayıtları için kullanilir. Aynı
+zamanda tinydns-data ters kayıtlarından olan PTR girdisi içindir.
+                </li><li><tt>+</tt> ile başlayanlar add-alias betiği oluşturulur.
+Yine bu işaret tinydns-data'ya A kaydı oluşturmasını soyler, fakat PTR
+kaydı girilmez. Eğer aynı IP için iki tane <tt>=</tt>
+kullanırsanız hata alırsınız (data dosyasını elle değiştirerek ya da
+add-host ile).
+                </li><li><tt>&amp;</tt> ile başlayan satırlar alt dns sunucusu girmek
+içindir. Mesela elek.yildiz.edu.tr 'nin kendi dns sunucusunun olmasını
+istiyorsunuz. Bunun için <tt>add-childdns</tt> komutunu
+kullanırız.
+                </li></ul></dd><dt><span class="term">ip</span></dt><dd class="varlist"><div class="para">
+Girdisi yapılacak fqdn'nin çözümleneceği IP'yi belirler. Mesela:
+</div><div class="para"><div align="right"><pre class="screen">
+ &amp;ece.yildiz.edu.tr:193.140.1.15:86400
+</pre></div></div><div class="para">
+ifadesindeki ikinci segman IP'dir ve kendisinden önce gelen ifadenin
+(&amp;ece.yildiz.edu.tr)  IP'sini belirler.
+            </div></dd><dt><span class="term">x</span></dt><dd class="varlist"><div class="para">
+mx ve ns kayıtlarında işe yaramaktadır. Bu önceliği belirlemek için
+kullanılır ve sorgulara  buna göre verilir. Şöyleki eğer buraya "a" ya
+da "b" girerseniz dnsq ile size dönecek cevap eğer ns kaydı sözkonusu
+ise a.ns.yildiz.edu.tr olur. Eğer girilen değer b ise bu ikincil
+isim sunucusunu gösterir ve b.ns.yildiz.edu.tr olarak gösterilir.
+Yine mx kayıtları içinde a.mx.yildiz.edu.tr ve b.mx.yildiz.edu.tr
+kullanılır. Eğer bu tarz gösterim yapmak istemiyorsanız. Bu kısma
+doğrudan "dns1.yildiz.edu.tr" ya da "dns2.yildiz.edu.tr" girebilirsiniz.
+Ya da aynı şekilde "mx1.yildiz.edu.tr" ve de  "mx2.yildiz.edu.tr".
+            </div><div class="para">
+Aklınıza şu soru gelebilir. Eğer bu kısma ben kendim makina isimlerimi
+girersem öncelik sırası ne olacak. Burada ilk giren ilk sunulur ilkesi
+esas alınır. Yani dosyada hangisi üstte ise önceliğe o sahiptir.
+            </div></dd><dt><span class="term">ttl</span></dt><dd class="varlist"><div class="para">
+Kurduğumuz yetkili isim sunucuyu sorgulayan sunucuların belleklerinde bu
+girdiyi kaç saniye(**) tutacağını belirler. ns  ve mx sunucular için
+burada öntanımlı değer 3 gün (259200 saniye) iken diğer girdiler
+için 1 gündür (86400 saniye).
+            </div></dd><dt><span class="term">timestamp</span></dt><dd class="varlist"><div class="para">
+Adındanda anlaşılacağı üzere dosyanın ne zaman değiştirildiğini gösterir.
+" add-* " scriptleri bu kısma dokunmazlar.
+            </div></dd><dt><span class="term">lo</span></dt><dd class="varlist"><div class="para">
+Bu kısım aşağıda da anlatıldığı üzere "Değişik istemcileri değişik sunuculara
+nasıl yönlendirebilirim? " sorusunun cevabı olmaktadır.
+            </div></dd></dl></div><div class="para">
+EK: 3 kısımda anlatılanları somutlaştırmak için  örnek bir data dosyasından
+alıntı yapayım:
+</div><div class="para"><div align="right"><pre class="screen">
+.yildiz.edu.tr:193.140.1.1:dns1.yildiz.edu.tr:259200
+</pre></div></div><div class="para">
+Böyle bir girdide tinydns-data komutu iki şey yapar. İlk başta
+dns1.yildiz.edu.tr için 193.140.1.1'i gösteren A kaydı oluşturulur. Daha
+sonra  bunun SOA olduğunu belirtilen kısım data.cdb'ye yazılır.
+</div><div class="para"><div align="right"><pre class="screen">
+@yildiz.edu.tr:193.140.1.3:mx1.yildiz.edu.tr::86400
+</pre></div></div><div class="para">
+Bu örnekte ise ilk başta A kaydı sonra da mx kaydı oluşturulur.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/djbdns-kurulumu-nasil_tinydns.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/djbdns-kurulumu-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/djbdns-kurulumu-nasil_zone.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Tiny-dns Kurulumu </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Bölge (zone) Transferi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

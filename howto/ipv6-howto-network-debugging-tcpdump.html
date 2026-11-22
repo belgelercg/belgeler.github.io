@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:43+03:00" /><title>Tcpdump ile paket inceleme örnekleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/ipv6-howto-network-debugging.html" title="Ağda hata ayıklama" /><link rel="previous" href="../howto/ipv6-howto-network-debugging-binding.html" title="Sunucu soketi ataması (binding)" /><link rel="next" href="../howto/ipv6-howto-support-persistent-configuration.html" title="Linux dağıtımlarının IPv6 yapılandırma destekleri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Tcpdump ile paket inceleme örnekleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/ipv6-howto-network-debugging-binding.html">Önceki</a> </td><th width="60%" align="center">Ağda hata ayıklama</th><td width="20%" align="right"> <a accesskey="n" href="../howto/ipv6-howto-support-persistent-configuration.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="ipv6-howto-network-debugging-tcpdump" id="ipv6-howto-network-debugging-tcpdump"></a>Tcpdump ile paket inceleme örnekleri</div><dl><dd><div class="para">
+Aşağıda sizin hata ayıklamanızda da yardımcı olabilecek, yakalanan paketler ile ilgili örnekler verilmiştir.
+  </div> <div class="head4"><a name="id12" id="id12"></a>Yönlendirici araştırması</div><dl><dd><dl class="example"><dt class="example"><a class="example" name="idxmp40" id="idxmp40"></a><b>Örnek 8.3. Yönlendirici bildirimi</b></dt><dd class="example"><div class="para"><div align="right"><pre class="screen">
+15:43:49.484751 fe80::212:34ff:fe12:3450 &gt; ff02::1: icmp6: router
+¬ advertisement(chlim=64, router_ltime=30, reachable_time=0,
+¬ retrans_time=0)(prefix info: AR valid_ltime=30, preffered_ltime=20,
+¬ prefix=2002:0102:0304:1::/64)(prefix info: LAR valid_ltime=2592000,
+¬ preffered_ltime=604800, prefix=3ffe:ffff:0:1::/64)(src lladdr:
+¬ 0:12:34:12:34:50) (len 88, hlim 255)
+</pre></div></div><div class="para">
+Yerel bağlantı adresi <tt>fe80::212:34ff:fe12:3450</tt> olan yönlendirici ağdaki tüm düğümlerin çoğa gönderim adresi olan <tt>ff02::1</tt> adresine iki önek <tt>2002:0102:0304:1::/64</tt> (yaşam süresi 30 s) ve <tt>3ffe:ffff:0:1::/64</tt> (yaşam süresi 2592000 s) ve kendi MAC adresini <tt>0:12:34:12:34:50</tt> içeren bir bilgilendirme göndermektedir.
+  </div></dd></dl><dl class="example"><dt class="example"><a class="example" name="idxmp41" id="idxmp41"></a><b>Örnek 8.4. Yönlendirici talebi</b></dt><dd class="example"><div class="para"><div align="right"><pre class="screen">
+15:44:21.152646 fe80::212:34ff:fe12:3456 &gt; ff02::2: icmp6: router solicitation
+¬ (src lladdr: 0:12:34:12:34:56) (len 16, hlim 255)
+</pre></div></div><div class="para">
+MAC adresi <tt>0:12:34:12:34:56</tt> ve yerel bağlantı adresi <tt>fe80::212:34ff:fe12:3456</tt> olan bir düğüm bağlantısında bir yönlendirici arıyor, bu nedenle <tt>ff02::2</tt> çoğa gönderim adresine istekte bulunuyor.
+  </div></dd></dl></dd></dl> <div class="head4"><a name="id22" id="id22"></a>Komşuların araştırılması</div><dl><dd><dl class="example"><dt class="example"><a class="example" name="idxmp42" id="idxmp42"></a><b>Örnek 8.5. Aynı adresi kullanan komşuların varlığının araştırılması</b></dt><dd class="example"><div class="para">
+Aşağıdaki paketler <tt>0:12:34:12:34:56</tt> MAC adresli bir düğüm tarafından otomatik yapılandırma sırasında başka bir düğümün aynı adresi kullanıp kullanmadığını kontrol etmek için çoğa gönderim adresine gönderilmektedir.
+  </div><ul type="disc" class="itemizedlist"><li><div class="para">
+Düğüm yerel bağlantı adresini <tt>fe80::212:34ff:fe12:3456</tt> olarak yapılandırmak istiyor ve çifte kullanımı kontrol ediyor.
+  </div><div class="para"><div align="right"><pre class="screen">
+15:44:17.712338 :: &gt; ff02::1:ff12:3456: icmp6: neighbor sol: who has
+¬ fe80::212:34ff:fe12:3456(src lladdr: 0:12:34:12:34:56) (len 32, hlim 255)
+</pre></div></div></li><li><div class="para">
+Düğüm küresel adresini <tt>2002:0102:0304:1:212:34ff:fe12:3456</tt> olarak (yukarıdaki bilgilendirmeyi aldıktan sonra) yapılandırmak istiyor ve çifte kullanımı kontrol ediyor.
+  </div><div class="para"><div align="right"><pre class="screen">
+15:44:21.905596 :: &gt; ff02::1:ff12:3456: icmp6: neighbor sol: who has
+¬ 2002:0102:0304:1:212:34ff:fe12:3456(src lladdr: 0:12:34:12:34:56) (len 32,
+¬ hlim 255)
+</pre></div></div></li><li><div class="para">
+Düğüm küresel adresini <tt>3ffe:ffff:0:1:212:34ff:fe12:3456</tt> olarak (yukarıdaki bilgilendirmeyi aldıktan sonra) yapılandırmak istiyor ve çifte kullanımı kontrol ediyor.
+  </div><div class="para"><div align="right"><pre class="screen">
+15:44:22.304028 :: &gt; ff02::1:ff12:3456: icmp6: neighbor sol: who has
+¬ 3ffe:ffff:0:1:212:34ff:fe12:3456(src lladdr: 0:12:34:12:34:56) (len 32,
+¬ hlim 255)
+</pre></div></div></li></ul></dd></dl><dl class="example"><dt class="example"><a class="example" name="idxmp43" id="idxmp43"></a><b>Örnek 8.6. Aranılan bir konak veya ağ geçidi için komşuların araştırılması</b></dt><dd class="example"><ul type="disc" class="itemizedlist"><li><div class="para">
+Düğüm <tt>3ffe:ffff:0:1::10</tt> adresine paket göndermek istiyor ama paketleri göndereceği ikinci katman MAC adresini bilmediğinden istek gönderiyor.
+  </div><div class="para"><div align="right"><pre class="screen">
+13:07:47.664538 2002:0102:0304:1:2e0:18ff:fe90:9205 &gt; ff02::1:ff00:10:
+¬ icmp6: neighbor sol: who has 3ffe:ffff:0:1::10(src lladdr:
+¬ 0:e0:18:90:92:5) (len 32, hlim 255)
+</pre></div></div></li><li><div class="para">
+Düğüm <tt>fe80::10</tt> adresini arıyor.
+  </div><div class="para"><div align="right"><pre class="screen">
+13:11:20.870070 fe80::2e0:18ff:fe90:9205 &gt; ff02::1:ff00:10: icmp6: neighbor
+¬ sol: who has fe80::10(src lladdr: 0:e0:18:90:92:5) (len 32, hlim 255)
+</pre></div></div></li></ul></dd></dl></dd></dl></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/ipv6-howto-network-debugging-binding.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/ipv6-howto-network-debugging.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/ipv6-howto-support-persistent-configuration.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Sunucu soketi ataması (binding) </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Linux dağıtımlarının IPv6 yapılandırma destekleri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

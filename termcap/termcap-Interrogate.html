@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:08+03:00" /><title>Uçbirim Tanımının Sorgulanması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../termcap/termcap-Library.html" title="Termcap Kütüphanesi" /><link rel="previous" href="../termcap/termcap-Find.html" title="Uçbirim Tanımının Bulunması" /><link rel="next" href="../termcap/termcap-Initialize.html" title="Termcap Kullanımı için İlklendirme" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Uçbirim Tanımının Sorgulanması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../termcap/termcap-Find.html">Önceki</a> </td><th width="60%" align="center">Termcap Kütüphanesi</th><td width="20%" align="right"> <a accesskey="n" href="../termcap/termcap-Initialize.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="termcap-Interrogate" id="termcap-Interrogate"></a>Uçbirim Tanımının Sorgulanması</div><dl><dd><div class="para">
+Bir uçbirim tanımında kayıtlı her bilgi parçasına <span class="wordasword"><i>yetenek</i></span> adı verilir. Kayıtlı her uçbirim yeteneğinin özel bir anlamı olan ve iki harfle kodlanan bir ismi vardır. Örneğin sütun sayısının ismi  <b><tt>co</tt></b>'dur. Standart yetenek isimlerinin tamamını <a href="../termcap/termcap-Capabilities.html" class="xref" title="Uçbirim Yeteneklerinin Tanımları">Uçbirim Yeteneklerinin Tanımları</a> bölümünde bulabilirsiniz.
+   </div><div class="para">
+<b><tt>tgetent</tt></b> ile <a class="link" href="../termcap/termcap-Find.html" title="Uçbirim Tanımının Bulunması">uygun uçbirim tanımını bulduktan</a> sonra, artık uygulama yazılımınız çeşitli uçbirim yeteneklerini <span class="wordasword"><i>sorgulama</i></span>ya hazır demektir. Aradığınız yetenek ile ilgili bilgi almak için yeteneğin iki harflik kodunu belirtmeniz gerekir.
+   </div><div class="para">
+Yeteneklerin değerleri sayısal, mantıksal (yetenek var/yok tarzında) ya da dizge biçiminde olabilir. Her yetenek değerinin kendine özgü bir değer türü vardır. Örneğin, <b><tt>co</tt></b> daima bir sayısal değer içerirken <b><tt>am</tt></b> (kenarlarda özdevinimli sarmalama) daima bir var/yok değeri içerir. <b><tt>cm</tt></b> (imleç hareket komutu) ise daima bir dizge değere sahiptir. Her yeteneğin değerinin hangi türde olduğu bu kılavuzda açıklanmıştır.
+   </div><div class="para">
+Bir yeteneğin değerini öğrenmek için kullanabileceğiniz üç işlev vardır ve yeteneğin değerinin türüne göre bunlardan biri kullanılır:
+</div><a name="termcap-tgetnum" id="termcap-tgetnum"></a>
+<a class="indexterm" name="idx3" id="idx3"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>tgetnum</tt></b></tt></td><td valign="top"><pre class="paramdef">(char *<i><tt>isim</tt></i>);</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>tgetnum</tt></b> işlevi, değeri sayısal olan bir yeteneği sorgulamakta kullanılır. <i><tt>isim</tt></i> argümanı yeteneğin iki harflik kodu olmalıdır. Eğer belirtilen yetenek mevcutsa, <b><tt>tgetnum</tt></b> onun değerini negatif olmayan bir değer olarak döndürür. Eğer belirtilen yetenek uçbirim tanımında yoksa, işlev -1 değeri ile döner.
+</div></dd></dl><div style="padding:5px"></div>
+<a name="termcap-tgetflag" id="termcap-tgetflag"></a>
+<a class="indexterm" name="idx4" id="idx4"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>tgetflag</tt></b></tt></td><td valign="top"><pre class="paramdef">(char *<i><tt>isim</tt></i>);</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>tgetflag</tt></b>  işlevi, değeri mantıksal olan bir yeteneği sorgulamakta kullanılır. Eğer belirtilen yetenek uçbirim tanımında  mevcutsa, <b><tt>tgetflag</tt></b> 1 ile yoksa 0 ile döner.
+</div></dd></dl><div style="padding:5px"></div>
+<a name="termcap-tgetstr" id="termcap-tgetstr"></a>
+<a class="indexterm" name="idx5" id="idx5"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>char *<b><tt>tgetstr</tt></b></tt></td><td valign="top"><pre class="paramdef">(char  *<i><tt>isim</tt></i>,
+ char **<i><tt>alan</tt></i>);</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<b><tt>tgetstr</tt></b> işlevi, dizge değerli bir yeteneği sorgulamakta kullanılır.  Belirtilen <i><tt>isim</tt></i> uçbirim tanımında mevcut bir yeteneğin ismiyse işlev yeteneğin değerine bir gösterici ile, aksi takdirde bir boş gösterici ile döner.
+      </div><div class="para">
+<b><tt>tgetstr</tt></b> işlevinin döndüreceği dizgenin saklanacağı alanı ayırmanın iki yolu vardır:
+      </div><ul type="disc" class="itemizedlist"><li><div class="para">
+Alanı ayırmasını <b><tt>tgetstr</tt></b> işlevinden talep edersiniz. <i><tt>alan</tt></i> argümanı ile işleve bir boş gösterici aktarırsanız, <b><tt>tgetstr</tt></b> yeterli alanı ayırmak için <b><tt>malloc</tt></b> işlevini kullanacaktır. Termcap bu alanı serbest bırakmayacağı gibi aynı alanı tekrar kullanmayacağından, işiniz bittiğinde bu alanı sizin serbest bırakmanız gerekir.
+        </div><div class="para">
+Ne kadar alan ayrılacağını düşünmeyi gerektirmediğinden bu yöntem daha sağlamsa da, sadece GNU termcap kütüphanesi tarafından desteklenmektedir.
+        </div></li><li><div class="para">
+Gerekli alanı kendiniz ayırırsınız. <i><tt>alan</tt></i> argümanı olarak <b><tt>char *</tt></b> türünde bir göstericinin adresini vermelisiniz. <b><tt>tgetstr</tt></b> işlevini çağırmadan önce bu değişkeni yeterli alanla ilklendirmelisiniz. İşlev çağrıldığında dizge değerini bu alana kaydedecek ve göstericiyi bu kullanılan alanın sonrasını gösterecek şekilde arttıracaktır. Böylece, aynı göstericiyi çok sayıda <b><tt>tgetstr</tt></b> çağrısı yapmak için kullanabilmeniz mümkün kılınmıştır.
+        </div><div class="para">
+Tek bir dizge için ne kadar alan gerektiğini saptamanın bir yolu olmadığı gibi ne sizin tarafınızdan ne de kütüphane tarafından bellek taşmalarını önlemenin bir yolu yoktur. Ancak, bir uçbirim tanımından elde edilebilecek tüm dizge değerli yeteneklerin değerlerinin toplam uzunluğu uçbirim tanımı için ayrılan alandan daha büyük olamayacağından aynı uzunlukta bir alanı ayırmak en iyi seçim olacaktır (tabii, aynı yeteneği birden fazla sorgulamamak şartıyla). Böyle bir alanı ayırırken, belirtilecek alanın uzunluğunu <b><tt>tgetent</tt></b> işlevine ayrılan tamponun uzunluğu olarak <b><tt>strlen</tt></b> işlevi ile saptayabilirsiniz. Aşağıda böyle bir örneğe yer verilmiştir.
+        </div><div class="para">
+Gerekli alanı kendinizin ayırması gerekliliği termcap'ın Unix sürümü tarafından desteklenen tek yöntemdir.
+        </div></li></ul>
+      </dd></dl><div style="padding:5px"></div>
+   <div class="para">
+Sorgulama işlevlerinde bir uçbirim ismi ya da bir uçbirim tanımı belirtmek zorunda olmadığınızın farkına varmış olmalısınız. Bu işlevler son yapılan <b><tt>tgetent</tt></b> çağrısında bulunan tanımı özdevinimli kullanırlar.
+   </div><div class="para">
+Bu örnekte, bir uçbirim tanımındaki çeşitli yetenekler sorgulanırken, koşullar kodun çalışacağı sisteme göre Unix veya GNU yöntemlerine göre ayarlanmaktadır:
+   </div>
+<div class="para"><div align="right"><pre class="screen">char *tgetstr ();
+
+char *cl_string, *cm_string;
+int height;
+int width;
+int auto_wrap;
+
+char PC;   /*  tputs için.  */
+char *BC;  /* tgoto için.  */
+char *UP;
+
+interrogate_terminal ()
+{
+#ifdef UNIX
+  /* Burada tgetent'e term_buffer'ın bizim
+     tarafımızdan sağlandığı varsayılmıştır. */
+  char *buffer
+    = (char *) malloc (strlen (term_buffer));
+#define BUFFADDR &amp;buffer
+#else
+#define BUFFADDR 0
+#endif
+
+  char *temp;
+
+  /* Kullanacağımız bilgileri alalım.  */
+  cl_string = tgetstr ("cl", BUFFADDR);
+  cm_string = tgetstr ("cm", BUFFADDR);
+  auto_wrap = tgetflag ("am");
+  height = tgetnum ("li");
+  width = tgetnum ("co");
+
+  /* termcap işlevlerinin kullanacağı bilgileri alalım.  */
+  temp = tgetstr ("pc", BUFFADDR);
+  PC = temp ? *temp : 0;
+  BC = tgetstr ("le", BUFFADDR);
+  UP = tgetstr ("up", BUFFADDR);
+}
+</pre></div></div>
+   <div class="para">
+<b><tt>PC</tt></b> değişkeni ile ilgili bilgiler için <a href="../termcap/termcap-Padding.html" class="xref" title="Geciktirme">Geciktirme</a> bölümüne, <b><tt>UP</tt></b> ve <b><tt>BC</tt></b> için ise <a href="../termcap/termcap-Using-Parameters.html" class="xref" title="Ekran Komutlarının Parametrelerle Gönderilmesi">Ekran Komutlarının Parametrelerle Gönderilmesi</a> bölümüne bakınız.
+   </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../termcap/termcap-Find.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../termcap/termcap-Library.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../termcap/termcap-Initialize.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Uçbirim Tanımının Bulunması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Termcap Kullanımı için İlklendirme</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

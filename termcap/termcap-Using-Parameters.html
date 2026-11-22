@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:08+03:00" /><title>Ekran Komutlarının Parametrelerle Gönderilmesi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../termcap/termcap-Parameters.html" title="Parametreler" /><link rel="previous" href="../termcap/termcap-Encode-Parameters.html" title="Kodlamanın Açıklaması" /><link rel="next" href="../termcap/termcap-Data-Base.html" title="Veritabanının Biçimi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Ekran Komutlarının Parametrelerle Gönderilmesi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../termcap/termcap-Encode-Parameters.html">Önceki</a> </td><th width="60%" align="center">Parametreler</th><td width="20%" align="right"> <a accesskey="n" href="../termcap/termcap-Data-Base.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="termcap-Using-Parameters" id="termcap-Using-Parameters"></a>Ekran Komutlarının Parametrelerle Gönderilmesi</div><dl><dd><div class="para">
+Termcap kütüphanesinin <b><tt>tparam</tt></b> ve <b><tt>tgoto</tt></b> işlevleri uçbirim dizge parametreleri için <b><tt>printf</tt></b> işlevinin yaptığına benzer şekilde kullanılabilir. Yeni <b><tt>tparam</tt></b> işlevi bir GNU oluşumudur, daha genel amaçlıdır ancak, Unix termcap'ta yoktur. İmleç hareketleri için bir parametre kodlama işlevi olarak <b><tt>tgoto</tt></b> tercih edilen bir işlevdir.
+    </div><div class="para">
+<b><tt>tparam</tt></b> işlevi herhangi bir sayıdaki parametreye sahip ekran komutlarını kodlayabilir ve bir tampon alanı belirtmenizi mümkün kılar. <b><tt>cm</tt></b> yeteneği dışında tüm yeteneklerin parametreleri için tercih edilen bir işlevdir.
+</div><a name="termcap-tparam" id="termcap-tparam"></a>
+<a class="indexterm" name="idx15" id="idx15"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>char *<b><tt>tparam</tt></b></tt></td><td valign="top"><pre class="paramdef">(char  *<i><tt>biçim_dizgesi</tt></i>,
+ char  *<i><tt>tampon</tt></i>,
+ int    <i><tt>boyut</tt></i>,
+ int    <i><tt>parm1</tt></i>,
+ ...);</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Burada, <i><tt>biçim_dizgesi</tt></i>'nin bir uçbirim yeteneğinin değeri olacağı varsayılır; <i><tt>tampon</tt></i> ve <i><tt>boyut</tt></i> ise çıktı tamponu içindir. <i><tt>parm1</tt></i>, ... ise biçim dizgesinde kodlanacak tamsayı parametrelerdir. <b><tt>tparam</tt></b> işlevi biçim dizgesi içindeki <b><tt>%</tt></b> dizilerini parametrelerle kodlayarak sonucu tampona kopyalar.
+     </div><div class="para">
+Çıktı tamponunu adresiyle <i><tt>tampon</tt></i> argümanında, bayt cinsinden boyuyla <i><tt>boyut</tt></i> argümanında siz tanımlayabilirsiniz. Eğer ayırdığınız alan yetersiz kalırsa, <b><tt>tparam</tt></b> işlevi <b><tt>malloc</tt></b>'u kullanarak tamponu büyütür. Her iki durumda da
+<b><tt>tparam</tt></b> tamponun adresi ile döner. Eğer dönüş değeri <i><tt>tampon</tt></i> ile aynıysa sizin ayırdığınız alan kullanılmıştır, değilse, işlev yeni bir tampon ayırmıştır ve onu da çıktılama tamamlanınca siz serbest bırakmalısınız. Eğer işleve <i><tt>boyut</tt></i> ve
+<i><tt>tampon</tt></i> olarak 0 değeri aktarmışsanız, tampon için gerekli alanı <b><tt>tparam</tt></b> kendisi ayırır.
+     </div><div class="para">
+Parametre gerektirmekten başka geciktirme belirtilmesi zorunlu olan yeteneklerde <b><tt>tparam</tt></b> tarafından üretilen çıktı için <b><tt>tputs</tt></b> kullanmalısınız. Bkz. <a href="../termcap/termcap-Padding.html" class="xref" title="Geciktirme">Geciktirme</a>.  Burada buna bir örnek verilmiştir:
+     </div>
+<div class="para"><div align="right"><pre class="screen">{
+char *buf;
+char buffer[40];
+
+buf = tparam (command, buffer, 40, parm);
+tputs (buf, 1, fputchar);
+if (buf != buffer)
+free (buf);
+}
+</pre></div></div>
+     <div class="para">
+Eğer sıfır değerli bir parametre <b><tt>%.</tt></b> tarzı kodlama ile kodlanırsa, <b><tt>tputs</tt></b> buna memnun olmayacak ve bu bir sürü soruna yol açacaktır.  Fakat, şansa bakın ki, <b><tt>%.</tt></b> tarzı kodlama birkaç modası geçmiş uçbirim tarafından sadece <b><tt>cm</tt></b> yeteneğinde kullanılmaktadır. Bu sorunla karşılaşmamak için <b><tt>cm</tt></b> yeteneğini kodlarken <b><tt>tparam</tt></b> işlevini değil <b><tt>tgoto</tt></b> işlevini kullanın.
+       </div></dd></dl><div style="padding:5px"></div>
+     <div class="para">
+İmleç hareketlerinde bazı özel durumlar <b><tt>tgoto</tt></b> işlevinin kullanılmasını gerektirmektedir. <b><tt>tgoto</tt></b> kullanmanızı gerektiren sebepler şunlardır:
+     </div><ul type="disc" class="itemizedlist"><li><div class="para">
+Unix uyumluluğu için. Çünkü Unix termcap, <b><tt>tparam</tt></b> işlevine sahip değildir.
+       </div></li><li><div class="para">
+<b><tt>cm</tt></b> yeteneği için. <b><tt>tgoto</tt></b> işlevi,  parametre kodlamasında bazı eski model uçbirimlerdeki boş karakter, sekme ve satırsonu karakteri ile ilgili sorunları önlemek amacıyla bu yetenek için <b><tt>%.</tt></b>  kodlamasını kullanır.
+       </div></li></ul>
+<a name="termcap-tgoto" id="termcap-tgoto"></a>
+<a class="indexterm" name="idx16" id="idx16"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>char *<b><tt>tgoto</tt></b></tt></td><td valign="top"><pre class="paramdef">(char *<i><tt>cm_dizgesi</tt></i>,
+ int   <i><tt>yatay_konum</tt></i>,
+ int   <i><tt>düşey_konum</tt></i>);</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+İşlevin üç argümanı vardır: uçbirim tanımının <b><tt>cm</tt></b> dizgesi ile imlecin yatay ve düşey konumları. <b><tt>tgoto</tt></b> parametreli dizgeyi bir iç tamponda kendisi hazırlar ve bu tamponun adresi ile döner. İşlevin daha sonraki kullanımlarında <b><tt>tgoto</tt></b> aynı tamponu yeniden kullanacaktır.
+     </div><div class="para">
+<b><tt>%.</tt></b> kodlaması ile kodlanan parametreler boş karakterler, sekmeler ve satırsonu karakterleri üretebilir. Bunlar sorunlara yol açabilir: Boş karakterler <b><tt>tputs</tt></b>'un dizgenin sonuna gelindiğini varsaymasına sebep olabilir. Sekmeler, çekirdeğin veya başka bir uygulamanın bu karakteri boşluklarla genişletmesine sebep olabilir. Satırsonu karakterlerinde ise çekirdek bir satırbaşı karakteri ekleyebilir ya da satırsonunu aşmak için normal olarak satırın sonunu boşluklar ekleyebilir. Bu tür sorunlarla karşılaşmamak için <b><tt>tgoto</tt></b> bu karakterlerden kaçınmada dikkatlidir. Pek iyi de, bunu nasıl yapar: Hedef imleç konumu (sıfır, dokuz ya da on) böyle bir soruna yol açacak gibiyse, <b><tt>tgoto</tt></b> konumu bir arttırır ve böylece imlecin bir dizge eklenerek bir konum geri ya da yukarı hareket etmesine engel olur (sorunu telafi eder).
+     </div>
+<a class="indexterm" name="idx17" id="idx17"></a>
+<a class="indexterm" name="idx18" id="idx18"></a>
+     <div class="para">
+Geri ya da yukarı taşıma için kullanılacak telafi dizgeleri <b><tt>BC</tt></b> ve <b><tt>UP</tt></b> isimli genel değişkenlerde bulunur. Bunlar büyük harfli isimleriyle aslında birer <tt>external</tt> C değişkenleridir ve <b><tt>char *</tt></b> türünde bildirilirler. Uygun değerleri siz belirtirsiniz. Bu değerler normalde, uçbirim tanımından <b><tt>tgetstr</tt></b> işlevi kullanılarak <b><tt>le</tt></b> ve <b><tt>up</tt></b> uçbirim yeteneklerinden elde edilir. Ayrıca, bu iki değişken sıfır da olabilir, bu durumda boş karakterler, sekmeler ve satırsonu karakterleri ile ilgili sorunların telafisine çalışılmaz.
+     </div><div class="para">
+<b><tt>BC</tt></b> ve <b><tt>UP</tt></b> değişkenlerinin değerleri sıfır olduğunda <b><tt>tgoto</tt></b> işlevi sadece <b><tt>cm</tt></b> dışında, diğer tüm komutlar için güvenlidir.
+     </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+<b><tt>tgoto</tt></b> işlevinde yatay ve düşey konum argümanları ters sıradadır. Hatta <b><tt>cm</tt></b> dizgesinde bile düşey konum parametresi yatay konum parametresinden öncedir. Eğer <b><tt>tgoto</tt></b> işlevini <b><tt>AL</tt></b> gibi tek parametre alan bir komut ile kullanıyorsanız, parametreyi <i><tt>düşey_konum</tt></i> argümanı ile işleve aktarmalısınız.
+     </div></td></tr></table></div></dd></dl><div style="padding:5px"></div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../termcap/termcap-Encode-Parameters.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../termcap/termcap-Parameters.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../termcap/termcap-Data-Base.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Kodlamanın Açıklaması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Veritabanının Biçimi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

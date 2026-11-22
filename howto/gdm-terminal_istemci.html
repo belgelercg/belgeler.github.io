@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:51+03:00" /><title>İstemci Yapılandırması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/gdm-terminal.html" title="GDM ile X Terminali NASIL" /><link rel="previous" href="../howto/gdm-terminal_sunucu.html" title="Sunucu Yapılandırması" /><link rel="next" href="../howto/gdm-terminal_sonuc.html" title="Sonuç" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">İstemci Yapılandırması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/gdm-terminal_sunucu.html">Önceki</a> </td><th width="60%" align="center">GDM ile X Terminali NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/gdm-terminal_sonuc.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="gdm-terminal_istemci" id="gdm-terminal_istemci"></a>İstemci Yapılandırması</div><dl><dd><div class="para">
+Başta da belirttiğim gibi istemci makinaya gerekli olanların dışında birşey kurmadım, çünkü sistemin 2 GB'lık sabit diske sığması gerekiyordu. Özel kurulumu seçip sadece X ve GNOME kurulumu yapın, ağ yapılandırmasında IP'nin DHCP üzerinden alınmasını sağlayın ve makinaya ismini verin (Benimki <tt>belma.buguner.home</tt>). Bu makina için güvenlik duvarı olmayacak.
+Kurulum sırasında dikkat edin. Yoksa sunucu makinaya bağlanamazsınız.
+   </div><div class="para">
+Eğer sistem X sunucusu ile açılmaya ayarlanmışsa ve yazıtiplerini de yüklemediyseniz açılmayacaktır. X açılmayacak, hata verecek ve konsola düşeceksiniz.
+   </div><div class="para">
+Burada ağ yapılandırmasını, sunucu için yaptığım gibi anlatmayacağım. Kurulum bitip sistem açıldığında IP adresi olarak
+sunucudan <tt>10.10.10.100</tt> adresini alacak. <b><tt>ifconfig</tt></b> komutu ile ağ yapılandırmanızı görebilirsiniz. Gerekli değil ama, <b><tt>nmap 10.10.10.1</tt></b> ile de sunucu makinada bir port taraması yapıp, iki makinanın birbirini görüp görmediğine bakabilirsiniz.
+    </div><div class="para">
+Bir DNS sunucumuz olmadığından sunucu makinanın ismini istemci makinaya öğretmemiz lazım. Bunun için, <tt>/etc/hosts</tt> dosyasını düzenlememiz gerekli.
+    </div>
+<div class="para"><div align="right"><pre class="screen"><tt>~&gt; </tt><b><tt>cat /etc/hosts</tt></b>
+# Do not remove the following line, or various programs
+# that require network functionality will fail.
+127.0.0.1       localhost.localdomain localhost
+10.10.10.1      nilgun.buguner.home
+10.10.10.100    belma.buguner.home
+</pre></div></div>
+    <div class="para">
+XF86Config dosyası kurulum sırasında yapılandırılmış olmalı. Dosya üzerinde tek bir satırda değişiklik yapacağız ve X sunucusu <b><tt>xfs</tt></b> sunucusunu bulabilecek. <tt>/etc/X11/XF86Config</tt> dosyasını bir metin düzenleyici ile açın ve <tt>FontPath</tt> satırını bulup, satırı aşağıdaki gibi düzenleyin:
+    </div>
+<div class="para"><div align="right"><pre class="screen">        FontPath    "tcp/10.10.10.1:7100"</pre></div></div>
+    <div class="para">
+Burada <tt>10.10.10.1</tt> sunucu makinamızın adresi. Sizinki farklıysa onu yazın. Artık X sunucunuz açılacaktır. Diğer işlemlere geçmeden önce deneyin.
+<b><tt>startx</tt></b> ile X'i başlatabilirsiniz. GNOME'un açılma hızını belleğinize kaydedin, yapılandırmanız bitip, sunucu makinaya bağlandığınızda KDE açılacak ve buna rağmen hız farkını farkedeceksiniz <tt>:-)</tt> (Dikkat, istemci makinaya KDE kurmadım; KDE, sunucu makinada kurulu. Böylece ne yaptığımızdan %100 emin oluyoruz.)
+    </div><div class="para">
+X oturumunun çalıştığını gördükten sonra artık <b><tt>gdm</tt></b>'yi yapılandırabiliriz. Yöntem aynı; bir fark dosyası veriyorum, siz bu dosyaya bakarak kendi dosyanızı düzenliyorsunuz.
+    </div>
+<div class="para"><div align="right"><pre class="screen"><tt>/etc/X11/gdm&gt; </tt><b><tt>diff -u factory-gdm.conf gdm.conf &gt; gdm.conf.diff</tt></b>
+<tt>/etc/X11/gdm&gt; </tt><b><tt>cat gdm.conf.diff</tt></b>
+--- factory-gdm.conf    2004-06-07 07:07:44.000000000 +0300
++++ gdm.conf    2004-06-10 01:08:33.000000000 +0300
+@@ -46,10 +46,12 @@
+ # The greeter for local (non-xdmcp) logins.  Change gdmlogin to gdmgreeter to
+ # get the new graphical greeter.
+ #Greeter=/usr/bin/gdmlogin
++Greeter=/usr/bin/gdmgreeter
+
+ # The greeter for xdmcp logins, usually you want a less graphically intensive
+ # greeter here so it's better to leave this with gdmlogin
+ #RemoteGreeter=/usr/bin/gdmlogin
++RemoteGreeter=/usr/bin/gdmgreeter
+
+ # Launch the greeter with an additional list of colon seperated gtk
+ # modules. This is useful for enabling additional feature support
+@@ -199,7 +201,7 @@
+ # allow local access is another alternative but not the safest.
+ # Firewalling port 177 is the safest if you wish to have xdmcp on.
+ # Read the manual for more notes on the security of XDMCP.
+-Enable=false
++Enable=true
+ # Honour indirect queries, we run a chooser for these, and then redirect
+ # the user to the chosen host.  Otherwise we just log the user in locally.
+ #HonorIndirect=true
+@@ -333,6 +335,7 @@
+ #ShowLastSession=true
+ # Always use 24 hour clock no matter what the locale.
+ #Use24Clock=false
++Use24Clock=true
+ # Use circles in the password field.  Looks kind of cool actually,
+ # but only works with certain fonts.
+ #UseCirclesInEntry=false
+@@ -389,7 +392,7 @@
+ # and they will always be started.  Each line must start with a unique
+ # number and that will be the display number of that server.  Usually just
+ # the 0 server is used.
+-0=Standard
++#0=Standard
+ #1=Standard
+ # Note the VTAllocation and FirstVT keys on linux.  Don't add any vt&lt;number&gt;
+ # arguments if VTAllocation is on, and set FirstVT to be the first vt
+@@ -400,9 +403,9 @@
+ # send patches.  X servers will just not get any extra arguments then.
+ #
+ # If you want to run an X terminal you could add an X server such as this
+-#0=Terminal -query serverhostname
++0=Terminal -query nilgun.buguner.home
+ # or for a chooser (optionally serverhostname could be localhost)
+-#0=Terminal -indirect serverhostname
++0=Terminal -indirect nilgun.buguner.home
+ #
+ # If you wish to run the XDMCP chooser on the local display use the following
+ # line
+</pre></div></div>
+    <div class="para">
+Şimdi sıra <tt>/etc/inittab</tt> dosyasında. Bu dosyayı da düzenledikten sonra sistemi yeniden başlatacaksınız. Dosyada iki satır önemli,
+bu iki satırı bulup onları aşağıdaki gibi düzenleyin:
+       </div>
+<div class="para"><div align="right"><pre class="screen">
+id:5:initdefault:
+
+...
+
+x:5:respawn:/usr/bin/gdm -nodaemon
+</pre></div></div>
+       <div class="para">veya:</div>
+<div class="para"><div align="right"><pre class="screen">
+id:5:initdefault:
+
+...
+
+x:5:respawn:/usr/X11R6/bin/X -query nilgun.buguner.home
+</pre></div></div>
+     <div class="para">
+Artık hazırsınız. Sistemi yeniden başlatın. Doğrudan, hiçbir ek işlem yapmadan sunucu makinaya bağlanacaksınız. Sunucu makinada oturum açarken sunucu makinada geçerli bir kullanıcı adı ve parolası belirtmeyi unutmayın. İstemci makinada geçerli kullanıcı ismini ve parolasını orada kullanamazsınız.
+    </div><div class="para">
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/gdm-terminal_sunucu.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/gdm-terminal.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/gdm-terminal_sonuc.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Sunucu Yapılandırması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Sonuç</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

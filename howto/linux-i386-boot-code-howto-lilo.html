@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:13+03:00" /><title>LILO</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/linux-i386-boot-code-howto-bootloader.html" title="C. GRUB ve LILO" /><link rel="previous" href="../howto/linux-i386-boot-code-howto-grub.html" title="GNU GRUB" /><link rel="next" href="../howto/linux-i386-boot-code-howto-bootloader_ref.html" title="Kaynakça" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">LILO</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/linux-i386-boot-code-howto-grub.html">Önceki</a> </td><th width="60%" align="center">C. GRUB ve LILO</th><td width="20%" align="right"> <a accesskey="n" href="../howto/linux-i386-boot-code-howto-bootloader_ref.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="linux-i386-boot-code-howto-lilo" id="linux-i386-boot-code-howto-lilo"></a>LILO</div><dl><dd><div class="para">
+GRUB'dan farklı olarak, LILO sistemi önyüklerken yapılandırma dosyasını kontrol etmez. <b><tt>lilo</tt></b> uçbirimden çağırıldığında bazı trikler ortaya çıkar.
+      </div><div class="para">
+Aşağıdaki LILO program anahatları lilo-22.5.8 tabanlıdır.
+      </div>
+<div class="para"><div align="right"><pre class="programlisting">
+lilo.c:main()
+|-- cfg_open(config_file);
+|-- cfg_parse(cf_options);
+|-- bsect_open(boot_dev, map_file, install, delay, timeout);
+|   |-- open_bsect(boot_dev);
+|   `-- map_create(map_file);
+|-- cfg_parse(cf_top)
+|   `-- cfg_do_set();
+|       `-- do_image();             // "image=" bölümü için walk-&gt;action
+|           |-- cfg_parse(cf_image) -&gt; cfg_do_set();
+|           |-- bsect_common(&amp;descr, 1);
+|           |   |-- map_begin_section();
+|           |   |-- map_add_sector(fallback_buf);
+|           |   `-- map_add_sector(options);
+|           |-- boot_image(name, &amp;descr) veya boot_device(name, range, &amp;descr);
+|           |   |-- int fd = geo_open(&amp;descr, name, O_RDONLY);
+|           |   |   read(fd, &amp;buff, SECTOR_SIZE);
+|           |   |   map_add(&amp;geo, 0, image_sectors);
+|           |   |   map_end_section(&amp;descr-&gt;start, setup_sects+2+1);
+|           |   |       /* bsect_common()içinde iki sektör yaratıldı,
+|           |   |        * bootsect için ise başka bir sektör*/
+|           |   |   geo_close(&amp;geo);
+|           |   `-- fd = geo_open(&amp;descr, initrd, O_RDONLY);
+|           |       map_begin_section();
+|           |       map_add(&amp;geo, 0, initrd_sectors);
+|           |       map_end_section(&amp;descr-&gt;initrd,0);
+|           |       geo_close(&amp;geo);
+|           `-- bsect_done(name, &amp;descr);
+`-- bsect_update(backup_file, force_backup, 0); // önyükleme sektörünü güncelle
+    |-- make_backup();
+    |-- map_begin_section();
+    |   map_add_sector(table);
+    |   map_write(&amp;param2, keytab, 0, 0);
+    |   map_close(&amp;param2, here2);
+    |-- // ... önyükleme sektörünün yeniden yerleştirilmesini yap
+    |-- // ... bsect_wr'yi doğru yere ayarla
+    |-- write(fd, bsect_wr, SECTOR_SIZE);
+    `-- close(fd);
+</pre></div></div>
+      <div class="para">
+<tt>map_register()</tt> tüm kayıtlı sektörleri tanımlamakta kullanılan (<tt>CX, DX, AL</tt>) üçlüsü (veri yapısı <tt>SECTOR_ADDR</tt>) için bir liste tutarken <tt>map_add(), map_add_sector()</tt> ve <tt>map_add_zero()</tt> işlerini tamamlamak için <tt>map_register()</tt>'ı çağırabilir.
+      </div><div class="para">
+LILO sistemi yüklemek için <tt>first.S</tt> ve <tt>second.S</tt>'yi çalıştırır. Eşlem (map) dosyasını, bootsect ve kurulum kodunu yüklemek için <tt>second.S:doboot()</tt> yöntemini çağırır. Sonra, sistem kodunu yüklemek için <tt>lfile()</tt> yöntemini çağırır, <tt>launch2() -&gt; launch() -&gt; cl_wait() -&gt; start_setup() -&gt; start_setup2()</tt> yöntemini çağırır ve son olarak ayar kodunu çalıştırmak için <tt>jmpi 0,SETUPSEG</tt> komutunu çalıştırır.
+      </div><div class="para">
+LILO'nun ayrıntıları için "<b><tt>man lilo</tt></b>" ve "<b><tt>man lilo.conf</tt></b>"a bakınız.
+      </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/linux-i386-boot-code-howto-grub.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/linux-i386-boot-code-howto-bootloader.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/linux-i386-boot-code-howto-bootloader_ref.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">GNU GRUB </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Kaynakça</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

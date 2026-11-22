@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:51+03:00" /><title>Sunucu Yapılandırması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/gdm-terminal.html" title="GDM ile X Terminali NASIL" /><link rel="previous" href="../howto/gdm-terminal_gereken.html" title="Neler Gerekli" /><link rel="next" href="../howto/gdm-terminal_istemci.html" title="İstemci Yapılandırması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Sunucu Yapılandırması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/gdm-terminal_gereken.html">Önceki</a> </td><th width="60%" align="center">GDM ile X Terminali NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/gdm-terminal_istemci.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="gdm-terminal_sunucu" id="gdm-terminal_sunucu"></a>Sunucu Yapılandırması</div><dl><dd><div class="para">
+Sunucumda RH 9 kurulu olmasına rağmen saf bir RH 9 değil. Üzerinde pek çok paketi güncellemiştim. Bu nedenle kullandığım paket sürümlerini ayrıca belirteceğim. Bir sorunla karşılaşırsanız en azından bu sürümler çözüm olabilir. Güvenlik ile ilgili basit yapılandırmaları da yapacağız ama, eğer örütbağa bu makina ile bağlanıyorsanız güvenlik duvarınızı yapılandırmayı unutmayın. Çünkü makinanız bir sürü port dinleyecek, bunların örütbağdan değil sadece iç ağınızdan erişilebilir olmasını sağlamalısınız. Güvenlik duvarı yapılandırması bu belge kapsamında değil. Sunucuyu 3 adımda yapılandıracağız:
+    </div>
+    <div class="variablelist"><dl><dt><span class="term">DHCPD yapılandırması</span></dt><dd class="varlist"><div class="para">
+<b><tt>dhcpd</tt></b> için bir DNS kurmadım. Siz bu yöntemi büyük bir ağa uygulamak içn DNS kullanmak isterseniz sizin bileceğiniz birşey. Benim 2 makinalık bir ağ için DNS'ye ihtiyacım yoktu.
+      </div><div class="para">
+Ağ yapılandırması:
+      </div>
+<div class="para"><div align="right"><pre class="screen"><tt>~&gt; </tt><b><tt>cat /etc/sysconfig/network-scripts/ifcfg-eth0</tt></b>
+DEVICE=eth0
+IPADDR=10.10.10.1
+NETMASK=255.255.255.0
+NETWORK=10.10.10.0
+BROADCAST=10.10.10.255
+ONBOOT=yes
+BOOTPROTO=static
+<tt>~&gt; </tt><b><tt>cat /etc/sysconfig/network</tt></b>
+NETWORKING=yes
+HOSTNAME=nilgun.buguner.home
+<tt>~&gt; </tt><b><tt>cat /etc/sysconfig/static-routes</tt></b>
+eth0 net 10.10.10.0 netmask 255.255.255.0 gw 10.10.10.254
+<tt>~&gt; </tt><b><tt>cat /etc/sysconfig/hosts</tt></b>
+127.0.0.1       localhost localdomain
+10.10.10.1      nilgun.buguner.home
+10.10.10.100    belma.buguner.home
+<tt>~&gt; </tt><b><tt>cat /etc/hosts.allow</tt></b>
+# Bu dosyada yerel ag hizmetlerinden hangi makinalarin
+# faydalanabilecegi belirtilir.
+#
+ALL: .buguner.home
+ALL: 127
+</pre></div></div><div class="para">
+Makina isminin <tt>.home</tt> içermesi sizi şaşırtmasın, yerel ağlar için isim sınırlaması yoktur. <tt>:-)</tt>. Bakalım makinada <b><tt>dhcpd</tt></b> namına ne kuruluymuş:
+      </div>
+<div class="para"><div align="right"><pre class="screen"><tt>~&gt; </tt><b><tt>rpm -qa | grep dhcp</tt></b>
+dhcp-3.0pl2-6.16
+dhcp-devel-3.0pl2-6.16
+</pre></div></div>
+      <div class="para">
+<b><tt>dhcpd</tt></b> yapılandırma dosyası <tt>/etc/dhcpd.conf</tt><sup>[<a name="id53" href="#ftn.id53" id="id53">53</a>]</sup>:
+      </div>
+<div class="para"><div align="right"><pre class="screen"><tt>~&gt; </tt><b><tt>cat /etc/dhcpd.conf</tt></b>
+allow booting;
+allow bootp;
+ddns-update-style none;
+
+# Standart yapilandirma yonergeleri...
+option domain-name "buguner.home";
+
+max-lease-time 120;
+default-lease-time 120;
+
+subnet 10.10.10.0 netmask 255.255.255.0 {
+}
+group {
+  server-name "nilgun.buguner.home";
+  get-lease-hostnames true;
+  use-host-decl-names on;
+# istemci makina bilgileri; makinanin ismi: belma
+  host belma {
+# bu adres, istemci makinadaki ag kartinin ethernet adresi
+    hardware ethernet 00:80:ad:77:72:7c;
+# sabit bir adres veriyoruz. Kimden bahsettigimizi bilelim.
+    fixed-address 10.10.10.100;
+  }
+}
+</pre></div></div>
+      <div class="para">
+Şimdi <b><tt>dhcpd</tt></b>'yi başlatalım ve bakalım çalışıyor mu?
+       </div>
+<div class="para"><div align="right"><pre class="screen"><tt>~&gt; </tt><b><tt>/sbin/service dhcpd start</tt></b>
+dhcpd başlatılıyor:                                              [  TAMAM  ]
+<tt>~&gt; </tt><b><tt>netstat -Nlp | grep dhcp</tt></b>
+udp   0    0 0.0.0.0:bootps      0.0.0.0:*                1181/dhcpd
+raw   0    0 0.0.0.0:icmp        0.0.0.0:*       7        1181/dhcpd
+</pre></div></div>
+       <div class="para">
+Çalışıyormuş <tt>:-)</tt>. Çalışma seviyenizde başlatılan hizmetlere <b><tt>dhcpd</tt></b>'yi eklemeyi unutmayın.
+      </div></dd><dt><span class="term">XFS yapılandırması</span></dt><dd class="varlist"><div class="para">
+<b><tt>xfs</tt></b>, X Pencere Sisteminin yazıtipi sunucusudur (XFS - X Font Server). İstemci makinaya X yazıtiplerini kurmayacağız, tabii <b><tt>xfs</tt></b>'i de kurmayacağız. İstemci makinanın X Pencere Sistemi sunucu makinadaki <b><tt>xfs</tt></b> sunucusunu kullanacak.  Bunun için bu makinadaki <b><tt>xfs</tt></b> sunucusunu dinlemeye almamız lazım. Hemen yapalım:
+       </div><div class="para">
+<tt>/etc/X11/fs/config</tt> dosyasının en alt satırına gidin,
+       </div>
+<div class="para"><div align="right"><pre class="screen"># don't listen to TCP ports by default for security reasons
+no-listen = tcp
+</pre></div></div>
+       <div class="para">
+son satırı iptal edeceğiz ki, <b><tt>xfs</tt></b> ağdan gelen istekleri dinlesin:
+       </div>
+<div class="para"><div align="right"><pre class="screen"># don't listen to TCP ports by default for security reasons
+# no-listen = tcp
+</pre></div></div>
+       <div class="para">
+Eğer <b><tt>xfs</tt></b>'i kullanmıyorsanız başlatın, ben kullanıyordum, yeniden başlatıyorum ve dinlemeye geçmiş mi bakıyorum:
+       </div>
+<div class="para"><div align="right"><pre class="screen"><tt>~&gt; </tt><b><tt>/sbin/service xfs restart</tt></b>
+xfs yeniden başlatılıyor:
+xfs durduruluyor:                                                [  TAMAM  ]
+xfs başlatılıyor:                                                [  TAMAM  ]
+<tt>~&gt; </tt><b><tt>netstat -Npl | grep xfs</tt></b>
+tcp   0    0 0.0.0.0:xfs         0.0.0.0:*       LISTEN   1249/xfs
+unix  2    [ ACC ]     STREAM    LISTENING        9433    1249/xfs ¬
+/tmp/.font-unix/fs7100
+</pre></div></div>
+       <div class="para">
+Bu da tamamdııır. Çalışma seviyenizde başlatılan hizmetlere <b><tt>xfs</tt></b>'i eklemeyi unutmayın. Bu arada unutmadan belirteyim, makinada <tt>x-4.3.0</tt> kurulu.
+      </div></dd><dt><span class="term">GDM yapılandırması</span></dt><dd class="varlist"><div class="para">
+Geldik işin en canalıcı kısmına... <b><tt>gdm</tt></b>, <b><tt>xdm</tt></b>'yi kullanmaz. Bu bakımdan <tt>/etc/X11/xdm</tt>
+dizinindeki dosyalarda daha önce <b><tt>xdm</tt></b> için bazı değişiklikler yaptınızsa onları
+öntanımlı durumlarına getirin. Oradaki dosyalara dokunmayacağız.
+       </div><div class="para">
+Kullandığım <b><tt>gdm</tt></b> sürümü <tt>2.6.0.2</tt> (güncel sürüm, kaynak paketinden kurdum). <b><tt>gdm</tt></b> yapılandırmasını uzun uzadıya anlatmayacağım, merak ediyorsanız, belgelerini okuyun. Sadece <tt>/etc/X11/gdm/gdm.conf</tt> dosyasının <tt>/etc/X11/gdm/factory-gdm.conf</tt> dosyasına göre fark dosyasını veriyorum. Bu fark dosyasına bakarak <tt>/etc/X11/gdm/gdm.conf</tt> dosyanızı düzeltin:
+       </div>
+<div class="para"><div align="right"><pre class="screen"><tt>/etc/X11/gdm&gt; </tt><b><tt>diff -u factory-gdm.conf gdm.conf &gt; gdm.conf.diff</tt></b>
+<tt>/etc/X11/gdm&gt; </tt><b><tt>cat gdm.conf.diff</tt></b>
+--- factory-gdm.conf    2004-06-07 07:35:12.000000000 +0300
++++ gdm.conf    2004-06-08 17:41:14.000000000 +0300
+@@ -46,10 +46,12 @@
+ # The greeter for local (non-xdmcp) logins. Change gdmlogin to gdmgreeter
+ # to get the new graphical greeter.
+ #Greeter=/usr/bin/gdmlogin
++Greeter=/usr/bin/gdmgreeter
+
+ # The greeter for xdmcp logins, usually you want a less graphically
+ # intensive greeter here so it's better to leave this with gdmlogin
+ #RemoteGreeter=/usr/bin/gdmlogin
++RemoteGreeter=/usr/bin/gdmgreeter
+
+ # Launch the greeter with an additional list of colon seperated gtk
+ # modules. This is useful for enabling additional feature support
+@@ -111,7 +113,7 @@
+ # for backwards compatibility reasons with 2.4.4.x
+ #SessionDesktopDir=/etc/X11/sessions/:/etc/X11/dm/Sessions/:/usr/share/gdm/¬
+  BuiltInSessions/:/usr/share/xsessions/
+ # This is the default .desktop session. One of the ones in SessionDesktopDir
+-#DefaultSession=gnome.desktop
++DefaultSession=kde.desktop
+ # Better leave this blank and HOME will be used.  You can use syntax ~/
+ # below to indicate home directory of the user.  You can also set this to
+ # something like /tmp if you don't want the authorizations to be in home
+ # directories.
+@@ -135,8 +137,8 @@
+ # Automatic VT allocation.  Right now only works on Linux.  This way
+ # we force X to use specific vts.  turn VTAllocation to false if this
+ # is causing problems.
+-#FirstVT=7
+-#VTAllocation=true
++FirstVT=7
++VTAllocation=true
+ # Should double login be treated with a warning (and possibility to change
+ # vts on linux systems for console logins)
+ #DoubleLoginWarning=true
+@@ -179,7 +181,7 @@
+ # Note: Anytime we find a -query or -indirect on the command line we do
+ # not add a "-nolisten tcp", as then the query just wouldn't work, so
+ # this setting only affects truly local sessions.
+-#DisallowTCP=true
++DisallowTCP=false
+ # By default never place cookies if we "detect" NFS.  We detect NFS
+ # by detecting "root-squashing".  It seems bad practice to place
+ # cookies on things that go over the network by default and thus we
+@@ -199,7 +201,7 @@
+ # allow local access is another alternative but not the safest.
+ # Firewalling port 177 is the safest if you wish to have xdmcp on.
+ # Read the manual for more notes on the security of XDMCP.
+-Enable=false
++Enable=true
+ # Honour indirect queries, we run a chooser for these, and then redirect
+ # the user to the chosen host.  Otherwise we just log the user in locally.
+ #HonorIndirect=true
+@@ -313,6 +315,7 @@
+ #BackgroundImage=
+ #BackgroundScaleToFit=true
+ #BackgroundColor=#76848F
++BackgroundColor=#a3bbce
+ # XDMCP session should only get a color, this is the sanest setting since
+ # you don't want to take up too much bandwidth
+ #BackgroundRemoteOnlyColor=true
+@@ -333,6 +336,7 @@
+ #ShowLastSession=true
+ # Always use 24 hour clock no matter what the locale.
+ #Use24Clock=false
++Use24Clock=true
+ # Use circles in the password field.  Looks kind of cool actually,
+ # but only works with certain fonts.
+ #UseCirclesInEntry=false
+@@ -406,7 +410,7 @@
+ #
+ # If you wish to run the XDMCP chooser on the local display use the
+ # following line
+-#0=Chooser
++0=Chooser
+
+ ## Note:
+ # is your X server not listening to TCP requests?  Perhaps you should look
+</pre></div></div>
+       <div class="para">
+Son satırdaki <tt>0=Chooser</tt> gerekli değil, istemci makinanın <b><tt>gdm</tt></b> yapılandırması olmuş mu diye bakmak isterseniz faydalı, o da kendini sunucu zannediyor çünkü. Yapılandırmalar bittikten sonra isterseniz denemek için ona bağlanabilirsiniz <tt>:-)</tt>
+       </div><div class="para">
+Şimdi sıra <tt>/etc/inittab</tt> dosyasında. Bu dosyayı da düzenledikten sonra sistemi yeniden başlatacaksınız. Dosyada iki satır önemli,
+bu iki satırı bulup onları aşağıdaki gibi değiştirin:
+       </div>
+<div class="para"><div align="right"><pre class="screen">
+id:5:initdefault:
+
+...
+
+x:5:respawn:/usr/bin/gdm
+</pre></div></div>
+       <div class="para">
+<b><tt>gdm</tt></b> bu makinada artalanda bir sunucu olarak çalışacağından alışılmış olan <tt>-nodaemon</tt> seçeneğini kullanmıyoruz.
+      </div></dd></dl></div><div class="para">
+Sistemi yeniden başlattığınızda doğrudan X sunucusundan oturum açıyor olacaksınız. Şimdiye dek X sunucusu ağdan gelecek istekleri beklemiyorsa artık bekliyor olacak. <b><tt>gdm</tt></b>'de 177/udp'yi dinliyor olacak. <b><tt>nmap</tt></b> ile bakarsanız aşağıdakine benzer bir çıktı alacaksınız:
+    </div>
+<div class="para"><div align="right"><pre class="screen"><tt>~&gt; </tt><b><tt>nmap -sTU 127.0.0.1</tt></b>
+
+Starting nmap V. 3.00 ( www.insecure.org/nmap/ )
+Interesting ports on localhost (127.0.0.1):
+(The 3044 ports scanned but not shown below are in state: closed)
+Port       State       Service
+67/udp     open        dhcpserver
+177/udp    open        xdmcp
+6000/tcp   open        X11
+7100/tcp   open        font-service
+
+Nmap run completed -- 1 IP address (1 host up) scanned in 9 seconds
+</pre></div></div>
+    <div class="para">
+Burada tekrarlıyorum: <b><tt>Güvenlik duvarınızı yapılandırmadan bu makina ile örütbağa çıkmayın! Açık portlarınız var.</tt></b>
+    </div><div class="footnotes"><br /><hr width="100" align="left" /><div class="footnote"><div class="para"><sup>[<a name="ftn.id53" href="#id53" id="ftn.id53">53</a>] </sup>
+Bir ağda, sadece X terminallerinin, mac adreslerine göre sabit adres değil, rasgele adres almasını sağlayabilirsiniz (mac adresi toplamak zor iştir). Bunun için DHCP sunucusu olarak çalışan makinanın <tt>/etc/dhcp.conf</tt> dosyasına aşağıdaki gibi bir kayıt girebilir,
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+class "X-Terminal" {
+        match if option dhcp-client-identifier = "x-terminal";
+}
+</pre></div></div>
+    <div class="para">hatta bu sınıfın üyelerine belli bir adres bloğunu  ayırabilir,</div>
+<div class="para"><div align="right"><pre class="screen">
+option vendor-class-identifier
+
+  pool {
+        allow members of "X-Terminal";
+        range 10.10.10.128 10.10.10.253;
+  }
+</pre></div></div>
+    <div class="para">ve istemci makinanın <tt>/etc/dhclient.conf</tt> dosyasına ise aşağıdakini,</div>
+<div class="para"><div align="right"><pre class="screen">
+interface "eth0" {
+        send dhcp-client-identifier "x-terminal";
+}
+</pre></div></div>
+    <div class="para">yazabilirsiniz. <tt>"x-terminal"</tt> yerine her iki dosyada aynı olmak üzere sizce uygun başka bir şey de yazabilirsiniz. Bu çözümü gönderen Deniz Akkuş'a teşekkürler.
+    </div></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/gdm-terminal_gereken.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/gdm-terminal.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/gdm-terminal_istemci.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Neler Gerekli </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> İstemci Yapılandırması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

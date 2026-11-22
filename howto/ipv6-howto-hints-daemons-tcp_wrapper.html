@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:44+03:00" /><title>tcp_wrapper</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/ipv6-howto-hints-daemons.html" title="IPv6 uyumlu Artalan Süreçleri İçin İpuçları" /><link rel="previous" href="../howto/ipv6-howto-hints-daemons-dhcpv6.html" title="Dinamik Konak Yapılandırma Protokolü v6 Sunucusu (dhcp6s)" /><link rel="next" href="../howto/ipv6-howto-hints-daemons-vsftpd.html" title="vsftpd" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">tcp_wrapper</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/ipv6-howto-hints-daemons-dhcpv6.html">Önceki</a> </td><th width="60%" align="center">IPv6 uyumlu Artalan Süreçleri İçin İpuçları</th><td width="20%" align="right"> <a accesskey="n" href="../howto/ipv6-howto-hints-daemons-vsftpd.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="ipv6-howto-hints-daemons-tcp_wrapper" id="ipv6-howto-hints-daemons-tcp_wrapper"></a><tt>tcp_wrapper</tt></div><dl><dd><div class="para">
+<b><tt>tcp_wrapper</tt></b> sizi servislerin hatalı kullanımından koruyan bir kütüphanedir.
+  </div> <div class="head4"><a name="id16" id="id16"></a>Süzme yetenekleri</div><dl><dd><div class="para">
+<b><tt>tcp_wrapper</tt></b>'ı iki şekilde kullanabilirsiniz:
+  </div><ul type="disc" class="itemizedlist"><li>
+Kaynak adresine göre süzme (IPv4 veya IPv6)
+  </li><li>
+Kullanıcılara göre süzme (istemcide <b><tt>ident</tt></b> artalan sürecinin çalışmasını gerektirir)
+  </li></ul></dd></dl> <div class="head4"><a name="id26" id="id26"></a><tt>tcp_wrapper</tt> kullanan uygulamalar</div><dl><dd><div class="para">
+<b><tt>tcp_wrapper</tt></b> kullandığı bilinen iki uygulama:
+  </div><ul type="disc" class="itemizedlist"><li><b><tt>xinetd</tt></b> tarafından çağrılan tüm servisler (eğer <b><tt>xinetd</tt></b>, <b><tt>tcp_wrapper</tt></b> kütüphanelerini kullanacak şekilde derlenmişse)
+  </li><li><b><tt>sshd</tt></b> (eğer <b><tt>tcp_wrapper</tt></b> kullanılarak derlenmişse)
+  </li></ul></dd></dl> <div class="head4"><a name="id36" id="id36"></a>Kullanım</div><dl><dd><div class="para">
+<b><tt>tcp_wrapper</tt></b> iki dosya ile kontrol edilir; <tt>/etc/hosts.allow</tt> ve <tt>/etc/hosts.deny</tt>. Daha fazla bilgi için:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>$ man hosts.allow</tt></b>
+</pre></div></div><dl class="example"><dt class="example"><a class="example" name="idxmp50" id="idxmp50"></a><b>Örnek 8.13. Örnek <tt>/etc/hosts.allow</tt> dosyası</b></dt><dd class="example"><div class="para">
+Bu dosyada bağlantısı kabul edilecek her servis için bir satır bulunmalıdır.
+  </div><div class="para"><div align="right"><pre class="screen">
+sshd:           1.2.3. [3ffe:ffff:100:200::]/64
+daytime-stream: 1.2.3. [3ffe:ffff:100:200::]/64
+</pre></div></div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+IPv6 ağ tanımlaması hatalı olan bazı gösterimler de vardır: [3ffe:ffff:100:200::/64].
+  </div></td></tr></table></div></dd></dl><dl class="example"><dt class="example"><a class="example" name="idxmp51" id="idxmp51"></a><b>Örnek 8.14. Örnek <tt>/etc/hosts.deny</tt> dosyası</b></dt><dd class="example"><div class="para">
+Bu dosya tüm olumsuz filtreleme girdilerini barındırmalı ve kalan herşeyi,
+  </div><div class="para"><div align="right"><pre class="screen">ALL: ALL</pre></div></div><div class="para">ile reddetmelidir.</div><div class="para">
+Eğer bu düğüm daha duyarlıysa yukarıdaki satır aşağıdaki ile değiştirilebilir ama kısa zamanda çok fazla bağlantı olması durumunda DoS saldırısına neden olabilir. Bir günlük kaydı böyle işler için daha iyidir.
+  </div><div class="para"><div align="right"><pre class="screen">
+ALL: ALL: spawn (echo "Attempt from %h %a to %d@`date`"
+ | tee -a /var/log/tcp.deny.log | mail root@localhost)
+</pre></div></div></dd></dl></dd></dl> <div class="head4"><a name="id46" id="id46"></a>Günlük Kayıtları</div><dl><dd><div class="para">
+Syslog'un yapılandırma dosyası olan <tt>/etc/syslog.conf</tt> içindeki girdiye bağlı olarak değişebilse de <b><tt>tcp_wrapper</tt></b> kayıtlarını normal olarak <tt>/var/log/secure</tt> dizininde tutar.
+  </div><div class="variablelist"><dl><dt><span class="term">Reddedilen bağlantı</span></dt><dd class="varlist"><div class="para">
+Kayıt dosyasında <tt>daytime-stream</tt> servisi tarafından reddedilen her bağlantı için aşağıdakine benzer bir satır bulunur:
+  </div><div class="para"><div align="right"><pre class="screen">
+Jan 2 20:40:44 gate xinetd-ipv6[12346]: FAIL: daytime-stream libwrap
+¬ from=::ffff:1.2.3.4
+Jan 2 20:32:06 gate xinetd-ipv6[12346]: FAIL: daytime-stream libwrap
+¬ from=3ffe:ffff:100:200::212:34ff:fe12:3456
+</pre></div></div><div class="para">
+Kayıt dosyasında <b><tt>sshd</tt></b> servisi tarafından reddedilen her bağlantı için aşağıdakine benzer bir satır bulunur:
+  </div><div class="para"><div align="right"><pre class="screen">
+Jan 2 20:24:17 gate sshd[12345]: refused connect from ::ffff:1.2.3.4
+¬ (::ffff:1.2.3.4)
+Jan 2 20:39:33 gate sshd[12345]: refused connect from
+¬ 3ffe:ffff:100:200::212:34ff:fe12:3456
+¬ (3ffe:ffff:100:200::212:34ff:fe12:3456)
+</pre></div></div></dd><dt><span class="term">İzin verilen bağlantı</span></dt><dd class="varlist"><div class="para">
+Kayıt dosyasında <tt>daytime-stream</tt> servisi tarafından izin verilen bağlantılar için aşağıdakine benzer bir satır bulunur:
+  </div><div class="para"><div align="right"><pre class="screen">
+Jan 2 20:37:50 gate xinetd-ipv6[12346]: START: daytime-stream pid=0
+¬ from=::ffff:1.2.3.4
+Jan 2 20:37:56 gate xinetd-ipv6[12346]: START: daytime-stream pid=0
+¬ from=3ffe:ffff:100:200::212:34ff:fe12:3456
+</pre></div></div><div class="para">
+Kayıt dosyasında <b><tt>sshd</tt></b> servisi tarafından izin verilen bağlantılar için aşağıdakine benzer bir satır bulunur:
+  </div><div class="para"><div align="right"><pre class="screen">
+Jan 2 20:43:10 gate sshd[21975]: Accepted password for user
+¬ from ::ffff:1.2.3.4 port 33381 ssh2
+Jan 2 20:42:19 gate sshd[12345]: Accepted password for user
+¬ from 3ffe:ffff:100:200::212:34ff:fe12:3456 port 33380 ssh2
+</pre></div></div></dd></dl></div></dd></dl></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/ipv6-howto-hints-daemons-dhcpv6.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/ipv6-howto-hints-daemons.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/ipv6-howto-hints-daemons-vsftpd.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Dinamik Konak Yapılandırma Protokolü v6 Sunucusu (dhcp6s) </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> vsftpd</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

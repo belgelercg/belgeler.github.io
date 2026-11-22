@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:25:41+03:00" /><title>Paylaşımda Öncelik</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../uygulamalar/htb-qdisc.html" title="II. Oylum - HTB Linux Kuyruklama Düzeni Kullanıcı Kılavuzu" /><link rel="previous" href="../uygulamalar/htb-qdisc.burst.html" title="Sıçrama" /><link rel="next" href="../uygulamalar/htb-qdisc.statistics.html" title="İstatistikleri Yorumlamak" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Paylaşımda Öncelik</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../uygulamalar/htb-qdisc.burst.html">Önceki</a> </td><th width="60%" align="center">II. Oylum - HTB Linux Kuyruklama Düzeni Kullanıcı Kılavuzu</th><td width="20%" align="right"> <a accesskey="n" href="../uygulamalar/htb-qdisc.statistics.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="htb-qdisc.priorizing" id="htb-qdisc.priorizing"></a>Paylaşımda Öncelik</div></div></div><dl><dd><span class="inlinemediaobject"><img src="images/hierprio.gif" class="imagedata" align="right" alt="" /></span><div class="para">
+Trafiği öncelikli duruma getirme konusunun iki yüzü vardır. İlki band genişliğindeki fazlalığın kardeşler arasında nasıl dağıtılacağını etkiler. Şimdiye kadar gördüğümüz, band genişliğindeki fazlalığın hız oranlarına göre dağıtıldığı şeklindeydi. Şimdi, <a href="../uygulamalar/htb-qdisc.hierarchy.html" class="xref" title="Paylaşım Hiyerarşisi">Paylaşım Hiyerarşisi</a> bölümündeki temel yapılandırmayı (tavan hız ve sıçrama olmaksızın hiyerarşi) kullanıp önceliği SMTP (yeşil) için 0'a (yüksek), diğerleri için 1'e değiştirdim.
+</div><div class="para">
+Paylaşım bakımından öncelikli sınıfın artan band genişliğinin tamamını aldığını görürsünüz. Burada kural <b>artan band genişliği, önce daha yüksek öncelikli sınıflara ikram edilir</b> şeklindedir. Ancak garantili hız ve hız tavanı ile ilgili kurallar hala geçerlidir.
+</div><div class="para">
+Sorunun bir de ikinci yüzü vardır: paketin toplam gecikmesi. Çok hızlı olan ethernette gecikme ölçümü görece zordur (gecikme ihmal edilebilir miktardadır). Fakat küçük bir yardımla bu sorun aşılabilir. Hız sınırı 100 kbps'in altında olan bir sınıfa sahip bir HTB'den başka bunun çocuğu olarak ikinci bir HTB ekleyebiliriz (ölçmeyi bu ikincisinde yapacağız). Böylece, daha büyük gecikmeli daha yavaş bağlantıyı taklit edebiliriz. Basit olması için iki sınıflı bir senaryo kullanacağım:
+</div><div class="para"><div align="right"><pre class="screen">
+# gecikme bireştirici için kuyruklama düzeni
+tc qdisc add dev eth0 root handle 100: htb
+tc class add dev eth0 parent 100: classid 100:1 htb rate 90kbps
+
+# gerçek ölçütlerde kuyruklama düzeni
+tc qdisc add dev eth0 parent 100:1 handle 1: htb
+AC="tc class add dev eth0 parent"
+$AC 1:  classid 1:1 htb rate 100kbps
+$AC 1:2 classid 1:10 htb rate 50kbps ceil 100kbps prio 1
+$AC 1:2 classid 1:11 htb rate 50kbps ceil 100kbps prio 1
+tc qdisc add dev eth0 parent 1:10 handle 20: pfifo limit 2
+tc qdisc add dev eth0 parent 1:11 handle 21: pfifo limit 2
+</pre></div></div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+HTB, başka bir HTB'nin çocuğu olarak, aynı HTB'nin içindeki başka bir sınıfın altındaki sınıfla aynı DEĞİLdir. HTB içindeki sınıf gönderebildiğinde donanımın gönderebileceği kadar erken göndereceği için bu böyledir. Dolayısıyla, sınır altındaki sınıfın gecikmesi sadece donanım tarafından sınırlanır, ata sınıflar tarafından değil.
+</div><div class="para">
+HTB altında HTB durumunda, dıştaki HTB herşeyiyle yeni donanımı taklit eder (daha büyük gecikmeyle).
+</div></td></tr></table></div><div class="para">
+Bireştirici her iki sınıf için 50 kbps üretmeye ayarlanır ve 3. zaman noktasında şu komutu çalıştırır:
+</div><div class="para"><div align="right"><pre class="screen">
+tc class change dev eth0 parent 1:2 classid 1:10 htb \
+ rate 50kbps ceil 100kbps burst 2k prio 0
+</pre></div></div><span class="inlinemediaobject"><img src="images/priotime.gif" class="imagedata" align="right" alt="" /></span><div class="para">
+Gördüğünüz gibi SMTP'nin gecikmesi artarken WWW sınıfının gecikmesi sıfıra yakın değerlere düşmektedir. Gecikmeyi iyileştirmek için önceliği arttırırsanız daima diğer sınıfın gecikmesinin kötüye gitmesine yol açarsınız.
+</div><div class="para">
+Daha sonra (7. zaman noktasında) bireştirici WWW'yi 60 kbps hızda, SMTP'yi de 40 kbps hızda üretmeye başlar. Bundan sonraki ilginç davranışı gözlemleyebilirsiniz. Sınıf (WWW) sınırı aştığında HTB band genişliği için sınırın altında kalana öncelik verir.
+</div><div class="para">
+<b>Hangi sınıfa öncelik vermelisiniz?</b> Genelde bunlar gerçekte düşük gecikme gerektiren yerlerdeki sınıflardır. Örnek, görsel veya işitsel trafik (trafiğin başka bir sınıf tarafından öldürülmemesi için burada gerçekten doğru hız kullanmanız gerekirdi) veya doğasında sıçramalar bulunan etkileşimli bir trafik (telnet, SSH gibi) olabilirdi ve diğer akışları olumsuz etkilemezdi.
+</div><div class="para">
+Tamamı yararlı bağlantılarda bile hoş ping gecikmeleri almak için bilinen bir yöntem ICMP'ye öncelik vermektir (fakat bağlantılılığı ölçümlerken teknik açıdan istediğimiz bu değildi).
+</div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../uygulamalar/htb-qdisc.burst.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../uygulamalar/htb-qdisc.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../uygulamalar/htb-qdisc.statistics.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Sıçrama </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> İstatistikleri Yorumlamak</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

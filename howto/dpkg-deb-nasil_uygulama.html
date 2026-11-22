@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:59+03:00" /><title>Uygulama</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/dpkg-deb-nasil.html" title="Debian İkilik Paketlerini Oluşturma Nasıl" /><link rel="previous" href="../howto/dpkg-deb-nasil_structure.html" title="Paket Yapısı" /><link rel="next" href="../howto/dpkg-deb-nasil_check.html" title="İki Misli Kontrol" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Uygulama</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/dpkg-deb-nasil_structure.html">Önceki</a> </td><th width="60%" align="center">Debian İkilik Paketlerini Oluşturma Nasıl</th><td width="20%" align="right"> <a accesskey="n" href="../howto/dpkg-deb-nasil_check.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="dpkg-deb-nasil_uygulama" id="dpkg-deb-nasil_uygulama"></a>Uygulama</div><dl><dd><div class="para">
+Artık kendimizi pratikleştirmenin zamanı geldi. <tt>linuxstatus</tt> isimli, <tt>/usr/bin/linuxstatus</tt> olarak yüklemek istediğim basit bir betiğim var. Öncelikle <tt>linuxstatus</tt> dosyasının yanında <tt>debian</tt> isimli bir dizin oluşturalım.
+  </div>
+<div class="para"><div align="right"><pre class="screen"><tt>$ </tt><b><tt>mkdir -p ./debian/usr/bin</tt></b>
+<tt>$ </tt><b><tt>cp linuxstatus ./debian/usr/bin</tt></b>
+</pre></div></div>
+   <div class="head3"><a name="dpkg-deb-nasil_kontrol" id="dpkg-deb-nasil_kontrol"></a>control</div><dl><dd><div class="para">
+<tt>control</tt> isimli dosya ile başlayalım. Sürüm numarası Debian paket numarasına ek olarak bir çizgi içermelidir. örn: <tt>1.1-1</tt>. Eğer programınız mesela taşınabilir kabuk betikleri içeriyorsa, <tt>all</tt> kelimesini mimarisini ('Architecture') belirtmek için kullanın. Bağımlılıklar ('Depends') için, yeni paketinizin bağımlı olduğu belli bir dosya veya uygulamanın hangi pakette olduğunu bulmak isteyebilirsiniz. Bunu bulmak için, <b><tt>dpkg -S </tt></b><i><tt>dosya</tt></i> komutunu kullanabilirsiniz:
+    </div>
+<div class="para"><div align="right"><pre class="screen"><tt>$ </tt><b><tt>dpkg -S /bin/cat</tt></b>
+coreutils: /bin/cat
+</pre></div></div>
+    <div class="para">
+Daha sonra <tt>coreutils</tt> paketiyle ilgili daha fazla bilgi almak için, diğer paketler arasından sisteminizde yüklü olan paketin sürüm bilgisini verecek olan <b><tt>apt-cache showpkg coreutils</tt></b> komutunu kullanabilirsiniz.<sup>[<a name="id54" href="#ftn.id54" id="id54">54</a>]</sup>
+    </div><div class="para">
+Son olarak, küçük seviyede olmayan <b><tt>kpackage</tt></b> isimli kullanışlı bir şekilde paket tarama seçenekleri sunan ve ayrıca verilen isme göre paket aranmasına imkan tanıyan hoş bir kullanıcı arayüzü vardır.
+    </div><div class="para">
+'Suggests', 'Conflicts' ve 'Replaces' v.s. eğer ihtiyaç duyulmuyorsa boş geçilebilir.
+    </div><div class="para">
+İlk <tt>control</tt> dosyamızın sonucu işte burada:
+    </div>
+<div class="para"><div align="right"><pre class="screen">Package: linuxstatus
+Version: 1.1-1
+Section: base
+Priority: optional
+Architecture: all
+Depends: bash (&gt;= 2.05a-11), textutils (&gt;= 2.0-12), awk, procps (&gt;= \
+1:2.0.7-8), sed (&gt;= 3.02-8), grep (&gt;= 2.4.2-3), coreutils (&gt;= 5.0-5)
+Maintainer: Chr. Clemens Lee &lt;clemens@kclee.com&gt;
+Description: Linux system information
+  This script provides a broad overview of different
+  system aspects.
+</pre></div></div>
+    <div class="para">
+<tt>control</tt> dosyası <tt>debian</tt> dizini içindeki <tt>DEBIAN</tt> dizinine kopyalanır.
+    </div>
+<div class="para"><div align="right"><pre class="screen"><tt>$ </tt><b><tt>mkdir -p debian/DEBIAN</tt></b>
+<tt>$ </tt><b><tt>find ./debian -type d | xargs chmod 755</tt></b> # <i>Debian Woody için bu gereksiz, sebebini sormayın.</i>
+<tt>$ </tt><b><tt>cp control debian/DEBIAN</tt></b>
+</pre></div></div>
+    <div class="para">
+Paketinizin ilerde daha büyük bir izleyici kesimine sahip olmasınız istiyorsanız, <a class="ulink" href="http://people.debian.org/~walters/descriptions.html" target="_top">Debian Paket Açıklamaları Yazma</a> isimli makaleyi okumanızın faydası olabilir.
+    </div></dd></dl> <div class="head3"><a name="dpkg-deb-nasil_dpkg-deb" id="dpkg-deb-nasil_dpkg-deb"></a>dpkg-deb</div><dl><dd><div class="para">
+Artık neredeyse bitti. Sadece şunu yazın:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>$ </tt><b><tt>dpkg-deb --build debian</tt></b>
+dpkg-deb: building package `linuxstatus' in `debian.deb'.
+<tt>$ </tt><b><tt>mv debian.deb linuxstatus_1.1-1_all.deb</tt></b>
+</pre></div></div>
+    <div class="para">
+Bütün bunların hepsi beklenenden daha kolaydı. Şimdi bu paketi makinamıza kurduk mu, işlemimiz tamamlanacak.
+    </div>
+<div class="para"><div align="right"><pre class="screen"><tt>root# </tt><b><tt>dpkg -i ./linuxstatus_1.1-1_all.deb</tt></b>
+</pre></div></div>
+    <div class="para">
+Çalışıp çalıpmadığını görmek için <b><tt>linuxstatus</tt></b> veya <b><tt>ls -l /usr/bin/linuxstatus</tt></b> yazın. Eğer artık paketinizi sevmiyorsanız, sadece <b><tt>dpkg -r linuxstatus</tt></b> yazın ve tekrar kaldırılmış mı diye kontrol edin. Aslında eğer yeni bir sürümunu yüklerseniz, eskisini kaldırmanız gerekmez.
+    </div><div class="para">
+Eğer Debian paketleri için sürüm numaralama şeması ve isimlendirme hükümlerini merak ediyorsanız <a class="ulink" href="http://www.debian.org/doc/manuals/reference/reference.en.html" target="_top">Debian Referans</a> belgesindeki <a class="ulink" href="http://www.debian.org/doc/manuals/reference/ch-system.en.html#s-pkgname" target="_top">bu bölümü</a> okuyun.
+    </div></dd></dl><div class="footnotes"><br /><hr width="100" align="left" /><div class="footnote"><div class="para"><sup>[<a name="ftn.id54" href="#id54" id="ftn.id54">54</a>] </sup>
+Aynı bilgiyi edinmenin iki yolu daha vardır. Debian paketlerini arayabileceğiniz bir web sayfası vardır: <a class="ulink" href="http://www.debian.org/distrib/packages" target="_top">http://www.debian.org/distrib/packages</a>; Web formunu doldurmak için sayfanın sonuna gidin.</div></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/dpkg-deb-nasil_structure.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/dpkg-deb-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/dpkg-deb-nasil_check.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Paket Yapısı </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> İki Misli Kontrol</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:47+03:00" /><title>İkinci Ethernet Kartının Tanıtılması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/kablonet-nasil.html" title="Kablonet, Linux ve IP-Maskeleme NASIL" /><link rel="previous" href="../howto/kablonet-nasil_sistem.html" title="Sistem" /><link rel="next" href="../howto/kablonet-nasil_config.html" title="Yapılandırma Dosyaları" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">İkinci Ethernet Kartının Tanıtılması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/kablonet-nasil_sistem.html">Önceki</a> </td><th width="60%" align="center">Kablonet, Linux ve IP-Maskeleme NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/kablonet-nasil_config.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="kablonet-nasil_setup" id="kablonet-nasil_setup"></a>İkinci Ethernet Kartının Tanıtılması</div><dl><dd><div class="para">
+      Hemen söyliyeyim ki, aynı tip Ethernet kartlarının birlikte kullanımı
+      sorun yaratıyor. Bunu bizzat ben de yaşadım. Kablonet elemanlarının ağ
+      kullanımı konusunda ilk söyledikleri de bu oluyor: <i>Aynı tip
+      ethernet kartı kullanmayın!</i>
+    </div><div class="para">
+      Ben, pek çok şeye, denemeden inanmam. Yine öyle oldu. NE2000 tipi,
+      farklı IRQ ve adrese ayarlanmış pek çok kartla deneme yaptım. Elbette
+      olmadı! Sadece zaman yitirmiş oldum.
+    </div><div class="para">
+      Belge taramaları sırasında bulduğum bir e-postada ise, PCI NE2000
+      kartlarının birlikte kullanımı için, <tt>/etc/conf.modules</tt>
+      dosyasının içinde alttaki satırların bulunmasının yeterli olduğu söyleniyor:
+</div><div class="para"><div align="right"><pre class="screen">
+alias eth0 ne2k-pci
+alias eth1 ne2k-pci
+</pre></div></div><div class="para">
+      (Bkz. <a class="ulink" href="http://linux.umbc.edu/lug-mailing-list/1999-01/msg00664.html" target="_top">http://linux.umbc.edu/lug-mailing-list/1999-01/msg00664.html</a>)
+    </div><div class="para">
+      Elimde sadece 1 adet PCI kart olduğu için kendim deneyemedim. Ancak,
+      mantıklı görünüyor.
+    </div><div class="para">
+      Benim yaptığım, zaten merkez'de kullanmakta olduğum eski tip NE2000 kartının
+      yanına, PCI tipi NE2000 kartını takmak oldu.
+    </div><div class="para">
+      PCI aygıtlar, sistem tarafından kolaylıkla tanınan aygıtlardır. Bunların
+      özelliklerini:
+</div><div class="para"><div align="right"><pre class="screen">
+cat /proc/pci
+</pre></div></div><div class="para">
+      komutuyla kolayca görebilirsiniz. Merkez'in <tt>/proc/pci</tt>
+      dosyasının içeriği aşağıda:
+</div><div class="para"><div align="right"><pre class="screen">
+PCI devices found:
+ Bus 0, device 0, function 0:
+  Host bridge: Intel 82437 (rev 2).
+   Medium devsel. Master Capable. Latency=64.
+ Bus 0, device 7, function 0:
+  ISA bridge: Intel 82371FB PIIX ISA (rev 2).
+   Medium devsel. Fast back-to-back capable. Master Capable. No bursts.
+ Bus 0, device 14, function 0:
+  Ethernet controller: Surecom NE-34PCI LAN (rev 1).
+   Medium devsel. Fast back-to-back capable. IRQ 11.
+   I/O at 0xff80 [0xff81].
+</pre></div></div><div class="para">
+      Hiç olmazsa 2. kart olarak, PCI NE2000 Ethernet kartı kullanmanızı
+      öneririm. Hiç uğraştırmıyor. Ayrıca, Redhat'in netconf komutunu da
+      denemelisiniz.
+    </div><div class="para">
+      Bildiğiniz gibi, Kablonet üzerinden bilgi alırken DHCP protokolünü
+      kullanmak gerekiyor. Eğer netconf komutunu kullanırsanız:
+    </div><div class="para">
+      <tt>Client tasks -&gt; Basic host information</tt> seçeneği altında
+      2., 3., hatta 5. ethernet kartını bile tanımlamanız olası. İkinci kartı
+      tanıtmak için, sadece <tt>Enabled</tt> ve <tt>Dhcp</tt>
+      seçeneklerini işaretleyip, <tt>Net device</tt> olarak da
+      <tt>eth1</tt> yazmanız yeterli oluyor.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/kablonet-nasil_sistem.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/kablonet-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/kablonet-nasil_config.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Sistem </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Yapılandırma Dosyaları</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

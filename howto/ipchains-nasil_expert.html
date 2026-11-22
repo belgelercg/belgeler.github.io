@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:23+03:00" /><title>Uzman</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/ipchains-nasil.html" title="Linux IPCHAINS NASIL" /><link rel="previous" href="../howto/ipchains-nasil_general.html" title="Genel" /><link rel="next" href="../howto/ipchains-nasil_chains.html" title="Kümeler" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Uzman</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/ipchains-nasil_general.html">Önceki</a> </td><th width="60%" align="center">Linux IPCHAINS NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/ipchains-nasil_chains.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="ipchains-nasil_expert" id="ipchains-nasil_expert"></a>Uzman</div><dl><dd><div class="para">
+      Buraya kadar <tt>ipchains</tt> ile basitce bir güvenlik duvarı
+      nasıl kurulur anlatıldı. Bu aşamadan sonra ise duyarlı ve daha güvenilir
+      güvenlik duvarı kurulumu ve <tt>ipchains</tt> komutunun daha
+      ayrıntılı kullanımı anlatılacaktır.
+    </div> <div class="head3"><a name="id1" id="id1"></a>Taklit Etme (spoofing)</div><dl><dd><div class="para">
+        <tt>ipchains  -i [<i>arabirim</i>]</tt>
+        Bu parametre ile paketin makinaya hangi arabirim aracılığıyla geldiğini
+        kontrol edebiliriz. <tt>lo</tt> ,<tt>eth*</tt>,
+        <tt>ppp*</tt> bu arabirimlerden biri olabilir. Bu şekilde
+        beklemediğimiz yerden gelen paketleri de kontrol edebiliriz. İki
+        ethernet kartı aracılığıyla arkada bir ağı maskeleme ile internete
+        çıkarıyor olabiliriz. Ve sadece arkadaki ağ üzerinden gelen paketleri
+        maskelemek için sadece IP kontrolu yetmeyebilir. Arabirim kontrolü
+        ile ip-taklidini önüne bir ölçüde geçilebilir. Örneklersek:
+      </div><div class="para">
+        <tt>10.1.10.x</tt> ağına <tt>eth1</tt> aracılığıyla
+        maskeleme yaptığımızı düşünürsek maskeleme tanımında arabirim belirtmek;
+        kendini bu adrestenmiş gibi gösteren birinin; bu ağa tanıdığımız
+        haklardan yararlanmasını engelleyecektir.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# ipchains -A forward -s 10.1.10.0/24 -d 0/0 -i eth1 -j MA
+                                             ^^^^^^^
+# ipchains -A forward -s 10.1.10.0/24 -d 0/0 -i eth+ -j MASQ
+                                                 ^
+</pre></div></div>
+      
+<div class="para"><pre class="literallayout">
+    eth+ = eth1 eth2 .....
+    ppp+ = ppp1 ppp2 .....
+</pre></div>
+<div class="para">
+        şeklinde de olabilir.
+      </div><div class="para">
+        IP taklidinin engellenmesi için daha başka yollar da vardır. Güvenlik
+        duvarı genelde bu işi tam karşılamaz. Mesela çekirdek 2.1 den sonrası
+        ip'si <tt>127.x.x.x</tt> gibi davranan paketleri kabul etmez.
+        Benzer şekilde çekirdekten kaynak adres kontrolü (Source Adres
+        Verification) özelliği kullanılabilir.
+      </div><div class="para">
+        <tt>/proc/sys/net/ipv4/conf/all/rp-filter</tt>'a değer
+        yüklenebilir.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# echo "1" &gt; /proc/sys/net/ipv4/conf/all/rp-filter
+</pre></div></div>
+      <div class="para">
+        Daha geniş bilgi için <a class="link" href="../howto/kernel-nasil.html" title="Çekirdeğe Yama Uygulanması ve Çekirdeğin Derlenmesi NASIL">Çekirdek-NASIL</a>
+        incelenebilir.
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Paketlerin Bölünmesi</div><dl><dd><div class="para">
+        Paketler, kullanılan araçların bir defada açabileceği boyutlarda
+        taşınırlar. <tt>MTU</tt> ile belirtilen
+        (<b>M</b>aximum
+        <b>T</b>ransmission
+        <b>U</b>nit) belli boyutlara uyulmak
+        zorunludur. Mesala <tt>FDDI</tt> bir ağ 4000 baytlık
+        paketler gönderebilirken buraya bağlı olan bir ethernet ağ ise
+        ancak 1518 bayt olarak bu paketleri alabilir. Bu durumda büyük
+        gelen paket bölünür (<i>fragmentation</i>). Bölünen
+        paketler <tt>Fragment Header</tt> denilen bir başlık ile
+        tanınırlar. Böyle bir paketin sadece ilk parçası <tt>ipchains</tt>
+        tarafından kontrole tabi tutulabilir. Diğer paketler kontrole tabi
+        tutulamazlar. Pek önemli görülmese de bu durumun da gözönünde tutulması
+        kimseye bir şey kaybettirmez.
+      </div><div class="para">
+        <tt>ipchains</tt> içinde bu durumu engellemek için
+        <tt>-f</tt> parametresi kullanılabilir. Yalnız bu durumda
+        bölünmüş olan paketin iki ve daha sonraki alt paketleri anlaşılabilir.
+        Port adresi ise okunamaz. Bu sebeple de bu parametre ile port numarası
+        kullanılmaz.
+      </div><div class="para">
+        Özellikle <tt>ICMP</tt> paketleri kullanan exploitler için
+        iyi bir savunma mekanizması oluşturulabilir. <tt>ICMP</tt>
+        paketleri bölünmeyecek kadar küçük paketlerdir. (ayrıca bölünmeyi
+        üzerlerindeki <tt>don't fragment</tt> biti de engeller).
+        Yani bölünmüş bu tür paketleri reddetmek yararınızadır.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# ipchains -A -t icmp input -s x.x.x.x/x -d y.y.y.y/y -f -j DENY
+                 ^^^^                                 ^^^
+</pre></div></div>
+      </dd></dl> <div class="head3"><a name="id3" id="id3"></a>Paket Sayımı</div><dl><dd><div class="para">
+        Her bir paket yakalandığında; paketle alakalı çekirdek tarafından
+        kontrol edilen iki sayaca işlenir. Birinci sayaç her yakalanan pakette
+        1 diğeri ise paket boyutu kadar artar. Paketin sayaçlarının artışı için
+        ille de pakete bir yaptırım uygulanmış olması gerekmez. Yakalanması
+        yeter şarttır.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# ipchains -A output -p tcp -s 155.223.3.202/32 6667 -d 0/0
+</pre></div></div>
+<div class="para">
+        komutu ile makinanızdan genelde <tt>irc</tt> için kullanılan
+        <tt>6667</tt>. port üzerinden kaç defa paket yollanmış ve
+        toplam ne kadar veri akmış öğrenebilirsiniz.
+      </div><div class="para">
+        Sayım sonuçlarını <tt>-L [<i>küme</i>] -v</tt>
+        ile görebilirsiniz.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# ipchains -L output -v
+</pre></div></div>
+      <div class="para">
+        Eğer istenirse yakalanan paketlerin bir disk sahasına depolanması da
+        mümkündür. <tt>-o [<i>max boyut</i>]</tt>
+        parametresi ile kullanılır.
+      </div></dd></dl> <div class="head3"><a name="id4" id="id4"></a>Gelen Paketlerin Yapısına Müdahale</div><dl><dd><div class="para">
+        Ipchains yakalanan paketlerin üzerinde belirli işlemler yapabilmenizi
+        sağlar. Paketi işaretleyebilir; TOS (<i>types of service</i>)
+        bilgisini değiştirebilir; hangi tür paketin ne kadar yakalandığıni ve ne
+        kadarlık bilgi aktığını anlayabilirsiniz.
+      </div><div class="para">
+        Eğer isterseniz de gelen paketleri işaretleyebilirsiniz. Gelen paketler
+        32bit işaretsiz bir sayı ile işaretlenebilir. Hatta birden çok defa
+        işaretlenebilir. Hiç işaretlenmemiş bir paketin işaret değeri 0 dır.
+        Paket her işaretlendiğinde tanımlanan 32 bit sayı kadar artırılır ve
+        azaltılır.
+      </div><div class="para">
+        Eğer <i>kernel hacking</i> konusunda meraklı iseniz başka
+        NASILlar öneririm.
+      </div><div class="para">
+        <tt>-m +-[<i>32 bit sayı</i>]</tt> biçemindedir.
+      </div></dd></dl> <div class="head3"><a name="id5" id="id5"></a>Paketin TOS (<i>Types Of Services</i>) Kısmının Kontrolü</div><dl><dd><div class="para">
+        Gelen paket içinde bulunan TOS istenirse iki onaltılık 8 bit sayı ile
+        AND'lenip sonuç ikinci değer ile XOR'lanır.
+      </div><div class="para">
+        Örnek olarak <tt>ftp</tt>'de <i>minimum delay</i>
+        ve <i>maximum throughput</i> sağlanmalıdır.
+      </div><div class="para">
+        Çünkü karşıdaki kullanıcı komutları girecek (<i>minimum delay</i>
+        burada) ve dosya aktarımı yapacaktır (dosya aktarımı için ise
+        <i>maximum throughput</i>).
+      </div><div class="para">
+        Bunları sağlamak için de <tt>TCP</tt> paketlerinin başında
+        bulunan 4 bit ile oynanabilir. Ve bir defada sadece biri 1 konumuna
+        getirilebilir.
+      </div><div class="para">
+        Bazı servisler için tavsiye edilen TOS değerleri:
+</div>
+<div class="para"><pre class="literallayout">
+|---------------------------------------------------------------------------|
+|Servis            Minimize    Maximize    Maximize    Minimize   Hex Value |
+|                    delay    throughput  reliability    cost               |
+|---------------------------------------------------------------------------|
+|Telnet/Rlogin        1     |      0     |     0      |    0     |   0x10   |
+|FTP                        |            |            |          |          |
+|  control            1     |      0     |     0      |    0     |   0x10   |
+|  data               0     |      1     |     0      |    0     |   0x08   |
+|any bulk data        0     |      1     |     0      |    0     |   0x08   |
+|TFTP                 1     |      0     |     0      |    0     |   0x10   |
+|SMTP                       |            |            |          |          |
+|  command phrase     1     |      0     |     0      |    0     |   0x10   |
+|  data phrase        0     |      1     |     0      |    0     |   0x18   |
+|DNS                        |            |            |          |          |
+|  UDP Query          1     |      0     |     0      |    0     |   0x10   |
+|  TCP Query          0     |      0     |     0      |    0     |   0x00   |
+|  zone transfer      0     |      1     |     0      |    0     |   0x08   |
+|ICMP                       |            |            |          |          |
+|  error              0     |      0     |     0      |    0     |   0x00   |
+|  query              0     |      0     |     0      |    0     |   0x00   |
+|  any IGP            0     |      0     |     1      |    0     |   0x04   |
+|SNMP                 0     |      0     |     1      |    0     |   0x04   |
+|BOOTP                0     |      0     |     0      |    0     |   0x00   |
+|NNTP                 0     |      0     |     0      |    1     |   0x02   |
+|---------------------------------------------------------------------------|
+
+Bu değerler tavsiye edilen değerlerdir. (R.Stevens,TCP/IP,1998)
+</pre></div>
+      </dd></dl> <div class="head3"><a name="id6" id="id6"></a>TCP Bağlantı İsteklerinin Engellenmesi</div><dl><dd><div class="para">
+        Bilindiği üzere <tt>TCP</tt> protokol olarak çok
+        kullanılmaktadır. <tt>ftp</tt>, <tt>telnet</tt> vs.
+        <tt>TCP</tt> paketleri ile yapılacak olan veri aktarımlarında
+        ise <tt>TCP</tt>'nin üç-koşullu-onaylama (<i>three way
+        hanshaking</i>) olarak adlandırılan yöntemi kullanılır.
+      </div><div class="para">
+        Yöntem bir bağlantı isteği (<i>active open</i> olarak geçer) ile
+        işlemeye başlar.
+      </div><div class="para">
+        İstemci makina sunucuya <tt>SYN</tt> (<i>syncronise</i>)
+        sayısı içeren bir paket gönderdiğinde sunucu buna <tt>SYN</tt>
+        ve <tt>ACK</tt> (<i>acknowledgement</i>) ile cevap
+        verir.
+      </div><div class="para">
+        Üçüncü adım olarak da istemciden sadece bir <tt>ACK</tt> geri
+        döner (<i>passive open</i>).
+      </div><div class="para">
+        Daha fazla ayrıntısına girmeyeceğim bu iletişim bir <tt>TCP</tt>
+        bağlantısı başlatır. Biz eğer makinamıza giren <tt>TCP</tt>
+        isteklerini kontrol etmek istersek (bu sekilde <tt>TCP</tt>
+        kullanan tüm servisler kontrol edilir; <tt>ftp</tt>,
+        <tt>telnet</tt>, <tt>ssh</tt>, <tt>finger</tt>
+        <tt>www</tt> vs.) <tt>ipchains</tt>'in
+        <tt>-y</tt> parametresi yardımımıza koşar.
+      </div><div class="para">
+        Bu parametre ile içinde <tt>SYN</tt> biti 1 olan ve aynı
+        zamanda <tt>ACK</tt> ve <tt>FIN</tt> bitleri 1'e
+        eşit olan (<tt>SYN=1 &amp;&amp; ACK=0 &amp;&amp; FIN=0</tt> durumu) paketler
+        yakalanabilir.
+      </div><div class="para">
+        Parametrenin ! (tersi) seçeneği de vardır. (bit durumlarının tersi değil
+        koşul sağlanmasının tersi). Ve de doğal olarak sadece <tt>TCP</tt>
+        protokolü için kullanılır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# ipchains -A input -p tcp -s 0/0 -d 155.223.3.202/32 -y -j DENY
+</pre></div></div>
+<div class="para">
+        Komutu ile makinaya gelen tüm <tt>SYN_REQ</tt>'ler kabul
+        edilmemiş olur. Böylece dışardan hiçbir şekilde makinaya
+        <tt>TCP</tt> bağlantısı yapılamaz.
+      </div><div class="para">
+        Ve de bizim dışarıya <tt>TCP</tt> bağlantısı isteklerimiz de
+        bundan etkilenmez. (çünkü bizim başlattığımız <tt>TCP</tt>'lerde
+        de bu bitler kullanılır ne kadar sadece output kümesini ilgilendiriyor
+        görünse de <tt>TCP</tt>'nin çift taraflı özelliğinden ötürü
+        <tt>input</tt> kümesi de olaya girer. Ama belirttiğimiz gibi
+        <tt>-y</tt> parametresi bizim başlattığımız
+        <tt>TCP</tt> bağlantılarını görmez).
+      </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/ipchains-nasil_general.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/ipchains-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/ipchains-nasil_chains.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Genel </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Kümeler</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:37+03:00" /><title>Tiny-dns Kurulumu</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/djbdns-kurulumu-nasil.html" title="djbDNS Kurulumu NASIL" /><link rel="previous" href="../howto/djbdns-kurulumu-nasil_dnscache.html" title="Dnscache Programının Kurulması" /><link rel="next" href="../howto/djbdns-kurulumu-nasil_data.html" title="/service/tinydns/root/data Dosyasının Biçemi " /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Tiny-dns Kurulumu</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/djbdns-kurulumu-nasil_dnscache.html">Önceki</a> </td><th width="60%" align="center">djbDNS Kurulumu NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/djbdns-kurulumu-nasil_data.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="djbdns-kurulumu-nasil_tinydns" id="djbdns-kurulumu-nasil_tinydns"></a>Tiny-dns Kurulumu</div><dl><dd><div class="para">
+<tt>Tiny-dns</tt> yukarıda da anlatıldığı üzere bizim alanımız için
+yetkili isim sunucu olacak. (Aynı zamanda yetkili tersinir isim sunucumuz olacak
+- ipv4--&gt;hostname...)
+    </div><div class="para">
+Önce sistemimize <tt>tiny-dns</tt> kullanıcısını
+(<tt>tinydns</tt>) ekleyelim. Ayrıca sistem günlük kayıtlarını
+tutması için <tt>dnslog</tt> kullanıcısı da eğer daha önce
+<tt>dnscache</tt> kurulmadıysa eklenmelidir.
+    </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/caution.png" /></td><th class="admon">Dikkat</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Dikkat edilmesi gereken bir nokta, <tt>dnscache</tt> ile
+<tt>tinydns</tt> aynı IP'yi dinleyemez. Bu yüzden tiny-dns'i
+192.168.1.2'nin 53. portuna bağlayacağız. (IP-ALIASING artık bütün
+*NIX'lerde vardır). Eğer elinizde sadece bir Internet IP adresi varsa
+bu IP'yi tiny-dns için kullanın ve yerel 192.168.1.1 IP'sini de dnscache
+için kullanın.
+      </div></td></tr></table></div><div class="para">Tiny-dns yapılandırması
+</div><div class="para"><div align="right"><pre class="screen">
+# tinydns-conf tinydns dnslog /etc/tinydns 192.168.1.2  {<i>ya da bir Internet IP'si</i>}
+# ln -s /etc/tinydns /service                           {<i>5 saniye sonra çalışır olacak</i>}
+</pre></div></div><div class="para">
+Sıra <tt>tinydns</tt>'e makina ismi ve tersinir kayıtların
+girilmesine geldi. Bu aşamada iki seçeneğiniz var. Ya <tt>data</tt> dosyasını elle
+düzenleyeceksiniz ya da <tt>/etc/tinydns/root</tt> dizini altında
+bulunan <tt>add*</tt> betiklerini kullanacaksınız. Burada bizim
+tavsiyemiz <tt>data</tt> dosyasına girdilerin <tt>add*</tt>
+betikleri yardımıyla girilmesi yönünde olacaktır. Böylece her ne kadar
+<tt>data</tt> dosyasının yapılandırması bind'a göre son derece
+kolay ve anlaşılır olsa da ufak hatalar yapılabilme olasılığının olmasıdır.
+Fakat <tt>add*</tt> betikleri ile bu baş ağrıtıcı hataların oluşturduğu
+problemlerden kurtulmuş olursunuz.
+    </div><div class="para">
+Sırasıyla <tt>yildiz.edu.tr</tt> için dns kayıtlarını girelim ve
+yetkili isim sunucumuzu kuralım.
+ </div><div class="para"><div align="right"><pre class="screen">
+# cd /etc/tinydns/root
+# ./add-ns yildiz.edu.tr 193.140.1.1              <a name="djbdns-kurulumu-nasil.r1" id="djbdns-kurulumu-nasil.r1"></a><b style="background: transparent url(&quot;../images/xsl/callouts/1.png&quot;) no-repeat left 40%;">  </b>
+# ./add-ns 1.140.193.in-addr.arpa 193.140.1.1     <a name="djbdns-kurulumu-nasil.r2" id="djbdns-kurulumu-nasil.r2"></a><b style="background: transparent url(&quot;../images/xsl/callouts/2.png&quot;) no-repeat left 40%;">  </b>
+# ./add-host ogis.yildiz.edu.tr 193.140.1.3       <a name="djbdns-kurulumu-nasil.r3" id="djbdns-kurulumu-nasil.r3"></a><b style="background: transparent url(&quot;../images/xsl/callouts/3.png&quot;) no-repeat left 40%;">  </b>
+# ./add-alias www2.yildiz.edu.tr 193.140.1.3      <a name="djbdns-kurulumu-nasil.r4" id="djbdns-kurulumu-nasil.r4"></a><b style="background: transparent url(&quot;../images/xsl/callouts/4.png&quot;) no-repeat left 40%;">  </b>
+# ./add-mx yildiz.edu.tr 193.140.1.1              <a name="djbdns-kurulumu-nasil.r5" id="djbdns-kurulumu-nasil.r5"></a><b style="background: transparent url(&quot;../images/xsl/callouts/5.png&quot;) no-repeat left 40%;">  </b>
+# ./add-mx yildiz.edu.tr 193.140.1.5              <a name="djbdns-kurulumu-nasil.r6" id="djbdns-kurulumu-nasil.r6"></a><b style="background: transparent url(&quot;../images/xsl/callouts/6.png&quot;) no-repeat left 40%;">  </b>
+# ./add-childdns ece.yildiz.edu.tr 193.140.1.15   <a name="djbdns-kurulumu-nasil.r7" id="djbdns-kurulumu-nasil.r7"></a><b style="background: transparent url(&quot;../images/xsl/callouts/7.png&quot;) no-repeat left 40%;">  </b>
+# make                                            <a name="djbdns-kurulumu-nasil.r8" id="djbdns-kurulumu-nasil.r8"></a><b style="background: transparent url(&quot;../images/xsl/callouts/8.png&quot;) no-repeat left 40%;">  </b>
+</pre></div></div> <div class="para">
+    <div class="calloutlist"><table border="0" summary="Dikkat edilecek hususlar" cellspacing="0" cellpadding="3" width="100%"><tr><td width="15" valign="top" align="left" class="coimage"><a href="#djbdns-kurulumu-nasil.r1"><img src="../images/xsl/callouts/1.png" alt="1" border="0" /></a> </td><td valign="top" align="left"><div class="para"><tt>*.yildiz.edu.tr</tt> için yetkili isim sunucusu 193.140.1.1 olacak; SOA</div></td></tr><tr><td width="15" valign="top" align="left" class="coimage"><a href="#djbdns-kurulumu-nasil.r2"><img src="../images/xsl/callouts/2.png" alt="2" border="0" /></a> </td><td valign="top" align="left"><div class="para">tersinir yetkili isim sunucusu 193.140.1.1 olacak</div></td></tr><tr><td width="15" valign="top" align="left" class="coimage"><a href="#djbdns-kurulumu-nasil.r3"><img src="../images/xsl/callouts/3.png" alt="3" border="0" /></a> </td><td valign="top" align="left"><div class="para">Sanırım bayağı zor anlaşılacak birşey :)</div></td></tr><tr><td width="15" valign="top" align="left" class="coimage"><a href="#djbdns-kurulumu-nasil.r4"><img src="../images/xsl/callouts/4.png" alt="4" border="0" /></a> </td><td valign="top" align="left"><div class="para">DAHA ÖNCEDEN TANIMLANMIŞ bir IP'ye takma isim ekliyoruz</div></td></tr><tr><td width="15" valign="top" align="left" class="coimage"><a href="#djbdns-kurulumu-nasil.r5"><img src="../images/xsl/callouts/5.png" alt="5" border="0" /></a> </td><td valign="top" align="left"><div class="para">bir numaralı mx (eposta sunucusu) olarak 193.140.1.1 ekleniyor</div></td></tr><tr><td width="15" valign="top" align="left" class="coimage"><a href="#djbdns-kurulumu-nasil.r6"><img src="../images/xsl/callouts/6.png" alt="6" border="0" /></a> </td><td valign="top" align="left"><div class="para">ikinci sırada gelen yildiz.edu.tr eposta sunucusu</div></td></tr><tr><td width="15" valign="top" align="left" class="coimage"><a href="#djbdns-kurulumu-nasil.r7"><img src="../images/xsl/callouts/7.png" alt="7" border="0" /></a> </td><td valign="top" align="left"><div class="para">alt alanlar için isim sunucusu</div></td></tr><tr><td width="15" valign="top" align="left" class="coimage"><a href="#djbdns-kurulumu-nasil.r8"><img src="../images/xsl/callouts/8.png" alt="8" border="0" /></a> </td><td valign="top" align="left"><div class="para"><tt>tindns-data</tt> komutu çalıştırılır</div></td></tr></table></div></div><div class="para">
+Bu noktada önemli birşey var. <tt>add-ns</tt> ve <tt>add-mx</tt>
+betiklerini kullanırken dikkat ederseniz isim sunucuların makina isimlerini
+vermedik.
+Bu iki betik öntanımlı olarak <tt>a.ns ... b.ns</tt> makina isimlerini
+atarlar. Eğer Internic'te ya da daha doğru ifadesiyle <tt>registrar</tt>'ınızda
+isim sunucusu makina ismi olarak farklı bir isim olabilir. İşte bu noktada iki
+makina ismi de aynı olmalıdır.<tt>add-ns</tt> ve <tt>add-mx</tt>
+yine aynı dizinde, <tt>/etc/tinydns/root/</tt> dizini altında bulunan
+<tt>data</tt> dosyasını düzenler. Burada metin düzenleyicinizle bu
+dosyayı açıp gerekli değişiklikleri yapmalısınız. Örnek olarak
+<tt>ulak.net.tr</tt>'de <tt>yildiz.edu.tr</tt> isim
+sunucusunun makina ismi <tt>ana.cc.yildiz.edu.tr</tt> olarak tanımlıdır.
+<tt>data</tt> dosyasında bu değişiklik yapılmalıdır.
+    </div><div class="para">
+Sıra geldi <tt>data</tt> dosyasındaki bilgileri <tt>data.cdb</tt>
+olarak yani<tt>tinydns</tt>'in yapılandırma dosyası olarak kaydetmeye.
+Yine ayni dizinde dikkat ederseniz bir <tt>Makefile</tt> vardır.
+Yapılması gereken tek şey bu dizinde <tt>make</tt> komutunu
+çalıştırmaktır. Make komutunun yazılması ile birlikte <tt>tiny-dns</tt>
+hizmet vermeye hazır olacaktır. Make komutu Makefile dosyasından da anlaşılacağı
+üzere <tt>tinydns-data</tt> programını kullanarak <tt>data.cdb</tt>'yi
+oluşturur. Kısacası <tt>tinydns-data</tt>, <tt>data</tt>
+dosyasını okur ve <tt>tinydns</tt>'in hızlı bir şekilde ulaşabileceği
+<tt>data.cdb</tt> dosyasını oluştururr. Ayrıca <tt>tinydns-data</tt>
+otomatik olarak <tt>data.cdb</tt>'yi günceller. Böylece data dosyasında
+yapılan bir değişiklik <tt>tinydns</tt>'i bir daha başlatmadan doğrudan
+<tt>data.cdb</tt> dosyasını günceller. <tt>data.cdb</tt>
+güncellenirken sistem çökse bile sistem yeniden başladığında
+<tt>data.cdb</tt> dosyasında bir problem yaşamaz. Tam bir ya hep ya hiç
+mantığıyla ya da veri aktarımı mantığı ile çalışır.
+    </div><div class="para">
+Aşağıda <tt>data</tt> dosyasının içeriği verilmiştir. Bu dosyayı üstte
+<tt>add-*</tt> betikleri ile yapılandırabileceğiniz gibi elle de
+yapılandırabilirsiniz.
+   </div>
+<div class="para"><div align="right"><pre class="screen">
+.yildiz.edu.tr:193.140.1.1:a:259200            <a name="djbdns-kurulumu-nasil.s1" id="djbdns-kurulumu-nasil.s1"></a><b style="background: transparent url(&quot;../images/xsl/callouts/1.png&quot;) no-repeat left 40%;">  </b>
+.1.140.193.in-addr.arpa:193.140.1.1:a:259200
+=www.yildiz.edu.tr:193.140.1.1:86400           <a name="djbdns-kurulumu-nasil.s2" id="djbdns-kurulumu-nasil.s2"></a><b style="background: transparent url(&quot;../images/xsl/callouts/2.png&quot;) no-repeat left 40%;">  </b>
+.1.140.193.in-addr.arpa:193.140.1.1:a:259200   <a name="djbdns-kurulumu-nasil.s3" id="djbdns-kurulumu-nasil.s3"></a><b style="background: transparent url(&quot;../images/xsl/callouts/3.png&quot;) no-repeat left 40%;">  </b>
+=ogis.yildiz.edu.tr:193.140.1.3:86400          <a name="djbdns-kurulumu-nasil.s4" id="djbdns-kurulumu-nasil.s4"></a><b style="background: transparent url(&quot;../images/xsl/callouts/4.png&quot;) no-repeat left 40%;">  </b>
++www2.yildiz.edu.tr:193.140.1.3:86400          <a name="djbdns-kurulumu-nasil.s5" id="djbdns-kurulumu-nasil.s5"></a><b style="background: transparent url(&quot;../images/xsl/callouts/5.png&quot;) no-repeat left 40%;">  </b>
+@yildiz.edu.tr:193.140.1.3:a::86400            <a name="djbdns-kurulumu-nasil.s6" id="djbdns-kurulumu-nasil.s6"></a><b style="background: transparent url(&quot;../images/xsl/callouts/6.png&quot;) no-repeat left 40%;">  </b>
+@yildiz.edu.tr:193.140.1.5:b::86400            <a name="djbdns-kurulumu-nasil.s7" id="djbdns-kurulumu-nasil.s7"></a><b style="background: transparent url(&quot;../images/xsl/callouts/7.png&quot;) no-repeat left 40%;">  </b>
+&amp;ece.yildiz.edu.tr:193.140.1.15:86400          <a name="djbdns-kurulumu-nasil.s8" id="djbdns-kurulumu-nasil.s8"></a><b style="background: transparent url(&quot;../images/xsl/callouts/8.png&quot;) no-repeat left 40%;">  </b>
+</pre></div></div> <div class="para">
+    <div class="calloutlist"><table border="0" summary="Dikkat edilecek hususlar" cellspacing="0" cellpadding="3" width="100%"><tr><td width="15" valign="top" align="left" class="coimage"><a href="#djbdns-kurulumu-nasil.s1"><img src="../images/xsl/callouts/1.png" alt="1" border="0" /></a> </td><td valign="top" align="left"><div class="para"><tt>yildiz.edu.tr</tt> için yetkili isim sunucusu nokta ile başlıyor</div></td></tr><tr><td width="15" valign="top" align="left" class="coimage"><a href="#djbdns-kurulumu-nasil.s2"><img src="../images/xsl/callouts/2.png" alt="2" border="0" /></a> </td><td valign="top" align="left"><div class="para">www.yildiz.edu.tr için host kaydı</div></td></tr><tr><td width="15" valign="top" align="left" class="coimage"><a href="#djbdns-kurulumu-nasil.s3"><img src="../images/xsl/callouts/3.png" alt="3" border="0" /></a> </td><td valign="top" align="left"><div class="para"><tt>*.1.140.193</tt> için yetkili isim sunucusu</div></td></tr><tr><td width="15" valign="top" align="left" class="coimage"><a href="#djbdns-kurulumu-nasil.s4"><img src="../images/xsl/callouts/4.png" alt="4" border="0" /></a> </td><td valign="top" align="left"><div class="para">ogis.yildiz.edu.tr için makina kaydı</div></td></tr><tr><td width="15" valign="top" align="left" class="coimage"><a href="#djbdns-kurulumu-nasil.s5"><img src="../images/xsl/callouts/5.png" alt="5" border="0" /></a> </td><td valign="top" align="left"><div class="para"> Bir takma ad (alias) kaydı. Takma ad kayıtları <tt>+</tt> ile başlar.</div></td></tr><tr><td width="15" valign="top" align="left" class="coimage"><a href="#djbdns-kurulumu-nasil.s6"><img src="../images/xsl/callouts/6.png" alt="6" border="0" /></a> </td><td valign="top" align="left"><div class="para">yildiz.edu.tr için mx kaydı. Öncelikler harflerle ifade ediliyor.</div></td></tr><tr><td width="15" valign="top" align="left" class="coimage"><a href="#djbdns-kurulumu-nasil.s7"><img src="../images/xsl/callouts/7.png" alt="7" border="0" /></a> </td><td valign="top" align="left"><div class="para">yildiz.edu.tr için ikinci mx kaydı. <tt>@</tt> ile başlıyor.</div></td></tr><tr><td width="15" valign="top" align="left" class="coimage"><a href="#djbdns-kurulumu-nasil.s8"><img src="../images/xsl/callouts/8.png" alt="8" border="0" /></a> </td><td valign="top" align="left"><div class="para">ece.yildiz.edu.tr için gelen sorguları 193.140.1.15 IP'sine yönlendir.</div></td></tr></table></div></div><div class="para">
+Bu arada istenirse <tt>daemontools</tt> paketi ile gelen <tt>svstat</tt>
+ile <tt>tinydns</tt> çalışıyor mu çalışmıyor mu kontrol edilebilir.
+</div><div class="para"><div align="right"><pre class="screen">
+# svstat /service/tinydns
+</pre></div></div><div class="para">
+Ya da günlük kayıt dosyalarına bakabiliriz.
+</div><div class="para"><div align="right"><pre class="screen">
+# tail -f /service/tinydns/log/current
+</pre></div></div><div class="para">ile gerçek zamanlı olarak işlemler gözlenebilir.
+    </div><div class="para">
+Bir de <tt>tinydns</tt>'in verisini kontrol edelim. Bunun için
+<tt>dnscache</tt> için kullandığımız komuta benzer bir komut olan
+<tt>dnsq</tt> komutunu kullanacağız.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+# dnsq a yildiz.edu.tr 193.140.1.1
+1 yildiz.edu.tr:
+127 bytes, 1+1+2+2 records, response, authoritative, weird ra, noerror
+query: 1 yildiz.edu.tr
+answer: yildiz.edu.tr 86400 A 193.140.1.1               {<i>Önemli olan kısım burası</i>}
+authority: yildiz.edu.tr 86400 NS smurf.cc.yildiz.edu.tr
+authority: yildiz.edu.tr 86400 NS bigblue.ce.yildiz.edu.tr
+additional: smurf.cc.yildiz.edu.tr 86400 A 193.140.1.1
+additional: bigblue.ce.yildiz.edu.tr 86400 A 193.140.2.1
+</pre></div></div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/caution.png" /></td><th class="admon">Dikkat</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+<tt>tinydns</tt>'i sorgulamak için <tt>dnsq</tt>
+        </div><div class="para">
+<tt>dnscache</tt>'i sorgulamak için <tt>dnsqr</tt> kullanılır.
+      </div></td></tr></table></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/djbdns-kurulumu-nasil_dnscache.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/djbdns-kurulumu-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/djbdns-kurulumu-nasil_data.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Dnscache Programının Kurulması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> /service/tinydns/root/data Dosyasının Biçemi </td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

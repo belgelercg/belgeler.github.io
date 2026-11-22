@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:47+03:00" /><title>Kontrol</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/kablonet-nasil.html" title="Kablonet, Linux ve IP-Maskeleme NASIL" /><link rel="previous" href="../howto/kablonet-nasil_config.html" title="Yapılandırma Dosyaları" /><link rel="next" href="../howto/kablonet-nasil_masq.html" title="IP Maskeleme" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Kontrol</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/kablonet-nasil_config.html">Önceki</a> </td><th width="60%" align="center">Kablonet, Linux ve IP-Maskeleme NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/kablonet-nasil_masq.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="kablonet-nasil_check" id="kablonet-nasil_check"></a>Kontrol</div><dl><dd><div class="para">
+      Buraya kadar yaptıklarımız, kablo üzerinden bilgi akışını başlatmak için
+      yeterli. Yine de bir püf noktası var: <i>Bilgisayarınız açık ve
+      yukarıdaki tanımlamalarınız tamamlanmış durumdayken, kablo modemi bir
+      kez daha resetlemek</i> (elektrik kablosunu çıkarıp, yeniden
+      takarak) yararlı olabilir. Modemin üzerinde herhangi bir reset-tuşu
+      olmadığına göre, belki de gereksiz bir işlem bu, ama, ne olur ne olmaz!
+    </div><div class="para">
+      Peki, sistemin ethernet kartını tanıyıp tanımadığını nasıl anlayacağız?
+    </div><ol class="orderedlist" start="ignore" type="1"><li><div class="listitem"><div class="para">
+            Sistem açılışı sırasında <tt>lo</tt>, <tt>eth0</tt>
+            ve <tt>eth1</tt> satırlarının [OK]'lenmesiyle,
+          </div></div></li><li><div class="listitem"><div class="para">
+            <tt>ifconfig</tt> komutuyla
+          </div><div class="para">
+            Merkez'in <tt>ifconfig</tt> komutuna verdiği yanıt şöyle:
+</div><div class="para"><div align="right"><pre class="screen">
+eth0   Link encap:Ethernet HWaddr 00:80:AD:16:3B:A6
+      inet addr:192.168.1.254 Bcast:192.168.1.255 Mask:255.255.255.0
+      UP BROADCAST RUNNING MULTICAST MTU:1500 Metric:1
+      RX packets:615 errors:0 dropped:0 overruns:0 frame:0
+      TX packets:855 errors:0 dropped:0 overruns:0 carrier:0
+      collisions:9 txqueuelen:100
+      Interrupt:5 Base address:0x320
+
+eth1   Link encap:Ethernet HWaddr 00:00:21:50:50:3D
+      inet addr:212.174.111.180 Bcast:212.174.111.255 Mask:255.255.255.0
+      UP BROADCAST RUNNING MTU:1500 Metric:1
+      RX packets:3540 errors:0 dropped:0 overruns:0 frame:0
+      TX packets:12 errors:0 dropped:0 overruns:0 carrier:0
+      collisions:0 txqueuelen:100
+      Interrupt:11 Base address:0xff80
+
+lo     Link encap:Local Loopback
+      inet addr:127.0.0.1 Mask:255.0.0.0
+      UP LOOPBACK RUNNING MTU:3924 Metric:1
+      RX packets:269 errors:0 dropped:0 overruns:0 frame:0
+      TX packets:269 errors:0 dropped:0 overruns:0 carrier:0
+      collisions:0 txqueuelen:0
+</pre></div></div><div class="para">
+            Ayrıntılarına girmiyorum, ancak, sizin de sisteminizden benzer bir yanıt
+            almanız gerekiyor.
+          </div></div></li></ol><div class="para">
+      Modemin çalışıp-çalışmadığını anlama yöntemleri değişebilir elbet. Bizim
+      kullandığımızda en üstteki 3 led sürekli yanıyor, en alttaki
+      <tt>Activity</tt> led'i ise bilgi akışına bağlı olarak düzensiz
+      aralıklarla yanıp sönüyor.
+    </div><div class="para">
+      Ayrıca, <tt>tcpdump -i eth1</tt> komutunu kullanabilirsiniz.
+      Böylece, veri akışı olup olmadığını anlamanız mümkün.
+    </div><div class="para">
+      Ben, daha etkin bir yöntem olarak, <tt>cold</tt> isimli bir
+      program kullanıyorum. Bir tür koklayıcı (<tt>sniffer</tt>).
+      Kullanımı çok basit. Konsolda kullanıyorsunuz. <tt>cold</tt>
+      ve <tt>tgz</tt> kelimelerini birlikte aratarak, internette
+      kolayca bulabilirsiniz.Aşağıdaki parametrelerle, ikinci ethernet kartını
+      sınamanızı sağlıyor:
+</div><div class="para"><div align="right"><pre class="screen">
+cold --interface eth1
+</pre></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/kablonet-nasil_config.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/kablonet-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/kablonet-nasil_masq.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Yapılandırma Dosyaları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> IP Maskeleme</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

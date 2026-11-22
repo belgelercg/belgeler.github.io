@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:40+03:00" /><title>IPv6 adresi neye benzer?</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/ipv6-howto-basics.html" title="Temel Bilgiler" /><link rel="previous" href="../howto/ipv6-howto-basics-history-ipv6-linux.html" title="IPv6'nın Linux geçmişi" /><link rel="next" href="../howto/ipv6-howto-basics-sss-basic.html" title="SSS (Temel düzey)" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">IPv6 adresi neye benzer?</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/ipv6-howto-basics-history-ipv6-linux.html">Önceki</a> </td><th width="60%" align="center">Temel Bilgiler</th><td width="20%" align="right"> <a accesskey="n" href="../howto/ipv6-howto-basics-sss-basic.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="ipv6-howto-basics-looklike" id="ipv6-howto-basics-looklike"></a>IPv6 adresi neye benzer?</div><dl><dd><div class="para">
+Önceden söylediğimiz gibi IPv6 adresleri 128 bit uzunluğundadır. Bu bit sayısı ile 39 basamağa kadar ulaşabilen çok büyük ondalık sayılar üretilmektedir.
+  </div>
+<div class="para"><pre class="literallayout">   2^128-1: 340282366920938463463374607431768211455</pre></div>
+  <div class="para">
+Böyle sayılar gerçekte hatırlanabilir adresler değildirler. Gerçekte IPv6 adres tasarımı bitwise yönelimlidir (IPv4 de öyledir ama genellikle farkedilmez). Bu yüzden böyle büyük sayıların yazımı için onaltılık taban daha uygundur. Onaltılık gösterimde 4 bit ("nibble" olarak da bilinir) bir basamakla ya da 0-9 ve a-f karakterlerinden biriyle temsil edilir. Bu düzen IPv6 adreslerinin uzunluğunu 32 karaktere düşürür:
+  </div>
+<div class="para"><pre class="literallayout">   2^128-1: 0xffffffffffffffffffffffffffffffff</pre></div>
+  <div class="para">
+Bu gösterim hala çok kullanışlı olmadığından (karışıklık hala olasıdır) IPv6 tasarımcıları 16 bit'lik bloklardan oluşan onaltılık bir düzeni tercih etmişler ve programlama dillerinde onaltılık değerlerin kullanıldığını gösteren "0x" ifadesini kaldırmışlardır.
+  </div>
+<div class="para"><pre class="literallayout">   2^128-1: ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff</pre></div>
+  <div class="para">
+Kullanılabilir bir adres (adres türlerinden daha sonra bahsedeceğiz) örneği şöyledir:
+  </div>
+<div class="para"><pre class="literallayout">   3ffe:ffff:0100:f101:0210:a4ff:fee3:9566</pre></div>
+  <div class="para">
+Basitlik için her 16 bit'lik bloğun başındaki sıfırlar ihmal edilebilir:
+  </div><div class="para"><div align="right"><pre class="screen">
+3ffe:ffff:0100:f101:0210:a4ff:fee3:9566 -&gt; 3ffe:ffff:100:f101:210:a4ff:fee3:9566
+</pre></div></div><div class="para">
+Tamamen sıfırlardan oluşan bir 16 bit'lik blok yerine "<tt>::</tt>" kullanılabilir. Fakat bir seferde birden fazla kullanımı gösterimin özelliğini bozar.
+  </div><div class="para"><div align="right"><pre class="screen">3ffe:ffff:100:f101:0:0:0:1 -&gt; 3ffe:ffff:100:f101::1</pre></div></div><div class="para">
+IPv6 ile yapılabilecek en büyük kısaltma şöyledir:
+  </div><div class="para"><div align="right"><pre class="screen">0000:0000:0000:0000:0000:0000:0000:0001 -&gt; ::1</pre></div></div><div class="para">
+Genel kullanımı olmayan bir diğer gösterim de 1 Nisan 1996 da <a class="ulink" href="http://www.faqs.org/rfcs/rfc1924.html" target="_top">RFC 1924 / A Compact Representation of IPv6 Addresses</a>'te yayınlanan <tt>compact</tt> isimli gösterimdir. Belki de bir 1 nisan şakasıdır ama bir örneği şöyledir:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>ipv6calc --addr_to_base85 3ffe:ffff:0100:f101:0210:a4ff:fee3:9566</tt></b>
+Itu&amp;-ZQ82s&gt;J%s99FJXT
+</pre></div></div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Bilgi</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+<b><tt>ipv6calc</tt></b>, IPv6 adres düzenini hesaplayabilen ve dönüştürebilen bir programdır ve şu adreslerden edinilebilir: <a class="ulink" href="http://www.deepspace6.net/projects/ipv6calc.html" target="_top">ipv6calc ana sayfası</a> (<a class="ulink" href="http://mirrors.bieringer.de/www.deepspace6.net/projects/ipv6calc.html" target="_top">Yansı</a>)
+  </div></td></tr></table></div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/ipv6-howto-basics-history-ipv6-linux.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/ipv6-howto-basics.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/ipv6-howto-basics-sss-basic.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">IPv6'nın Linux geçmişi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> SSS (Temel düzey)</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

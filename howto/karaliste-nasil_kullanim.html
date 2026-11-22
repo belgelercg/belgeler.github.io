@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:48+03:00" /><title>Kendi karalistenizi kullanmak</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/karaliste-nasil.html" title="IP Karalistesi NASIL" /><link rel="previous" href="../howto/karaliste-nasil_yansi.html" title="Karaliste yansısının kurulması ve çalıştırılması" /><link rel="next" href="../howto/karaliste-nasil_olustur.html" title="Karaliste oluşturmak" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Kendi karalistenizi kullanmak</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/karaliste-nasil_yansi.html">Önceki</a> </td><th width="60%" align="center">IP Karalistesi NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/karaliste-nasil_olustur.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="karaliste-nasil_kullanim" id="karaliste-nasil_kullanim"></a>Kendi karalistenizi kullanmak</div><dl><dd> <div class="head3"><a name="id1" id="id1"></a>Karaliste dosyasının oluşumu</div><dl><dd><div class="para">
+Internet'te olan herhangi bir alan adı ile karışmaması için karalistemizi <tt>rbl.zzz</tt> alanı olarak tanımlayacağız. Herhangi bir metin düzenleyici içerisinde <tt>/var/lib/rbldns/rbl.zzz</tt> dosyasını oluşturalım.
+</div><div class="para">
+Bütün DNS listeleri bir <tt>SOA</tt> "Start of Authority" - otorite başlangıcı - satırı ile başlar.
+</div><div class="para">
+<tt>/var/lib/rbldns/rbl.zzz</tt> ilk satır:
+</div><div class="para"><div align="right"><pre class="screen">
+$SOA 172800 bizimfirma.com.tr. root.bizimfirma.com.tr. 0 7200 7200 604800 3600
+</pre></div></div><div class="para">
+Dikkatinizi, <tt>bizimfirma.com.tr. root.bizimfirma.com.tr.</tt> ibaresine çekmek istiyorum. Alan adının Internet'te bulunan herhangi bir şeyle çakışmaması için <tt>rbl.zzz</tt> kullandık. Ama burada kendi gerçek alan adımızı ve ulaşılabilir bir posta adresimizi kullanıyoruz. Bundan sonra gelen tanım ise <tt>0</tt>. Bu da önemli. Bu, dosyanın seri numarası ve DNS'in, alan dosyasında değişiklik olduğunu farketmesinin yöntemi. <tt>rbldns</tt>'e özgü bir kolaylık ile, bu tanım 0 ise, dosyanın değişme tarihini seri numarası olarak alıyor.
+</div><div class="para">
+Bundan sonra karalisteye alacağımız numaraları tanımlayacağız. Biçem,
+</div><div class="para"><pre class="literallayout">
+    <i><tt>karalisteli no </tt></i>: <i><tt>kısa cevap</tt></i> : <i><tt>açıklama</tt></i>
+</pre></div><div class="para">şeklinde olacak.
+</div><div class="para">
+<tt>/var/lib/rbldns/rbl.zzz</tt> örnek:
+</div><div class="para"><div align="right"><pre class="screen">
+$SOA 172800 bizimfirma.com.tr. root.bizimfirma.com.tr. 0 7200 7200 604800 3600
+195.174.102.72 :127.0.0.2: Izinsiz erisim yapan TR dinamik IP -- 2005-01-08
+</pre></div></div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Karaliste dosyasını rbldns'e entegre etmek</div><dl><dd><div class="para">
+<tt>/etc/default/rbldnsd</tt>  dosyası içerisinde
+<tt>RBLDNSD</tt> tanımını aşağıdaki şekilde değiştirelim:
+</div><div class="para"><div align="right"><pre class="screen">
+RBLDNSD="- -r/var/lib/rbldns -b127.0.0.1/530 \
+-l requestlog -s statlog -f \
+tr.countries.nerd.dk:ip4set:tr.countries.nerd.dk.rbldnsd \
+dul.dnsbl.sorbs.net:ip4set:dul.dnsbl.sorbs.net \
+rbl.zzz:ip4set:rbl.zzz \
+"
+</pre></div></div><div class="para">
+<i>rbldnsd</i>'yi başlatalım:
+</div><div class="para"><div align="right"><pre class="screen">
+# <b><tt>/etc/init.d/rbldnsd restart</tt></b>
+Restarting rbldnsd: rbldnsd
+rbldnsd: listening on 127.0.0.1/530
+rbldnsd: ip4set:tr.countries.nerd.dk.rbldnsd: 20050126 233703:
+¬ e32/24/16/8=2061/3910/46/0
+rbldnsd: file dul.dnsbl.sorbs.net(3): compatibility mode: specify all NS
+¬ records in ONE line
+rbldnsd: ip4set:dul.dnsbl.sorbs.net: 20050126 233733:
+¬ e32/24/16/8=704801/271341/1628/0
+rbldnsd: ip4set:rbl.zzz: 20050129 061909: e32/24/16/8=4763/0/0/0
+rbldnsd: zones reloaded, time 0.36e/0.22u sec, mem arena=408 free=60 mmap=7628 Kb
+rbldnsd: rbldnsd version 0.994 (18 Dec 2004) started (1 socket(s), 3 zone(s))
+</pre></div></div><div class="para">
+Şimdi <i>rbldns</i>'i sorgulayalım:
+</div><div class="para"><div align="right"><pre class="screen">
+$ <b><tt>dig +short @127.0.0.1 -p 530 72.102.174.195.rbl.zzz</tt></b>
+127.0.0.2
+$ <b><tt>dig +short -t txt @127.0.0.1 -p 530 72.102.174.195.rbl.zzz</tt></b>
+"Izinsiz erisim yapan TR dinamik IP -- 2005-01-08"
+</pre></div></div></dd></dl> <div class="head3"><a name="id3" id="id3"></a>DNS içinden erişim</div><dl><dd><div class="para">
+<tt>/etc/bind/named.conf</tt> dosyası içerisinde yeni bir alan tanımı yapalım:
+</div><div class="para"><div align="right"><pre class="screen">
+zone "rbl.zzz" IN {
+        type forward;
+        forward only;
+        forwarders {
+        127.0.0.1 port 530;
+        };
+};
+</pre></div></div><div class="para">
+Özellikle <tt>forward only;</tt> komutuna dikkat edin. Eğer DNS sunucusu bir şekilde <i>rbldnsd</i> ile iletişim kuramaz ise, Internet üzerinden çözümlemeye gitmeyecek. Bu alan yalnızca bize mahsus olduğundan dolayı bu şekilde çalışıyor.
+</div><div class="para">
+DNS'i yeniden başlatın:
+</div><div class="para"><div align="right"><pre class="screen"># <b><tt>/etc/init.d/bind9 restart</tt></b>
+Stopping domain name service: named.
+Starting domain name service: named.
+</pre></div></div><div class="para">Artık bu alan için rutin DNS sorgusu yapabiliriz:
+</div><div class="para"><div align="right"><pre class="screen">
+$ <b><tt>dig +short 72.102.174.195.rbl.zzz</tt></b>
+127.0.0.2
+$ <b><tt>dig +short -t txt 72.102.174.195.rbl.zzz</tt></b>
+"Izinsiz erisim yapan TR dinamik IP -- 2005-01-08"
+</pre></div></div></dd></dl> <div class="head3"><a name="id4" id="id4"></a>Posta Sunucusunda Karalistenin Kullanılması</div><dl><dd><div class="para">
+Bu örnek <tt>postfix</tt> posta sunucusunu ele almaktadır. Kendi posta sunucunuz için farklı ayarlar olacaktır.
+</div><div class="para">
+Postfix 1.x sürümlerinde kendi karalistemizi kullanmak istersek;
+<tt>main.cf</tt> içerisinde,
+</div><div class="para"><div align="right"><pre class="screen">
+maps_rbl_domains = rbl.zzz
+smtpd_client_restrictions = reject_maps_rbl
+</pre></div></div><div class="para">
+değişikliğini yapın.
+    </div><div class="para">
+Postfix 2.x sürümlerinde ise biçim biraz farklı, yine <tt>main.cf</tt>  içerisinde,
+    </div><div class="para"><div align="right"><pre class="screen">
+smtpd_client_restrictions = reject_rbl_client rbl.zzz
+</pre></div></div><div class="para">
+<tt>maps_rbl_domains</tt> ve <tt>smtpd_client_restrictions</tt> değerleri için bunların bir ekleme olduğunu unutmayın. Başka değerlerin yerine değil, ek olarak koyun. Daha fazla bilgi için <a class="ulink" href="http://jimsun.linxnet.com/misc/postfix-anti-UCE.txt" target="_top">Postfix Anti-UCE Cheat-Sheet</a> adresine bakabilirsiniz.
+</div><div class="para">
+Bu değişiklik ile birlikte, <tt>postfix</tt> posta sunucusu <tt>rbl.zzz</tt> karalistesinde bulunan IP numaralarından posta almayı reddedecektir.
+</div></dd></dl> <div class="head3"><a name="id5" id="id5"></a>SpamAssassin'e kendi karalistenizi tanımlamak</div><dl><dd><div class="para">
+Karalisteyi, posta sunucusunda kullanıp karalisteden gelen postaları reddetmek yerine, <tt>spamassassin</tt> içerisinde, karalisteden gelen postalara not vermek şeklinde kullanmayı tercih edebilirsiniz.
+</div><div class="para">
+Bunu yapmak için, <tt>spamassassin</tt> için kendi kuralımızı yazacağız.
+<tt>/etc/mail/spamassassin/local.cf</tt> içerisine şunları
+ekliyoruz:
+    </div><div class="para"><div align="right"><pre class="screen">
+header RCVD_IN_RBL_ZZZ  eval:check_rbl('rbl-notfirsthop', 'zzz.',
+'127.0.0.2')
+describe RCVD_IN_RBL_ZZZ        RBL_ZZZ: Yerel karaliste
+tflags RCVD_IN_RBL_ZZZ  net
+score RCVD_IN_RBL_ZZZ 10
+</pre></div></div><div class="para">
+Bu ayarlarla, <tt>spamassassin</tt> içinde, RCVD_IN_RBL_ZZZ adında kendi kuralımızı tanımlıyor ve bu kurala uyan durumlarda <tt>spamassassin</tt>'in 10 puan vermesini sağlıyoruz.
+</div></dd></dl> <div class="head3"><a name="id6" id="id6"></a>Yapmak istedikleriniz bitmiş olabilir</div><dl><dd><div class="para">
+Eğer karalistenizin içeriğini nasıl oluşturacağınızı biliyor iseniz, buraya kadar işlediklerimizle bu karalisteyi sisteminizle nasıl bütünleştireceğinizi gördük. Bundan sonra, karalistelerin otomatik olarak nasıl oluşturulabileceğine bir örnek teşkil etmesi amacı ile <tt>rbl.zzz</tt> dosyasının içerisini nasıl dolduracağımızı ele alacağız.
+</div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/karaliste-nasil_yansi.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/karaliste-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/karaliste-nasil_olustur.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Karaliste yansısının kurulması ve çalıştırılması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Karaliste oluşturmak</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

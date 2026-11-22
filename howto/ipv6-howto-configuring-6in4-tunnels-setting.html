@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:42+03:00" /><title>6'ya 4 tünellerin ayarları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/ipv6-howto-configuring-6in4-tunnels.html" title="IPv4 içinde IPv6 tüneli yapılandırmak" /><link rel="previous" href="../howto/ipv6-howto-configuring-6in4-tunnels-configuring.html" title="Noktadan-noktaya tünel yapılandırması" /><link rel="next" href="../howto/ipv6-howto-configuring-ipv4-in-ipv6-tunnels.html" title="IPv6 içinde IPv4 Tüneli Yapılandırması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">6'ya 4 tünellerin ayarları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/ipv6-howto-configuring-6in4-tunnels-configuring.html">Önceki</a> </td><th width="60%" align="center">IPv4 içinde IPv6 tüneli yapılandırmak</th><td width="20%" align="right"> <a accesskey="n" href="../howto/ipv6-howto-configuring-ipv4-in-ipv6-tunnels.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="ipv6-howto-configuring-6in4-tunnels-setting" id="ipv6-howto-configuring-6in4-tunnels-setting"></a>6'ya 4 tünellerin ayarları</div><dl><dd><div class="para">
+2.2.x serisi çekirdeklerin 6'ya 4 tünel desteği olmadığını unutmayın (daha fazla bilgi <a href="../howto/ipv6-howto-systemcheck-kernel.html" class="xref" title="Çekirdeğin IPv6'ya hazırlanması">Çekirdeğin IPv6'ya hazırlanması</a> bölümünde mevcut). Dikkat edilmesi gereken bir başka konu ise 6'ya 4 adresinin önek uzunluğunun 16 olduğudur. Diğer tüm 6'ya 4 uyumlu konaklar aynı ikinci katmandadırlar.
+  </div> <div class="head4"><a name="id14" id="id14"></a>6'ya 4 tüneli eklemek</div><dl><dd><div class="para">
+İlk olarak yönlendirilebilir IPv4 adresinizi kullanarak 6'ya 4 önekinizi hesaplamalısınız (eğer istemcinizin küresel yönlendirilebilir IPv4 adresi yoksa, özel durumlarda sınır ağ geçitlerinde NAT kullanılabilir):
+  </div><div class="para">IPv4 adresiniz aşağıdaki gibi ise</div>
+<div class="para"><pre class="literallayout">   1.2.3.4</pre></div>
+  <div class="para">oluştracağınız 6'ya 4 öneki şöyle olacaktır:</div>
+<div class="para"><pre class="literallayout">   2002:0102:0304::</pre></div>
+  <div class="para">
+Yerel 6'ya 4 ağ geçitleri <tt>::1</tt> ile sonlanmalıdır, (eğer daha iyi hissedecekseniz başka bir şekilde sonlandırmayı tercih edebilirsiniz) bu yüzden yerel 6'ya 4 adresiniz aşağıdaki gibi olacaktır:
+  </div>
+<div class="para"><pre class="literallayout">   2002:0102:0304::1</pre></div>
+  <div class="para">
+Otomatik üretim aşağıdakine benzemelidir:
+  </div><div class="para"><div align="right"><pre class="screen">
+ipv4="1.2.3.4"; printf "2002:%02x%02x:%02x%02x::1" `echo $ipv4 | tr "." " "`
+</pre></div></div><div class="para">
+6to4 tüneli yapılandırmak için iki yöntem vardır.
+  </div><div class="variablelist"><dl><dt><span class="term"><tt>ip</tt> kullanarak ve adanmış tünel aygıtı ile</span></dt><dd class="varlist"><div class="para">
+Önerilen yöntem budur (öntanımlı TTL değeri 0 olduğundan yenisi atanmalıdır).
+  </div><div class="para">Yeni bir tünel aygıtı oluşturun:</div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>/sbin/ip tunnel add tun6to4 mode sit ttl </tt></b><i>öntanımlı_ttl</i> <b><tt>remote any</tt></b>
+¬ <b><tt>local</tt></b> <i>yerel_ipv4adres</i>
+</pre></div></div><div class="para">Arabirimi etkinleştirin:</div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>/sbin/ip link set dev tun6to4 up</tt></b>
+</pre></div></div><div class="para">Arabirime yerel 6'ya 4 adresini atayın.</div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Önekin uzunluğunun 16 olması önemlidir!
+  </div></td></tr></table></div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>/sbin/ip -6 addr add </tt></b><i>yerel_6ya4_adres </i><b><tt>/16 dev tun6to4</tt></b>
+</pre></div></div><div class="para">
+6ya4 yönlendiricilerini kullanarak küresel IPv6 ağına (öntanımlı) yönlendirme ekleyin
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>/sbin/ip -6 route add 2000::/3 via ::192.88.99.1 dev tun6to4 metric 1</tt></b>
+</pre></div></div><div class="para">
+<b><tt>ip</tt></b> komutunun bazı sürümlerinin (örneğin SuSE Linux 9.0'da yeralan sürüm) IPv4-uyumlu IPv6 adreslerini ağ geçidi olarak desteklemediği raporlanmıştır. Bu gibi durumlarda ilgili IPv6 adresi kullanılmalıdır:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>/sbin/ip -6 route add 2000::/3 via 2002:c058:6301::1 dev tun6to4 metric 1</tt></b>
+</pre></div></div></dd><dt><span class="term"><tt>ifconfig</tt> ve <tt>ip</tt> kullanarak ve genel tünel aygıtı <tt>sit0</tt> ile (önerilmez)</span></dt><dd class="varlist"><div class="para">
+Genel tünel aygıtı <tt>sit0</tt> aygıt başına filtreleme tanımlamaya izin vermediğinden bu yöntem önerilmemektedir.
+  </div><div class="para">
+Genel tünel aygıtı <tt>sit0</tt>'ı etkinleştirin:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>/sbin/ifconfig sit0 up</tt></b>
+</pre></div></div><div class="para">Arabirime yerel 6ya4 adresini ekleyin:</div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>/sbin/ifconfig sit0 add </tt></b><i>yerel_6ya4_adres</i><b><tt>/16</tt></b>
+</pre></div></div><div class="para">
+Tümü 6ya4 röleli IPv4 adreslerini kullanarak küresel IPv6 ağına yönlendirme ekleyin:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>/sbin/route -A inet6 add 2000::/3 gw ::192.88.99.1 dev sit0</tt></b>
+</pre></div></div></dd></dl></div></dd></dl> <div class="head4"><a name="id24" id="id24"></a>6ya4 tünelini iptal etmek</div><dl><dd><div class="variablelist"><dl><dt><span class="term"><tt>ip</tt> kullanarak ve adanmış tünel aygıtı ile</span></dt><dd class="varlist"><div class="para">
+Adanmış tünel aygıtı üzerindeki tüm yönlendirmeleri kaldırın:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>/sbin/ip -6 route flush dev tun6to4</tt></b>
+</pre></div></div><div class="para">Arabirimi kapatın:</div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>/sbin/ip link set dev tun6to4 down</tt></b>
+</pre></div></div><div class="para">Mevcut tünel aygıtını kaldırın:</div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>/sbin/ip tunnel del tun6to4</tt></b>
+</pre></div></div></dd><dt><span class="term"><tt>ifconfig</tt> ve <tt>route</tt> kullanarak ve genel tünel aygıtı <tt>sit0</tt> ile (önerilmez)</span></dt><dd class="varlist"><div class="para">
+6ya4 tünel arabirimi üzerindeki (öntanımlı) yönlendirmeyi kaldırın:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>/sbin/route -A inet6 del 2000::/3 gw ::192.88.99.1 dev sit0</tt></b>
+</pre></div></div><div class="para">Arabirimin yerel 6ya4 adresini kaldırın:</div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>/sbin/ifconfig sit0 del </tt></b><i>yerel_6ya4_adres </i><b><tt>/16</tt></b>
+</pre></div></div><div class="para">
+Genel tünel aygıtını kapatın (dikkatli olun, belki hala kullanılıyordur):
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>/sbin/ifconfig sit0 down</tt></b>
+</pre></div></div></dd></dl></div></dd></dl></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/ipv6-howto-configuring-6in4-tunnels-configuring.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/ipv6-howto-configuring-6in4-tunnels.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/ipv6-howto-configuring-ipv4-in-ipv6-tunnels.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Noktadan-noktaya tünel yapılandırması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> IPv6 içinde IPv4 Tüneli Yapılandırması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

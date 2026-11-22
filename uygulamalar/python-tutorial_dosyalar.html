@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:25:51+03:00" /><title>Dosya Okuma ve Yazma</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../uygulamalar/python-tutorial_io.html" title="Giriş ve Çıkış" /><link rel="previous" href="../uygulamalar/python-tutorial_write.html" title="Daha Güzel Çıkış Biçemi" /><link rel="next" href="../uygulamalar/python-tutorial_hatalar.html" title="Hatalar ve İstisnalar" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Dosya Okuma ve Yazma</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../uygulamalar/python-tutorial_write.html">Önceki</a> </td><th width="60%" align="center">Giriş ve Çıkış</th><td width="20%" align="right"> <a accesskey="n" href="../uygulamalar/python-tutorial_hatalar.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="python-tutorial_dosyalar" id="python-tutorial_dosyalar"></a>Dosya Okuma ve Yazma</div><dl><dd><div class="para">
+        <tt>open()</tt> işlevi bir dosya nesnesi geri döndürür ve
+        genellikle iki argüman ile kullanılır: <tt>open(dosya_adı, kip)</tt>
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+&gt;&gt;&gt; f=open('/tmp/workfile', 'w')
+&gt;&gt;&gt; print f
+&lt;open file '/tmp/workfile', mode 'w' at 80a0960&gt;
+</pre></div></div><div class="para">
+        İlk argüman dosya adını içeren bir dizgedir. İkincisi ise dosyanın
+        nasıl kullanılacağını belirten karakterlerden oluşur. Erişim kipi
+        dosyadan sadece okuma yapılacak ise <tt>'r'</tt>, sadece yazma
+        için <tt>'w'</tt> (aynı isimli bir dosya zaten var ise üzerine
+        yazılır) ve dosyanın sonuna eklemeler yapmak için <tt>'a'</tt>
+        olur. <tt>'r+'</tt> kipi dosyayı hem okuma hem de yazma yapmak
+        için açar. <tt>kip</tt> argümanı seçimliktir; kullanılamaması
+        halinde <tt>'r'</tt> olduğu varsayılır.
+      </div><div class="para">
+        Windows ve Macintosh üzerinde kipe eklenen <tt>'b'</tt> harfi
+        dosyayı ikilik kipte açar; yani <tt>'rb'</tt>,
+        <tt>'wb'</tt> ve <tt>'r+b'</tt> gibi kipler de vardır.
+        Windows metin ve ikilik dosyaları arasında ayrım yapmaktadır; metin
+        dosyalarında okuma veya yazma işlemlerinde satır sonu karakterleri otomatik
+        olarak biraz değişir. Bu görünmez değişiklik ASCII metin dosyaları için
+        iyidir; anacak JPEG resimler veya .EXE dosyalar gibi iklik verileri bozar.
+      </div> <div class="head3"><a name="id1" id="id1"></a>Dosya Nesnelerinin Yöntemleri</div><dl><dd><div class="para">
+          Bundan sonraki örneklerde <tt>f</tt> adlı bir dosya nesnesinin
+          önceden oluşturulmuş olduğunu varsayacağız.
+        </div><div class="para">
+          Dosyanın içeriğini okumak için belirli miktarda veriyi okuyup bunu
+          dizge olarak geri döndüren <tt>f.read(boy)</tt>yöntemi
+          kullanılabilir. <tt>boy</tt> okunacak bayt sayısını
+          belirleyen seçimlik bir argümandır; kullanılmaması halinde dosyanın
+          tamamı okunur. Dosyanın sonuna gelindiğinde <tt>f.read()</tt>
+          boş bir dizge ("") geri döndürür.
+</div><div class="para"><div align="right"><pre class="screen">
+&gt;&gt;&gt; f.read()
+'Dosyanın tamamı bu satırdan oluşuyor.\n'
+&gt;&gt;&gt; f.read()
+''
+</pre></div></div><div class="para">
+          <tt>f.readline()</tt> dosyadan tek bir satır okur. Satırın
+          sonundaki satırsonu karakteri (<tt>\n</tt>) korunur; ancak
+          dosya bir satırsonu karakteri ile bitmiyor ise son satırda bu karakter
+          silinir. Bu özellik geri döndürülen değerin birden fazla anlama gelmesini
+          engeller; <tt>f.readline()</tt> boş bir dizge geri
+          döndürdüğünde dosyanın sonuna ulaşılırken boş bir satır tek bir
+          <tt>'\n'</tt> karakteri ile ifade edilir.
+</div><div class="para"><div align="right"><pre class="screen">
+&gt;&gt;&gt; f.readline()
+'Bu dosyanın ilk satırı.\n'
+&gt;&gt;&gt; f.readline()
+'Dosyanın ikinci satırı\n'
+&gt;&gt;&gt; f.readline()
+''
+</pre></div></div><div class="para">
+          <tt>f.readlines()</tt> dosya içindeki bütün satırların
+          bulunduğu bir liste geri döndürür. Seçimlik parametre
+          <tt>boy_ipucu</tt> kullanılması durumunda ise dosyadan
+          <tt>boy_ipucu</tt> kadar ve bundan bir satır tamamlamaya
+          yetecek kadar fazla bayt okunur ve bunlar yine satırlar listesi
+          şeklinde geri döndürülür.
+</div><div class="para"><div align="right"><pre class="screen">
+&gt;&gt;&gt; f.readlines()
+['Bu dosyanın ilk satırı.\n', 'Dosyanın ikinci satırı\n']
+</pre></div></div><div class="para">
+          <tt>f.write(dizge)</tt> yöntemi <tt>dizge</tt>
+          içeriğini dosyaya yazar ve <tt>None</tt> geri döndürür.
+</div><div class="para"><div align="right"><pre class="screen">
+&gt;&gt;&gt; f.write('Bu bir deneme satırıdır.\n')
+</pre></div></div><div class="para">
+          <tt>f.tell()</tt> dosya nesnesinin dosya içindeki konumunu
+          belirten bir tamsayı geri döndürür (dosyanın başından bayt cinsinden
+          ölçülür). <tt>f.seek(uzaklık, nereden)</tt> ile de dosyanın
+          içinde istenen konuma gidilebilir. Konum, <tt>uzaklık</tt>
+          ile başvuru noktası <tt>nereden</tt> değerlerinin toplanması
+          ile bulunur. <tt>nereden</tt> 0 olursa dosyanın başını,
+          1 o andaki konumu, 2 ise dosyanın sonunu belirtir. <tt>nereden</tt>
+          kullanılmaz ise 0 olduğu varsayılır ve başvuru noktası olarak dosyanın
+          başı alınır.
+</div><div class="para"><div align="right"><pre class="screen">
+&gt;&gt;&gt; f=open('/tmp/workfile', 'r+')
+&gt;&gt;&gt; f.write('0123456789abcdef')
+&gt;&gt;&gt; f.seek(5)     # Dosyadaki 5'inci bayta git
+&gt;&gt;&gt; f.read(1)
+'5'
+&gt;&gt;&gt; f.seek(-3, 2) # Sondan 3'üncü bayta git
+&gt;&gt;&gt; f.read(1)
+'d'
+</pre></div></div><div class="para">
+          Dosya ile işiniz bittiğinde <tt>f.close()</tt> yöntemini
+          çağırarak dosyayı kapatabilir ve dosyanın işgal ettiği sistem
+          kaynaklarını serbest bırakabilirsiziz. <tt>f.close()</tt>
+          çağrıldıktan sonra dosya üzerinde başka işlem yapmaya devam etmek
+          mümkün değildir:
+</div><div class="para"><div align="right"><pre class="screen">
+&gt;&gt;&gt; f.close()
+&gt;&gt;&gt; f.read()
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in ?
+ValueError: I/O operation on closed file
+</pre></div></div><div class="para">
+          Dosya nesnelerinin <tt>isatty()</tt> ve
+          <tt>truncate()</tt> gibi pek sık kullanılmayan başka
+          yöntemleri de vardır.
+        </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a><tt>pickle</tt> Modülü</div><dl><dd><div class="para">
+          Dizgeler kolayca dosyalara yazılıp dosyalardan okunabilirler. Sayılar biraz
+          zahmetlidir; çünkü <tt>read()</tt> yöntemi sadece dizgeleri geri
+          döndürür ve bunların '123' gibi bir değeri alıp sayısal değeri 123'ü geri
+          döndüren <tt>string.atoi()</tt> işlevinden geçirilmeleri gerekir.
+          Listeler, sözlükler ve sınıf gerçeklemeleri (class instances) gibi daha
+          karmaşık veri türlerini dosyalara kaydetmek isterseniz işler oldukça zorlaşır.
+        </div><div class="para">
+          Programcıları karmaşık veri türlerini saklamak için kodlamak ve hata
+          ayıklamak ile uğraştırmak yerine Python bu iş için <tt>pickle</tt>
+          adlı standart modülü sağlar. Bu hayret verici modül neredeyse herhangi
+          bir Python nesnesini (bazı Python kodu biçimlerini bile!) dizge ile ifade
+          edilebilecek hale getirebilir ve bu halinden geri alabilir. Bu dönüşüm ve
+          geri kazanım işlemleri arasında nesne bir dosyaya kaydedilebilir ya da ağ
+          bağlantısı ile uzaktaki başka bir makineye gönderilebilir.
+        </div><div class="para">
+          <tt>x</tt> gibi bir nesneniz ve yazma işlemi için açılmış
+          <tt>f</tt> gibi bir dosya nesneniz varsa bu nesneyi dosyaya
+          aktarmanız için tek satırlık kod yeterli olur:
+</div><div class="para"><div align="right"><pre class="screen">
+pickle.dump(x, f)
+</pre></div></div><div class="para">
+          Nesneyi geri almak için ise <tt>f</tt> okumak için açılmış
+          bir dosya nesnesi olsun:
+</div><div class="para"><div align="right"><pre class="screen">
+x = pickle.load(f)
+</pre></div></div><div class="para">
+          Birden fazla nesnenin dönüştürülmesi gerekiyor ya da dönüştürülmüş
+          olan nesnelerin dosyaya yazılması istenmiyor ise <tt>pickle</tt>
+          farklı şekilde kullanılır. Bunları <tt>pickle</tt> modülünün
+          belgelerinden öğrenmek mümkündür.
+        </div><div class="para">
+          <tt>pickle</tt> modülü saklanabilen ve başka programlar
+          tarafından ya da aynı programın farklı çalışma zamanlarında
+          kullanılabilecek Python nesneleri yapmanın standart yoludur.
+          <tt>pickle</tt> modülü çok yaygın kullanıldığından Python
+          genişletme modülleri yazan çoğu programcı matrisler gibi yeni veri
+          türlerinin doğru olarak dönüştürülebilir ve geri alınabilir olmasına
+          özen gösterirler.
+        </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../uygulamalar/python-tutorial_write.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../uygulamalar/python-tutorial_io.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../uygulamalar/python-tutorial_hatalar.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Daha Güzel Çıkış Biçemi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Hatalar ve İstisnalar</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

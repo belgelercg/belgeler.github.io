@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:22+03:00" /><title>Belgelerin Şifrelenmesi ve Şifresinin Çözülmesi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/gpg-kullanimi.html" title="Linux'ta GPG Kullanımı" /><link rel="previous" href="../howto/gpg-kullanimi_anh-ynt.html" title="Anahtar Kullanımı" /><link rel="next" href="../howto/gpg-kullanimi_imzalama.html" title="İmzalama ve Doğrulama" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Belgelerin Şifrelenmesi ve Şifresinin Çözülmesi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/gpg-kullanimi_anh-ynt.html">Önceki</a> </td><th width="60%" align="center">Linux'ta GPG Kullanımı</th><td width="20%" align="right"> <a accesskey="n" href="../howto/gpg-kullanimi_imzalama.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="gpg-kullanimi_sifreleme" id="gpg-kullanimi_sifreleme"></a>Belgelerin Şifrelenmesi ve Şifresinin Çözülmesi</div><dl><dd><div class="para">
+Genel ve gizli anahtarların her biri belgelerin şifrelenmesi ve şifrelerinin  çözülmesinde kendilerine özel rollere sahiptir.  Bir genel anahtar açık güvence olmak niyetinde olabilir. İlgili kişi bir belgeyi bir genel anahtar kullanarak şifrelediğinde belge kasaya konmuş, kasa kapatılmış ve anahtar defalarca döndürülerek kilitlenmiştir. Karşılığı olan gizli anahtarın rolü ise kasayı yeniden açmak ve belgeyi almaktır. Başka bir deyişle, bir genel anahtarla şifrelenmiş bir belge, sadece bu genel anahtarın karşılığı olan gizli anahtarı bulunduran kişi tarafından okunabilir.
+    </div><div class="para">
+Belgelerin şifrelenmesi ve şifrelerinin çözülmesi süreci bu düşünce modeli ile basitleşmiştir. Murat'a göndereceğiniz bir mesajı şifrelemek isterseniz, onu Murat'ın genel anahtarını kullanarak şifrelersiniz ve Murat'da onu kendi özel anahtarını kullanarak çözüp okur. Eğer, Murat size bir şifreli mesaj göndermek isterse, mesajı sizin genel anahtarınızı kullanarak şifreler ve siz bu mesajı kendi özel anahtarınızla çözüp okursunuz.
+    </div><div class="para">
+Bu iki işlem için önemli bir ortak nokta vardır. Eğer sistemde birden fazla özel anahtar yüklüyse işlemin hangi kullanıcı olarak yapıldığını belirtmek gerekir. Belirtilmezse, işlemi yapan kullanıcı öntanımlı kullanıcıdır. Belirtme işlemi bir seçenektir <b><tt>-u kullanici_adi</tt></b> şeklinde yapılır.
+  </div> <div class="head3"><a name="id1" id="id1"></a>Şifreleme</div><dl><dd><div class="para">
+Bir belgeyi şifrelemek için <tt>--encrypt</tt> komut satırı seçeneği kullanılır. Elinizde şifreli belge göndermek istediğiniz alıcıların genel anahtarları olmalıdır. Yazılım, şifrelenecek belgenin girdi olarak verilmesini bekler; eğer verilmezse standart girdiyi okur. Şifrelenmiş belge ya standart çıktıya konur ya da <tt>--output</tt> seçeneği verilmişse onun argümanı olarak belirtilen dosyaya konur. Belge şifrelemeye ek olarak güvenliği arttırmak için sıkıştırılır.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>$</tt> <b><tt>gpg --output <i><tt>belge.gpg</tt></i> --encrypt --recipient <i><tt>anh-kiml belge</tt></i></tt></b>
+</pre></div></div>
+    <div class="para">
+<tt>--recipient</tt> komut satırı seçeneği her alıcı için bir kere kullanılır ve argüman olarak belgeyi şifrelemekte kullanılacak genel anahtarı alır. Şifreli belge sadece alıcıların genel anahtarlarının karşılığı olan özel anahtarlarla çözülebilir. Özellikle, kendiniz şifrelediğiniz bir belgenin şifresini çözebilmeyi istiyorsanız, kendi genel anahtarınızı da alıcılar listesine eklemelisiniz (ya da belgeyi imzalamalısınız, imzalama genel anahtarınızı devreye sokar).
+  </div><div class="para">
+Bu komut ile <i><tt>anh-kiml</tt></i> anahtar kimlikli alıcının genel anahtarı bu komutun girildiği sistemde mevcutken, <i><tt>anh-kiml</tt></i> anahtar kimlikli alıcının özel anahtarını kullanarak açabileceği şifrelenmiş ve sıkıştırılmış veriyi <b><tt>gpg</tt></b> uzantılı bir dosyaya yazar. Ayrıca, herhangi birisinin şifrelediğiniz bu verinin kendisi tarafından gönderildiğini iddia etme riskini ortadan kaldırmak için bu veriyi kendi özel anahtarınızla imzalamalısınız. Bu işin tamamını aşağıdaki komut ile yapabilirsiniz, bu komut çıktısını <tt>asc</tt> uzantılı bir dosyaya yazar:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>$</tt> <b><tt>gpg -u <i><tt>gönderen</tt></i> -r <i><tt>alıcı</tt></i> --armor --sign --encrypt <i><tt>belge</tt></i></tt></b>
+</pre></div></div>
+  
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para"><tt>-u</tt> seçeneğini kullanmazsanız, veri sistemdeki öntanımlı özel anahtar ile imzalanır. Eğer sistemde birden fazla özel anahtar varsa, <i><tt>gönderen</tt></i> yerine bu anahtarlardan kullanmak istediğinizin anahtar kimliğini yazarak, imzalama işlemini gerçekleştirebilirsiniz. Hatırlayacağınız gibi, anahtar kimliklerini görmek için <i>gpg --list-keys</i> çıktısından faydalanabilirsiniz.</div></td></tr></table></div>
+  <dl class="example"><dt class="example"><a class="example" name="idxmp23" id="idxmp23"></a><b>Örnek 7.1. </b></dt><dd class="example">
+<div class="para"><div align="right"><pre class="screen">
+<tt>$</tt> <b><tt>gpg --output cikti_dosyasi --export farukesk</tt></b>
+</pre></div></div>
+  <div class="para">
+Bu komut <i><tt>farukesk</tt></i> isimli kullanıcının ortak anahtarını ikili biçimde <tt>cikti_dosyasi</tt> isimli dosyaya yazar.
+  </div></dd></dl><dl class="example"><dt class="example"><a class="example" name="idxmp24" id="idxmp24"></a><b>Örnek 7.2. </b></dt><dd class="example">
+<div class="para"><div align="right"><pre class="screen">
+<tt>$</tt> <b><tt>echo "Merhaba, bu mesajı zyariz gonderdi :)" | gpg -u farukesk -r meren -ea | </tt></b>¬
+<b><tt>mail meren@comu.edu.tr</tt></b>
+</pre></div></div>
+  <div class="para">
+Bu komut "<i>Merhaba, bu mesajı zyariz gonderdi</i><tt>:)</tt>" mesajını <i><tt>farukesk</tt></i> kullanıcısı olarak ascii kipte <i><tt>meren</tt></i> kullanıcısı için şifreler, çıktısını da <span class="email">&lt;meren (at) comu.edu.tr&gt;</span> adresine postalar.
+  </div></dd></dl></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Şifre Çözme</div><dl><dd><div class="para">
+Bir mesajın şifresini çözmek için <tt>--decrypt</tt> komut satırı seçeneği kullanılır. Bunun için mesajın şifrelendiği genel anahtarın karşılığı olan gizli anahtara ihtiyacınız vardır. Şifreleme işlemine benzer olarak şifresi çözülecek belge girdi olarak alınır ve çözülmüş belge çıktılanır.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>$</tt> <b><tt>gpg --output belge --decrypt belge.gpg</tt></b>
+</pre></div></div>
+  <div class="para">
+Genel anahtarınıza sahip birisinin, onu kullanarak yalnızca sizin açmanız için şifrelediği veriyi deşifre etmenizi sağlar. Seçeneksiz kullanımda çıktısını standart çıktıya yazar. <b><tt>--output belge</tt></b> seçeneği eklenirse çıktı <tt>belge</tt> dosyasına yazılır. Bu komut <tt>belge.gpg</tt> isimli dosya içerisindeki şifreli veriyi özel anahtarınızın parolasını istedikten sonra deşifreler ve çıktıyı <tt>belge</tt> dosyasına yazar.
+  </div></dd></dl> <div class="head3"><a name="id3" id="id3"></a>Simetrik Şifre ile Şifreleme</div><dl><dd><div class="para">
+Belgeler genel anahtar kriptografisi kullanılmadan da şifrelenebilir. Bunun yerine belgeyi şifrelemekte simetrik şifre de kullanabilirsiniz. Simetrik şifreyi sürmede kullanılan anahtar, belge şifrelenirken belirtilen paroladan üretilir ve iyi bir güvenlik için bu parola gizli anahtarınızı korumakta kullandığınız anahtar parolası olmamalıdır. Simetrik şifreleme başkaları ile haberleşirken parolaya ihtiyaç duyulmadığında belge güvenliğini sağlamak için elverişlidir. Bir belgeyi simetrik şifre ile şifrelemek için <tt>--symmetric</tt> komut satırı seçeneği kullanılır.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>$</tt> <b><tt>gpg --output belge.gpg --symmetric belge</tt></b>
+Anahtar parolasını girin:
+</pre></div></div>
+  </dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/gpg-kullanimi_anh-ynt.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/gpg-kullanimi.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/gpg-kullanimi_imzalama.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Anahtar Kullanımı </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> İmzalama ve Doğrulama</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

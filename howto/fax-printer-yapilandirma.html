@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:53+03:00" /><title>Yapılandırma</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/fax-printer.html" title="Faks Yazıcı NASIL" /><link rel="previous" href="../howto/fax-printer-kurulum.html" title="Kurulum" /><link rel="next" href="../howto/fedora-multimedia-howto.html" title="Fedora Çoklu Ortam Kurulumu NASIL" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Yapılandırma</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/fax-printer-kurulum.html">Önceki</a> </td><th width="60%" align="center">Faks Yazıcı NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/fedora-multimedia-howto.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="fax-printer-yapilandirma" id="fax-printer-yapilandirma"></a>Yapılandırma</div><dl><dd><div class="para">
+Artık kurduğumuz paketleri yapılandırmaya başlayabiliriz. <tt>/etc/printcap</tt> dosyasına şu satırları ekleyin:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+fax:\
+     :lp=/dev/null:\
+     :sd=/var/spool/fax:\
+     :if=/usr/bin/faxlpr:
+</pre></div></div>
+  <div class="para">
+<b><tt>fax</tt></b> komutuna bir sabit bağ oluşturun (sembolik bağ değil):
+  </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>ln /usr/bin/fax /usr/bin/faxlpr</tt></b>
+</pre></div></div>
+  <div class="para">
+Modeminizin bağlı bulunduğu seri port için (benimki COM1'de) tüm kullanıcılara erişim izni verip, aygıta <tt>/dev/modem</tt> sembolik bağını oluşturalım:
+  </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>chmod 666 /dev/ttyS0</tt></b>
+# <b><tt>ln -s /dev/ttyS0 /dev/modem</tt></b>
+</pre></div></div>
+  <div class="para">
+<tt>/usr/bin/fax</tt> betiğindeki bazı değerleri özelleştirmemiz lazım:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+FAX=fax
+EFAX=efax
+EFIX=efix
+DEV=modem
+FROM="+90 <i>üç_haneli_alankodu yedi_haneli_abone_nr</i>"
+NAME="<i>adınız ve soyadınızı yazın</i>"
+PAGE=a4
+PRTYPE=ps
+PRCMD="lpr"
+VIEWCMD="xloadimage stdin"
+GS=kghostview
+DIALPREFIX="T"
+DIALSUFFIX=""
+LOCK='-x /var/lock/LCK..$DEV'
+CONFIGFILES="/etc/efax.rc ${HOME:-~}/.efaxrc ./.efaxrc"
+TSTAMP='date +%d%b%H%M%S
+LOOKUP='eval sed -n -e "/^fax($1):/{" -e "s/^[^:]*://p" -eq -e"}" $f'
+DIRFILES="${HOME:-.}/.faxdir"
+TELCVT='sed -e s/+90/1/ -e s/+/00/'     # Turkey
+PAGE_letter="8.465x11in"
+PAGE_legal="8.465x14in"
+PAGE_a4="21x29.7cm"
+RES=204x196
+PRINT='$EFIX -ve -p$PAGEDIM -r300 -s0.98 -d0,0.125 -o$PRTYPE $f'
+VIEW='$EFIX -ve -p$PAGEDIM -r300 -opgm $f'
+INIT="-iZ -i&amp;FE0&amp;D2S7=120 -i&amp;C0"
+RESET="-kZ"
+SPKR="-iM1L0"
+RXINIT=""
+TXINIT=""
+DATECMD='date +%c'
+HDR='$DATE     $FROM      $NAME     s. %d/%d'
+BUSYRETRIES="30 60 120 300 60 600 60 60 1200 60 60"
+NICE="nice -n -10"
+RM="/bin/rm -f"
+LS="/bin/ls"
+VERB="ewin"
+VERBLOG="chewmainrxtf
+CONSOLE=/dev/console
+FAXDIR=/var/spool/fax
+LOGDIR=/var/log/fax
+ANSFNAME="%d%b%H%M%S"
+UMASK=022
+FAXMGR=<i>faks geldiğinde eposta ile uyarılacak kullanıcı adı</i>
+SENDMAIL=/usr/sbin/sendmail
+NOTIFY='faxmail "$REMID" "$f" $FILES | $SENDMAIL $FAXMGR'
+# <i>telefon kaç defa çaldıktan sonra yanıt verilecek:</i>
+ANSRINGS=4
+DATAOPT="-j&amp;C1 -j+FCLASS=0 -jS7=30"
+DCMD="exec /sbin/getty -h $DEV %d vt100"
+FONE=/usr/bin/fone
+VCMD="exec $FONE %d"
+OWNER=root.tty
+MODE=666
+NOLOG='[145]'
+# ****************************************************************
+# --- End of user configuration section ---
+# ****************************************************************
+</pre></div></div>
+  <div class="para">
+Dosyada bu değerler açıklama satırlarının aralarına serpiştirilmiş durumda; sizin dosyanızda bu değerleri bulup bunlarla karşılaştırın. Bunlar benim ayarlarım; bazı özel değerlerin yerine ne yazılacağını belirttim. Bu değerlerin bazılarını /etc/efax.rc dosyasına da yazmak gerekiyor. Değişken adları aynı. Bunları bulup onları da özelleştirin.
+  </div><div class="para">
+Yine aynı dosyada kodların bulunduğu bölümde bazı düzeltmeler var. 619. satırı iptal edip altına doğrusunu yazın:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+#     cfile=`tail -1 lock`
+      cfile=`/usr/bin/tail -1 lock`
+</pre></div></div>
+  <div class="para">
+Yapılandırma kılavuzunda başka düzeltmeler de önerilmişti ama onlar zaten öyleydi. Ben sadece bu satırı düzelttim (efax-0.9). [Aslında gerekli değil, zaten bu dizin normal arama yollarında var.]
+  </div><div class="para">
+<tt>/var/spool/fax</tt> diye bir dizin yoksa oluşturun ve erişim izinlerini düzenleyin:
+  </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>mkdir /var/spool/fax</tt></b>
+# <b><tt>chmod 777 /var/spool/fax</tt></b>
+</pre></div></div>
+  <div class="para">
+<tt>/var/lock</tt> dizininin erişim izinlerini düzenleyin:
+  </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>chmod 1777 /var/lock</tt></b>
+</pre></div></div>
+  <div class="para">
+efax-gtk uygulamasının bir Ayarlar diyaloğu var ama <tt>/etc/efax-gtkrc</tt> dosyasında orada bulunmayan bazı ayarlar var. Bunları bu dosyada yaparsanız, bazı sürprizlerle karşılaşmazsınız. Ben yine dosyadaki açıklamaları ve iptal edilmiş değişkenleri atlayıp sadece geçerli değişkenleri alacağım; benim ayarlarım şöyle:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+NAME: <i>adınızı ve soyadınızı yazın</i>
+NUMBER: +90 <i>üç_haneli_alankodu yedi_haneli_abone_nr</i>
+DEVICE: modem
+LOCK: /var/lock
+PAGE: a4
+RES: fine
+RINGS: 4
+DIALMODE: tone
+INIT: Z &amp;FE&amp;D2S7=120 &amp;C0 M1L0
+RESET: Z
+PRINT_CMD: lpr
+PRINT_SHRINK: 98
+PRINT_POPUP: Yes
+PS_VIEWER: kghostview
+SOCK_SERVER: Yes
+SOCK_POPUP: Yes
+SOCK_SERVER_PORT: 9900
+SOCK_CLIENT_ADDRESS: localhost
+FAX_RECEIVED_POPUP: Yes
+FAX_RECEIVED_EXEC: No
+</pre></div></div>
+Artık yeni yazıcımızı CUPS'a tanıtmaya hazırız. CUPS'u yeniden başlatın:
+  
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>/etc/init.d/cupsys restart</tt></b>
+</pre></div></div>
+  <div class="para">
+Tarayıcınızın adres alanına  <a class="ulink" href="http://127.0.0.1:631/" target="_top">http://127.0.0.1:631/</a> yazın (ya da bağa sağ tıklayıp yeni bir tarayıcıda sayfayı açın). Printers -&gt; Add Printer seçimini yapın. Parola istenecek kullanıcı adı olarak root, parola olarak root parolasını verin ve adım adım şu değerleri girin:
+</div><div class="para"><pre class="literallayout">
+    Name: <b><tt>FAKS</tt></b>
+    Location: <b><tt>localhost</tt></b>
+    Description: <b><tt>Faks Yazıcı</tt></b>
+      &lt;Continue&gt;
+    Device: <b><tt>AppSocket/HP JetDirect</tt></b>
+      &lt;Continue&gt;
+    Device URI: <b><tt>socket://localhost:9900</tt></b>
+      &lt;Continue&gt;
+    Make: <b><tt>efax</tt></b>
+      &lt;Continue&gt;
+    Model: <b><tt>efax</tt></b>
+      &lt;Continue&gt;
+    Printer <b><tt>FAKS</tt></b> has been added successfully.
+</pre></div><div class="para">
+Böylece faks gönderirken yazdığımız metni tıpkı bir yazıcıya yazdırır gibi yazdırabileceğiz. Ancak işimiz bitmedi. Faks yazıcımızın kuyruğuna gönderilen işleri diğerleriyle karışmadan doğru alıcısına göndermek lazım. Bunun için efax-gtk uygulamasını kullanacağız. Masaüstü menünüzden efax-gtk'yı bulup çalıştırın. Menüsünden File -&gt; Settings seçin, Açılan pencerede
+<tt>/etc/efax-gtkrc</tt> dosyasında yazdıklarınızı görüyor olmalısınız. Tamam düğmesine tıklayıp Ayarlar penceresini kapatın. "Fax to Send" bölümünde "Fax entry method" olarak "Socket" düğmesini seçili hale getirin ve aşağıdaki "Standby" düğmesine tıklayıp uygulamanın gelecek faksları almak üzere modemi dinlemeye başlamasını sağlayın ve uygulamayı küçültüp panele yollayın.
+  </div><div class="para">
+Şimdi bir OpenOffice.org writer açıp yaptıklarınızı sınayabilirsiniz. Örneğin üstteki paragrafı OOo'ya kopyalayın ve menüden Dosya -&gt; Yazdır seçin. Açılan pencereden Yazıcı adı olarak FAKS'ı seçin. İsterseniz, Seçenekler ve Özellikler düğmelerinden diğer ayarlara bakın. Tamam'a tıkladığınızda, efax-gtk, kuyruğa bir iş geldiğini bildiren bir pencere açacak ve sizden alıcının abone numarasını girmenizi isteyecektir. Send'e tıkladığınızda faksınız gönderilmeye başlayacaktır.
+  </div><div class="para">
+Kişisel faksınız hayırlı olsun.
+  </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/fax-printer-kurulum.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/fax-printer.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/fedora-multimedia-howto.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Kurulum </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Fedora Çoklu Ortam Kurulumu NASIL</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

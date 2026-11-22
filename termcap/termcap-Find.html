@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:08+03:00" /><title>Uçbirim Tanımının Bulunması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../termcap/termcap-Library.html" title="Termcap Kütüphanesi" /><link rel="previous" href="../termcap/termcap-Preparation.html" title="Termcap Kütüphanesinin Kullanıma Hazırlanması" /><link rel="next" href="../termcap/termcap-Interrogate.html" title="Uçbirim Tanımının Sorgulanması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Uçbirim Tanımının Bulunması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../termcap/termcap-Preparation.html">Önceki</a> </td><th width="60%" align="center">Termcap Kütüphanesi</th><td width="20%" align="right"> <a accesskey="n" href="../termcap/termcap-Interrogate.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="termcap-Find" id="termcap-Find"></a>Uçbirim Tanımının Bulunması</div><dl><dd><a class="indexterm" name="idx2" id="idx2"></a><div class="para">
+Bir uygulama yazılımı termcap'ı kullanacaksa önce kullanımdaki uçbirimin tanımına bakmalıdır. Bu işlem <b><tt>tgetent</tt></b> işlevi çağrılarak yapılır.
+</div><a name="termcap-tgetent" id="termcap-tgetent"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>tgetent</tt></b></tt></td><td valign="top"><pre class="paramdef">(char *<i><tt>tampon</tt></i>,
+ char *<i><tt>uçbirim_türü</tt></i>);</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bu işlev tanımı bulur ve hatırlar; böylece ilgilendiğiniz <a class="link" href="../termcap/termcap-Interrogate.html" title="Uçbirim Tanımının Sorgulanması">uçbirim yeteneklerini sorgulayabilirsiniz</a>.
+   </div><div class="para">
+<i><tt>uçbirim_türü</tt></i> aranacak uçbirim türünün ismini içeren bir dizge olmalıdır. Bu değeri bir <b><tt>getenv ("TERM")</tt></b> çağrısı ile <b><tt>TERM</tt></b> ortam değişkeninden elde edebilirsiniz.
+   </div><div class="para">
+Termcap'ın GNU sürümünü kullanıyorsanız, <b><tt>tgetent</tt></b>'ten gerekli yeri kendisinin ayırmasını isteyebilirsiniz. İşleve <i><tt>tampon</tt></i> olarak bir boş gösterici aktarırsanız, <b><tt>tgetent</tt></b> <b><tt>malloc</tt></b> işlevini kullanarak gerektiği kadar yeri kendisi ayıracaktır. Ayrıca, ayrılan bellek alanının adresini almanın bir yolu olmadığından, bu bellek alanını serbest bırakma çabasına da girmeyeceksiniz.
+   </div><div class="para">
+Termcap'ın Unix sürümünü kullanıyorsanız, tanımı içerecek alanı kendiniz ayırmalı ve adresini <i><tt>tampon</tt></i> argümanı ile işleve aktarmalısınız. Ne kadar alan gerektiğini söylemek mümkün olmadığından, teamüllere uygun olarak 2048 baytlık bir tampon yeterli olacaktır diyebiliriz. (Önceleri, uzlaşım 1024 baytın yeterli olacağı şeklindeydi, ama
+günlerden bir gün bir uçbirim türü için bu yetersiz oldu.)
+   </div><div class="para">
+Elde edilen tanımın nasıl saklandığı bu kılavuzun konusu değildir. Termcap bu tanımı kendi saklar ve bu tanımı <b><tt>tgetnum</tt></b>, <b><tt>tgetstr</tt></b> veya <b><tt>tgetflag</tt></b> çağrılarınıza yanıt vermek için kullanır. Eğer tamponu termcap ayırmışsa, <b><tt>tgetent</tt></b>'i tekrar çağırdığınızda termcap bu belleği serbest bırakır. Eğer tamponu siz ayırmışsanız, tanımın sorgulanması gerektiği sürece bu tamponun içeriğinin değişmeden kalmasını sağlamalısınız.
+   </div><div class="para">
+Uçbirim türünün veritabanına erişimde bir zorlukla karşılaşılmışsa,  <b><tt>tgetent</tt></b> -1 değeriyle döner. Eğer, veritabanına sorunsuz erişildiği halde belirtilen uçbirim türü veritabanında yoksa 0 ile döner. Diğer durumlarda bunlardan farklı bir değerle döner.
+   </div><div class="para">
+Burada <b><tt>tgetent</tt></b> işlevini nasıl kullanmanız gerektiği gösterilmiştir:
+   </div>
+<div class="para"><div align="right"><pre class="screen">
+#ifdef unix
+static char term_buffer[2048];
+#else
+#define term_buffer 0
+#endif
+
+init_terminal_data ()
+{
+  char *termtype = getenv ("TERM");
+  int success;
+
+  if (termtype == 0)
+    hayati ("`setenv TERM &lt;uçbirimtürü&gt;'"
+            " komutu ile bir uçbirim belirtmelisiniz.\n");
+
+  success = tgetent (term_buffer, termtype);
+  if (success &lt; 0)
+    hayati ("Termcap veritabanına erişilemedi.\n");
+  if (success == 0)
+    hayati ("`%s' diye bir uçbirim tanımlanmamış.\n", termtype);
+}
+</pre></div></div>
+   <div class="para">
+Buradaki <b><tt>hayati</tt></b> işlevinin bir hata iletisi basıp uygulamayı sonlandıran bir işlev olduğu varsayılmıştır.
+   </div><div class="para">
+<b><tt>TERMCAP</tt></b> ortam değişkeni tanımlıysa, değeri uçbirim türü veritabanını hükümsüz bırakmakta kullanılır. <b><tt>tgetent</tt></b> işlevi <b><tt>TERMCAP</tt></b> değerini özdevinimli sınar. Eğer isim bir <b><tt>/</tt></b> ile başlıyorsa, değer, standart veritabanı olan <b><tt>/etc/termcap</tt></b> yerine veritabanı olarak kullanılacak dosya ismi olarak ele alınır. Eğer değer bir <b><tt>/</tt></b> ile başlamıyorsa, uygulanması istenen <i><tt>uçbirim_türü</tt></i> uçbirim türünün tanımı için kullanılır. Uçbirim tanımı ile ilgili daha ayrıntılı bilgi edinmek için <a href="../termcap/termcap-Data-Base.html" class="xref" title="Veritabanının Biçimi">Veritabanının Biçimi</a> bölümüne bakınız.
+   </div></dd></dl><div style="padding:5px"></div>
+  </dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../termcap/termcap-Preparation.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../termcap/termcap-Library.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../termcap/termcap-Interrogate.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Termcap Kütüphanesinin Kullanıma Hazırlanması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Uçbirim Tanımının Sorgulanması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

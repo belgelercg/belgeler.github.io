@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:00+03:00" /><title>GNU Debugger Kullanımı</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/howtos-programming.html" title="VI. Oylum - Yazılım Geliştirme" /><link rel="previous" href="../howto/gcc-baslangic-libs.html" title="Kütüphaneler ve GCC" /><link rel="next" href="../howto/makefile-nasil.html" title="GNU Paket Yapılandırma Sistemi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">GNU Debugger Kullanımı</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/gcc-baslangic-libs.html">Önceki</a> </td><th width="60%" align="center">VI. Oylum - Yazılım Geliştirme</th><td width="20%" align="right"> <a accesskey="n" href="../howto/makefile-nasil.html">Sonraki</a></td></tr></table></td></tr></table><div class="article"><div class="titlepage"><div> <h1 class="title"><a name="gdb-NASIL" id="gdb-NASIL"></a>GNU Debugger Kullanımı</h1></div><div><div style="padding:12px;"></div><div class="author"><i style="color:#999999;">Yazan: </i>M. Ali Vardar<dl><dd><div class="affiliation"><div class="address">
+          <span class="email">&lt;ali (at) linuxprogramlama.com&gt;</span>
+         </div></div></dd></dl></div></div><div><dl class="legalnotice"><dt class="legalnotice-title"><b>Yasal Açıklamalar</b></dt><dd><div class="para">
+Bu belgenin, <i>GNU Debugger Kullanımı</i> 1.0 sürümünün <b> telif hakkı © 2005 <i>M. Ali Vardar</i></b>'a aittir.  Bu belgeyi, Free Software Foundation tarafından
+yayınlanmış bulunan GNU Özgür Belgeleme Lisansının 1.1 sürümünün koşullarına
+bağlı kalarak kopyalayabilir, dağıtabilir ve/veya
+değiştirebilirsiniz. Bu Lisansın bir kopyasını <a class="ulink" href="http://www.gnu.org/copyleft/fdl.html" target="_top">http://www.gnu.org/copyleft/fdl.html</a> adresinde bulabilirsiniz.</div><div class="para">
+BU BELGE “ÜCRETSİZ” OLARAK RUHSATLANDIĞI İÇİN, İÇERDİĞİ
+BİLGİLER İÇİN İLGİLİ KANUNLARIN İZİN VERDİĞİ ÖLÇÜDE HERHANGİ BİR GARANTİ
+VERİLMEMEKTEDİR. AKSİ YAZILI OLARAK BELİRTİLMEDİĞİ MÜDDETÇE TELİF HAKKI
+SAHİPLERİ VE/VEYA BAŞKA ŞAHISLAR BELGEYİ “OLDUĞU GİBİ”,
+AŞİKAR VEYA ZIMNEN, SATILABİLİRLİĞİ VEYA HERHANGİ BİR AMACA UYGUNLUĞU DA
+DAHİL OLMAK ÜZERE HİÇBİR GARANTİ VERMEKSİZİN DAĞITMAKTADIRLAR. BİLGİNİN
+KALİTESİ İLE İLGİLİ TÜM SORUNLAR SİZE AİTTİR. HERHANGİ BİR HATALI BİLGİDEN
+DOLAYI DOĞABİLECEK OLAN BÜTÜN SERVİS, TAMİR VEYA DÜZELTME MASRAFLARI SİZE
+AİTTİR.
+  </div><div class="para">
+İLGİLİ KANUNUN İCBAR ETTİĞİ DURUMLAR VEYA YAZILI ANLAŞMA HARİCİNDE HERHANGİ
+BİR ŞEKİLDE TELİF HAKKI SAHİBİ VEYA YUKARIDA İZİN VERİLDİĞİ ŞEKİLDE BELGEYİ
+DEĞİŞTİREN VEYA YENİDEN DAĞITAN HERHANGİ BİR KİŞİ, BİLGİNİN KULLANIMI VEYA
+KULLANILAMAMASI (VEYA VERİ KAYBI OLUŞMASI, VERİNİN YANLIŞ HALE GELMESİ,
+SİZİN VEYA ÜÇÜNCÜ ŞAHISLARIN ZARARA UĞRAMASI VEYA BİLGİLERİN BAŞKA BİLGİLERLE
+UYUMSUZ OLMASI) YÜZÜNDEN OLUŞAN GENEL, ÖZEL, DOĞRUDAN YA DA DOLAYLI HERHANGİ
+BİR ZARARDAN, BÖYLE BİR TAZMİNAT TALEBİ TELİF HAKKI SAHİBİ VEYA İLGİLİ KİŞİYE
+BİLDİRİLMİŞ OLSA DAHİ, SORUMLU DEĞİLDİR.
+  </div><div class="para">
+Tüm telif hakları aksi özellikle belirtilmediği sürece sahibine aittir.
+Belge içinde geçen herhangi bir terim, bir ticari isim ya da kuruma itibar
+kazandırma olarak algılanmamalıdır. Bir ürün ya da markanın kullanılmış
+olması ona onay verildiği anlamında görülmemelidir.
+  </div></dd></dl></div><div><span class="pubdate">Ocak 2005</span></div><div><div class="formaltitle"><b>Sürüm Bilgileri</b></div><table width="100%" summary="Sürüm Bilgileri" cellspacing="1" cellpadding="0" border="0" class="revoutline"><tr class="revinline"><td><table width="100%" cellpadding="0" cellspacing="5" border="0" class="revhistory"><tr><td align="left" valign="top">Sürüm 1.0</td><td align="left" valign="top">Ocak 2005</td><td align="left" valign="top">MAV</td></tr><tr><td align="left" valign="top" colspan="3">Belgenin özgün sürümü <a class="ulink" href="http://www.linuxprogramlama.com" target="_top">http://www.linuxprogramlama.com</a> adresinde bulunabilir.</td></tr></table></td></tr></table></div><div><div class="abstract"><dl><dt><b>Özet</b></dt><dd><div class="para">
+Uygulamalarımızı geliştirme sırasında gerek sistemden olsun gerek yazılımcı tarafından olsun gelen bir takım sinyaller veya kesmeler veya hatalar yüzünden uygulamamızın çalışmasında kesilmeler olabilir. Bu
+gibi durumları çoğu zaman tahmin edebiliyor olmak yeterli olmayabilir. Bu gibi durumlarda en büyük yardımcımız gdb olacaktır.
+      </div></dd></dl></div></div><hr /></div><div class="toc"><div class="formaltitle"><b>İçindekiler</b></div><dl></dl></div><div class="head2"><a name="id1" id="id1"></a>GDB Kullanımı</div><div class="para">
+Uygulamalarımızı geliştirme sırasında gerek sistemden olsun gerek yazılımcı tarafından olsun gelen bir takım sinyaller veya kesmeler veya hatalar yüzünden uygulamamızın çalışmasında kesilmeler olabilir. Bu
+gibi durumları çoğu zaman tahmin edebiliyor olmak yeterli olmayabilir. Bu gibi durumlarda en büyük yardımcımız <b><tt>gdb</tt></b> olacaktır. Linux sistemlerde yaygın olarak GBU debugger isimli uygulama kullanılır. Bu uygulama ile uygulamanızın kodu veya <tt>core</tt> dosyası incelenebilir. Öncelikle derleme işlemine bir bakalım.
+  </div>
+<div class="para"><div align="right"><pre class="screen">$ <b><tt>gcc -g deneme.c -o deneme</tt></b></pre></div></div>
+  <div class="para">
+Derleme işleminden sonra uygulamanın büyüklüğünün normal <tt>-g</tt> parametresiz
+büyüklüğünden fazla olduğu görülecektir. Bu aşamadan sonra derlenen uygulama hata ayıklama işlemleri için gerekli olan açıklamaları da çalıştırılabilir dosyanın içerisine katmaktadır. Hata veren örnek bir uygulama yazalım. Örnek uygulama içerisinde değişiklik yapalım ve uygulamanın hata vermesini sağlayalım.
+  </div>
+<div class="para"><div align="right"><pre class="screen">int main()
+{
+  int a[5];
+  int i=0;
+  duzenle(a);
+}
+
+void duzenle(int a[])
+{
+  int i;
+  for (i=0; i&lt;10000; i++) a[i]=i;
+}
+</pre></div></div>
+  <div class="para">
+Uygulamamız <tt>for (i=0; i&lt;10000; i++) a[i]=i;</tt> satırında hata vermektedir. Çünkü bu satırda hafıza için ayrılmış olan 5 tamsayılık alanın 10000 nci değerine erişilmeye çalışılmaktadır. Uygulama ilk çalıştırıldığı anda "segmentation failed" (bölütleme başarısız) hatası verecektir. Bu kadar kısa bir kod içerisinde bunu bulmak sorun olmayacaktır. Ancak uygulamanın iç içe çağrılardan oluşan 100.000 satırlık bir uygulama olduğunu varsayarsanız bu gibi bir hatanın bulunması yazılımcıyı epey zorlayacaktır. Uygulamaya tekrar geri dönelim ve uygulamayı şimdi aşağıdaki şekilde çalıştıralım.
+  </div>
+<div class="para"><div align="right"><pre class="screen">[root@linuxprogramlama 1]# <b><tt>gdb deneme</tt></b>
+GNU gdb Red Hat Linux (5.1.90CVS-5)
+Copyright 2002 Free Software Foundation, Inc.
+GDB is free software, covered by the GNU General Public License, and
+you are welcome to change it and/or distribute copies of it under
+certain conditions.
+Type "show copying" to see the conditions.
+There is absolutely no warranty for GDB.     Type "show warranty" for
+details.
+This GDB was configured as "i386-redhat-linux"...
+(gdb)
+</pre></div></div>
+  <div class="para">
+<b><tt>gdb</tt></b> ilk çalıştığı zaman yukarıdaki şekilde bir karşılama iletisi karşımıza çıkacaktır. Uygulama çalıştırılabilir dosyası <b><tt>gdb</tt></b> tarafından yüklenmiş
+olacaktır. Uygulamayı <b><tt>r</tt></b> komutunu verelim ve karşımıza çıkan iletiye
+bir bakalım.
+  </div>
+<div class="para"><div align="right"><pre class="screen">(gdb) <b><tt>r</tt></b>
+Starting program: /Projects/Kurs/1/deneme
+Program received signal SIGSEGV, Segmentation fault.
+0x08048418 in duzenle (a=0xbffff970) at deneme.c:12
+12 for (i=0; i&lt;9000; i++) a[i]=i;
+</pre></div></div>
+  <div class="para">
+İşte <b><tt>gdb</tt></b> hata veren satırımızı ekrana yazdı. Açıklamanın başında bulunan 12 rakamı bize uygulama kodumuz içerisinde hatayı veren satırdır. Şimdi hatanın oluşma süreçlerine bakalım bu amaçla <b><tt>bt</tt></b> (backtrace) komutunu kullanıyoruz.
+  </div>
+<div class="para"><div align="right"><pre class="screen">(gdb) <b><tt>bt</tt></b>
+#0  0x08048418 in duzenle (a=0xbffff970) at deneme.c:12
+#1  0x080483e9 in main () at deneme.c:6
+#2  0x0000000b in ?? ()
+Cannot access memory at address 0xa
+(gdb)
+</pre></div></div>
+  <div class="para">
+Böylelikle en sade halde uygulamamızda bulunan hataları izleme yöntemini gördük. Şimdi de daha etkin bir şekilde GNU debugger kullanabilmek amacıyla bir takım komutlara göz atalım.
+  </div><div class="para">
+<b><tt>list</tt></b> komutu bize hataya neden olan satırın bulunduğu komut listesini
+verecektir.
+  </div>
+<div class="para"><div align="right"><pre class="screen">(gdb) <b><tt>list</tt></b>
+7       }
+8
+9       void duzenle(int a[])
+10      {
+11      int i;
+12      for (i=0; i&lt;9000; i++) a[i]=i;
+13      }
+(gdb)
+</pre></div></div>
+  <div class="para">
+Değişkenler hakkında bilgi almak için <b><tt>print</tt></b> komutu kullanılır.
+  </div>
+<div class="para"><div align="right"><pre class="screen">(gdb) <b><tt>print a[5]</tt></b>
+$2 = 5
+(gdb)
+</pre></div></div>
+  <div class="para">
+Değişken türünü öğrenmek için <b><tt>whatis</tt></b> komutu kullanılır.
+  </div>
+<div class="para"><div align="right"><pre class="screen">(gdb) <b><tt>whatis a</tt></b>
+type = int *
+</pre></div></div>
+  <div class="para">
+Peki bir koşul oluşması durumunda istenen değişken bilgilerini almak istesek ne yapmamız gerekir? Bu amaçla uygulamanın çalışma anında durdurulmasını sağlayacak bir kırılma noktası yerleştirmeliyiz.
+  </div>
+<div class="para"><div align="right"><pre class="screen">(gdb) <b><tt>break 12</tt></b>
+Breakpoint 1 at 0x80483f6: file deneme.c, line 12.
+(gdb) <b><tt>r</tt></b>
+Starting program: /Projects/Kurs/1/deneme
+
+Breakpoint 1, duzenle (a=0xbffff970) at deneme.c:12
+12 for (i=0; i&lt;9000; i++) a[i]=i;
+(gdb) <b><tt>print i</tt></b>
+$1 = 0
+</pre></div></div>
+  <div class="para">
+Yukarıda, 12. satıra bir kırılma noktası yerleştirdik ve o anki <i><tt>i</tt></i> değerine baktık. Diğer bir şartlı kırılma noktasına örnek ise;
+  </div>
+<div class="para"><div align="right"><pre class="screen">(gdb) <b><tt>break 12 if i==5</tt></b>
+Breakpoint 1 at 0x80483f6: file deneme.c, line 12.
+(gdb)
+</pre></div></div>
+  <div class="para">
+Görüldüğü üzere <i><tt>i</tt></i> değişkeni 12. satırda 5 değerine ulaştığı an uygulama
+kesilecektir. Makina dili kodlarını öğrenmek amacıyla verilen iki bellek arasını yazdırmak istersek:
+  </div>
+<div class="para"><div align="right"><pre class="screen">(gdb) <b><tt>disas 0x63e4 0x6404</tt></b>
+Dump of assembler code from 0x63e4 to 0x6404:
+0x63e4 &lt;builtin_init+5340&gt;:       ble 0x63f8 &lt;builtin_init+5360&gt;
+0x63e8 &lt;builtin_init+5344&gt;:       sethi %hi(0x4c00), %o0
+0x63ec &lt;builtin_init+5348&gt;:       ld [%i1+4], %o0
+0x63f0 &lt;builtin_init+5352&gt;:       b 0x63fc &lt;builtin_init+5364&gt;
+0x63f4 &lt;builtin_init+5356&gt;:       ld [%o0+4], %o0
+0x63f8 &lt;builtin_init+5360&gt;:       or %o0, 0x1a4, %o0
+0x63fc &lt;builtin_init+5364&gt;:       call 0x9288 &lt;path_search&gt;
+0x6400 &lt;builtin_init+5368&gt;:       nop
+End of assembler dump.
+</pre></div></div>
+  <div class="para">
+Kesilmiş olan yerden devam etmek aşağıdaki gibi <b><tt>c</tt></b> komutunu vermek gerekir.
+  </div>
+<div class="para"><div align="right"><pre class="screen">(gdb) <b><tt>c</tt></b>
+Continuing.
+</pre></div></div>
+  <div class="para">
+<b><tt>gdb</tt></b>'den çıkmak için <b><tt>quit</tt></b> veya <b><tt>q</tt></b> yazınız.
+  </div><div class="para">
+Aynı zamanda uygulamanız çöktüğünde oluşan <tt>core</tt> dosyasını da
+  </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>gdb core</tt></b></pre></div></div>
+  <div class="para">
+şeklinde kullanarak hata veren yeren yeri bulabilirsiniz.
+  </div></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/gcc-baslangic-libs.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/howtos-programming.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/makefile-nasil.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Kütüphaneler ve GCC </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> GNU Paket Yapılandırma Sistemi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

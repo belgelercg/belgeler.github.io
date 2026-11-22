@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:14+03:00" /><title>Jigdo Nasıl Çalışır (seçimlik)</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/debian-jigdo.html" title="Debian Jigdo küçük-NASIL" /><link rel="previous" href="../howto/debian-jigdo-whyjigdo.html" title="Neden jigdo?" /><link rel="next" href="../howto/debian-jigdo-downloadingyourfirstimage.html" title="İlk İmgenin İndirilmesi (5 Kolay Adımda)" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Jigdo Nasıl Çalışır (seçimlik)</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/debian-jigdo-whyjigdo.html">Önceki</a> </td><th width="60%" align="center">Debian Jigdo küçük-NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/debian-jigdo-downloadingyourfirstimage.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="debian-jigdo-howjigdoworks" id="debian-jigdo-howjigdoworks"></a>Jigdo Nasıl Çalışır (seçimlik)</div><dl><dd><div class="para">
+Jigdo'yu kullanmak için bu maddeyi bilmenize gerek yoktur fakat jigdonun ne yaptığının açığa çıkmasına yardım edebilir. Eğer ayrıntılarla ilgilenmiyorsanız, hızlı bir şekilde <a href="../howto/debian-jigdo-downloadingyourfirstimage.html" class="xref" title="İlk İmgenin İndirilmesi (5 Kolay Adımda)">İlk İmgenin İndirilmesi (5 Kolay Adımda)</a> kısmına ilerleyin, "Jigdo'yu Nasıl Kullanırım".
+  </div> <div class="head3"><a name="debian-jigdo-preparingtheisofordownload" id="debian-jigdo-preparingtheisofordownload"></a>Bir ISO'yu İndirime Hazırlamak</div><dl><dd><div class="para">
+Bir CD imgesi iso9660 olarak isimlendirilen bir dosya sistemidir, fakat buradaki açıklamalar için bir CD imgesinin "ISO imgesi" olarak isimlendirilen ve değişik göreli konumlarda pekçok dosya içeren büyük bir dosya olduğunu (yaklaşık 650MB) güvenli bir şekilde kabul edebiliriz. Örneğin, eğer bir CD 567 baytlık bir README dosyası içeriyorsa, ISO imgesi README dosyasının imgesini 20480000 ve 20480567 göreli konumları arasında içerebilir. Bir CD imgesini şu şekilde düşünebilirsiniz:
+  </div><div class="para"><pre class="literallayout">
+               ------------------------------------------------------------
+ISO İmgesi:    |xxxx| dosya-0 |xx| dosya-1 |xxx| dosya-2 |x| dosya-3 |xxxx|
+               ------------------------------------------------------------
+</pre></div><div class="para">
+İmgenin "x" alanları dizin bilgisi, sıfır ile hizalama, disk ismi, başlama bloğu, v.b. gibi bilgileri içermektedir.
+  </div><div class="para">
+<b><tt>jigdo-file</tt></b> girdi olarak iki parametre almaktadır: Tam bir CD imgesi (yani ISO önceden yapılmış olmalıdır) ve imgede kullanılabilir veya kullanılamaz dosyalar kümesi. Aşağıda <b><tt>jigdo-file</tt></b>'ın girdilerinin görsel bir hali bulunmaktadır:
+  </div><div class="para"><pre class="literallayout">
+               ------------------------------------------------------------
+ISO İmgesi:    |xxxx| dosya-0 |xx| dosya-1 |xxx| dosya-2 |x| dosya-3 |xxxx|
+               ------------------------------------------------------------
+
+                    -----------  -----------       -----------    -----------
+Serbest Dosyalar:   | dosya-0 |  | dosya-1 |       | dosya-3 |    | dosya-4 |
+                    -----------  -----------       -----------    -----------
+</pre></div><div class="para">
+Sihirli bir şekilde, <b><tt>jigdo-file</tt></b> ISO imgesi içerisindeki serbest dosyaları ve onların ISO dosyası içerisindeki göreli konumlarını bulmaktadır. Sonuç olarak iki dosya üretir: bir  <tt>.template</tt> dosyası ve bir <tt>.jigdo</tt> dosyası.
+  </div></dd></dl> <div class="head3"><a name="debian-jigdo-the.templatefile" id="debian-jigdo-the.templatefile"></a><tt>.template</tt> Dosyası</div><dl><dd><div class="para">
+Bir ISO imgesi ve ISO imgesi içerisinde olabilecek veya olmayacak dosyaların verilmesi halinde <b><tt>jigdo-file</tt></b> bu ISO imgesi için bir <tt>.template</tt> dosyası üretir. Aşağıda bir <tt>.template</tt> dosyasının neye benzediği gösterilmiştir.
+  </div><div class="para"><pre class="literallayout">
+              --------------------------------------------------------
+.template:    |xxxx| md5-0  |xx| md5-1  |xxx|cccccccc|x| md5-3  |xxxx|
+              --------------------------------------------------------
+</pre></div><div class="para">
+<b><tt>jigdo-file</tt></b>, <tt>dosya-0</tt>, <tt>dosya-1</tt> ve <tt>dosya-3</tt>'ün ISO imgesince içerildiğini bulmuştur. Bu dosyaların içeriklerini herbirinin  md5 sağlama toplamı ile değiştirmiştir (<tt>md5-0</tt>, <tt>md5-1</tt>, v.b.).
+  </div><div class="para">
+ISO imgesi içerisindeki "<tt>x</tt>" verisi (dizin bilgisi, sıfır ile yaslama, v.b.) sıkıştırılmış olup <tt>.template</tt> dosyasına yazılır. Son olarak da ISO imgesi içerisinde olup da serbest dosya olarak sağlanmayan dosyalar (<tt>dosya-2</tt> gibi) da <tt>.template</tt> dosyasına yazılır. Bu durum <tt>.template</tt> dosyasında görsel olarak "<tt>c</tt>" verisi olarak gösterilmiştir.
+  </div><div class="para">
+ISO imge içerisinde bulunmayan <b><tt>jigdo-file</tt></b>'a sağlanan serbest dosyalar (<tt>dosya-4</tt> gibi) ihmal edilir.
+  </div></dd></dl> <div class="head3"><a name="debian-jigdo-the.jigdofile" id="debian-jigdo-the.jigdofile"></a><tt>.jigdo</tt> Dosyası</div><dl><dd><div class="para">
+Bir ISO imgesi ve ISO imgesi içerisinde bulunabilecek veya bulunamayacak dosyaların verilmesi durumunda, <b><tt>jigdo-file</tt></b> o ISO imgesi için bir <tt>.jigdo</tt> dosyası üretir. Debian <tt>.jigdo</tt> dosyaları <b><tt>gzip</tt></b> ile sıkıştırılmıştır, dolayısiyle onları görmek için <b><tt>zcat</tt></b> veya <b><tt>zless</tt></b> kullanmalısınız. Bir <tt>.jigdo</tt> dosyasının <b><tt>gunzip</tt></b> ile açtığınızdaki görüntüsü:
+  </div><div class="para"><div align="right"><pre class="screen">md5-0=http://biryansi.org/dosya-0
+md5-1=http://biryansi.org/dosya-1
+md5-2=http://biryansi.org/dosya-2
+md5-3=http://biryansi.org/dosya-3
+</pre></div></div><div class="para">
+<tt>.jigdo</tt> dosyası basitçe ISO imgesi içerisindeki md5 toplam sağlamı ile o dosyanın indirilme URL'si arasında bir eşleme yapmaktadır. <tt>.jigdo</tt> dosyası içerisinde başka bazı şeyler de vardır, eğer içerisine bakarsanız <tt>.jigdo</tt> dosyasının bir "<tt>.ini</tt>" dosyasıyla aynı yapıya sahip olduğunu görürsünüz. Bu kendisini açıklamak için yeterlidir, fakat daha öz ayrıntıları istiyorsanız jigdo belgelendirmesine bakın.
+  </div><div class="para">
+Yukarıda gösterilen tipik bir <tt>.jigdo</tt> dosyası tam olarak öyle değildir, fakat oldukça benzemektedir. Eğer <tt>.jigdo</tt> dosyasının sonundaki <tt>[Servers]</tt> kısmına bakarsanız, gerçek bir <tt>.jigdo</tt> dosyası ile yukarıda gösterim arasındaki farkı tam olarak göreceksiniz.
+  </div></dd></dl> <div class="head3"><a name="debian-jigdo-downloadingtheimage" id="debian-jigdo-downloadingtheimage"></a>İmgenin İndirilmesi</div><dl><dd><div class="para">
+<b><tt>jigdo-file</tt></b>'ı bir kere bir ISO görütüsünün <tt>.jigdo</tt> ve <tt>.template</tt> dosyalarını oluşturmak için kullandıktan sonra herhangi biri <b><tt>jigdo-lite</tt></b> kullanarak o imgeyi indirebilir. <b><tt>jigdo-lite</tt></b>, <b><tt>wget</tt></b> kullanarak bir Debian ISO'nun tüm dosyalarını indirir, onları birleştirir ve asıl ISO imgesinin bir kopyasını anında oluşturur.
+  </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/debian-jigdo-whyjigdo.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/debian-jigdo.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/debian-jigdo-downloadingyourfirstimage.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Neden jigdo? </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> İlk İmgenin İndirilmesi (5 Kolay Adımda)</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

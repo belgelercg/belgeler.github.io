@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:48+03:00" /><title>Karaliste yansısının kurulması ve çalıştırılması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/karaliste-nasil.html" title="IP Karalistesi NASIL" /><link rel="previous" href="../howto/karaliste-nasil_giris.html" title="Giriş" /><link rel="next" href="../howto/karaliste-nasil_kullanim.html" title="Kendi karalistenizi kullanmak" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Karaliste yansısının kurulması ve çalıştırılması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/karaliste-nasil_giris.html">Önceki</a> </td><th width="60%" align="center">IP Karalistesi NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/karaliste-nasil_kullanim.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="karaliste-nasil_yansi" id="karaliste-nasil_yansi"></a>Karaliste yansısının kurulması ve çalıştırılması</div><dl><dd> <div class="head3"><a name="id1" id="id1"></a>Karaliste yazılımının kurulması</div><dl><dd><div class="para">
+Teorik olarak favori DNS yazılımınızı karaliste amaçları için
+kullanabilirsiniz. Pratikte, çok uzun alan dosyalarından oluşan karalisteleri
+yüklemek DNS yazılımınızı yoracaktır. Dolayısıyla en uygun çözüm, karaliste
+kullanımı için hazırlanmış özel ve hafif bir DNS yazılımı olan
+<i>rbldnsd</i> yazılımını kullanmaktır. Tabii aynı makinada iki
+DNS sunucusu birden çalıştığı zaman port çakışması olacaktır. Bunu engellemek
+için rbldnsd yazılımını başka bir port üzerinden çalıştıracağız.
+</div><div class="para">
+Eğer Debian kullanıyor iseniz,
+</div><div class="para"><div align="right"><pre class="screen">
+$<b><tt>apt-get install rbldnsd</tt></b>
+</pre></div></div><div class="para">
+komutu ile <i>rbldnsd</i> yazılımını kurabilirsiniz. Bu kurulum bir Debian
+makinası üzerinde yapıldığından dolayı çeşitli ayar dosyalarının yerleri başka
+bir dağıtımda farklı olabilir. Red Hat RPM ve tar.gz paketleri <a class="ulink" href="http://www.corpit.ru/mjt/rbldnsd.html" target="_top">http://www.corpit.ru/mjt/rbldnsd.html</a> adresinden alınabilir.
+</div><div class="para">
+<tt>/etc/default/rbldnsd</tt>  dosyası içerisinde
+<tt>RBLDNSD</tt> tanımını aşağıdaki şekilde değiştirelim:
+</div><div class="para"><div align="right"><pre class="screen">
+RBLDNSD="- -r/var/lib/rbldns -b127.0.0.1/530 \
+-l requestlog -s statlog  \
+"
+</pre></div></div><div class="para">
+Bu tanım, <i>rbldns</i> yazılımının 127.0.0.1 adresine
+bağlanacağını (yani makina dışından sorgulanamayacağını), 530 no'lu port
+üzerinde çalışacağını, dosyalarını <tt>/var/lib/rbldns</tt>
+dizininde tutacağını, istekleri ve istatistikleri günlük dosyasına kaydedeceğini
+belirtir.
+</div><div class="para">
+Henüz elimizde bir karaliste dosyası olmadığından dolayı şu aşamada
+<i>rbldnsd</i>'yi çalıştırmak manasız. Bir kaç adet karaliste
+yansısı elde ettikten sonra yazılımı çalıştıracağız.
+</div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Yansıları indirmek</div><dl><dd><div class="para">
+Yansılayacağımız ilk liste, Türk IP bloklarının listesi. Herhangi bir IP
+adresinin Türkiye'de olup olmadığını, şu şekilde sorgulayabilirsiniz:
+</div><div class="para">
+Sorgulanacak IP no'su: 127.0.0.1
+</div><div class="para"><div align="right"><pre class="screen">$ <b><tt>dig +short 1.0.0.127.tr.countries.nerd.dk</tt></b>
+</pre></div></div><div class="para">
+IP numarasının sorgu için tersten yazıldığına dikkat edin.
+</div><div class="para">
+Bu listeyi <a class="ulink" href="http://countries.nerd.dk" target="_top">http://countries.nerd.dk</a> adresinden ilgili bağları takip ederek, veya
+</div><div class="para"><div align="right"><pre class="screen">
+# <b><tt>cd /var/lib/rbldns</tt></b>
+# <b><tt>rsync rsync://nubian.blitzed.org/countries/tr.countries.nerd.dk.rbldnsd .</tt></b>
+</pre></div></div><div class="para">komutu ile alabilirsiniz.</div><div class="para">
+İkinci listemiz de, <a class="ulink" href="http://www.sorbs.net" target="_top">SORBS</a>
+tarafından oluşturulmuş olan dinamik IP kullanıcıları listesi. Herhangi bir IP
+adresinin, ISS'lerin telefonla veya ADSL/Kablo ile bağlanan ev kullanıcılarına
+ait olup olmadığını gösteren bu listeyi şu şekilde sorgulayabilirsiniz:
+</div><div class="para">
+Sorgulanacak IP no'su: 127.0.0.2
+</div><div class="para"><div align="right"><pre class="screen">
+$ <b><tt>dig +short 2.0.0.127.dul.dnsbl.sorbs.net</tt></b>
+127.0.0.10
+</pre></div></div><div class="para">
+IP numarasının sorgu için tersten yazıldığına dikkat edin.
+</div><div class="para">
+Bu listeyi de, <a class="ulink" href="http://www.sorbs.net" target="_top">SORBS</a>'daki
+linkleri takip ederek veya
+</div><div class="para"><div align="right"><pre class="screen">
+# <b><tt>cd /var/lib/rbldns</tt></b>
+# <b><tt>rsync rsync://rsync.bliab.com/sorbs/dul.dnsbl.sorbs.net .</tt></b>
+</pre></div></div><div class="para">
+komutu ile alabilirsiniz.
+</div><div class="para">
+Güncel olmayan bir karaliste, hiç karaliste kullanmamaktan çok daha kötüdür. Dolayısıyla bu karalisteleri yansılama işlemini bir defaya mahsus olarak yapmanın bir manası yok. Cron kullanarak karalistelerin düzenli aralıklarla güncellenmesini sağlamalıyız.
+</div><div class="para">
+Günde bir defa güncelleme işlemini yapan cron satırı:
+</div><div class="para"><div align="right"><pre class="screen">
+$ <b><tt>crontab -l</tt></b>
+37 1 * * * cd /var/lib/rbldns; \
+rsync rsync://nubian.blitzed.org/countries/tr.countries.nerd.dk.rbldnsd .
+¬ 2&gt;&amp;1 /dev/null;\
+rsync rsync://rsync.bliab.com/sorbs/dul.dnsbl.sorbs.net . 2&gt;&amp;1 /dev/null
+</pre></div></div><div class="para">
+<i>rbldnsd</i> dosyaların güncellendiğini otomatik olarak farkedip yeniden yüklediği için onu yeniden başlatmaya gerek yok.
+</div></dd></dl> <div class="head3"><a name="id3" id="id3"></a>Karaliste yazılımını başlatmak</div><dl><dd><div class="para">
+<tt>/etc/default/rbldnsd</tt>  dosyası içerisinde
+<tt>RBLDNSD</tt> tanımını aşağıdaki şekilde değiştirelim:
+</div><div class="para"><div align="right"><pre class="screen">
+RBLDNSD="- -r/var/lib/rbldns -b127.0.0.1/530 \
+-l requestlog -s statlog -f \
+tr.countries.nerd.dk:ip4set:tr.countries.nerd.dk.rbldnsd \
+dul.dnsbl.sorbs.net:ip4set:dul.dnsbl.sorbs.net \
+"
+</pre></div></div><div class="para">
+Eklediğimiz satırlar, <tt>tr.countries.nerd.dk</tt> ve <tt>dul.dnsbl.sorbs.net</tt> alanlarının IP numarası olarak ilgili dosyalarda tanımlandığını belirtiyor.
+</div><div class="para">
+Şimdi <i>rbldnsd</i>'yi başlatalım:
+</div><div class="para"><div align="right"><pre class="screen"># <b><tt>/etc/init.d/rbldnsd start</tt></b>
+Starting rbldnsd: rbldnsd
+rbldnsd: listening on 127.0.0.1/530
+rbldnsd: ip4set:tr.countries.nerd.dk.rbldnsd: 20050126 233703:
+¬ e32/24/16/8=2061/3910/46/0
+rbldnsd: file dul.dnsbl.sorbs.net(3): compatibility mode: specify all NS
+¬ records in ONE line
+rbldnsd: ip4set:dul.dnsbl.sorbs.net: 20050126 233733:
+¬ e32/24/16/8=704801/271341/1628/0
+rbldnsd: zones reloaded, time 0.36e/0.22u sec, mem arena=408 free=60
+¬ mmap=7628 Kb
+rbldnsd: rbldnsd version 0.994 (18 Dec 2004) started (1 socket(s), 2 zone(s))
+</pre></div></div><div class="para">
+Karalisteyi sorgulayalım. Bu sorguların, daha önce Internet'ten yaptığımız sorgulara nazaran çok daha hızlı olduğunu farkedeceksiniz.
+</div><div class="para"><div align="right"><pre class="screen">
+$ <b><tt>dig +short @127.0.0.1 -p 530 2.0.0.127.dul.dnsbl.sorbs.net</tt></b>
+127.0.0.10
+$ <b><tt>dig +short @127.0.0.1 -p 530 1.0.0.127.tr.countries.nerd.dk</tt></b>
+</pre></div></div></dd></dl> <div class="head3"><a name="id4" id="id4"></a>Normal DNS'e karalisteyi entegre etmek</div><dl><dd><div class="para">
+Az önce kullandığımız sorgularda, <tt>dig</tt> komutuna hangi sunucu (127.0.0.1) ve hangi port (530) kullanması gerektiğini belirttik. Şu anda bu tanım yapılmaksızın yapılacak olan sorgular gene Internet'e yönlenir. Bu karalisteleri posta yazılımınızda veya spamassassin içerisinde kullanıyorsanız, bunlar halen daha Internet'ten çözümleniyor. Bunu değiştirmenin yolu, DNS sunucunuzda bu alanları yerel karaliste yansısından sorgulamasını belirtmektir.
+</div><div class="para">
+Örneklerin hazırlandığı sistemde Debian üzerinde Bind9 çalıştırılmaktadır. Kendi dağıtım ve DNS yazılımınıza göre yapılacak ayarlar bir nebze farklı olabilir.
+</div><div class="para">
+<tt>/etc/bind/named.conf</tt> dosyası içerisinde iki yeni alan tanımı yapalım:
+</div><div class="para"><div align="right"><pre class="screen">
+zone "tr.countries.nerd.dk" IN {
+        type forward;
+        forward first;
+        forwarders {
+        127.0.0.1 port 530;
+        };
+};
+
+zone "dul.dnsbl.sorbs.net" IN {
+        type forward;
+        forward first;
+        forwarders {
+        127.0.0.1 port 530;
+        };
+};
+</pre></div></div><div class="para">
+Özellikle <tt>forward first;</tt> komutuna dikkat edin. Eğer DNS sunucusu bir şekilde <i>rbldnsd</i> ile iletişim kuramaz ise, eskiden yaptığı gibi Internet üzerinden çözümlemeye gidecektir.
+</div><div class="para">
+DNS'i yeniden başlatın:
+</div><div class="para"><div align="right"><pre class="screen">
+# <b><tt>/etc/init.d/bind9 restart</tt></b>
+Stopping domain name service: named.
+Starting domain name service: named.
+</pre></div></div><div class="para">
+Şu anda <tt>tr.countries.nerd.dk</tt> ve <tt>dul.dnsbl.sorbs.net</tt> alanlarına sistemden gelen herhangi bir sorgu, <i>rbldnsd</i>'ye yönlenecektir. Eğer bu sorguları posta sunucunuzda veya spamassassin içerisinde kullanıyor idiyseniz, bu sorguların hızlandığını göreceksiniz.
+</div></dd></dl> <div class="head3"><a name="id5" id="id5"></a>Yapmak istedikleriniz bitmiş olabilir</div><dl><dd><div class="para">
+Eğer sisteminizde yaptığınız çeşitli karaliste sorgularını hızlandırmak amacında iseniz, buraya kadar uyguladıklarımızla bunu gerçekleştirebilirsiniz. Sıklıkla kullandığınız karalistelerin yansısını elde edip, kendi sisteminizde <i>rbldnsd</i> içerisinde çalıştıracaksınız.
+</div><div class="para">
+Bu yazının geri kalan kısmı, benim hazırladığım bir karalisteyi örnek olarak kullanarak, kendinize ait bir karalisteyi nasıl sisteminize entegre edeceğinizi konu almaktadır.
+</div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/karaliste-nasil_giris.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/karaliste-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/karaliste-nasil_kullanim.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Giriş </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Kendi karalistenizi kullanmak</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

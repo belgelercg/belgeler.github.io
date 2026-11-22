@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:08+03:00" /><title>İlgili Tanımları Miras Alma</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../termcap/termcap-Data-Base.html" title="Veritabanının Biçimi" /><link rel="previous" href="../termcap/termcap-Naming.html" title="Uçbirim Türü İsimlendirme Uzlaşımları" /><link rel="next" href="../termcap/termcap-Changing.html" title="Etkin Veritabanı Değişirse" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">İlgili Tanımları Miras Alma</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../termcap/termcap-Naming.html">Önceki</a> </td><th width="60%" align="center">Veritabanının Biçimi</th><td width="20%" align="right"> <a accesskey="n" href="../termcap/termcap-Changing.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="termcap-Inheriting" id="termcap-Inheriting"></a>İlgili Tanımları Miras Alma</div><dl><dd><a class="indexterm" name="idx23" id="idx23"></a><div class="para">
+İki uçbirimin tanımları benzer olduğunda, eşdeğerdeki parçaları iki defa vermek gerekmez. <b><tt>tc</tt></b> yeteneği ile bunlardan biri diğerinin kurallarını kullanabilir.  Böyle bir durumda bir tanım diğerine <span><i>başvuruyor</i></span> ya da onun yeteneklerini <span><i>miras alıyor</i></span> deriz.
+   </div><div class="para">
+<b><tt>tc</tt></b> yeteneği uçbirim tanımında tanımlanmış son yetenek olmalıdır. Değeri ise yeteneklerin miras alınacağı uçbirim tanımının ismi olmalıdır. Örnek:
+   </div>
+<div class="para"><div align="right"><pre class="screen">N9|aaa|ambassador|aaa-30|ann arbor ambassador/30 lines:\
+        :ti=\E[2J\E[30;0;0;30p:\
+        :te=\E[60;0;0;30p\E[30;1H\E[J:\
+        :li#30:tc=aaa-unk:
+</pre></div></div>
+   <div class="para">
+Burada, <b><tt>aaa-30</tt></b> uçbirim türü (ayrıca düz <b><tt>aaa</tt></b> olarak da bilinir), herşeyin ekran yüksekliğine bağımlı olarak tanımlandığı Ambassador <b><tt>aaa-unk</tt></b> tanımının kurallarıyla tanımlanmaktadır. <b><tt>aaa-36</tt></b>, <b><tt>aaa-48</tt></b> ve benzerleri farklı ekran yükseklikleri sağlamak için benzer şekilde <b><tt>aaa-unk</tt></b> tanımını miras alırlar.
+   </div><div class="para">
+<b><tt>aaa-30</tt></b> tanımının içerdiği <b><tt>li</tt></b> (tanımın kaç satırlık olacağını belirler), <b><tt>ti</tt></b> ve <b><tt>te</tt></b> (uçbirimi bu satır sayısına göre yapılandırırlar) yetenekleri, miras alınan aynı yetenekleri değiştirmek içindir.
+   </div><div class="para">
+<b><tt>aaa</tt></b> türü etkin uçbirim tanımı yukarıdaki tanıma <b><tt>aaa-unk</tt></b> tanımının eklenmişi olur. <b><tt>tgetent</tt></b> işlevi <b><tt>tc</tt></b> yeteneğini gördüğünde ek <a class="link" href="../termcap/termcap-Find.html" title="Uçbirim Tanımının Bulunması">uçbirim tanımını bulur</a> ve ikisini birleştirir. Diğer taraftan, <b><tt>tc</tt></b> yeteneğinin kullanımı sadece uçbirim tanımları yapanları ilgilendirir. Kullanıcılar ve uygulama geliştiricilerin bu yetenekle ilgilenmeye ihtiyaçları olmayacaktır.
+   </div><div class="para">
+Miras alınan uçbirim tanımı sona eklendiğinden, miras alan tanım, miras alınan tanımın içindeki yetenekleri tekrar tanımlayarak bu yeteneklerin tanımlarını değiştirebilir.
+   </div><div class="para">
+Ayrıca miras alan tanım, yeteneklere yeni bir değer belirtmeyerek miras aldığı yetenekleri iptal edebilir. Bunun için yetenek isminden sonra bir <b><tt>@</tt></b> karakteri konur. Örnek:
+   </div>
+<div class="para"><div align="right"><pre class="screen">NZ|aaa-30-nam|ann arbor ambassador/30 lines/no automatic-margins:\
+        :am@:tc=aaa-30:
+</pre></div></div>
+   </dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../termcap/termcap-Naming.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../termcap/termcap-Data-Base.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../termcap/termcap-Changing.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Uçbirim Türü İsimlendirme Uzlaşımları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Etkin Veritabanı Değişirse</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

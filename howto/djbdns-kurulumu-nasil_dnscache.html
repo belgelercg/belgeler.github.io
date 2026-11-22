@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:37+03:00" /><title>Dnscache Programının Kurulması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/djbdns-kurulumu-nasil.html" title="djbDNS Kurulumu NASIL" /><link rel="previous" href="../howto/djbdns-kurulumu-nasil_bagimlilik.html" title="Önceden Kurulması Gerekli Yazılımlar" /><link rel="next" href="../howto/djbdns-kurulumu-nasil_tinydns.html" title="Tiny-dns Kurulumu" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Dnscache Programının Kurulması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/djbdns-kurulumu-nasil_bagimlilik.html">Önceki</a> </td><th width="60%" align="center">djbDNS Kurulumu NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/djbdns-kurulumu-nasil_tinydns.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="djbdns-kurulumu-nasil_dnscache" id="djbdns-kurulumu-nasil_dnscache"></a>Dnscache Programının Kurulması</div><dl><dd><div class="para">
+<tt>Dnscache</tt> yukarıda anlatılan yazılımlardan çözümleyici
+kısmına girmektedir. Yani <tt>/etc/resolv.conf</tt> dosyasına
+yazılacak IP şimdi kuracağımız yazılımın çalıştığı bir makinaya ait olmalıdır.
+Burada kuracağımız <tt>dnscache</tt> aslında dnscache'in kurulması
+olası iki çeşidinden birisi olacaktır.
+Bunlar "harici dnscache" ve "dahili dnscache" olarak adlandırılır. Biz burada
+Internet'de ya da ağımızda bulunan başka bir makinanın sorgularını işleme
+yetisine sahip olan "harici dnscache" kuracağız. Eğer evinizden dial-up bağlanan
+bir kullanıcı iseniz sisteminizde dahili bir dnscache kuracabilir ve
+<tt>/etc/resolv.conf</tt> dosyanıza <tt>127.0.0.1</tt>
+adresini yazabilirsiniz. Dahili denmesinin sebebi 127.0.0.1 arayüzüne
+kurulması ve dnscache'in kendini o ip'nin 53. portuna bağlamasıdır.
+Haricinin farkı ise sadece dnscache'in 127.0.0.1'den farklı ve diğer makinaların
+ulaşabileceği bir IP olmasıdır.
+    </div><div class="para">
+Ek olarak <tt>dnscache</tt> kurulmadan önce hangi kullanıcı olarak
+çalışacağı ve hangi kullanıcı olarak günlük kayıtlarının tutulacağı
+belirtilmelidir. Genel olarak sisteminize giriş yapması ihtimali olmayan
+(kabuğu /bin/false olan) iki kullanıcı ekleyin. Bunlardan biri <tt>dnscache</tt>
+diğeride günlük kayıtlarını hesap olan <tt>dnslog</tt> olabilir. Bir de programımızın
+çalışacağı dizin belirlenmelidir. Genel olarak <tt>/etc/dnscachex</tt>
+(x = external -&gt; harici) kullanılmaktadır. Şimdi yazılımı kurabiliriz.
+    </div>
+      <div class="variablelist"><dl><dt><span class="term">Harici dnscache</span></dt><dd class="varlist">
+<div class="para"><div align="right"><pre class="screen">
+# dnscache-conf dnscache dnslog /etc/dnscachex 192.168.1.1
+# ln -s /etc/dnscachex /service
+# echo "192.168.1.1" &gt; /etc/resolv.conf
+</pre></div></div><div class="para">
+            İlk satırın açılımı:
+</div><div class="para"><pre class="literallayout">
+dnscache-conf <i>çalıştırma-kullanıcısı günlük-kaydı-kullanıcısı ip-adresi</i>
+</pre></div><div class="para">
+şeklindedir. İkinci satır ise <tt>dnscache</tt>'i açılışta
+çalıştırmak içindir.
+            </div></dd><dt><span class="term">Dahili dnscache</span></dt><dd class="varlist">
+<div class="para"><div align="right"><pre class="screen">
+# dnscache-conf dnscache dnslog /etc/dnscache
+# ln -s /etc/dnscache /service
+# echo "127.0.0.1" &gt; /etc/resolv.conf
+# touch /etc/dnscachex/root/ip/193.140.1
+</pre></div></div><div class="para">
+Dikkat ederseniz ilk satırda IP belirtmedik. Öntanımlı değeri 127.0.0.1'dir
+            </div><div class="para">
+Öntanımlı olarak <tt>dnscache</tt> bütün sorguları reddeder.
+Son satırda 193.140.1 dosyası ile ağ için sorgu yapılmasına izin veriyoruz.
+            </div><div class="para">
+<tt>dnscache</tt>'in çalışıp çalışmadığını sorgulamak için
+<tt>dnsqr</tt> komutu kullanılabilir. Yapılan sorgularda
+önemli olan satır  <tt>answer</tt> satırıdır.
+</div><div class="para"><div align="right"><pre class="screen">
+# dnsqr a yildiz.edu.tr
+1 yildiz.edu.tr:
+166 bytes, 1+1+3+3 records, response, noerror
+query: 1 yildiz.edu.tr
+answer: yildiz.edu.tr 30218 A 193.140.1.1      <a name="djbdns-kurulumu-nasil-co2" id="djbdns-kurulumu-nasil-co2"></a><b style="background: transparent url(&quot;../images/xsl/callouts/1.png&quot;) no-repeat left 40%;">  </b>
+authority: yildiz.edu.tr 86391 NS ana.cc.yildiz.edu.tr
+authority: yildiz.edu.tr 86391 NS ns.ulak.net.tr
+authority: yildiz.edu.tr 86391 NS vm4381.ce.yildiz.edu.tr
+additional: ana.cc.yildiz.edu.tr 86391 A 193.140.1.1
+additional: ns.ulak.net.tr 62760 A 193.140.83.251
+additional: vm4381.ce.yildiz.edu.tr 86391 A 193.140.2.1
+</pre></div></div><div class="calloutlist"><table border="0" summary="Dikkat edilecek hususlar" cellspacing="0" cellpadding="3" width="100%"><tr><td width="15" valign="top" align="left" class="coimage"><a href="#djbdns-kurulumu-nasil-co2"><img src="../images/xsl/callouts/1.png" alt="1" border="0" /></a> </td><td valign="top" align="left"><div class="para">
+<tt>answer</tt> ile başlayan kısım bizim aradığımız cevaptır.
+      </div></td></tr></table></div></dd></dl></div>
+    <div class="para">
+Artık elimizde çalışan bir çözümleyici var. Ek olarak istersek bellek
+büyüklüğünü 100MB ram harcayacak şekilde ayarlayabiliriz. Bunun için:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+# echo 100000000 &gt; /etc/dnscachex/env/CACHESIZE
+# echo 104857600 &gt; /etc/dnscachex/env/DATALIMIT
+</pre></div></div>
+    <div class="para">
+yapılması gerekir. Tabii bundan sonra <tt>svc -t /service/dnscache</tt>
+ile programımızı yeniden başlatmak gerekecektir.
+    </div><div class="para">
+Şimdi sıra alanımız için yetkili isim sunucu olacak olan  <tt>tiny-dns</tt> programını kurmaya geldi.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/djbdns-kurulumu-nasil_bagimlilik.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/djbdns-kurulumu-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/djbdns-kurulumu-nasil_tinydns.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Önceden Kurulması Gerekli Yazılımlar </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Tiny-dns Kurulumu</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

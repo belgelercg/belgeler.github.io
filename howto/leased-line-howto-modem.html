@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:38+03:00" /><title>Modem</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/leased-line-howto.html" title="Kiralık Hat-Mini NASIL" /><link rel="previous" href="../howto/leased-line-howto-intro.html" title="Giriş" /><link rel="next" href="../howto/leased-line-howto-pppd.html" title="PPPD" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Modem</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/leased-line-howto-intro.html">Önceki</a> </td><th width="60%" align="center">Kiralık Hat-Mini NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/leased-line-howto-pppd.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="leased-line-howto-modem" id="leased-line-howto-modem"></a>Modem</div><dl><dd><div class="para">
+Bir kiralık hat bir telefon hattı değildir, bir doğru akım taşımaz, çevir sesi, meşgul sesi veya zil sesi sinyali yoktur. Yani, onlarla çalışmak için gereken herşeyi modemleriniz sağlayabilmelidir.
+</div><div class="para">
+Hem kiralık hattı hem de sessiz kipi destekleyen birbirinin aynı (gömülü yazılımları dahil) iki <i>harici</i> modeminiz olmalıdır. Modemlerinizin bunu gerçekten yapabildiğinden ve ayrıca <i>olması gerektiği gibi belgelenmiş olduğundan</i> emin olun. Ayrıca şunlara da gerek duyacaksınız:
+</div><ul type="disc" class="itemizedlist"><li>
+İki tane ekranlı RS232 kablosu. Ekran tek uçta değil her iki uçta da soketin dışı ile irtibatlanmış olmalıdır.
+</li><li>
+Bir RS232 test fişi deneme amacıyla bulundurulmalıdır.
+</li><li>
+Kiralık hattın her ucu için bir tane olmak üzere 2 tane RJ11 kordonu.
+</li><li>
+'AT' komutları hakkında temel bilgi.
+</li></ul>
+   <div class="head3"><a name="leased-line-howto-modem-conf" id="leased-line-howto-modem-conf"></a>Modem Yapılandırması</div><dl><dd><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Modem yapılandırması ve ilklendirme dizgesi hakkında</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Modeminizi Minicom veya (m)getty gibi bir yazılımla olası en yüksek hızında kullanmak için yapılandırın; 14k4 modemler için 57600 bps ve 28k8 ve daha hızlı modemler için 115200 bps. Çoğu kimse çok uzun ve karmaşık ilklendirme dizgeleri kullanır, bunlar çoğunlukla AT&amp;F ile başlayan modemin markasına ve türüne özgü bir takım komutlar içeren dizgelerdir. Bu işi gereksiz yere karmaşıklaştırmaktan başka bir şey değildir. Bir çok program aynı modem ayarlarını kullanmaktan memnundur, o halde neden bütün modemlerin kalıcı belleklerine bu ayarlar yazılmaz ve bütün programlarda bir ilklendirme dizgesi olarak sadece 'ATZ' kullanılmaz ki. Böylece hiçbir yazılımın yeniden yapılandırılmasına gerek olmaksızın modem kolayca değiştirebilir ya da üst modele geçilebilirdi.
+</div></td></tr></table></div><div class="para">
+Çoğu program aşağıdaki ayarların yapılmasını gerektirir:
+</div><ul type="disc" class="itemizedlist"><li>
+Sabit (otomatik değil) baud hızı (bit/saniye cinsinden bilgi aktarım hızı)
+</li><li>
+Donanımsal 2 yönlü RTS-CTS (x-on/x-off değil) akış denetimli
+</li><li>
+8 Bitlik, eşlik biti yok, 1 sonlandırma biti
+</li><li>
+Modem <b>gerçek</b> DCD durumu üretmeli (&amp;C1)
+</li><li>
+Modem DTR durumunu  (&amp;D2 veya &amp;D3) <i>yoksaymamalı</i></li></ul>
+<div class="para">
+Bunu AT&amp;V veya AT&amp;Ix (modem belgelerine bakın) ile karşılaştırın.
+</div><div class="para">
+Bu ayarların öntanımlı üretim profili (&amp;F) ile aynı olması gerekli değildir, bu yüzden bir ilklendirme dizgesinin ilk anda AT&amp;F'yle başlatılması muhtemelen iyi bir fikir olmaz. Gerçekten bozulan kalıcı bellekte modemin kurulumunun saklandığına inanıyorsanız sadece AT&amp;F' yi kullanmak muhtemelen akıllıca bir düşüncedir. Eğer modemleriniz için doğru kurulumu bulduğunuza inanıyorsanız, onu AT&amp;W ile geçici olmayan belleğe yazın ve ASCII metni ve ikilik dosyaların her ikisini de Z-modem dosya transferiyle iyice test edin. Eğer bu işlemlerin hepsi sizce tamamen doğruysa, kiralık hat için modemlerinizi yapılandırın.
+</div><div class="para">
+Modeminizi sessiz kipe nasıl sokacağınızı ve daha da önemlisi sessiz kipten nasıl çıkarabileceğinizi bulun; Modem sadece sessiz kipte olmadığında yeniden yapılandırılabilir. Emin olun aslında modemlerinizi olası en yüksek hız için yapılandırabilirsiniz. İlk olarak, sessiz kipte tüm 'AT' komutlarını yoksayacak ve sonuçta COM portun hızına ayarlanmamış olacak, fakat  yapılandırıldığı hızı kullanacaktır (bu hız AT&amp;W komutu tarafından bir S-yazmacına saklanır).
+</div><div class="para">
+Artık modeminizi yapılandırabilirsiniz:
+</div><ul type="disc" class="itemizedlist"><li>
+DTR'yi değiştirerek modemi sıfırlayın (&amp;D3, bu bazen bir S yazmacı olabilir). Bu ayar bazı ISP'ler tarafından gerekli görülür.
+</li><li>
+Kiralık hat kipi (&amp;L1 veya &amp;L2, modem belgenize bakın)
+</li><li>
+Uzak modem özdevinimli yanıt (S0=1), yerel başlangıç (S0=0)
+</li><li>
+Sonuç kodlarını hizmet dışı bırakın (Q1, bazen sessiz kip bunu sizin için yapar)
+</li><li>
+Sessiz kip (\D1 veya %D1, bu bazen bir atlama teli veya kısadevre fişi olabilir).
+Sessiz kipte modem tüm AT komutlarını görmezden gelecektir (bazen ESC karakterini de iptal etmeniz gerekebilir).
+</li></ul>
+Değişken olmayan belleğe yapılandırmayı yazın (&amp;W).
+</dd></dl> <div class="head3"><a name="leased-line-howto-modem-test" id="leased-line-howto-modem-test"></a>Deneme</div><dl><dd><div class="para">
+Şimdi RS232 kabloları kullanarak 2 bilgisayarı modemlere ve RJ11 fişli bir kordon ile de modemleri birbirine bağlayın. Modemlerinizi denemek için her iki bilgisayarda da Minicom (Linux), procom veya telix (DOS) gibi bir modem programı kullanın. Bir bilgisayardan diğerine metin yazabiliyor olmalısınız (iki yönde de). Eğer metin bozuk geliyorsa seri port hızını ve diğer ayarları gözden geçirin. Şimdi bağlantıyı kesin ve RJ11 kordonunu tekrar bağlayın. Bağlantının kendiliğinden yeniden kurulmasını bekleyin. RJ232 kablolarını süküp takın, modemlerinizi açıp kapayın, Minicom'u durdurup başlatın.  Modemler daima olası en yüksek hızda yeniden bağlanmalıdır (bazı modemlerin hız gösteren LED'leri vardır).  Modemlerin gerçekten ESC (+++) karakterini yoksayıp saymadığına bakın Gerekiyorsa ESC karakterini iptal edin.
+</div><div class="para">
+Eğer bunlar çalışıyorsa modemlerinizi yeniden yapılandırmak isteyebilirsiniz; uzak modemin sesini kapatıp (MO) ve yerel modemin sesini kısın (L1).
+</div></dd></dl> <div class="head3"><a name="leased-line-howto-examples" id="leased-line-howto-examples"></a>Örnekler</div><dl><dd> <div class="head4"><a name="leased-line-howto-hi-tech" id="leased-line-howto-hi-tech"></a>Hi-Tech</div><dl><dd><div class="para">
+'Markasız kopya modem''den hallice bir modem. Yapılandırma dizgesi buna rağmen tipiktir ve bu dizgenin çoğu modemde çalışması gerekir.
+</div><div class="variablelist"><dl><dt><span class="term">Arayan (yerel):</span></dt><dd class="varlist"><div class="para">
+ATL1&amp;C1&amp;D3&amp;L2%D1&amp;W&amp;W1
+</div></dd><dt><span class="term">Aranan (uzak):</span></dt><dd class="varlist"><div class="para">
+ATM0L1&amp;C1&amp;D3&amp;L2%D1S0=1&amp;W&amp;W1
+</div></dd></dl></div></dd></dl> <div class="head4"><a name="leased-line-howto-tornado" id="leased-line-howto-tornado"></a>Tornado FM 228 E</div><dl><dd><div class="para">
+Ne yapsan çalışır;
+</div><div class="variablelist"><dl><dt><span class="term">Arayan (yerel):</span></dt><dd class="varlist"><div class="para">
+ATB15L1Q1&amp;C1&amp;D3&amp;L2&amp;W&amp;W1
+</div></dd><dt><span class="term">Aranan (uzak):</span></dt><dd class="varlist"><div class="para">
+ATM0B15M0Q1&amp;C1&amp;D3&amp;L2S0=1&amp;W&amp;W1
+</div></dd></dl></div>
+<div class="para">
+Sessiz kip seçim fişini 2-3 durumundan 1-2 durumuna getirin.
+</div><div class="para">
+Gömülü yazılımındaki bir hatadan dolayı modemler sadece DTR birken enerjileri kesilip verildikten sonra bağlanacaklardır. Ben, DTR geçişlerinde modemi açıp kapayan bir <a class="ulink" href="http://www.sput.nl/hardware/modem-reset.html#l2h" target="_top">devre</a> hazırladım. FreeBSD pppd her nedense, bu durumdan çok memnun değil. DTR geçişlerinde sıfırlamak yerine <a class="ulink" href="http://www.sput.nl/hardware/modem-reset.html#h2l" target="_top">devreyi</a> &amp;D0 ayarı ile birleştirince, bu sorun giderilebilir.
+</div></dd></dl> <div class="head4"><a name="leased-line-howto-tron" id="leased-line-howto-tron"></a>Tron DF</div><dl><dd><div class="para">
+S2 &gt; 127 yaparak ESC karakteri iptal edilmelidir;
+</div><div class="variablelist"><dl><dt><span class="term">Arayan (yerel):</span></dt><dd class="varlist"><div class="para">
+ATL1&amp;L1Q1&amp;C1&amp;D3S2=171\D1&amp;W
+</div></dd><dt><span class="term">Aranan (uzak):</span></dt><dd class="varlist"><div class="para">
+ATM0&amp;L2Q1&amp;C1&amp;D3S0=1S2=171\D1&amp;W
+</div></dd></dl></div></dd></dl> <div class="head4"><a name="leased-line-howto-courier" id="leased-line-howto-courier"></a>US Robotics Courier V-hepsi</div><dl><dd><div class="para">
+USR Sportster ve USR Courier-I kiralık hattı desteklemez. Bu iş için Courier V-hepsi sürümüne ihtiyacınız var. USR sitesinde Courier modeminizi kiralık hat için nasıl ayarlayacağınızı açıklayan bir sayfa var. Bununla birlikte, eğer bu komutları takip ederseniz, bu işlemler sonunda elinizde sadece pppd'nizle algılanamayan ya da denetlenemeyen ölü beyinli bir modem olur.
+</div><div class="para">
+USR Courier kart üzerindeki mini anahtarlarla da yapılandırılabilir, yine de önce yapılandırma dizgesi ile beslemeniz gerekir. İlk doğru fabrika ayarlarının kullanıldığından emin olun. Diğer modemlerin bir çoğundan farklı olarak, &amp;F0, &amp;F1 ve &amp;F2 diye üç  profili vardır. Öntanımlı olanı ve sizin de kullanmanız gerekeni &amp;F1'dir. Eğer ona bir AT&amp;F gönderirseniz, buna rağmen abrika profili &amp;F0'ı yükleyecektir! DTR geçişi ile sıfırlamak için S yazmacı 13'ün sıfırıncı biti 1 yapılır. Bunun anlamı S13'e 1 yerleştirmektir. Ayrıca &amp;L1; ATS13=1&amp;L1&amp;W dizgesiyle kiralık hat kipine ayarlamanız gerekir. Kart üzerindeki mini anahtarların fabrika ayarlarına aşağıdakiler hariç dokunmayın:
+</div><div class="variablelist"><dl><dt><span class="term">3</span></dt><dd class="varlist"><div class="para">
+OFF Sonuç kodları iptal edilir.
+</div></dd><dt><span class="term">4</span></dt><dd class="varlist"><div class="para">
+ON Çevrimdışı komutlar iptal edilir
+</div></dd><dt><span class="term">5</span></dt><dd class="varlist"><div class="para">
+Arayan için ON, aranan için OFF
+</div></dd><dt><span class="term">8</span></dt><dd class="varlist"><div class="para">
+OFF Sessiz kip
+</div></dd></dl></div></dd></dl></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/leased-line-howto-intro.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/leased-line-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/leased-line-howto-pppd.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Giriş </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> PPPD</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

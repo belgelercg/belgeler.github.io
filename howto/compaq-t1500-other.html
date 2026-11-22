@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:14+03:00" /><title>FLASH Görüntüsünü Düzenlemek ve Diğer Araçlar</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/compaq-t1500.html" title="Compaq T1500 Linux NASIL" /><link rel="previous" href="../howto/compaq-t1500-debian.html" title="Geçerli Bir Yöntem" /><link rel="next" href="../howto/compaq-t1500-xfree86.html" title="XFree86" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">FLASH Görüntüsünü Düzenlemek ve Diğer Araçlar</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/compaq-t1500-debian.html">Önceki</a> </td><th width="60%" align="center">Compaq T1500 Linux NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/compaq-t1500-xfree86.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="compaq-t1500-other" id="compaq-t1500-other"></a>FLASH Görüntüsünü Düzenlemek ve Diğer Araçlar</div><dl><dd> <div class="head3"><a name="compaq-t1500-editing-flash" id="compaq-t1500-editing-flash"></a>FLASH Görüntüsünü Düzenlemek</div><dl><dd><div class="para">
+T1500 '<tt>makeflash</tt>' adında (hem <tt>/sbin</tt> dizininde hem de CD'de bulunan) bir araçla birlikte gelmektedir. Bu aracı kullanarak <tt>tar.gz</tt> dosyasından yerel ya da NFS/SMB olabilen bir flash dosya sistemi görüntüsü oluşturabilirsiniz.
+Gerekli tüm sağlama toplamları da birlikte oluşturulacaktır.
+  </div><ol class="orderedlist" start="ignore" type="1"><li><div class="listitem"><div class="para">
+Slackware 8.0 görüntüsünü hesaplanmış sağlama toplamları ile dahi kullanamamam bana <tt>vmlinux</tt>'un kendisinde ileri bir denetim daha yapıldığı fikrini verdi.
+</div></div></li><li><div class="listitem"><div class="para">
+Ayrılmış <tt>leo.boot</tt> ve <tt>vmlinux</tt> dosyaları yüzünden <tt>leo.boot</tt> dosyasının <tt>vmlinux</tt>'un sağlama toplamını kullanılan özel çekirdeğin sağlama toplamı olan “xxxxyyyyWYSEwysexxxx” dizisi ile karşılaştırdığından şüphelendim.
+</div></div></li><li><div class="listitem"><div class="para">
+<tt>Leo.boot</tt> aslında Win CE ile ilgili bir dosyadır ve linux açılışına izin verecek hale getirilmiştir. Normal Win CE <tt>leo.boot</tt> dosyasının neredeyse iki katı kadar büyüklüğe sahiptir. Ethernet ve paralel port flash programlama için Eboot protokolünü kullanır. <tt>Leo.boot</tt> dosyasını ve OS görüntüsünü yenilemek için görüntüleri düzgünce biçimlendirecek ücretsiz Linux araçları bulunsa da bunlar sizin bootrom'un uygun bir şekilde derlenmiş sürümünü sağlayabileceğinize güvenirler.
+</div></div></li></ol><div class="para">
+Çalışırken dikkatli olun. T1500'ü tekrar açabilmek için bir DOS aracı veya bir laplink kablosu kullanmak zorunda kalabilirsiniz.
+  </div><div class="para">
+<b><tt>makeflash</tt></b> uygulamasını terminal haricinde birşey üzerinde çalıştırabilen varsa nasıl yaptığını bilmek isterim. AFAICT oldukça eski <tt>glibc</tt> ve <tt>libforms</tt> ile bağlamaya çalıştığından T1500'ün flash güncellemesini birkaç 100,000 kez yapmak zorunda kalabilirsiniz.
+  </div><div class="para">
+T1500 'Leo Board' tabanlı bir Wyse WT3X15 gibi görünmektedir. UK Wyse sitesinin Customer Support bölümünün firmware sayfasından flash'ı tekrar yükleyebileceğiniz bir DOS aracını ve belgelerini indirebilirsiniz. Bu aracı kullanmak için bir paralel port kablosuna ihtiyacınız olacak.
+  </div></dd></dl> <div class="head3"><a name="compaq-t1500-flash" id="compaq-t1500-flash"></a>FLASH'ı Bağlamak</div><dl><dd><div class="para">
+<b><tt>mknod</tt></b> komutunu aşağıdaki gibi çalıştırdıktan sonra her ikisi de 16Mb flashfs olan <tt>/dev/fnand</tt> ve <tt>/dev/fnand1</tt> disk bölümlerini bağlayabilirsiniz. <tt>/dev/fram</tt> bölümünü de bağlayıp yazabilirsiniz ama yeniden bağladığınızda veya çözdüğünüzde veriler kaybolacaktır. Takas alanı gibi kullanılabilir.
+  </div><div class="para"><div align="right"><pre class="screen">
+mknod /dev/fcard b 63 0
+mknod /dev/fcard.fmt b 63 128
+mknod /dev/fcard1 b 63 1
+mknod /dev/fcard1.fmt b 63 129
+mknod /dev/fnand b 62 0
+mknod /dev/fnand.fmt b 62 128
+mknod /dev/fnand1 b 62 2
+mknod /dev/fnand1.fmt b 62 120
+mknod /dev/fnor b 65 0
+mknod /dev/fnor.2m b 65 128
+mknod /dev/fram b 64 128
+</pre></div></div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/compaq-t1500-debian.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/compaq-t1500.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/compaq-t1500-xfree86.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Geçerli Bir Yöntem </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> XFree86</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

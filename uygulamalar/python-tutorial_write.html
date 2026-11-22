@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:25:51+03:00" /><title>Daha Güzel Çıkış Biçemi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../uygulamalar/python-tutorial_io.html" title="Giriş ve Çıkış" /><link rel="previous" href="../uygulamalar/python-tutorial_io.html" title="Giriş ve Çıkış" /><link rel="next" href="../uygulamalar/python-tutorial_dosyalar.html" title="Dosya Okuma ve Yazma" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Daha Güzel Çıkış Biçemi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../uygulamalar/python-tutorial_io.html">Önceki</a> </td><th width="60%" align="center">Giriş ve Çıkış</th><td width="20%" align="right"> <a accesskey="n" href="../uygulamalar/python-tutorial_dosyalar.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="python-tutorial_write" id="python-tutorial_write"></a>Daha Güzel Çıkış Biçemi</div><dl><dd><div class="para">
+        Buraya kadar değerleri yazdırmanın iki yolunu gördük: deyim ifadeleri ve
+        print deyimi. Üçüncü bir yol da dosya nesnelerinin <tt>write()</tt>
+        yöntemidir. Standart çıktıya <tt>sys.stdout</tt> şeklinde atıfta
+        bulunulabilir.
+      </div><div class="para">
+        Çoğu zaman boşluklar ile birbirinden ayrılmış değerlerden daha iyi
+        biçimlendirilimiş bir çıktıya ihtiyaç duyulur. Çıktınızı biçimlendirmenin
+        iki yolu var. İlki bütün dizge işlemlerini dilimleme ve birleştirme ile
+        yapıp istediğiniz herhangi bir biçimi elde etmek. <tt>string</tt>
+        standart modülü dizgelerin istenen sütun genişliğine kadar
+        boşluklar ile doldurulmasını sağlayan, daha sonra değineceğimiz, bazı
+        faydalı işlevlere sahiptir. İkinci yol ise sol argümanı bir dizge olan
+        <tt>%</tt> işlecini kullanmaktır. <tt>%</tt> işleci
+        sol argümanını sağdaki argümanına uygulanacak <tt>sprintf()</tt>
+        tarzı biçim dizgesi olarak yorumlar ve biçimleme işleminden sonra bir
+        dizge geri döndürür.
+      </div><div class="para">
+        Sayısal değerleri dizgeye çevirmek için ise değer <tt>repr()</tt>
+        veya <tt>str()</tt> işlevine geçirilebilir ya da ters tırnak işareti
+        (<b><tt>``</tt></b>) içine alınabilir (<tt>repr()</tt> ile
+        aynı etkiye sahiptir).
+      </div><div class="para">
+        <tt>str()</tt> işlevi değerlerin insan tarafından okunabilir
+        gösterimini geri döndürürken, <tt>repr()</tt> işlevi yorumlayıcı
+        tarafından okunabilir gösterimini geri döndürür (veya uygun sözdizim yok
+        ise <tt>SyntaxError</tt> istisnası oluşturur). İnsan için anlam
+        ifade edecek bir gösterimi bulunmayan nesneler için <tt>str()</tt>
+        işlevi <tt>repr()</tt> ile aynı değeri döndürür. Rakamlar, listeler
+        ve sözlükler gibi yapılar ile daha pek çok değer için her iki işlev de aynı
+        sonucu verir. Dizgeler ve gerçel sayılar ise iki farklı gösterime sahiptir.
+      </div><div class="para">
+        İşte birkaç örnek:
+</div><div class="para"><div align="right"><pre class="screen">
+&gt;&gt;&gt; s = 'Hello, world.'
+&gt;&gt;&gt; str(s)
+'Hello, world.'
+&gt;&gt;&gt; `s`
+"'Hello, world.'"
+&gt;&gt;&gt; str(0.1)
+'0.1'
+&gt;&gt;&gt; `0.1`
+'0.10000000000000001'
+&gt;&gt;&gt; x = 10 * 3.25
+&gt;&gt;&gt; y = 200 * 200
+&gt;&gt;&gt; s = 'The value of x is ' + `x` + ', and y is ' + `y` + '...'
+&gt;&gt;&gt; print s
+The value of x is 32.5, and y is 40000...
+&gt;&gt;&gt; # Ters tırnaklar sayılar dışındaki tipler ile de çalışır:
+... p = [x, y]
+&gt;&gt;&gt; ps = repr(p)
+&gt;&gt;&gt; ps
+'[32.5, 40000]'
+&gt;&gt;&gt; # Karakter dizisinde ise tırnaklar ve ters bölü işareti eklenir:
+... hello = 'hello, world\n'
+&gt;&gt;&gt; hellos = `hello`
+&gt;&gt;&gt; print hellos
+'hello, world\n'
+&gt;&gt;&gt; # Ters tırnakların argümanı bir demet de olabilir:
+... `x, y, ('spam', 'eggs')`
+"(32.5, 40000, ('spam', 'eggs'))"
+</pre></div></div><div class="para">
+        Sayıların kare ve küplerinden oluşan bir tablo yazdırmanın iki yolu
+        vardır:
+</div><div class="para"><div align="right"><pre class="screen">
+&gt;&gt;&gt; import string
+&gt;&gt;&gt; for x in range(1, 11):
+...     print string.rjust(`x`, 2), string.rjust(`x*x`, 3),
+...     # Üst satırın sonundaki virgüle dikkat edin.
+...     print string.rjust(`x*x*x`, 4)
+...
+ 1   1    1
+ 2   4    8
+ 3   9   27
+ 4  16   64
+ 5  25  125
+ 6  36  216
+ 7  49  343
+ 8  64  512
+ 9  81  729
+10 100 1000
+&gt;&gt;&gt; for x in range(1,11):
+...     print '%2d %3d %4d' % (x, x*x, x*x*x)
+...
+ 1   1    1
+ 2   4    8
+ 3   9   27
+ 4  16   64
+ 5  25  125
+ 6  36  216
+ 7  49  343
+ 8  64  512
+ 9  81  729
+10 100 1000
+</pre></div></div><div class="para">
+        Sütunların arasındaki bir karakterlik boşluk <tt>print</tt>
+        tarafından eklenir; argümanların arasına daima bir boşluk karakteri
+        eklenir.
+      </div><div class="para">
+        Bu örnek dizgelerin başını boşluklar ile doldurup bunları sağ tarafa
+        dayayan <tt>string.rjust()</tt> işlevini kullanmaktadır.
+        Buna benzer <tt>string.ljust()</tt> ve
+        <tt>string.center()</tt> işlevleri de vardır. Bunlar bir şey
+        yazdırmaz; sadece yeni bir dizge geri döndürürler. Verilen
+        dizge uzun ise kırpılmaz ve aynen geri döndürülür; bu
+        sütunlarınızın bozulmasına sebep olmasına rağmen hatalı bir değer
+        göstermekten iyidir. Büyük bir değeri kırpmayı gerçekten istiyorsanız
+        dilimleme ile bunu yapabilirsiniz (<tt>string.ljust(x, n)[0:n]</tt>
+        gibi).
+      </div><div class="para">
+        <tt>string.zfill()</tt> işlevi ise rakamlar içeren dizgelerin
+        başını sıfırlar ile doldurur. Bu işlev artı ve eksi işaretlerini de
+        dikkate alır:
+</div><div class="para"><div align="right"><pre class="screen">
+&gt;&gt;&gt; import string
+&gt;&gt;&gt; string.zfill('12', 5)
+'00012'
+&gt;&gt;&gt; string.zfill('-3.14', 7)
+'-003.14'
+&gt;&gt;&gt; string.zfill('3.14159265359', 5)
+'3.14159265359'
+</pre></div></div><div class="para">
+        <tt>%</tt> işleçi şu şekilde kullanılır:
+</div><div class="para"><div align="right"><pre class="screen">
+&gt;&gt;&gt; import math
+&gt;&gt;&gt; print 'PI sayısının yaklaşık değeri: %5.3f' % math.pi
+PI sayısının yaklaşık değeri: 3.142
+</pre></div></div><div class="para">
+        Dizgenin içinde birden fazla biçem varsa sağ terim olarak bir demet
+        kullanmak gerekir:
+</div><div class="para"><div align="right"><pre class="screen">
+&gt;&gt;&gt; table = {'Sjoerd': 4127, 'Jack': 4098, 'Dcab': 7678}
+&gt;&gt;&gt; for name, phone in table.items():
+...     print '%-10s ==&gt; %10d' % (name, phone)
+...
+Jack       ==&gt;       4098
+Dcab       ==&gt;       7678
+Sjoerd     ==&gt;       4127
+</pre></div></div><div class="para">
+        Çoğu biçim aynı C dilindeki gibi çalışır ve doğru veri türünün
+        geçirilmesi gerekir; bu yapılamaz ise bir istisna oluşur.
+        <tt>%s</tt> biçiminin kullanımı daha rahattır; verilen
+        argüman dizge değilse yerleşik işlev <tt>str()</tt> ile
+        dizgeye dönüştürülür. Genişlik ya da hassasiyeti belirtmek için
+        <tt>*</tt> ile bir tamsayı argüman kullanılabilir. C dilindeki
+        <tt>%n</tt> ve <tt>%p</tt> biçimler ise
+        desteklenmemektedir.
+      </div><div class="para">
+        Eğer bölmek istemediğiniz gerçekten uzun bir biçim dizgeniz varsa
+        biçimlendirmek istediğiniz argümanlara konumu yerine ismiyle atıfta
+        bulunabilmeniz güzel olur. Bu aşağıda gösterildiği gibi
+        <tt>%(isim)biçim</tt> şeklinde yapılabilir:
+</div><div class="para"><div align="right"><pre class="screen">
+&gt;&gt;&gt; table = {'Sjoerd': 4127, 'Jack': 4098, 'Dcab': 8637678}
+&gt;&gt;&gt; print 'Jack: %(Jack)d; Sjoerd: %(Sjoerd)d; Dcab: %(Dcab)d' % table
+Jack: 4098; Sjoerd: 4127; Dcab: 8637678
+</pre></div></div><div class="para">
+        Bu özellik bütün yerel değişkenlerin bulunduğu bir sözlük geri döndüren
+        yerleşik işlev <tt>vars()</tt> ile beraber kullanıldığında
+        faydalı olur.
+      </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../uygulamalar/python-tutorial_io.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../uygulamalar/python-tutorial_io.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../uygulamalar/python-tutorial_dosyalar.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Giriş ve Çıkış </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Dosya Okuma ve Yazma</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:23+03:00" /><title>Iptables ile NAT (Network Address Translation) İşlemleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/iptables-usage.html" title="Iptables'ın Basit Kullanımı" /><link rel="previous" href="../howto/iptables-usage_optdescr.html" title="Zincirlerde kullanılan seçenek ve parametrelere genel bakış" /><link rel="next" href="../howto/iptables-usage_rules.html" title="Zincir Uygulamaları" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Iptables ile NAT (Network Address Translation) İşlemleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/iptables-usage_optdescr.html">Önceki</a> </td><th width="60%" align="center">Iptables'ın Basit Kullanımı</th><td width="20%" align="right"> <a accesskey="n" href="../howto/iptables-usage_rules.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="iptables-usage_nat" id="iptables-usage_nat"></a>Iptables ile NAT (Network Address Translation) İşlemleri</div><dl><dd>
+      Bu kısımda ise elimden geldiğince Iptables ile NAT (Network Address
+      Translation) işlemlerine değineceğim. Iptables'ın NAT özelliğini:
+      <ul type="disc" class="itemizedlist"><li><div class="para">
+            Internet bağlantısını paylaştırmak,
+          </div></li><li><div class="para">
+            Sunucu yükünü dağıtmak/paylaştırmak,
+          </div></li><li><div class="para">
+            Şeffaf vekil tanımlamak,
+          </div></li></ul>
+      gibi işlemlerde kullanırız.
+    <div class="para">
+      NAT özelliği temel olarak iki bölümden oluşur. Kaynak NAT (SNAT) ve
+      Hedef NAT (DNAT).
+    </div><div class="para">
+      SNAT (POSTROUTING) kaynak adres üzerinde bir değişiklik yapılmak
+      isteniyorsak kullanılır. Maskeleme (Masquerading) işlemi SNAT ile
+      yapılır. İç ağdan gelen paket SNAT işlemi sonucunda dış ağa sanki
+      bizim ip adresimizden gelmiş gibi iletilir ve gelen sonuç ise bizim
+      tarafımızdan, istek yapılan IP'ye iletilir.
+    </div><div class="para">
+      DNAT (PREROUTING) ise hedef adres üzerinde bir değişiklik yapılmak
+      isteniyorsa kullanılır. Örneğin makinamıza gelen bir paketi iç/dış
+      ağdaki bir başka makinaya yönlendirmek istiyorsak DNAT kısmı ile
+      işlem yaparız. Paket bize gelir fakat bu işlem sonucunda paket hedef
+      adres değiştirilmiş olarak yoluna devam eder. Transparent proxy, port
+      yönlendirme, yük paylaşımı (load sharing) gibi işlemlerde bu kısmı
+      kullanıyoruz.
+    </div><div class="para">
+      Bu işlemler için <tt>-t nat</tt> parametresi ile belirlediğimiz
+      iptables'ın NAT ile ilgili tablosunu kullanıyoruz. O yüzden nat işlemlerini
+      kullanmak için ilk olarak <tt>-t nat</tt> parametresini kullanmamız
+      gerekiyor. Daha sonra ise yapacağımız işlem cinsine göre <tt>-A</tt>
+      parametresinden sonra <tt>POSTROUTING</tt> yada
+      <tt>PREROUTING</tt>'i kullanıyoruz.
+    </div><div class="para">
+      Fakat burada dikkat edilmesi gereken nokta <tt>PREROUTING</tt>
+      işleminde sadece giriş parametrelerinin, <tt>POSTROUTING</tt>
+      işleminde ise sadece çıkış parametrelerinin kullanılması gerektiğidir.
+    </div><div class="para">
+      <b><tt>PREROUTING</tt></b> işlemlerinde:<br />
+      <tt>-j [DNAT,REDIRECT]</tt> pakete uygulanacak işlemi belirler.<br />
+      <b><tt>DNAT:</tt></b> Paketin hedef
+      adresini değiştirir ve yollar.<br />
+      <b><tt>REDIRECT:</tt></b> Paketi
+      hedef adresini değiştirmeden başka bir adrese iletir.
+      (Şeffaf vekil işlemleri)
+    </div><div class="para">
+      <b><tt>POSTROUTING</tt></b> işlemlerinde:<br />
+      <tt>-j [SNAT, MASQUERADE]</tt> pakete uygulanacak işlemi
+      belirler.<br />
+      <b><tt>SNAT:</tt></b> Paketin kaynak
+      adresini değiştirme işlemini gerçekleştirir.<br />
+      <b><tt>MASQUERADE:</tt></b> Pakete
+      maskeleme işlemini uygular. Bu işlem sonucunda paketin kaynak adresi
+      ve kaynak portu, sunucu adresi ve boş bir port ile eşlenerek hedefe yollanır.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/iptables-usage_optdescr.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/iptables-usage.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/iptables-usage_rules.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Zincirlerde kullanılan seçenek ve parametrelere genel bakış </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Zincir Uygulamaları</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

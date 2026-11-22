@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:25:49+03:00" /><title>İşlev Tanımları Üzerine Daha Fazla Bilgi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../uygulamalar/python-tutorial_akis-denetimi.html" title="Akış Denetimi" /><link rel="previous" href="../uygulamalar/python-tutorial_func.html" title="İşlev Tanımlama" /><link rel="next" href="../uygulamalar/python-tutorial_veri-yapilari.html" title="Veri Yapıları" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">İşlev Tanımları Üzerine Daha Fazla Bilgi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../uygulamalar/python-tutorial_func.html">Önceki</a> </td><th width="60%" align="center">Akış Denetimi</th><td width="20%" align="right"> <a accesskey="n" href="../uygulamalar/python-tutorial_veri-yapilari.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="python-tutorial_func-more" id="python-tutorial_func-more"></a>İşlev Tanımları Üzerine Daha Fazla Bilgi</div><dl><dd><div class="para">
+        Değişken sayıda argüman alan işlevler tanımlamak da mümkündür. Bunun için
+        kullanılan üç yöntem olup bunlar birleştirilerek kullanılabilir.
+      </div> <div class="head3"><a name="id1" id="id1"></a>Argüman Değerlerini Önceden Belirleme</div><dl><dd><div class="para">
+          İşlev argümanlarına öntanımlı değerler atamak da mümkündür. Böylece
+          çağıran işlev bu argümanları sağlamazsa bunlar önceden belirlenmiş
+          öntanımlı değerlerini alırlar. Örnek:
+</div><div class="para"><div align="right"><pre class="screen">
+def onay_al(prompt, denemeler=4, sikayet='Evet veya hayır, lütfen !'):
+    while True:
+        ok = raw_input(prompt)
+        if ok in ('e', 'evet'): return 1
+        if ok in ('h', 'hayır'): return 0
+        denemeler = denemeler - 1
+        if denemeler &lt; 0: raise IOError, 'kararsız kullanıcı'
+        print sikayet
+</pre></div></div><div class="para">
+          Bu işlev <tt>onay_al('Programdan çıkmak istiyor musunuz?')</tt>
+          ya da <tt>onay_al('Dosyayı silmek istiyor musunuz?', 2)</tt>
+          şeklinde çağırılabilir.
+        </div><div class="para">
+          İşlevin öntanımlı parametreleri işlevin tanımlandığı anda, o an yürürlükte
+          olan etki alanı (scope) içinde değerlendirilirler. Yani:
+</div><div class="para"><div align="right"><pre class="screen">
+i = 7
+def f(arg = i):
+    print arg
+
+i = 6
+f()
+7
+</pre></div></div>
+          <div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/warning.png" /></td><th class="admon">Uyarı</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+              İşlevin öntanımlı parametreleri sadece bir defa değerlendirilirler.
+              Bu durum parametrenin liste gibi değiştirilebilir bir nesne olduğu
+              durumlarda farklılık yaratır. Örneğin aşağıdaki işlev ard arda
+              çağırıldığında argümanlarını biriktirir:
+</div><div class="para"><div align="right"><pre class="screen">
+def f(a, L = []):
+    L.append(a)
+    return L
+print f(1)
+print f(2)
+print f(3)
+</pre></div></div><div class="para">
+              Bu şu çıktıyı verir:
+</div><div class="para"><div align="right"><pre class="screen">
+[1]
+[1, 2]
+[1, 2, 3]
+</pre></div></div></td></tr></table></div>
+        <div class="para">
+          Eğer öntanımlı parametre değerlerinin birbirini izleyen çağrılarla
+          paylaşılmasını istemiyorsanız yukarıdaki işlevi şu şekilde
+          yazabilirsiniz:
+</div><div class="para"><div align="right"><pre class="screen">
+def f(a, L = None):
+    if L is None:
+        L = []
+    L.append(a)
+    return L
+</pre></div></div>
+        </dd></dl> <div class="head3"><a name="id2" id="id2"></a>Anahtar Kelime Argümanlar</div><dl><dd><div class="para">
+          İşlevler <tt>anahtar kelime = değer</tt> şeklindeki anahtar
+          kelimelerle de çağırılabililer. Örneğin şu işlev:
+</div><div class="para"><div align="right"><pre class="screen">
+def otomobil(yakit,  hareket=' uçar', model='Anadol'):
+    print "Eğer", yakit, "koyarsan bu", model, hareket
+</pre></div></div><div class="para">
+          aşağıdaki gibi çağırılabilir:
+</div><div class="para"><div align="right"><pre class="screen">
+otomobil('roket yakıtı')
+otomobil(hareket = 'dans eder', yakıt = 'zeytin yağı' )
+otomobil('ispirto', model = 'Kartal')
+otomobil('su','bozulur','Şahin')
+</pre></div></div><div class="para">
+          Şu çağrılar ise hatalıdır:
+</div><div class="para"><div align="right"><pre class="screen">
+otomobil()                           # gerekli argüman eksik
+otomobil(yakıt = 'su','zeytin yağı') # anahtar kelimeden sonra gelen
+                                     # anahtar kelime olmayan argüman
+otomobil('mazot', yakit = 'benzin')  # aynı argüman için iki değer
+otomobil(sehir = 'İzmir')            # bilinmeyen anahtar kelime
+</pre></div></div><div class="para">
+          Genel olarak, argüman listesinin başında konuma bağlı argümanlar
+          bulunur ve anahtar kelime argümanlar onları izler; anahtar kelime
+          adları da işlevin parametrelerinden seçilir. Parametrenin öntanımlı
+          değerlerinin olup olmaması önemli değildir. Bir argüman birden
+          fazla değer alamaz; konuma bağlı parametre isimleri aynı çağrıda
+          anahtar kelime olarak kullanılamazlar. İşte bundan dolayı hatalı
+          olan bir örnek:
+</div><div class="para"><div align="right"><pre class="screen">
+&gt;&gt;&gt; def function(a):
+...     pass
+...
+&gt;&gt;&gt; function(0, a=0)
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in ?
+TypeError: keyword parameter redefined
+</pre></div></div><div class="para">
+          Eğer işlev tanımındaki son parametre <tt>**isim</tt> şeklinde
+          ise bu parametre adları herhangi bir parametre olmayan anahtar kelime
+          şeklindeki argümanların bulunduğu bir sözlük olur.
+          Bu <tt>*isim</tt> (bu konu <a href="../uygulamalar/python-tutorial_sozlukler.html" class="xref" title="Sözlükler (Çağrışımlı Listeler)">Sözlükler (Çağrışımlı Listeler)</a>
+          bölümünde anlatılacaktır.) şeklindeki bir parametre ile de kullanılabilir, ki
+          bu parametre listesi içinde bulunmayan konuma bağlı argümanları içeren
+          bir demet (daha sonra <a href="../uygulamalar/python-tutorial_demetler.html" class="xref" title="Demetler (tuples)">Demetler (tuples)</a> bölümünde
+          incelenecek bir veri türüdür) olur. <tt>*isim</tt> parametresi
+          <tt>**isim</tt> parametresinden önce gelmelidir. Buna örnek işlev:
+</div><div class="para"><div align="right"><pre class="screen">
+def kasapdukkani(etCinsi,*argumanlar, **anahtarKelimeler):
+    print "--", etCinsi, "var mi ?"
+    print "-- Maalesef", etCinsi, "kalmadı."
+    for arg in argumanlar:
+        print arg
+    print '-'*40
+    anahtarlar = anahtarKelimeler.keys()
+    anahtarlar.sort()
+    for ak in anahtarlar:
+        print ak, ':', anahtarKelimeler[ak]
+</pre></div></div><div class="para">
+          Şu şekilde çağrılabilir:
+</div><div class="para"><div align="right"><pre class="screen">
+kasapdukkani('martı eti',"Çok lezzetli.",
+           "Çok satılıyor.",
+           musteri = 'Martı Murat',
+           kasap = 'Dev İsmail')
+</pre></div></div><div class="para">
+          ve doğal olarak şu çıktıyı verir:
+</div><div class="para"><div align="right"><pre class="screen">
+-- martı eti var mi ?
+-- Maalesef martı eti kalmadı.
+Çok lezzetli.
+Çok satılıyor.
+----------------------------------------
+kasap : Dev İsmail
+musteri : Martı Murat
+</pre></div></div>
+        <div class="para">
+          <tt>anahtarKelimeler</tt> isimli sözlüğün içeriği yazdırılmadan
+          önce anahtar kelime isimleri listesinin <tt>sort()</tt>
+          yönteminin çağırıldığına dikkat edin; bu yapılmaz ise argümanların hangi
+          sıra ile yazılacağı tanımlanmamış olur.
+        </div></dd></dl> <div class="head3"><a name="id3" id="id3"></a>Keyfî Argüman Listeleri</div><dl><dd><div class="para">
+          Son olarak, en ender kullanılan seçenek de keyfî sayıdaki argümanla
+          çağrılabilen bir işlev tanımlamaktır. Bu argümanlar bir demet
+          (değişmez liste [tuple]) içine alınırlar. Keyfî argüman listesinden
+          önce sıfır ya da daha fazla normal argüman bulunabilir. Örnek:
+</div><div class="para"><div align="right"><pre class="screen">
+def fprintf(file, format, *args):
+    file.write(format % args)
+</pre></div></div>
+        </dd></dl> <div class="head3"><a name="id4" id="id4"></a>Lambda Biçemli İşlevler</div><dl><dd><div class="para">
+          Yoğun istek üzerine işlevsel dillerde ve Lisp'te bulunan bazı
+          özellikler Python'a eklenmiştir. <tt>lambda</tt> anahtar
+          kelimesi ile küçük anonim işlevler yazılabilir. İşte iki
+          argümanının toplamını geri döndüren bir işlev:
+          <tt>lambda a, b: a+b</tt>.
+        </div><div class="para">
+          Lambda işlevleri bir işlev
+          nesnesine ihtiyaç duyulan her yerde kullanılabilirler.
+          Sözdizim (syntax) açısından bunlar tek bir ifade ile
+          sınırlandırılmışlardır. Anlambilim (semantics) açısından ise normal
+          işlev tanımlamasına getirilen bir sözdizim güzelliğidir. İç içe
+          tanımlanmış işlevlerde olduğu gibi lambda işlevleri de kendilerini kapsayan
+          etki alanindaki değişkenlere erişebilirler:
+</div><div class="para"><div align="right"><pre class="screen">
+&gt;&gt;&gt; def artirici_yap(n):
+...     return lambda x: x + n
+...
+&gt;&gt;&gt; f = artirici_yap(42)
+&gt;&gt;&gt; f(0)
+42
+&gt;&gt;&gt; f(1)
+43
+</pre></div></div>
+        </dd></dl> <div class="head3"><a name="id5" id="id5"></a>Belgelendirme Dizgeleri</div><dl><dd><div class="para">
+          Belgelendirmede kullanılan dizgelerin şekli ve içeriği ile ilgili
+          şartlar yeni yeni oluşmaktadır.
+        </div><div class="para">
+          İlk satır daima nesnenin amacının kısa ve öz tanımı olmalıdır. Kısa
+          olması için, nesnenin adından ve türünden bahsedilmemeli; zira bunlar
+          başka yollarla da öğrenilebilir. Bu satır büyük harf ile başlayıp
+          nokta ile bitmelidir.
+        </div><div class="para">
+          Eğer belgelendirme dizgesinde birden fazla satır var ise ikinci satır
+          boş olup özet ile açıklamamın devamını birbirinden ayırmalıdır. Diğer
+          satırlar bir ya da daha fazla satır olabilir. Bunlarla nesnenin
+          özellikleri, çağrı şekilleri, yan etkileri vs. açıklanabilir.
+        </div><div class="para">
+          Python çözümleyicisi (parser) çok satırlı dizgelerdeki
+          girintileri yok etmez; yani belgeleri işleyen programlar gerekirse
+          bunları atabilirler. İlk satırdan sonra gelen ve boş olmayan ilk satırdaki
+          girinti miktarı belgelendirme dizgesinin devamındaki girinti miktarını
+          belirler. Bu girinti miktarına ``eşdeğer'' boşluk diğer satırların
+          başından atılır. Daha az girintili satırlar olmamalı; ama olursa da
+          bunların önündeki boşluğun tamamı atılmalı. Boşluğun eşdeğerliği
+          sekmelerin genişletilmesinden (1 sekme = 8 boşluk) sonra sınanmalıdır.
+        </div><div class="para">
+          İşte çok satırlı bir belgelendirme dizgesi örneği:
+</div><div class="para"><div align="right"><pre class="screen">
+&gt;&gt;&gt; def benimFonksiyon():
+...     """Sadece belgeler.
+...
+...     Başka birşey yapmaz. Gerçekten !.
+...     """
+...     pass
+...
+&gt;&gt;&gt; print benimFonksiyon.__doc__
+Sadece belgeler.
+
+   Başka birşey yapmaz. Gerçekten !
+</pre></div></div>
+        </dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../uygulamalar/python-tutorial_func.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../uygulamalar/python-tutorial_akis-denetimi.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../uygulamalar/python-tutorial_veri-yapilari.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">İşlev Tanımlama </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Veri Yapıları</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

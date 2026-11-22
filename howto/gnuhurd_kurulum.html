@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:16+03:00" /><title>Kurulumu</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/gnuhurd.html" title="HURD - GNU Projesi Çekirdeği" /><link rel="previous" href="../howto/gnuhurd_ozellik.html" title="Özellikleri" /><link rel="next" href="../howto/gnuhurd_kaynak.html" title="Kaynakça" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Kurulumu</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/gnuhurd_ozellik.html">Önceki</a> </td><th width="60%" align="center">HURD - GNU Projesi Çekirdeği</th><td width="20%" align="right"> <a accesskey="n" href="../howto/gnuhurd_kaynak.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="gnuhurd_kurulum" id="gnuhurd_kurulum"></a>Kurulumu</div><dl><dd> <div class="head3"><a name="id1" id="id1"></a>Giriş</div><dl><dd><div class="para">
+        <a class="ulink" href="http://www.hurd.gnu.org" target="_top">GNU Hurd</a>, geliştirilme aşamasında
+        olan bir işletim sistemi. Bu sebeple standart ve kararlı bir kurulum şekli yok.
+        Bu belgede iki farklı kurulum yöntemi anlatılacak.
+      </div><div class="para">
+        Gerekli enküçük kurulumun bulunduğu bir tar paketi kullanarak kurulum ve
+        Debian .deb paketleri kullanarak çapraz kurulum (cross install).
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>HURD Sabit Disk Bölüm İsimlendirmesi</div><dl><dd><div class="para">
+        Gnu/Linux'den farklı olarak Hurd sabit disk bölüm isimlendirmesinde BSD tarzını
+        kullanmaktadır. Daha önce Solaris gibi işletim sistemleri kullananlar bu konuda
+        yabancılık çekmeyecektir. IDE diskler hd0, hd1,...,hdn olarak isimlendirilirler.
+        1. IDE sabit disk hd0, ikinci IDE sabit disk hd1'dir. SCSI diskler de aynı
+        şekilde sd0, sd1,..,sdn olarak isim alırlar.
+      </div><div class="para">
+        Bölümler ise sn (n=1,2,3...) biçimindedir. Yani s1 birinci bölüm, s2 ikinci
+        bölüme karşılık gelir.
+      </div>Böylece:
+        <ul type="disc" class="itemizedlist"><li>hd0s1 ---&gt; birinci IDE'nin 1. bölümünü,</li><li>hd0s2 ---&gt; birinci IDE'nin 2. bölümünü,</li><li>hd1s1 ---&gt; ikinci IDE'nin 1. bölümünü,</li><li>hd1s2 ---&gt; ikinci IDE'nin 2. bölümünü,</li><li>hdmsn ---&gt; (m-1). IDE'nin n. bölümünü</li></ul>ifade eder.
+      
+        Linux ile karşılaştırılırsa:
+        <ul type="disc" class="itemizedlist"><li>/dev/hda1 ---&gt; /dev/hd0s1</li><li>/dev/hda5 ---&gt; /dev/hd0s5</li><li>/dev/hda6 ---&gt; /dev/hd0s6</li><li>/dev/hdb1 ---&gt; /dev/hd1s1</li><li>/dev/hdb5 ---&gt; /dev/hd0s5</li></ul>olacaktır.
+      </dd></dl> <div class="head3"><a name="id3" id="id3"></a>Sabit Diski Bölümlendirmek</div><dl><dd><div class="para">
+        Hurd'ı denemek veya kullanmak için farklı bir sabit disk bölümüne
+        ihtiyacımız olacaktır. Linux üzerinden bu işlemlerin yapıldığını
+        varsayarak devam ediyoruz.
+      </div><div class="variablelist"><dl><dt><span class="term">adım 1: Boş Alan Ayırın</span></dt><dd class="varlist"><div class="para">
+              Hurd, 1 Gb'dan büyük sabit disk bölümlerini şu an için desteklemiyor.
+              (dosya sistemi sunucusu 1Gb'lık bir alanı adresleyip kullanabiliyor).
+              Bu sebeple yeni ayıracağımız veya boşaltacağımız bölüm &lt; 1Gb olsun.
+              Halihazırda kullandığınız ext2 bir bölüm var ise bunu da kullanabilirsiniz.
+            </div></dd><dt><span class="term">adım 2: Dosya Sistemi Türü</span></dt><dd class="varlist"><div class="para">
+              Hurd şu anda ext2 dosya sistemini kullanıyor. Bu da Linux'un kullandığı
+              dosya sistemidir. cfdisk veya fdisk ile ayırdığımız bölümün tipini
+              belirlerken de bu kullanılır. (Linux Native (83) olarak seçilir.)
+              Dosya sistemi tipleri listesinde bulunan Hurd türü ise kafa karıştırmasın
+              bu türle bir alakamız olmayacak. Bu türü seçerseniz Hurd çalışmayacaktır.
+            </div></dd><dt><span class="term">adım 3: Bölümü Biçimlendirme</span></dt><dd class="varlist"><div class="para">
+Hurd'ı kurmak için ayırdığımız bölümün 1. sabit diskte 6. bölüm olduğunu varsayarsak. (Linux: /dev/hda6)
+            </div>
+<div class="para"><div align="right"><pre class="screen">
+# mke2fs -o hurd /dev/hda6
+</pre></div></div>
+            <div class="para">
+komutu ile bu kısmı biçemlendiriyoruz.
+            </div><div class="para">
+<b><tt>-o hurd</tt></b>: bu parametre ile bu sabit disk bölümü üzerindeki dosya sisteminin (ext2'dir) sahibinin Hurd olduğunu belirtiyoruz. Hurd'ın çalışabilmesi için böyle yapmak zorunludur. Bu sebeple daha önce kullandığınız doğal Linux biçemli bölümleri tekrar bu komutla biçemlendirmek gerekecektir.
+            </div></dd></dl></div></dd></dl> <div class="head3"><a name="id4" id="id4"></a>Hurd'ı Tar Paketi Kullanarak Kurmak</div><dl><dd><div class="para">
+        Hurd'ı kurmanın en kolay yolu budur. Hurd projesi geliştiricilerinden Marcus
+        Brinkmann'ın hazırladığı ve başlangıç Hurd sistemi için gereken en küçük
+        paketleri toplandığı tar paketi önceki adımlarda ayrılan Hurd disk bölümüne
+        açılır.
+      </div><div class="para">
+        Linux üzerinden Hurd disk bölümünü bağlayıp dosyalara erişebilirsiniz.
+        (Hurd'da ext2 kullanıyor). Genelde Linux üzerinde <tt>/gnu</tt>
+        dizini bunun için kullanılır.
+</div><div class="para"><div align="right"><pre class="screen">
+# mkdir /gnu
+# mount /dev/hda6 /gnu
+</pre></div></div><div class="para">
+        artık tar paketini buraya açabiliriz.
+</div><div class="para"><div align="right"><pre class="screen">
+# tar zxvpf gnu-.......tar.gz /gnu
+</pre></div></div><div class="para">
+        Şu konumda artık ayırdığımız disk bölümünde gerekli Hurd sistemi
+        kopyalanmış durumda. Artık <a href="../howto/gnuhurd_kurulum.html#gnuhurd_boot" class="xref" title="GRUB ile Sistemin Açılması">GRUB ile Sistemin Açılması</a> bölümüne geçebilirsiniz.
+      </div></dd></dl> <div class="head3"><a name="id5" id="id5"></a>Hurd'ı Çapraz Kurulum ile Kurmak (Cross Install)</div><dl><dd><div class="para">
+        Hurd kurmak için ikinci yol ise çapraz kurulumdur. Yalnız bu bölüm paketler
+        ve paketleme sistemi hakkında daha derin bilgi gerektirir. Eğer Hurd'ın
+        kendi başına çalışabilmesi için hangi paketlere -en azından- ihtiyaç
+        duyduğunu biliyorsaniz bu yolu uygulayın.
+      </div><div class="para">
+        Kurulmak istenen .deb paketlerini Gnu arşivinden veya Debian arşivinden
+        indirip bir dizin içine toplamanız gerekli. Sonra da şu üc kurulum
+        betiğinin mevcut olduğundan ve çalıştırılabilir durumda olduklarından
+        emin olun.
+</div><div class="para"><pre class="literallayout">
+cross-install
+native-install
+dpkg-hurd
+</pre></div><div class="para">
+        Sonra <tt>cross-install</tt> betiğini sisteminize göre
+        değiştirin (herhangi bir metin düzenleyici ile). Hurd disk bölümünü
+        bağlayın ve betiği çalıştırın.
+</div><div class="para"><div align="right"><pre class="screen">
+# mount /dev/hda6 /gnu
+# ./cross-install
+</pre></div></div>
+      </dd></dl> <div class="head3"><a name="id6" id="id6"></a>Hurd Kurulum Dosyalarını İndirmek</div><dl><dd><div class="variablelist"><dl><dt><span class="term">Tar Paketi</span></dt><dd class="varlist"><div class="para">
+              Marcus Brinkmann tarafından hazırlanan bu tar paketini
+              <a class="ulink" href="ftp://alpha.gnu.org/pub/gnu/hurd/contrib/marcus/gnu-tarih.tar.gz" target="_top">ftp://alpha.gnu.org/pub/gnu/hurd/contrib/marcus/gnu-tarih.tar.gz</a>
+              çekin. Tar paketinin ismindeki -tarih- kısmı <tt>yyyyaagg</tt>
+              biçemindedir. En son tarihli olan paketi indirmeye dikkat edin.
+            </div></dd><dt><span class="term">.deb Paketleri</span></dt><dd class="varlist"><div class="para">
+              <a class="ulink" href="ftp://ftp.debian.org/pub/debian/dists/sid/main/binary-hurd-i386/" target="_top">ftp://ftp.debian.org/pub/debian/dists/sid/main/binary-hurd-i386/</a>
+              dizini altında kategoriler halinde veya
+              <a class="ulink" href="ftp://ftp.alpha.gnu.org/pub/gnu/hurd/" target="_top">ftp://ftp.alpha.gnu.org/pub/gnu/hurd/</a> altında bulabilirsiniz.
+              Bu dosyaları herhangi bir ftp programı yardımıyla anonim olarak
+              indirebilirsiniz.
+            </div></dd><dt><span class="term">Betikler</span></dt><dd class="varlist"><div class="para">
+              Çapraz kurulum için gerekli olan üç betik ;
+</div><div class="para"><pre class="literallayout">
+<a class="ulink" href="ftp://ftp.alpha.gnu.org/pub/gnu/hurd/contrib/marcus/cross-install" target="_top">ftp://ftp.alpha.gnu.org/pub/gnu/hurd/contrib/marcus/cross-install</a>
+<a class="ulink" href="ftp://ftp.alpha.gnu.org/pub/gnu/hurd/contrib/marcus/native-install" target="_top">ftp://ftp.alpha.gnu.org/pub/gnu/hurd/contrib/marcus/native-install</a>
+<a class="ulink" href="ftp://ftp.alpha.gnu.org/pub/gnu/hurd/contrib/marcus/dpkg-hurd" target="_top">ftp://ftp.alpha.gnu.org/pub/gnu/hurd/contrib/marcus/dpkg-hurd</a>
+</pre></div><div class="para">
+              dosyalarıdır. Bu dosyaları çektikten sonra çalıştırılabilir duruma
+              getirin:
+</div><div class="para"><div align="right"><pre class="screen">
+# chmod +x cross-install
+# chmod +x native-install
+# chmod +x dpkg-hurd
+</pre></div></div>
+            </dd></dl></div></dd></dl> <div class="head3"><a name="gnuhurd_boot" id="gnuhurd_boot"></a>GRUB ile Sistemin Açılması</div><dl><dd><div class="para">
+        Şu aşamada elimizde ayrı bir disk bölümünde kopyalanmış olan Hurd işletim
+        sistemi bulunuyor. Linux'deki Lilo gibi; bu Hurd sistemin çekirdeğini
+        yükleyecek ve Hurd sunucularını çalıştıracak bir Önyükleme
+        Yoneticisine ihtiyaç var. Hurd'ın bu konudaki tercihi GRUB'dır
+        (GRand Unified Boot loader).
+      </div><div class="para">
+        GRUB hakkında daha ayrıntılı bilgi için <a href="../howto/gnuhurd_kaynak.html" class="xref" title="Kaynakça">Kaynakça</a>
+        bölümündeki bağlara bakabilirsiniz. Şu an için basit bir şekilde GRUB
+        kurup Hurd'ı yüklemeye çalışacağız.
+      </div><div class="variablelist"><dl><dt><span class="term">GRUB İmge Dosyasını İndirin</span></dt><dd class="varlist"><div class="para">
+              <a class="ulink" href="ftp://ftp.alpha.gnu.org/pub/gnu/hurd/contrib/marcus/" target="_top">ftp://ftp.alpha.gnu.org/pub/gnu/hurd/contrib/marcus/</a>grub-floppy-....tar.gz
+              dosyasını çekin. Ve açın.
+</div><div class="para"><div align="right"><pre class="screen">
+# gunzip grub-floppy-....tar.gz
+</pre></div></div>
+            </dd><dt><span class="term">GRUB'ı Diskete Yüklemek</span></dt><dd class="varlist"><div class="para">
+              Yeni biçemlendirilmiş bir diskete bu dosyayı yazıyoruz:
+</div><div class="para"><div align="right"><pre class="screen">
+# dd if=grub-floppy-....tar.gz of=/dev/fd0 bs=512
+</pre></div></div><div class="para">
+              artık bu disketle sistemi açabiliriz.
+            </div></dd><dt><span class="term">Komut Kabuğuna Geçilir</span></dt><dd class="varlist"><div class="para">
+              GRUB size seçenekler sunan bir menü ile açılacaktır. Burada
+              '<tt>c</tt>'ye basıp GRUB'ın komut kabuğuna geçiyoruz.
+            </div></dd><dt><span class="term">Kök Dosya Sistemi Belirtilir</span></dt><dd class="varlist"><div class="para">
+              Sistemi sabit diskin hangi bölümünden açacağımızı belirtmeliyiz.
+              Burası illa ki kök dosya sistemi ile aynı bölüm olmak zorunda
+              değildir. Linux'da /boot dizinini farklı disk bölümünden yüklemek
+              gibi. Fakat şimdilik biz aynı bölümü kullanacağız.
+</div><div class="para"><div align="right"><pre class="screen">
+&gt;root=(hd0,5)
+</pre></div></div><div class="para">
+              hd0,5 --&gt; hd0s6'dır. GRUB'da sabit disk bölüm isimleri de 0'dan
+              başlıyor. Yani BSD tarzı bölüm isminden bir eksik.
+            </div></dd><dt><span class="term">Yüklenecek Çekirdek Belirtilir</span></dt><dd class="varlist"><div class="para">
+              Şimdi Hurd çekirdeğini seçmemiz gerekli.
+</div><div class="para"><div align="right"><pre class="screen">
+&gt;kernel=/boot/gnumach.gz root=hd0s6 -s
+</pre></div></div><div class="para">
+              Dosya yolunu yazarken bash'deki gibi tab ile dosya tamamlama
+              özelliğini kullanabilirsiniz.
+            </div><div class="para">
+              <tt>root=hd0s6 -s</tt>
+              kısmı ise GRUB'ın çekirdeğe geçeceği parametredir. Bu sebeple
+              <tt>hd0s6</tt> GRUB değil Hurd sözdizimi ile verilmiştir.
+            </div><div class="para">
+              <tt>-s</tt> ise tek kullanıcı açılışını belirtir.
+              Bu parametre geçilirse Hurd konsola süper kullanıcı olarak düşer.
+            </div></dd><dt><span class="term">Yüklenecek Modüller Belirtilir</span></dt><dd class="varlist">
+<div class="para"><div align="right"><pre class="screen">
+&gt;module=/boot/serverboot.gz
+</pre></div></div>
+            </dd><dt><span class="term">Sistem Açılır</span></dt><dd class="varlist"><div class="para"><div align="right"><pre class="screen">&gt;boot</pre></div></div><div class="para">Artık GRUB Hurd'ı sizin için yükleyecektir. KOLAY GELSİN! </div></dd></dl></div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/gnuhurd_ozellik.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/gnuhurd.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/gnuhurd_kaynak.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Özellikleri </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Kaynakça</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

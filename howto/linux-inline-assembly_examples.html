@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:02+03:00" /><title>Genel Satıriçi Sembolik Makina Dili Kullanım Örnekleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/linux-inline-assembly.html" title="Linux için Satıriçi Sembolik Makina Dili (Inline Assembly)" /><link rel="previous" href="../howto/linux-inline-assembly_declarators.html" title="Terim Belirteçleri" /><link rel="next" href="../howto/linux-inline-assembly_eod.html" title="Sonuç" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Genel Satıriçi Sembolik Makina Dili Kullanım Örnekleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/linux-inline-assembly_declarators.html">Önceki</a> </td><th width="60%" align="center">Linux için Satıriçi Sembolik Makina Dili (Inline Assembly)</th><td width="20%" align="right"> <a accesskey="n" href="../howto/linux-inline-assembly_eod.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="linux-inline-assembly_examples" id="linux-inline-assembly_examples"></a>Genel Satıriçi Sembolik Makina Dili Kullanım Örnekleri</div><dl><dd><div class="para">
+      Aşağıdaki örnekler değişik terim belirteçlerinin kullanımını göstermektedir.
+      Örnek verilebilecek çok fazla belirteç vardır fakat burada daha sık kullanılan
+      belirteç türlerine yer verilmiştir.
+      </div><div class="variablelist"><dl><dt><span class="term">"asm" ve register belirteci "r"</span></dt><dd class="varlist"><div class="para">
+            İlk önce 'r' belirtecinin "asm" de kullanılışına bir bakalım.
+            Örneğimiz GCC'nin nasıl yazmaç ayırdığını ve değerleri nasıl
+            güncelleştirdiğini göstermektedir.
+            </div>
+<div class="para"><div align="right"><pre class="screen">
+int main(void)
+{
+        int x = 10, y;
+
+        asm ("movl %1, %%eax;
+             "movl %%eax, %0;"
+                :"=r"(y)        /* y çıktı terimidir */
+                :"r"(x)         /* x girdi terimidir */
+                :"%eax");       /* %eax geri dönen yazmaç */
+}
+</pre></div></div>   <div class="para">
+            Bu örnekte x'in değeri "asm" içinde y'ye kopyalandı. x ve y "asm"den
+            yazmaçların içinde geçtiler. Bunun için üretilecek Sembolik Makina Dili
+            kodu şuna benzer:
+            </div>
+<div class="para"><div align="right"><pre class="screen">
+    main:
+        pushl %ebp
+        movl %esp,%ebp
+        subl $8,%esp
+        movl $10,-4(%ebp)
+        movl -4(%ebp),%edx      /* x=10 %edx te tutulur */
+#APP    /* asm burada başlıyor */
+        movl %edx, %eax         /* x %eax e taşınır*/
+        movl %eax, %edx         /* y edx e taşınır ve güncelleştirilir */
+
+#NO_APP /* asm burada bitiyor */
+        movl %edx,-8(%ebp)      /* y nin yığıttaki değeri %edx in değeri ile
+                                   güncelleştirilir.*/
+</pre></div></div>  <div class="para">
+           'r' belirteci kullanıldığında GCC herhangi bir yazmacı ayırmakta serbesttir.
+            Örneğimizde <tt>x</tt>'i tutmak için <tt>%edx</tt>'i
+            seçmiştir. <tt>x</tt>'in değerini <tt>%edx</tt>'ten
+            okuduktan sonra <tt>y</tt> için yine <tt>%edx</tt>'i
+            seçmiştir.
+            </div><div class="para">
+              <tt>y</tt>'nin değeri çıktı terimi bölümünde oldukça
+              <tt>%edx</tt>'in güncelleştirilen değeri
+              <tt>;y</tt>'nin yığıttaki yeri, <tt>-8(%ebp)</tt>'de
+              belirtilir. Eğer <tt>y</tt> girdi bölümünde tanımlanmış olsa
+              idi, geçici <tt>y</tt> yazmacı (%edx) güncelleştirilmesine
+              rağmen <tt>y</tt>'nin yığıttaki yeri güncelleştirilmezdi.
+            </div><div class="para">
+              <tt>%eax</tt> geri dönen yazmaçlar listesinde oldukça GCC onu
+              bilgi tutmak dışında kullanmayacaktır.
+            </div><div class="para">
+              Çıktılar oluşmadan önce girdilerin yok olduğu farz edilerek, hem
+              <tt>x</tt> girdisi hem <tt>y</tt> çıktısı aynı
+              <tt>%edx</tt> yazmacında tutuldular. Ama şunu unutmayın eğer
+              bir kaç komut işletecekseniz bunu yapamazsınız. Girdi ve çıktıların
+              farklı yazmaçlarda tutulduğundan emin olmak için, &amp; belirteç
+              değiştiricisini kullanabiliriz.
+            </div><div class="para">
+              Bununla ilgili bir örnek :
+            </div>
+<div class="para"><div align="right"><pre class="screen">
+        int main(void)
+{
+        int x = 10, y;
+
+        asm ("movl %1, %%eax;
+             "movl %%eax, %0;"
+                :"=&amp;r"(y)       /* y çıktı terimidir ve
+                                   &amp; belirteç değiştiricisidir. */
+                :"r"(x)         /* x girdi terimidir */
+                :"%eax");       /* %eax geri dönen yazmaçtır*/
+}
+</pre></div></div>
+            <div class="para">
+              Ve burada bu örnek için üretilmiş Sembolik Makina Dili kodunu
+              bulabilirsiniz, <tt>x</tt> ve <tt>y</tt>'nin
+              "asm" de farklı yazmaçta tutulduğu görülmektedir.
+            </div>
+<div class="para"><div align="right"><pre class="screen">
+    main:
+        pushl %ebp
+        movl %esp,%ebp
+        subl $8,%esp
+        movl $10,-4(%ebp)
+        movl -4(%ebp),%ecx      /* x, girdi %ecx tedir */
+#APP
+        movl %ecx, %eax
+        movl %eax, %edx         /* y, çıktı %edx tedir */
+
+#NO_APP
+        movl %edx,-8(%ebp)
+</pre></div></div>
+            </dd><dt><span class="term">Özel yazmaç belirteçlerinin kullanımı</span></dt><dd class="varlist"><div class="para">
+            Şimdi kişisel yazmaçları terimler için belirteç olarak kullanmaya bir
+            bakalım. Aşağıdaki örneğimizde <tt>cpuid</tt> komutu girdiyi
+            <tt>%eax</tt> yazmacından alıyor ve çıktıyı dört yazmaca
+            veriyor: <tt>%eax</tt>, <tt>%ebx</tt>,
+            <tt>%ecx</tt>, <tt>%edx</tt>. <tt>cpuid</tt>
+            girdisi, <tt>op</tt> değişkeni, "asm"ye
+            <tt>%eax cpuid</tt>'nin de beklediği gibi yazmacından giriyor.
+            <tt>a</tt>, <tt>b</tt>, <tt>c</tt> ve
+            <tt>d</tt> belirteçleri çıktıda dört yazmaçtaki değerleri
+            kendilerinde toplamak için kullanılmıştır.
+            </div>
+<div class="para"><div align="right"><pre class="screen">
+    asm ("cpuid"
+                : "=a" (_eax),
+                  "=b" (_ebx),
+                  "=c" (_ecx),
+                  "=d" (_edx)
+                : "a" (op));
+</pre></div></div>
+            <div class="para">
+              Aşağıda bunun için üretilmiş Sembolik Makina Dili kodunu görebilirsiniz
+              (_eax ,_ebx vb ... değişkenlerin yığıtta bulunduğu varsayılmıştır):
+            </div>
+<div class="para"><div align="right"><pre class="screen">
+        movl -20(%ebp),%eax     /* 'op' yi %eax te tut -- girdi */
+#APP
+        cpuid
+#NO_APP
+        movl %eax,-4(%ebp)      /* %eax i _eax te tutar -- çıktı */
+        movl %ebx,-8(%ebp)      /* diğer yazmaçları kendi çıktı
+        movl %ecx,-12(%ebp)        değişkenlerinde tutar */
+        movl %edx,-16(%ebp)
+</pre></div></div>
+            <div class="para">
+              Aşağıdaki yolda <tt>strcpy</tt> fonksiyonu <tt>"S"</tt>
+              ve <tt>"D"</tt> belirteçleri kullanılarak uygulanabilir:
+            </div>
+<div class="para"><div align="right"><pre class="screen">
+    asm ("cld\n
+              rep\n
+              movsb"
+              : /* girdi yok */
+              :"S"(src), "D"(dst), "c"(count));
+</pre></div></div>
+            <div class="para">
+              Kaynak gösterge <tt>src</tt> <tt>%esi</tt>'ye
+              <tt>"S"</tt> belirteci ve hedef gösterge
+              <tt>dst</tt>'ye <tt>"D"</tt> belirteci kullanılarak
+              yerleştirilmiştir. Sayaç değeri <tt>rep</tt> önekinin
+              gerektirdiği gibi <tt>%ecx</tt>'e yerleştirilmiştir.
+            </div><div class="para">
+              Ve burada da 32-bit kodları birleştirip 64-bit kod elde etmek için,
+              <tt>%eax</tt> ve <tt>%edx</tt> olmak üzere iki
+              yazmaç kullanan bir belirteç göreceksiniz:
+            </div>
+<div class="para"><div align="right"><pre class="screen">
+#define rdtscll(val) \
+     __asm__ __volatile__ ("rdtsc" : "=A" (val))
+</pre></div></div>
+            <div class="para">
+              Üretilen Sembolik Makina Dili kodu şuna benzer
+              (<tt>val</tt> 64 bit bellek alanına sahipse):
+            </div><div class="para"><div align="right"><pre class="screen">
+#APP
+        rdtsc
+#NO_APP
+        movl %eax,-8(%ebp)      /* A belirtecinin sonucu olarak
+        movl %edx,-4(%ebp)         %eax ve %edx çıktı gibi çalışır */
+</pre></div></div><div class="para"><tt>%edx:%eax</tt>'in içindeki değerler 64 bit çıktı gibi çalışır.
+            </div></dd><dt><span class="term">Karşılaştırma belirteçlerinin kullanımı</span></dt><dd class="varlist"><div class="para">
+              Burada da dört parametreli sistem çağrıları için kodları göreceğiz:
+            </div>
+<div class="para"><div align="right"><pre class="screen">
+#define _syscall4(type,name,type1,arg1,type2,arg2,type3,arg3,type4,arg4) \
+type name (type1 arg1, type2 arg2, type3 arg3, type4 arg4) \
+{ \
+long __res; \
+__asm__ volatile ("int $0x80" \
+        : "=a" (__res) \
+        : "0" (__NR_##name),"b" ((long)(arg1)),"c" ((long)(arg2)), \
+          "d" ((long)(arg3)),"S" ((long)(arg4))); \
+__syscall_return(type,__res); \
+}
+</pre></div></div>
+            <div class="para">
+              Üstteki örnekte sistem çağrısına dört argüman <tt>%ebx, %ecx, %edx</tt>
+              ve <tt>%esi</tt>'ye <tt>b, c, d</tt> ve <tt>S</tt>
+              belirteçleri kullanılarak bırakılmıştır. <tt>"=a"</tt> belirteci çıktıda
+              kullanılmıştır. Bundan dolayı sistem çağrısının dönen değeri <tt>%eax</tt>,
+              <tt>__res</tt> değişkenine aktarılır. Karşılaştırma belirteçlerinden
+              <tt>"0"</tt>'ı girdi bölümünün ilk teriminin belirteci olarak kullanarak,
+              sistem çağrısı numarası <tt>__NR_##name %eax</tt>'e atanır ve sistem
+              çağrısın girdisi olarak işlem görür. Böylece <tt>%eax</tt> burada hem
+              girdi hem de çıktı yazmacı olarak çalışır. Bunun için iki farklı yazmaç kullanılmadı.
+              Ama şu unutulmamalıdır ki girdi (sistem çağrı numarası) çıkış üretilmeden önce
+              kullanılmalıdır.
+            </div></dd><dt><span class="term">Bellek terimi belirtecinin kullanımı</span></dt><dd class="varlist"><div class="para">
+              Aşağıdaki küçük azaltma işlemini inceleyin:
+            </div>
+<div class="para"><div align="right"><pre class="screen">
+    __asm__ __volatile__(
+                "lock; decl %0"
+                :"=m" (counter)
+                :"m" (counter));
+</pre></div></div>
+            <div class="para">
+              Bunun için üretilen Sembolik Makina Dili kodu şöyle olur:
+            </div>
+<div class="para"><div align="right"><pre class="screen">
+    #APP
+        lock
+        decl -24(%ebp) /* sayaç bu bellek bölümünde değiştirilir. */
+#NO_APP.
+</pre></div></div>   <div class="para">
+              Burada sayaç için yazmaç belirteci kullanmadan önce bir düşünmelisiniz.
+              Eğer kullanırsanız, önce sayacın içeriğini bir yazmaca atamalısınız.
+              Azaltma işlemini yaptıktan sonra sonucu belleğine atamalısınız. Ama o
+              zaman da <tt>lock</tt> kullanma ve kodu küçük tutma
+              çabamızı boşa çıkarmış oluruz. Bu bellek belirtecinin gereğini kesin
+              olarak göstermektedir.
+            </div></dd><dt><span class="term">Geri Dönen yazmaçların Kullanımı</span></dt><dd class="varlist"><div class="para">
+              Temel Bellek Kopyasının işlemesini inceleyin.
+            </div>
+<div class="para"><div align="right"><pre class="screen">
+        asm ("movl $count, %%ecx;
+              up: lodsl;
+              stosl;
+              loop up;"
+                :                       /* çıktı yok */
+                :"S"(src), "D"(dst)     /* girdi */
+                :"%ecx", "%eax" );      /* geri dönen yazmaçlar */
+</pre></div></div>
+            <div class="para">
+              <tt>lodsl %eax</tt>'i değiştirirken, <tt>lodsl</tt> ve
+              <tt>stosl</tt> komutları onu dolaylı olarak kullanır.
+              <tt>%ecx</tt> yazmacı doğrudan <tt>count</tt>'u çağırır.
+              Biz <tt>%eax</tt> ve <tt>%ecx</tt>'i geri dönen
+              yazmaçlar listesinde belirtmediğimiz sürece GCC bunun farkında olmayacaktır.
+              Bunu yapmadığımız sürecce GCC <tt>%eax</tt> ve <tt>%ecx</tt>'in
+              serbest olduğunu varsayar ve onları başka bilgiler tutmak için kullanabilir.
+              Şunu bilmelisiniz ki <tt>%esi</tt> ve <tt>%edi</tt> "asm"
+              tarafından kullanılıyor ve geri dönen yazmaçlar arasında belirtilmemişlerdir.
+              Çünkü onlar zaten girdi terimlerinin listesinde bulunmaktadırlar. Ve son olarak,
+              eğer dolaylı veya doğrudan kullanılmış bir yazmaç girdi veya çıktı listesinde
+              bulunmuyorsa, onu geri dönen yazmaçlar listesine yazmalısınız.
+            </div></dd></dl></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/linux-inline-assembly_declarators.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/linux-inline-assembly.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/linux-inline-assembly_eod.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Terim Belirteçleri </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Sonuç</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:42+03:00" /><title>Tünel türleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/ipv6-howto-configuring-6in4-tunnels.html" title="IPv4 içinde IPv6 tüneli yapılandırmak" /><link rel="previous" href="../howto/ipv6-howto-configuring-6in4-tunnels.html" title="IPv4 içinde IPv6 tüneli yapılandırmak" /><link rel="next" href="../howto/ipv6-howto-configuring-6in4-tunnels-monitoring.html" title="Varolan tünellerin görüntülenmesi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Tünel türleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/ipv6-howto-configuring-6in4-tunnels.html">Önceki</a> </td><th width="60%" align="center">IPv4 içinde IPv6 tüneli yapılandırmak</th><td width="20%" align="right"> <a accesskey="n" href="../howto/ipv6-howto-configuring-6in4-tunnels-monitoring.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="ipv6-howto-configuring-6in4-tunnels-types" id="ipv6-howto-configuring-6in4-tunnels-types"></a>Tünel türleri</div><dl><dd><div class="para">
+IPv4 ağlarında IPv6 paketlerini tünellemenin birden çok yöntemi vardır.
+  </div> <div class="head4"><a name="id11" id="id11"></a>Statik noktadan-noktaya tünelleme: salt6</div><dl><dd><div class="para">
+Noktadan-noktaya tünel, bir son noktaya adanmış bir tüneldir. Bu son nokta sizin IPv6 ağınızı (geri yönlendirme için) ve tünelinizin son noktasının IPv4 adresini bilmeli ve <a class="ulink" href="http://www.faqs.org/rfcs/rfc2893.html" target="_top">RFC 2893 / Transition Mechanisms for IPv6 Hosts and Routers</a> adresinde tanımlandığı gibi olmalıdır. Gereksinimler:
+  </div><ul type="disc" class="itemizedlist"><li>
+Tünelinizin son noktasının IPv4 adresi statik olmalı ve tünel dışından ulaşılabilir olmalıdır.
+  </li><li>
+Size bir küresel IPv6 öneki tahsis edilmiş olmalıdır (<a class="link" href="../howto/ipv6-howto-addresstypes-w-prefix.html#ipv6-howto-addresstypes-6bone">salt6 kaydına bakın</a>).
+  </li><li>
+IPv6 önekinizi tünelinizin sonuna yönlendirebilecek bir dış tünel son noktası gereklidir (çoğunlukla uzaktan elle yapılandırma gerekir)
+  </li></ul></dd></dl> <div class="head4"><a name="id21" id="id21"></a>Otomatik tünelleme</div><dl><dd><div class="para">
+Otomatik tünelleme ancak bir düğüm diğerinin IPv4 adresini önceden alarak doğrudan ona bağlanıyorsa oluşur.
+  </div></dd></dl> <div class="head4"><a name="ipv6-howto-tunelling-6to4" id="ipv6-howto-tunelling-6to4"></a>6'ya 4 Tünelleme</div><dl><dd><div class="para">
+6'ya 4 tünelleme (<a class="ulink" href="http://www.faqs.org/rfcs/rfc3056.html" target="_top">RFC 3056 / Connection of IPv6 Domains via IPv4 Clouds</a>) otomatik tünelleme için basit bir mekanizma kullanır. Küresel emsalsiz bir IPv4 adresine sahip her düğüm 6'ya 4 tünelinin son noktası olabilir (elbette IPv4 güvenlik duvarının trafiği engellememesi gerekir). 6'ya 4 tünelleme çoğunlukla bire-bir tünel değildir. Bu tünelleme yukarı ve aşağı tünelleme olarak ikiye ayrılabilir. Ayrıca, özel bir IPv6 adresinin bu düğümün IPv6 ağına bağlanmak için 6'ya 4 tünellemesi kullanacağını gösterir.
+  </div><div class="variablelist"><dl><dt><span class="term">6'ya 4 önekinin oluşturulması</span></dt><dd class="varlist"><div class="para">
+6'ya 4 adresi aşağıdaki gibi tanımlanır (şema <a class="ulink" href="http://www.faqs.org/rfcs/rfc3056.html" target="_top">RFC 3056 / Connection of IPv6 Domains via IPv4 Clouds</a> adresinden alınmıştır):
+  </div><div class="para"><pre class="literallayout">
+|   3+13   |    32     |    16  |            64 bits             |
++---+------+-----------+--------+--------------------------------+
+|  FP+TLA  |  V4ADDR   | SLA ID |           Interface ID         |
+|  0x2002  |           |        |                                |
++---+------+-----------+--------+--------------------------------+
+</pre></div><div class="para">
+FP ve TLA birlikte (16 bit) <tt>0x2002</tt> değerine sahiptirler. V4ADDR düğümün onaltılık gösterimde küresel emsalsiz IPv4 adresidir. SLA ise alt ağ kimliğidir (65536 yerel alt ağ mümkündür) ve bu değerler sizin yerel ağ yapınızı belirlerler.
+  </div><div class="para">
+Bu değerler, ağ geçitleri için genellikle SLA <tt>0000</tt> ve sonek <tt>::1</tt> alınarak oluşturulurlar (bu zorunlu değildir, yerel nedenlerle başka türlü de alınabilirler) ve 6'ya 4 tünel arabirimine atanırlar. Microsoft Windows'un V4ADDR değerini sonek için de kullandığını unutmayın.
+  </div></dd><dt><span class="term">6'ya 4 yukarı tünelleme</span></dt><dd class="varlist"><div class="para">
+Düğüm, tünelin IPv6 paketlerini göndereceği dış son noktasını bilmelidir. 6'ya 4 tünellemenin "ilk" dönemlerinde, yukarı yönlendirmeyi kabul eden adanmış yönlendiriciler tanımlanıyordu. Yönlendiricilerin listesi için: <a class="ulink" href="http://www.kfu.com/%7Ensayer/6to4/" target="_top">NSayer's 6to4 information</a> .
+  </div><div class="para">
+Bugünlerde, 6'ya 4 yönlendiricileri <tt>192.88.99.1</tt> adresi kullanılarak otomatik olarak bulunabiliyor. Bunu yönlendirme protokollerinin arka planı idare etmektedir, ayrıntılar için: <a class="ulink" href="http://www.faqs.org/rfcs/rfc3068.html" target="_top">RFC 3068 / An Anycast Prefix for 6to4 Relay Routers</a> belgesine bakabilirsiniz.
+  </div></dd><dt><span class="term">6'ya 4 aşağı tünelleme</span></dt><dd class="varlist"><div class="para">
+Aşağı yönlendirme (salt6'dan 6'ya 4 uyumlu düğüme) aslında sabit değildir ve asıl paketlerin gönderildiği konağa göre değişebilir. İki farklı durum söz konusudur:
+  </div><ul type="disc" class="itemizedlist"><li>
+Yabancı konak 6'ya 4 kullanmaktadır ve paketleri doğrudan sizin düğümünüze geri göndermektedir (aşağıya bakınız)
+  </li><li>
+Yabancı konak paketleri geriye IPv6 ağı üzerinden göndermektedir ve dinamik yönlendirmeye bağlı olarak bir aktarım (relay) yönlendiricisi düğümünüze geri dönüş için otomatik tünel yaratmaktadır.
+  </li></ul></dd><dt><span class="term">Olası 6'ya 4 trafik</span></dt><dd class="varlist"><ul type="disc" class="itemizedlist"><li>
+6'ya 4'ten 6'ya 4'e: iki 6to4 uyumlu konak arasında doğrudan tünellenir.
+  </li><li>
+6'ya 4'ten 6'ya 4 olmayana: yukarı tünelleme ile gönderilir.
+  </li><li>
+6'ya 4 olmayandan 6'ya 4'e: aşağı tünelleneme ile gönderilir.
+  </li></ul></dd></dl></div>
+  </dd></dl></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/ipv6-howto-configuring-6in4-tunnels.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/ipv6-howto-configuring-6in4-tunnels.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/ipv6-howto-configuring-6in4-tunnels-monitoring.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">IPv4 içinde IPv6 tüneli yapılandırmak </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Varolan tünellerin görüntülenmesi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

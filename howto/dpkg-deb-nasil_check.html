@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:59+03:00" /><title>İki Misli Kontrol</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/dpkg-deb-nasil.html" title="Debian İkilik Paketlerini Oluşturma Nasıl" /><link rel="previous" href="../howto/dpkg-deb-nasil_uygulama.html" title="Uygulama" /><link rel="next" href="../howto/dpkg-deb-nasil_ozet.html" title="Özet" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">İki Misli Kontrol</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/dpkg-deb-nasil_uygulama.html">Önceki</a> </td><th width="60%" align="center">Debian İkilik Paketlerini Oluşturma Nasıl</th><td width="20%" align="right"> <a accesskey="n" href="../howto/dpkg-deb-nasil_ozet.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="dpkg-deb-nasil_check" id="dpkg-deb-nasil_check"></a>İki Misli Kontrol</div><dl><dd><div class="para">
+Şimdi artık ilk ikilik paketinizi yaptınız ve ilk izlenime sahipsiniz, biraz daha ciddi yaklaşmanın ve ürettiğimiz paketin kalitesine bakmanın zamanı geldi.
+  </div> <div class="head3"><a name="dpkg-deb-nasil_lintian" id="dpkg-deb-nasil_lintian"></a><tt>lintian</tt></div><dl><dd><div class="para">
+Bizim için ne şans ki Debian projesi Debian paketlerini kontrol etmek için <b><tt>lint</tt></b> benzeri bir araç sunmaktadır. Bu araç <b><tt>lintian</tt></b> olarak isimlendirilir. Hala yüklemediyseniz şu an iyi bir zaman (<b><tt>apt-get install lintian</tt></b>).
+    </div><div class="para">
+Şimdi bu küçük define arayıcıyı kendi paket dosyamız üzerinde kullanacağız.
+    </div>
+<div class="para"><div align="right"><pre class="screen"><tt>$ </tt><b><tt>lintian linuxstatus_1.1-1_all.deb</tt></b>
+E: linuxstatus: binary-without-manpage linuxstatus
+E: linuxstatus: no-copyright-file
+W: linuxstatus: prerm-does-not-remove-usr-doc-link
+W: linuxstatus: postinst-does-not-set-usr-doc-link
+</pre></div></div>
+    <div class="para">
+O kadar da mükemmel gözükmüyor. Bir kılavuz sayfası, <tt>copyright</tt> dosyası ve şu <tt>prerm</tt> ve <tt>postinst</tt> betiklerini atladık.
+    </div></dd></dl> <div class="head3"><a name="dpkg-deb-nasil_minimal-doc" id="dpkg-deb-nasil_minimal-doc"></a>Minimum Belgeleme</div><dl><dd><div class="para">
+Kılavuz sayfaları yazmak ve oluşturmakla ilgili çok fazla söz söylenecek yer burası değil, bir veya herhangi bir bölümü bu konuyla ilgili pek çok kitap ve ayrıca internetten erişebilinecek <a class="ulink" href="http://www.tldp.org/HOWTO/mini/Man-Page.html" target="_top">http://www.tldp.org/HOWTO/mini/Man-Page.html</a> adresindeki belge vardır.
+    </div><div class="para">
+Küçük bir zaman atlaması yapalım ve betiğiniz için <tt>./man/man1/linuxstatus.1</tt> konumunda mükemmel bir kılavuz sayfasına sahip olduğunuzu varsayalım.
+    </div><div class="para">
+Aynı durum <tt>copyright</tt> dosyası için de geçerli olsun. <b><tt>find /usr/share/doc -name "copyright"</tt></b> komutuyla <tt>/usr/share/doc</tt> dizini altında yeterince örnek bulabilirsiniz.
+    </div><div class="para">
+İşte bizim kendi <tt>copyright</tt> dosyası örneğimiz:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+linuxstatus
+
+Copyright: Chr. Clemens Lee &lt;clemens@kclee.com&gt;
+
+2002-12-07
+
+The home page of linuxstatus is at:
+http://www.kclee.com/clemens/unix/index.html#linuxstatus
+
+The entire code base may be distributed under the terms of the GNU General
+Public License (GPL), which appears immediately below.  Alternatively, all
+of the source code as any code derived from that code may instead be
+distributed under the GNU Lesser General Public License (LGPL), at the
+choice of the distributor. The complete text of the LGPL appears at the
+bottom of this file.
+
+See /usr/share/common-licenses/(GPL|LGPL)
+</pre></div></div>
+    <div class="para">
+<tt>prerm</tt> ve <tt>postinst</tt> betikleri için yukarıda, <tt>parted</tt> paketindeki örnekleri birebir aynı isimle kendi proje dizinimize kopyalayalım. Bu dosyalar bizim için de düzgün çalışmalı.
+    </div><div class="para">
+Şimdi Debian paketini tekrar oluşturuyoruz. <tt>control</tt> dosyasında sürüm numarasını ilk önce 1.1-1'den 1.2-1'e yükseltiriz (yeni bir kılavuz sayfası yazdığımız için dahili sürüm numaramızı yükseltiriz). Aynı zamanda yeni dosyaları uygun konumlara kopyalamaya ihtiyacımız var.
+    </div>
+<div class="para"><div align="right"><pre class="screen"><tt>$ </tt><b><tt>mkdir -p ./debian/usr/share/man/man1</tt></b>
+<tt>$ </tt><b><tt>mkdir -p ./debian/usr/share/doc/linuxstatus</tt></b>
+<tt>$ </tt><b><tt>find ./debian -type d | xargs chmod 755</tt></b>
+<tt>$ </tt><b><tt>cp ./man/man1/linuxstatus.1 ./debian/usr/share/man/man1</tt></b>
+<tt>$ </tt><b><tt>cp ./copyright ./debian/usr/share/doc/linuxstatus</tt></b>
+<tt>$ </tt><b><tt>cp ./prerm ./postinst ./debian/DEBIAN</tt></b>
+<tt>$ </tt><b><tt>gzip --best ./debian/usr/share/man/man1/linuxstatus.1</tt></b>
+<tt>$ </tt>
+<tt>$ </tt><b><tt>dpkg-deb --build debian</tt></b>
+dpkg-deb: building package `linuxstatus' in `debian.deb'.
+<tt>$ </tt><b><tt>mv debian.deb linuxstatus_1.2-1_all.deb</tt></b>
+</pre></div></div>
+    <div class="para">
+<b><tt>gzip</tt></b> gereklidir, çünkü <b><tt>lintian</tt></b> kılavuz sayfalarının mümkün olduğunca sıkıştırılmış olmasını bekler.
+    </div></dd></dl> <div class="head3"><a name="dpkg-deb-nasil_fakeroot" id="dpkg-deb-nasil_fakeroot"></a><tt>fakeroot</tt></div><dl><dd><div class="para">
+Bakalım paketimiz daha iyi bir Debian tebaası haline gelmiş mi:
+    </div>
+<div class="para"><div align="right"><pre class="screen"><tt>$ </tt><b><tt>lintian linuxstatus_1.2-1_all.deb</tt></b>
+E: linuxstatus: control-file-has-bad-owner prerm clemens/clemens != root/root
+E: linuxstatus: control-file-has-bad-owner postinst clemens/clemens != root/root
+E: linuxstatus: bad-owner-for-doc-file usr/share/doc/linuxstatus/
+¬ clemens/clemens != root/root
+E: linuxstatus: bad-owner-for-doc-file usr/share/doc/linuxstatus/copyright
+¬ clemens/clemens != root/root
+E: linuxstatus: debian-changelog-file-missing
+</pre></div></div>
+    <div class="para">
+Ups, yeni şikayetler. Tamam, yılmayacağız. Çoğu hata aslında aynı hataymış gibi duruyor. Bizim dosyalarımızın hepsi <tt>clemens</tt> kullanıcı ve gurubu için paketlendi, bunu yaparken de ben pekçok insanın onları root kullanıcısı ve gurubu için yüklü tercih edeceklerini varsaydım. Bu sorun <b><tt>fakeroot</tt></b> aracı kullanılarak kolayca çözülebilir. Hadi bunu hızlı bir şekilde düzeltip kontrol edelim (<tt>changelog</tt> kısmını ihmal ediyoruz).
+    </div>
+<div class="para"><div align="right"><pre class="screen"><tt>$ </tt><b><tt>fakeroot dpkg-deb --build debian</tt></b>
+dpkg-deb: building package `linuxstatus' in `debian.deb'.
+<tt>$ </tt><b><tt>mv debian.deb linuxstatus_1.2-1_all.deb</tt></b>
+<tt>$ </tt><b><tt>lintian linuxstatus_1.2-1_all.deb</tt></b>
+E: linuxstatus: debian-changelog-file-missing
+</pre></div></div>
+    <div class="para">
+Güzel, fakat hala pakete eklememiz gereken bir dosya var.
+    </div></dd></dl> <div class="head3"><a name="dpkg-deb-nasil_more-docs" id="dpkg-deb-nasil_more-docs"></a>Daha Fazla Belge</div><dl><dd><div class="para">
+Hemen şunu söyliyeyim, <tt>changelog</tt> dosyası yanında <tt>doc/linuxstatus</tt> dizininde <tt>changelog.Debian</tt> dosyasına da ihtiyaç vardır. Her ikisi de <b><tt>gzip</tt></b> ile sıkıştırılmış olmalıdır.
+    </div><div class="para">
+İki örnek dosya, <tt>changelog</tt>:
+    </div>
+<div class="para"><div align="right"><pre class="screen">linuxstatus (1.2-1)
+
+  * Made Debian package lintian clean.
+
+  -- Chr. Clemens Lee &lt;clemens@kclee.com&gt;  2002-12-13
+</pre></div></div>
+    <div class="para">ve <tt>changelog.Debian</tt>:</div>
+<div class="para"><div align="right"><pre class="screen">linuxstatus Debian maintainer and upstream author are identical.
+Therefore see also normal changelog file for Debian changes.
+</pre></div></div>
+    <div class="para">
+Debian Sözleşme (Debian Policy File) dosyası, <a class="ulink" href="http://www.debian.org/doc/debian-policy/ch-miscellaneous.html#s-dpkgchangelog" target="_top"><tt>changelog</tt> dosyasının biçimiyle</a> ilgili daha ayrıntılı bilgiye sahiptir.
+    </div><div class="para">
+Ve nihayet son adımımız:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>$ </tt><b><tt>cp ./changelog ./changelog.Debian ./debian/usr/share/doc/linuxstatus</tt></b>
+<tt>$ </tt><b><tt>gzip --best ./debian/usr/share/doc/linuxstatus/changelog</tt></b>
+<tt>$ </tt><b><tt>gzip --best ./debian/usr/share/doc/linuxstatus/changelog.Debian</tt></b>
+<tt>$ </tt><b><tt>fakeroot dpkg-deb --build ./debian</tt></b>
+dpkg-deb: building package `linuxstatus' in `debian.deb'.
+<tt>$ </tt><b><tt>mv debian.deb linuxstatus_1.2-1_all.deb</tt></b>
+<tt>$ </tt><b><tt>lintian linuxstatus_1.2-1_all.deb</tt></b>
+</pre></div></div>
+    <div class="para">
+Ah, artık başka şikayet almıyoruz <tt>;-)</tt>. <tt>root</tt> olarak bu paketi eskisinin üzerine standart komutu kullanarak yükleyebilirsiniz: <b><tt>dpkg -i</tt></b>
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>root# </tt><b><tt>dpkg -i ./linuxstatus_1.2-1_all.deb</tt></b>
+(Reading database ... 97124 files and directories currently installed.)
+Preparing to replace linuxstatus 1.1-1 (using linuxstatus_1.2-1_all.deb) ...
+Unpacking replacement linuxstatus ...
+Setting up linuxstatus (1.2-1) ...
+</pre></div></div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/dpkg-deb-nasil_uygulama.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/dpkg-deb-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/dpkg-deb-nasil_ozet.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Uygulama </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Özet</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:43+03:00" /><title>/proc/net/ dizininde IPv6 kayıtları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/ipv6-howto-kernel-settings.html" title="/proc dosya sisteminde çekirdek ayarlamaları" /><link rel="previous" href="../howto/ipv6-howto-kernel-settings-proc-sys-net-ipv4.html" title="/proc/sys/net/ipv4/ dizininde IPv6 kayıtları" /><link rel="next" href="../howto/ipv6-howto-netlink.html" title="Çekirdeğe Netlink-Arabirimi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">/proc/net/ dizininde IPv6 kayıtları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/ipv6-howto-kernel-settings-proc-sys-net-ipv4.html">Önceki</a> </td><th width="60%" align="center">/proc dosya sisteminde çekirdek ayarlamaları</th><td width="20%" align="right"> <a accesskey="n" href="../howto/ipv6-howto-netlink.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="ipv6-howto-kernel-settings-proc-net" id="ipv6-howto-kernel-settings-proc-net"></a><tt>/proc/net/</tt> dizininde IPv6 kayıtları</div><dl><dd><div class="para">
+<tt>/proc/net</tt> dizininde pek çok salt okunur kayıt bulunmaktadır. Bu dizinde <b><tt>sysctl</tt></b> kullanarak bilgi alamayacağınızdan <b><tt>cat</tt></b> gibi görüntüleme araçlarını kullanmalısınız.
+  </div><div class="variablelist"><dl><dt><span class="term"><tt>if_inet6</tt></span></dt><dd class="varlist"><div class="para">
+Biçimi: çoklu değerli her adres için bir satır
+  </div><div class="para">
+Burada yapılandırılmış tüm IPv6 adresleri özel bir biçimde gösterilir. Örnekte sadece geridönüş arabirimi gösterilmektedir (daha fazlası için <tt>net/ipv6/addrconf.c</tt>).
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>cat /proc/net/if_inet6</tt></b>
+00000000000000000000000000000001 01 80 10 80 lo
++------------------------------+ ++ ++ ++ ++ ++
+|                                |  |  |  |  |
+1                                2  3  4  5  6
+</pre></div></div><ol class="orderedlist" start="ignore" type="1"><li><div class="listitem">
+32 onaltılık karekter ile yazılmış ve ayırıcı kullanılmamış IPv6 adresi.
+  </div></li><li><div class="listitem">
+Onaltılık gösterimde Netlink aygıt numarası (arabirim indisi) (bakınız "ip addr").
+  </div></li><li><div class="listitem">
+Onaltılık olarak önek uzunluğu.
+  </div></li><li><div class="listitem">
+Faaliyet alanı değeri (çekirdek kaynak kodunda <tt>include/net/ipv6.h</tt> ve <tt>net/ipv6/addrconf.c</tt> dosyalarına da bakabilirsiniz).
+  </div></li><li><div class="listitem">
+Arabirim bayrakları (<tt>include/linux/rtnetlink.h</tt> ve <tt>net/ipv6/addrconf.c</tt> dosyalarına da bakabilirsiniz).
+  </div></li><li><div class="listitem">
+Aygıt adı
+  </div></li></ol></dd><dt><span class="term"><tt>ipv6_route</tt></span></dt><dd class="varlist"><div class="para">
+Biçimi: Çoklu değer içeren her rota için bir satır
+  </div><div class="para">
+Burada yapılandırılmış tüm IPv6 yönlendirmeleri özel bir biçimde gösterilmektedir. Örnekte sadece geridönüş arabirimi gösterilmektedir. Aşağıda açıklamaları verilmiştir (ayrıntılı bilgi için <tt>net/ipv6/route.c</tt>).
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>cat /proc/net/ipv6_route</tt></b>
+00000000000000000000000000000000 00 00000000000000000000000000000000 00
++------------------------------+ ++ +------------------------------+ ++
+|                                |  |                                |
+1                                2  3                                4
+¬ 00000000000000000000000000000000 ffffffff 00000001 00000001 00200200 lo
+¬ +------------------------------+ +------+ +------+ +------+ +------+ ++
+¬ |                                |        |        |        |        |
+¬ 5                                6        7        8        9        10
+</pre></div></div><ol class="orderedlist" start="ignore" type="1"><li><div class="listitem">
+32 onaltılık karakter ile yazılmış ve ayırıcı kullanılmamış hedef IPv6 ağı
+  </div></li><li><div class="listitem">
+Onaltılık gösterimde IPv6 hedef önek uzunluğu
+  </div></li><li><div class="listitem">
+32 onaltılık karekter ile yazılmış ve ayırıcı kullanılmamış kaynak IPv6 ağı
+  </div></li><li><div class="listitem">
+Onaltılık gösterimde IPv6 kaynak önek uzunluğu
+  </div></li><li><div class="listitem">
+32 onaltılık karekter ile yazılmış ve ayırıcı kullanılmamış sıradaki IPv6 sıçrama noktası
+  </div></li><li><div class="listitem">
+Onaltılık ölçü
+  </div></li><li><div class="listitem">
+Referans sayacı
+  </div></li><li><div class="listitem">
+Kullanım sayacı
+  </div></li><li><div class="listitem">
+Bayraklar
+  </div></li><li><div class="listitem">
+Aygıt adı
+  </div></li></ol></dd><dt><span class="term"><tt>sockstat6</tt></span></dt><dd class="varlist"><div class="para">
+Biçimi: Tanımı ve değeri ile her satırda bir protokol
+  </div><div class="para">
+Kullanılmış olan IPv6 soketleri hakkında istatistikler. Örneğin:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>cat /proc/net/sockstat6</tt></b>
+TCP6: inuse 7
+UDP6: inuse 2
+RAW6: inuse 1
+FRAG6: inuse 0 memory 0
+</pre></div></div></dd><dt><span class="term"><tt>tcp6</tt></span></dt><dd class="varlist"><div class="para">
+Yazılacak.
+  </div></dd><dt><span class="term"><tt>udp6</tt></span></dt><dd class="varlist"><div class="para">
+Yazılacak.
+  </div></dd><dt><span class="term"><tt>igmp6</tt></span></dt><dd class="varlist"><div class="para">
+Yazılacak.
+  </div></dd><dt><span class="term"><tt>raw6</tt></span></dt><dd class="varlist"><div class="para">
+Yazılacak.
+  </div></dd><dt><span class="term"><tt>ip6_flowlabel</tt></span></dt><dd class="varlist"><div class="para">
+Yazılacak.
+  </div></dd><dt><span class="term"><tt>rt6_stats</tt></span></dt><dd class="varlist"><div class="para">
+Yazılacak.
+  </div></dd><dt><span class="term"><tt>snmp6</tt></span></dt><dd class="varlist"><div class="para">
+Biçimi: Her SNMP tanımı ve değeri için bir satır
+  </div><div class="para">
+SNMP istatistikleri, ağ yönetim yazılımları kullanarak SNMP sunucusundan ve ilgili MIB tablosundan alınabilir.
+  </div></dd><dt><span class="term"><tt>ip6_tables_names</tt></span></dt><dd class="varlist"><div class="para">
+Kullanılabilir netfilter6 tabloları
+  </div></dd></dl></div>
+  </dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/ipv6-howto-kernel-settings-proc-sys-net-ipv4.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/ipv6-howto-kernel-settings.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/ipv6-howto-netlink.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">/proc/sys/net/ipv4/ dizininde IPv6 kayıtları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Çekirdeğe Netlink-Arabirimi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

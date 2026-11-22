@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:15+03:00" /><title>Donanım</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/kahve-nasil.html" title="Kahve Yapmak Nasıl" /><link rel="previous" href="../howto/kahve-nasil-menu.html" title="Menü" /><link rel="next" href="../howto/kahve-nasil-yazilim.html" title="Yazılım" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Donanım</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/kahve-nasil-menu.html">Önceki</a> </td><th width="60%" align="center">Kahve Yapmak Nasıl</th><td width="20%" align="right"> <a accesskey="n" href="../howto/kahve-nasil-yazilim.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="kahve-nasil-donanim" id="kahve-nasil-donanim"></a>Donanım</div><dl><dd><div class="para">
+Sistem devre şeması şöyledir:
+  </div>
+<div class="para"><pre class="literallayout">
+    ---------   0-5V  ---------  ~220V   ----------------
+    |  PC   |====&gt;====|Circuit|==========|Coffee-Machine|
+    ---------         ---------          ----------------
+</pre></div>
+  <div class="para">
+Temel mantık şöyledir, elektriksel olarak yalıtılmış bir devreyi bir röle veya triyak ile kontrol etmemizi sağlayacak denetim gerilimini bilgisayardan alırız.
+  </div><div class="para">
+200Wat'tan daha büyük bir kahve makinanız varsa bir röle devresi seçmelisiniz. Kahve makinanız o kadar büyük bir güce sahip değilse triyak tabanlı bir devreyi de seçebilirsiniz.
+  </div><div class="para">
+Gösterilmiş olan tüm devreler denenmiştir, fakat sonuçlar ve riskler SİZİN SORUMLULUĞUNUZDUR. Eğer elektronik ile tecrübeniz yoksa bunları YAPMAmalısınız, yoksa kötü bir netice alabilirsiniz.
+  </div><div class="para">
+220V ile çalışırken çok dikkatli olmalısınız, ayrıca uygun bir sigortanın kullanımı kesinlikle tavsiye edilmektedir.
+  </div> <div class="head3"><a name="id1" id="id1"></a>Bilgisayardan 0-5V elde etmek</div><dl><dd><div class="para">
+Aşağıda, bilgisayarın paraler portundan 0-5V elde etmek için  bir örnek vardır:
+    </div>
+<div class="para"><pre class="literallayout">
+Arkadan görünüş    +------  Pin 10 - ACK
+Erkek DB-25        |   +--  Pin  9 - D7            +------ Pin 2 - D0
+Konnektör          |   |                           |   +-- Pin 1 - ~Strobe
+                   v   v                           v   v
+ ------------------------------------------------------------
+/                                                            \
+\     13  12  11  10   9   8   7   6   5   4   3   2   1     /
+ \                                                          /
+  \     25  24  23  22  21  20  19  18  17  16  15  14     /
+   --------------------------------------------------------
+</pre></div>
+    <div class="para">
+1 numaralı, Strob'dur. (Strobe) (mantıksal ters)
+    </div><div class="para">
+2-9 arası pinler veri yolu (DATA BUS) sinyalleri içindir, esas itibariyle paralel porta yazılan her şey bir OUTB komutuyla tutulmaktadır.
+    </div><div class="para">
+10 numaralı pin, onay (ACK) sinyalidir, sizin tarafınızdan denetlenir, böylece işlemciye bir kesme gönderebilirsiniz.
+    </div><div class="para">
+18-25 arası pinler kısa devredir, topraklağa bağlanmalıdır (GND).
+    </div><div class="para">
+Ayrıntılı olarak:
+    </div>
+<div class="para"><pre class="literallayout">
+&lt;= gir DB25   Cent   Sinyal    Yazmaç
+=&gt; çık pin    pin     İsmi      Biti    Açıklama
+------ ----   ----  --------    ---   -----------------------------
+=&gt;      1      1    -Strobe     C0-   gönderme için &gt;05us aşağı çekilir
+=&gt;      2      2    Data 0      D0    en kıymetsiz bit
+=&gt;      3      3    Data 1      D1    ...
+=&gt;      4      4    Data 2      D2    ...
+=&gt;      5      5    Data 3      D3    ...
+=&gt;      6      6    Data 4      D4    ...
+=&gt;      7      7    Data 5      D5    ...
+=&gt;      8      8    Data 6      D6    ...
+=&gt;      9      9    Data 7      D7    en kıymetli bit
+&lt;=     10     10   -Ack         S6+   IRQ onaydan sonra ~5us aşağı çekilir
+&lt;=     11     11   +Busy        S7-   Meşgul/Devredışı/Hata için yukarı çekilir
+&lt;=     12     12   +PaperEnd    S5+   Kağıt sonu için yukarı çekilir
+&lt;=     13     13   +SelectIn    S4+   yazıcı seçiliyse yukarı çekilir
+=&gt;     14     14   -AutoFd      C1-   bir satır ileri için aşağı çekilir
+&lt;=     15     32   -Error       S3+   Hata/Devredışı/Kağıtsonu için aşağı çekilir
+=&gt;     16     31   -Init        C2+   ilklendirme için &gt;50uS aşağı çekilir
+=&gt;     17     36   -Select      C3-   yazıcıyı seçmek için aşağı çekilir
+==gt;    18-25  19-30  Ground
+</pre></div>
+    </dd></dl> <div class="head3"><a name="id2" id="id2"></a>Röle ile kontrol</div><dl><dd><div class="para">
+Bir röleyi sürebilecek bir devrenin şeması genelde şöyle birşeydir:
+      </div>
+<div class="para"><pre class="literallayout">
+                                Vcc
+                                  |
+                                  +------+
+                                  |    __|__
+                                 Röle   /^\  Diode 1N4002
+                                Bobini /---\
+                                  |      |
+                                  +------+
+                                  |
+                               | /
+                    4.7K    B  |/  C
+     paralel port &gt;-\/\/\/\/---|        NPN Transistor: BC547A or 2N2222A
+     veri ucu                  |\  E
+                               | \
+                                  V
+     paralel port  &gt;--------------+
+     toprak ucu                   |
+                               Toprak
+
+</pre></div>
+      <div class="para">
+Vcc ucunu rölenin çalışma gerilimine eşitı gerilimdeki bir kaynağa bağlayınız (Genellikle 5 veya 12 V'dir). Elbette ki röle özellikleriniz kahve makinasına göre ayarlanmış olmalıdır.
+      </div><div class="para">
+Barmen, röleyi transistörden sonra, kollektör (C) ucu yerine, emetör (E) ucunun olduğu yere koyma meyilindedir. Bu kötü bir denemedir ve transistörü kötü yönde etkiler ve sonuç olarak da kötü bir kahve ile neticelenebilir. 1N4002 diyodu, transistörü rölenin ters akımından korumak için kullanışlıdır. Eğer kullanmazsanız, bir süre sonra transistör bozulabilir.
+      </div></dd></dl> <div class="head3"><a name="id3" id="id3"></a>TRIAK ile kontrol #1</div><dl><dd><div class="para">
+Eğer basit bir devre istemezseniz, Motorola'nın triyak sürücüsü olan MOC301[012]'i, SC141D gibi genel amaçlı bir triyakla  kullanabilirsiniz. Bu yöntemin getirisi, ilave bir güç kaynağına ihtiyaç duymamanızdır.
+      </div><div class="para">
+Endüktif olmayan yükler için, işte devre:
+      </div>
+<div class="para"><pre class="literallayout">
+          270     1 +-------+ 6    180
+    +5v -VAVAVA-----+       +----VAVAVA-----+-------------- Faz
+                  2 |  MOC  |               |
+    TTL in ---------+ 3012  +nc            VA  SC141D
+                    |       | 4           / |
+                  nc+       +------------/  |
+                    +-------+               +----\/\/\/---- Nötr
+                                                  LOAD
+</pre></div>
+      <div class="para">
+Eğer 220V ile çalışacaksanız, bir 3021 edinmeye çalışın. Endüktif yükler triyaka paralel kapasitörler ile birlikte kullanılmalıdır, en iyisi Motorola Application Note AN-780'a başvurun. Kahve makinaları genelde direnç gösteren yüklerdir ve (bir motor gibi) endüktif değildir, fakat sizinkinin ne olduğunu kim bilebilir?
+      </div></dd></dl> <div class="head3"><a name="id4" id="id4"></a>TRIAK ile kontrol #2</div><dl><dd><div class="para"><pre class="literallayout">
+    +5VDC
+    |    180                       180      2.2k
+    +---/\/\/\----+----+     +----/\/\/-+--/\/\/\---+-----------&gt; 120V
+                  |   1|     |6         |           |             Faz
+                  |    +=====+          |           | MT1
+                  |    | MC  | TRIAC    |          +-+
+                  |    | 3032| Sürücü   |        G | | TRIAC
+                  |    +=====+          |         /| |
+                  \|  2|     |4         |        / +-+
+            2N3904 |---+     |          |        |  | MT2
+                  /|   |     +--------- | -------+  |
+                  V    |                |        |  |
+                  |    &gt;                |        &gt;  |
+                  |    &gt; 43      .01u  ---   10k &gt;  |
+                  |    &gt;         500V  ---       &gt;  |
+                  |    |                |        |  |
+                  +----+                |        |  |             Nötr
+                  |                     +--------+--+---o    o--&gt; 120V
+                |/                                        Yük
+     &gt;--/\/\/\--| 2N3904
+                |\
+                  V
+                  |
+                 ---
+                 ///
+</pre></div><div class="blockquote"><div class="para">Bu devre 120V için tasarlanmıştır. 220V için dirençleri uygun şekilde ayarlamalısınız.</div></div><div class="para">
+MC3032 bir TRIAK sürücü optoizolatörüdür. 180-ohm'luk direnç optoizolatör içindeki LED emetörü için akımı ayarlar. Daha uygun akımlar almak için - eğer gerekliyse - bu direncin değerini değiştiriniz.
+      </div><div class="para">
+Bir yük olmadan bu devreyi kontrol edemezsiniz. TRIAK herhangi bir AA gerilim kaynağı olmadan çalışmayacaktır, bu yüzden basit bir anahtarlama için şebeke gerilimi ve yük uygulamadan çalıştırmak mümkün değildir. .01uF'lık kapasitörün 500V'luk olmasına dikkat ediniz.
+      </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/kahve-nasil-menu.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/kahve-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/kahve-nasil-yazilim.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Menü </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Yazılım</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

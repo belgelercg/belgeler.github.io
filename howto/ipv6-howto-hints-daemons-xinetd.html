@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:44+03:00" /><title>Internet süper artalan süreci (xinetd)</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/ipv6-howto-hints-daemons.html" title="IPv6 uyumlu Artalan Süreçleri İçin İpuçları" /><link rel="previous" href="../howto/ipv6-howto-hints-daemons-bind.html" title="Berkeley Internet Name Daemon BIND (named)" /><link rel="next" href="../howto/ipv6-howto-hints-daemons-httpd2.html" title="Apache2 (httpd2)" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Internet süper artalan süreci (xinetd)</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/ipv6-howto-hints-daemons-bind.html">Önceki</a> </td><th width="60%" align="center">IPv6 uyumlu Artalan Süreçleri İçin İpuçları</th><td width="20%" align="right"> <a accesskey="n" href="../howto/ipv6-howto-hints-daemons-httpd2.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="ipv6-howto-hints-daemons-xinetd" id="ipv6-howto-hints-daemons-xinetd"></a>Internet süper artalan süreci (xinetd)</div><dl><dd><div class="para">
+IPv6 desteği <a class="ulink" href="http://www.xinetd.org/" target="_top">xinetd</a> sürüm 1.8.9'dan itibaren verilmektedir. Daha eski sürümleri güvenlik açıkları taşıdığından en azından 2.3.3 sürümü ya da daha iyisi son sürümü kullanılmalıdır.
+  </div><div class="para">
+Bazı Linux dağıtımları IPv6 uyumlu <b><tt>xinetd</tt></b> için ilave paketler içerirken bazı dağıtımlar <tt>/etc/sysconfig/network</tt> (dağıtımlara göre farklı dosyalar olabilir) dosyasında <tt>NETWORKING_IPV6="yes"</tt> değişkeninin atanmasıyla IPv6 uyumlu hale gelmektedirler. Güncel sürümlerde tek bir dosya hem IPv4'ü hem de IPv6'yı desteklemektedir.
+  </div><div class="para">
+Eğer zaman (daytime) gibi gömülü bir servisi IPv6 uyumlu hale getirecekseniz <tt>/etc/xinetd.d/daytime</tt> yapılandırma dosyası aşağıdaki gibi değiştirilmelidir.
+  </div><div class="para"><div align="right"><pre class="screen">
+# diff -u /etc/xinetd.d/daytime.orig /etc/xinetd.d/daytime
+--- /etc/xinetd.d/daytime.orig Sun Dec 16 19:00:14 2001
++++ /etc/xinetd.d/daytime Sun Dec 16 19:00:22 2001
+@@ -10,5 +10,5 @@
+        protocol = tcp
+        user = root
+        wait = no
+-       disable = yes
++       disable = no
+ }
+</pre></div></div><div class="para">
+<b><tt>xinetd</tt></b>'yi yeniden başlattığınızda aşağıdaki gibi olumlu bir sonuç almalısınız:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>netstat -lnptu -A inet6 |grep "xinetd*"</tt></b>
+tcp 0 0 ::ffff:192.168.1.1:993  :::*  LISTEN  12345/xinetd-ipv6
+tcp 0 0 :::13                   :::*  LISTEN  12345/xinetd-ipv6 &lt;== service
+¬ daytime/tcp
+tcp 0 0 ::ffff:192.168.1.1:143  :::*  LISTEN  12345/xinetd-ipv6
+</pre></div></div><div class="para">
+Yukarıdaki örnek aynı zamanda "sadece IPv4 uyumlu" bir IMAP ve IMAP-SSL dinleyen bir <b><tt>xinetd</tt></b>'yi de göstermektedir.
+  </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+<b><tt>xinetd</tt></b>'nin 2.3.11'den önceki sürümlerinde bununla ilgili sorunlar olduğu bilinmesine rağmen bu sorunlar giderilmiştir.
+  </div></td></tr></table></div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/ipv6-howto-hints-daemons-bind.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/ipv6-howto-hints-daemons.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/ipv6-howto-hints-daemons-httpd2.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Berkeley Internet Name Daemon BIND (named) </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Apache2 (httpd2)</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

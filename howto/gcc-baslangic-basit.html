@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:00+03:00" /><title>Basit GCC Kullanımı</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/gcc-baslangic.html" title="GNU C Derleyicisi Kullanımı" /><link rel="previous" href="../howto/gcc-baslangic.html" title="GNU C Derleyicisi Kullanımı" /><link rel="next" href="../howto/gcc-baslangic-libs.html" title="Kütüphaneler ve GCC" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Basit GCC Kullanımı</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/gcc-baslangic.html">Önceki</a> </td><th width="60%" align="center">GNU C Derleyicisi Kullanımı</th><td width="20%" align="right"> <a accesskey="n" href="../howto/gcc-baslangic-libs.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="gcc-baslangic-basit" id="gcc-baslangic-basit"></a>Basit GCC Kullanımı</div><dl><dd><div class="para">
+GCC ismi "GNU Compiler Collection" sözcüklerinin baş harflerinden oluşmuştur. Gerçek ismini GNU C Compiler kelimelerinden almaktadır. Bu değişikliğin sebebi GCC paketinin eskiden sadece C derleyicisinden oluşmakta olduğudur. Diğer diller daha sonradan GCC ailesine eklenmiştir. Bu konuda bilgi için  <a class="ulink" href="http://en.wikipedia.org/wiki/GNU_Compiler_Collection" target="_top">http://en.wikipedia.org/wiki/GNU_Compiler_Collection</a> adresine bir ziyaret  yapılabilir.
+<a class="ulink" href="http://gcc.gnu.org/" target="_top">http://gcc.gnu.org/</a> adresinden GCC paketinin son sürümlerini takip edebilirsiniz.
+  </div><div class="para">
+Kullandığınız GCC sürümünü öğrenmek için;
+  </div><div class="para"><div align="right"><pre class="screen"># <b><tt>gcc -v</tt></b></pre></div></div><div class="para">
+komutunu kullanabilirsiniz. Benim sistemimde dönen sonuç:
+  </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>gcc -v</tt></b>
+Reading specs from /usr/lib/gcc-lib/i386-slackware-linux/3.2.2/specs
+Configured with: ../gcc-3.2.2/configure --prefix=/usr --enable-shared
+--enable-threads=posix --enable-__cxa_atexit --disable-checking --with-gnu-ld
+--verbose --target=i386-slackware-linux --host=i386-slackware-linux
+Thread model: posix
+gcc version 3.2.2</pre></div></div>
+  <div class="para">
+Derleyicinin uygulamaları doğru bir şekilde derlemesi için bir takım parametrelerin doğru olarak verilmesi gerekmektedir. En basit şekli ile uygulamamızı yazalım ve ilk derleme işlemimize geçelim.
+  </div>
+<div class="para"><div align="right"><pre class="screen">#include &lt;stdio.h&gt;
+int main()
+{
+  printf("Örnek uygulama");
+}
+</pre></div></div>
+  <div class="para">
+Yukarıdaki en basit uygulamamızdan başlamış olduk. Şimdi bu uygulamamızı derlemeye geçelim. Uygulamayı herhangi bir metin düzenleyici ile yazdıktan sonra <tt>ilk.c</tt> olarak kaydededelim ve konsolda komut istemine aşağıdaki satırları yazalım.
+  </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>gcc ilk.c</tt></b></pre></div></div>
+  <div class="para">
+Bu satırdan sonra uygulamada hata yok ise veya bir uyarı mesajı vermezse hemen komut istemine düşülür. Ancak kaynak kodun olduğu dizine bakıldığı zaman <tt>a.out</tt> isimli bir dosyanın oluştuğu görülecektir. Uygulamamızı bir isim vermeden derledik. Bu gibi durumlarda <b><tt>gcc</tt></b> öntanımlı olarak <tt>a.out</tt> dosya adını kullanacaktır. Şimdide uygulamamızı kendi ismiyle derleyelim. Bu amaçla <tt>-o</tt> seçeneği kullanılır. <tt>-o</tt> seçeneği parametre olarak çıkış dosya adınını alır:
+  </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>gcc ilk.c -o ilk</tt></b></pre></div></div>
+  <div class="para">
+Komut satırından sonra ilgili dizin içerisinde artık <tt>ilk</tt> isimli bir çalıştırılabilir dosya oluşacaktır. Bu aşamadan sonra artık basit bir uygulamanın derlenmesi işlemi anlaşılmış oldu. Peki ya uygulama içerisinde dışarıdan bir takım kitaplıklar eklenmek istenirse nasıl
+derlenmelidir? Bu aşamada örnek basit uygulamamız üzerinde bir iki ufak değişiklik yapalım;
+  </div>
+<div class="para"><div align="right"><pre class="screen">#include &lt;ncurses.h&gt;
+int main()
+{
+  initscr();
+  getch();
+  endwin();
+  printf("bitti\n");
+}
+</pre></div></div>
+  <div class="para">
+GNU C kütüphanesinde <b><tt>getch()</tt></b> işlevi yoktur. Ancak ncurses kütüphanesi kullanılması durumunda bu komut mevcuttur. Dikkat edilecek olursa <tt>stdio.h</tt> uygulamaya eklenmedi. Ön bilgi olarak, <tt>ncurses.h</tt> kullanılması durumunda <tt>stdio.h</tt> kullanılmasına gerek yoktur. Bu uygulamayı aynı şekilde aşağıdaki ilk öğrendiğimiz standart derleme yöntemi ile derleyelim.
+  </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>gcc ilk.c -o ilk</tt></b>
+/tmp/cc4k34cd.o(.text+0x11): `main' işlevinde:
+: `initscr'ye tanımsız başvuru
+/tmp/cc4k34cd.o(.text+0x1a): main' işlevinde:
+: `stdscr'ye tanımsız başvuru
+/tmp/cc4k34cd.o(.text+0x1f): main' işlevinde:
+: `wgetch'ye tanımsız başvuru
+/tmp/cc4k34cd.o(.text+0x27): main' işlevinde:
+: `endwin'ye tanımsız başvuru
+collect2: ld çıkış durumu 1 ile döndü
+</pre></div></div>
+  <div class="para">
+<b><tt>gcc</tt></b> bize bir çok tanımlanmamış nesne olduğunu bildiriyor. Aslında bunlar yazdığımız kodla ilgili hatalar değil, ilintileyici (<b><tt>ld</tt></b>) bazı kütüphaneleri bulamamış. Bu işlevlerin <b><tt>ncurses</tt></b> kütüphanesinde bulunduğunu biliyoruz. Bizim yapmamız gereken <b><tt>ncurses</tt></b> kütüphanesini <b><tt>gcc</tt></b>'ye tanıtmak, yani ilgili seçeneği (<tt>-l</tt>) komut satırına eklemek olacaktır.
+  </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>gcc ilk.c -o ilk -lncurses</tt></b></pre></div></div>
+  <div class="para">
+Bu komuttan sonra, uygulama hata vermeden derleme işlemini gerçekleştirecektir. Önemli hatırlatma: uygulamaya eklenecek olan kütüphaneler eğer sistemde standart olan yerlerde ise bu kullanım yeterlidir. Ama bu standart yerler nerelerdir? Bu tanım dağıtımlara göre farklılıklar gösterebilir ancak tüm kütüphanelere ait başlık dosyaları genel olarak <tt>/usr/include</tt> içindedir. Eğer bu başlık dosyaları farklı bir yerde ise, bulundukları yerin belirtilmesi için farklı bir seçenek (<tt>-I</tt>) kullanılmalıdır:
+  </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>gcc ilk.c -o ilk -I/usr/local/include -lncurses</tt></b></pre></div></div>
+  <div class="para">
+Bu satır da aynı şekilde uygulamamızı sorunsuz olarak derleyecektir. Burada uygulamamız içine eklenen başlık dosyalarını araması için standart dizin dışında <tt>/usr/local/include</tt> dizininide eklemiş olduk. Bu aşamadan itibaren <b><tt>ncurses</tt></b> kütüphanesini uygulamamız içerisine ekleyebiliyoruz ve istediğimiz <b><tt>ncurses</tt></b> komutlarını kullanabiliriz.
+Bunun yanında <b><tt>mysql</tt></b> kütüphanesini de uygulamaya katmak istersek uygulamamızı aşağıdaki şekle sokabiliriz:
+  </div>
+<div class="para"><div align="right"><pre class="screen">#include &lt;ncurses.h&gt;
+#include &lt;mysql.h&gt;
+int main()
+{
+  initscr();
+  getch();
+  endwin();
+  printf("bitti\n");
+}
+</pre></div></div>
+  <div class="para">
+En son derleme satırımız ile derleyelim. Aynı zamanda <tt>-lmysql</tt> ile mysql kütüphanesini kullanacağımızı belirtelim:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>gcc ilk.c -o ilk -I/usr/local/include -lncurses -lmysql</tt></b>
+ilk.c:2:19: mysql.h: Böyle bir dosya ya da dizin yok
+</pre></div></div>
+  <div class="para">
+Neden <tt>mysql.h</tt> dosyasını bulamadı? Halbuki <tt>-I/usr/local/include</tt> yazdık. Sistemde ufak bir arama yapalım bakalım doğru mu yazdık?
+  </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>locate mysql.h</tt></b>
+/usr/share/apps/quanta/doc/php/ref.mysql.html
+/usr/include/mysql/mysql.h
+</pre></div></div>
+  <div class="para">
+İşte aradığımız satır. <tt>mysql.h</tt> dosyası <tt>/usr/include/mysql</tt> dizini içerisinde bulunmaktaymış, öyleyse derleme seçeneklerinde bir değişiklik yapalım:
+  </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>gcc ilk.c -o ilk -I/usr/local/include -I/usr/include/mysql -lncurses -lmysql</tt></b>
+</pre></div></div>
+  <div class="para">
+Ve sonuç başarılı olacaktır. Bu şekilde istendiği kadar kütüphaneyi uygulamamız içerisine ekleyebiliriz. Eğer aranan kütüphanenin nesne dosyaları farklı bir dizin içerisinde ise <tt>-L</tt> seçeneği ile bu kütüphanenin yolunu tanımlamalıyız. Örnek olarak;
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>gcc ilk.c -o ilk -I/usr/local/include -I/usr/include/mysql -L/usr/local/lib</tt></b>
+¬ <b><tt>-lncurses -lmysql</tt></b>
+</pre></div></div>
+  <div class="para">
+Aynı şekilde matematik kütüphanesini uygulamamızda kullanacaksak <tt>-lm</tt> eklemeliyiz. Şifreleme algoritması kullanacaksak <tt>-lcrypt</tt>, postgresql için <tt>-lpq</tt>, POSIX evreleri kullanımı için <tt>-lpthread</tt>, glib kütüphanesini kullanmak için <tt>-lglib</tt>, vga kütüphanesini kullanmak için <tt>-lvga</tt> seçeneklerini örnek
+olarak verebiliriz. Bu kullanım örnekleri sisteminize kurduğunuz kütüphanelerin miktarına göre değişebilir.
+  </div><div class="para">
+Şimdi de <b><tt>gcc</tt></b> ile kullanabileceğimiz diğer seçeneklere gelelim. <tt>-m</tt> seçeneği işlemci seçimli derleme işlemini gerçekleştirmek için kullanılır.
+386 komut seti için <tt>-m386</tt>, 486 komut seti için <tt>-m486</tt>, pentium komut seti için <tt>-mpentium</tt> parametresi verilmelidir. Örnek olarak;
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>gcc ilk.c -o ilk -I/usr/local/include -I/usr/include/mysql -lncurses -lmysql</tt></b>
+¬ <b><tt>-mpentium</tt></b>
+</pre></div></div>
+  <div class="para">
+komutu sonrası uygulama pentium işlemci için derlenmiş olacaktır. 486 seçimli derleme işleminden sonra özellikle büyük uygulamalarda kodda bir miktar büyüme olabilir, ancak bu hız ile ters orantılı olarak artmaktadır.
+  </div><div class="para">
+Diğer önemli bir kullanım şekli uygulamanın kullandığı kütüphaneleri doğrudan uygulama içerisine eklemektir (<tt>-static</tt> seçeneği). Bu şekilde uygulamanın çalıştırılabilir dosyası içerisine kütüphaneler de eklenecektir. Bu işlemi örnek uygulamamız içerisinde deneyelim;
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>gcc ilk.c -o ilk -I/usr/local/include -I/usr/include/mysql -lncurses -lmysql</tt></b>
+¬ <b><tt>-mpentium -static</tt></b>
+</pre></div></div>
+  <div class="para">
+Her iki farklı derleme şeklinden sonra uygulamanın büyüklüğüne dikkat ediniz, büyüklüğünde epey bir fark olduğu görülecektir.
+  </div><div class="para">
+Uygulama içerisinde verilen hata iletileri haricinde bir takım uyarı iletileri de bulunmaktadır. Örneğin, bir değişkenin tanımlanmış olmasına rağmen kullanılmaması; uygulama içerisinde bir değişken tanımlayalım. Derleme seçeneklerine de <tt>-Wall</tt> seçeneğini ekleyelim ve derleyelim.
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>gcc ilk.c -o ilk -I/usr/local/include -I/usr/include/mysql -lcurses -Wall</tt></b>
+ilk.c: `main' işlevinde:
+ilk.c:5: uyarı: değişken `a' kullanılmamış
+ilk.c:10: uyarı: denetim void olmayan işlevin sonunu aşıyor
+</pre></div></div>
+    <div class="para">
+Böylece karşımıza uyarılar çıkmaya başlayacaktır. Uygulama içerisinde eniyileme yapılmasına önem verilmesi durumunda bu gibi gereksiz değişkenler temizlenmelidir. <tt>-w</tt> seçeneği ile tüm uyarıların ekrana çıkmasına engel olunur.
+    </div><div class="para">
+<b><tt>gcc</tt></b> aynı zamanda kendi içerisinde yazılmış olan kodlar üzerinde de eniyileme yapmaktadır. Bu amaçla <tt>-O</tt> seçeneği kullanılmaktadır. Örnek uygulamamızı aşağıdaki şekilde derleyelim:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>gcc ilk.c -o ilk -I/usr/include -I/usr/include/mysql -lcurses -O1</tt></b>
+</pre></div></div>
+  <div class="para">
+Bu seçenek <tt>-O0</tt>, <tt>-O1</tt>, <tt>-O2</tt>, <tt>-O3</tt>, <tt>-Os</tt> değerlerini alabilir. <tt>-O0</tt> hiç eniyileme yaptırmazken, <tt>-O3</tt> en yüksek eniyileme ile uygulama kodunu düzenler. <tt>-Os</tt> ise <tt>-O2</tt> eniyilemelerine ek olarak kod boyunu kısaltacak eniyilemeleri yapar.
+  </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/gcc-baslangic.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/gcc-baslangic.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/gcc-baslangic-libs.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">GNU C Derleyicisi Kullanımı </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Kütüphaneler ve GCC</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

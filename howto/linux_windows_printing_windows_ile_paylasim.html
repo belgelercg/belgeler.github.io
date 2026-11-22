@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:50+03:00" /><title>Yazıcıları Windows Makinalarla Paylaşmak</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/linux_windows_printing.html" title="Debian ve Windows Paylaşımlı Yazdırma Nasıl" /><link rel="previous" href="../howto/linux_windows_printing_windowsa-yazdirma.html" title="Windows Makinalara Yazdırma" /><link rel="next" href="../howto/linux_windows_printing_sorun-giderme.html" title="Sorun Giderme" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Yazıcıları Windows Makinalarla Paylaşmak</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/linux_windows_printing_windowsa-yazdirma.html">Önceki</a> </td><th width="60%" align="center">Debian ve Windows Paylaşımlı Yazdırma Nasıl</th><td width="20%" align="right"> <a accesskey="n" href="../howto/linux_windows_printing_sorun-giderme.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="linux_windows_printing_windows_ile_paylasim" id="linux_windows_printing_windows_ile_paylasim"></a>Yazıcıları Windows Makinalarla Paylaşmak</div><dl><dd> <div class="head3"><a name="linux_windows_printing_paylasim_temelleri" id="linux_windows_printing_paylasim_temelleri"></a>Paylaşım Temelleri</div><dl><dd><div class="para">
+Samba, <i>nmbd</i> ve <i>smbd</i> artalan süreçlerini Windows makinalarla dosya ve yazıcı paylaşmak için kullanmaktadır. <i>nmbd</i> Windows isimlendirme servisi gibi hareket ederek ağda bulunan Windows makinalara makina adınızı yayınlar. <i>smbd</i>, Windows makinalardan gelen yazıcı ve dosya isteklerini karşılar.
+    </div><div class="para">
+Paylaştırdığınız her Linux yazıcı için Windows yazıcı sürücülerini yüklemeniz gerekebilir. Windows sürücüleri, üretici firmanın sayfasında arama yapılarak bulunabilir.
+    </div></dd></dl> <div class="head3"><a name="linux_windows_printing_samba_config" id="linux_windows_printing_samba_config"></a>Samba Yapılandırması</div><dl><dd><div class="para">
+Eğer yazıcınıza anonim erişime izin veriyorsanız, uzaktan gönderilen yazıcı istekleri için bir kullanıcı hesabı oluşturmanız gerekir:
+    </div>
+<div class="para"><div align="right"><pre class="screen">/usr/sbin/adduser --system --disabled-password smbprint
+</pre></div></div>
+    <div class="para">
+Bu komut sisteminize <tt>smbprint</tt> isimli bir kullanıcı ekler. <tt>smbprint</tt> kullanıcısının ev dizini ve yazıcı kuyruğundaki dosyaların tutulduğu yer olan <tt>/home/smbprint</tt> altında yeterli alan olup olmadığına bakın. <tt>smbprint</tt> kullanıcısının  sisteminizdeki önemli dosyalara erişim yetkilerini, bu dosyalara okuma ve değiştirme için gerekli yetkilere sahip olmadığına da bakın. Eğer CUPS yapılandırmasını yaparken yazıcıyı sisteminizdeki belli kullanıcıların kullanımı için ayarladıysanız, <tt>smbprint</tt> kullanıcısına da paylaştırdığınız yazıcıya erişim hakkı vermelisiniz.
+    </div><div class="para">
+Samba yapılandırma dosyasının ismi <tt>/etc/samba/smb.conf</tt>'dur. Aşağıda CUPS'u <tt>smbprint</tt> kullanıcısıyla beraber kullanmak için yazılmış bir yapılandırma dosyası örneği vardır:
+    </div>
+<div class="para"><div align="right"><pre class="screen">[global]
+  printcap name = cups
+  printing = cups
+  security = share
+[printers]
+  browseable = yes
+  printable = yes
+  public = yes
+  create mode = 0700
+  guest only = yes
+  use client driver = yes
+  guest account = smbprint
+  path = /home/smbprint
+</pre></div></div>
+    <div class="para">
+Bu yapılandırma dosyası, bilgisayarınıza ağ bağlantısı yapan herkese yazdırma izni vermektedir, onun için de doğrudan internete bağlanan bilgisayarlarda olduğu gibi güvenli olmayan ağlarda bulunan bilgisayarlar için önerilmez. Eğer erişim denetimi sağlamak istiyorsanız, <tt>security = user</tt> veya <tt>security = domain</tt> şeklinde ayarlayın ve daha ayrıntılı bilgi için Samba kılavuz sayfasını okuyun.
+    </div><div class="para">
+Samba yapılandırma dosyasına yukarıdakileri ekledikten sonra Sambayı tekrar başlatmanız gerekir:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+/etc/init.d/samba restart
+</pre></div></div>
+    </dd></dl> <div class="head3"><a name="linux_windows_printing_cups_config" id="linux_windows_printing_cups_config"></a>CUPS Yapılandırması</div><dl><dd><div class="para">
+Windows yazıcı sürücüleri çıktılarını bir ağa göndermeden önce,  yazıcı için biçimlemektedir. CUPS'u, bu önceden biçimlenmiş çıktıları alabilmesi için <tt>/etc/cups/mime.types</tt> dosyasında aşağıdaki satırı etkin hale getirerek yapılandırmalısınız:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+application/octet-stream   application/vnd.cups-raw   0   -
+</pre></div></div>
+    <div class="para">
+Ayrıca <tt>/etc/cups/mime.convs</tt> dosyasındaki şu satırı da etkin hale getirin:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+application/octet-stream
+</pre></div></div>
+    <div class="para">
+Şimdi CUPS'a ağdaki diğer makinalardan gelen bağlantılara izin vermesi söylenmelidir. <tt>/etc/cups/cupsd.conf</tt> dosyasına şu satırları ekleyin:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+&lt;Location /printers&gt;
+  AuthType None
+  Order Deny,Allow
+  Deny From None
+  Allow From All
+  &lt;/Location&gt;
+</pre></div></div>
+    <div class="para">
+Samba yapılandırma dosyasında oluğu gibi, herhangi bir bilgisayarın yazıcınıza bağlanmasını sağlar ve güvenli olmayan ağlarda tavsiye edilmez. Yazıcılara olan erişim yetkilerinin sınırlandırılmasıyla ilgili bilgi almak için <tt>cupsd.conf</tt> kılavuz sayfasını ve  CUPS belgesini okuyunuz.
+    </div><div class="para">
+Son olarak cups'u yeniden başlatın:
+    </div>
+<div class="para"><div align="right"><pre class="screen">/etc/init.d/cupsys restart
+</pre></div></div>
+    <div class="para">
+Linux yazıcılarınız artık ağdaki Windows makinalara paylaştırılmış olmalıdır. Bir Windows makinaya ağ yazıcısı eklemek için yaptığınız bilindik adımları takip edin ve bir test sayfası çıkarmayı unutmayın.
+    </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/linux_windows_printing_windowsa-yazdirma.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/linux_windows_printing.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/linux_windows_printing_sorun-giderme.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Windows Makinalara Yazdırma </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Sorun Giderme</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:47+03:00" /><title>IP Maskeleme</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/kablonet-nasil.html" title="Kablonet, Linux ve IP-Maskeleme NASIL" /><link rel="previous" href="../howto/kablonet-nasil_check.html" title="Kontrol" /><link rel="next" href="../howto/kablonet-nasil_the-end.html" title="Sonuç" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">IP Maskeleme</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/kablonet-nasil_check.html">Önceki</a> </td><th width="60%" align="center">Kablonet, Linux ve IP-Maskeleme NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/kablonet-nasil_the-end.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="kablonet-nasil_masq" id="kablonet-nasil_masq"></a>IP Maskeleme</div><dl><dd><div class="para">
+      Gelelim işin, paylaştırma kısmına. Bu kez küçük bir betik
+      hazırlayacağız. Adı, <tt>kablo.sh</tt> ve
+      <tt>/etc/rc.d</tt> dizinine yerleştirilecek:
+</div><div class="para"><div align="right"><pre class="screen">
+echo "1" &gt; /proc/sys/net/ipv4/ip_forward
+
+/sbin/depmod -a
+/sbin/modprobe ip_masq_ftp
+/sbin/modprobe ip_masq_irc
+/sbin/modprobe ip_masq_raudio
+/sbin/modprobe ip_masq_quake
+
+/sbin/ipchains -P forward DENY
+/sbin/ipchains -A forward -i eth1 -j MASQ
+</pre></div></div><div class="para">
+      Eğer paket yönlendirme konusunda ayrıntıya girmek isterseniz, <a class="link" href="../howto/ipchains-nasil.html" title="Linux IPCHAINS NASIL">IPCHAINS-HOWTO</a> ve IP-Masquerade-HOWTO belgelerini
+      okumalısınız.
+    </div><div class="para">
+      <tt>kablo.sh</tt> betiğini çalıştırılabilir hale getirmeyi
+      unutmayalım (<tt># chmod +x kablo.sh</tt>).
+    </div><div class="para">
+      Son olarak ta <tt>/etc/rc.d/rc.local</tt> dosyasının sonuna,
+      aşağıdaki satırı ekleyelim. Böylece bilgisayarımız yeniden açıldığında,
+      bilgi akışı ve paylaşım işlemleri kendiliğinden başlayabilecektir:
+</div><div class="para"><div align="right"><pre class="screen">
+/etc/rc.d/kablo.sh
+</pre></div></div><div class="para">
+      Benim yaptığım gibi, internete daha önceden de çıkabilen bir sistem
+      üzerinde çalışıyorsanız <tt>/etc/resolv.conf</tt> dosyanızda
+      herhangi bir değişiklik yapmanıza gerek yoktur.
+    </div><div class="para">
+      Yine de örnek olarak, merkez'in <tt>/etc/resolv.conf</tt>
+      dosyasını veriyorum. Dikkat ederseniz, <tt>nameserver</tt>
+      adreslerinin her biri bir başka (ISP) Servis Sağlayıcı'ya aittir.
+      Böylece, bazan hızı düşürse de, bir ISP'deki arıza yüzünden internete
+      erişememe riskini oldukça azaltıyor.
+    </div><div class="para"><div align="right"><pre class="screen">
+search ixir.com.tr
+nameserver 213.186.155.15
+nameserver 195.174.219.10
+nameserver 212.64.200.32
+</pre></div></div><div class="para">
+      Böylece sunucu tarafındaki tüm işlemler tamamlanmış oldu.
+    </div> <div class="head3"><a name="id1" id="id1"></a>İstemci Tarafı</div><dl><dd><div class="para">
+        İstemci tarafı için söyleyeceğim fazla bir şey yok. Yeter ki ethernet
+        kartının <tt>TCP/IP</tt> protokolünde <tt>gateway</tt>
+        adresi doğru tanımlansın (örneğin merkez için <tt>gateway:
+        192.168.1.254</tt>).
+      </div><div class="para">
+        Eğer <tt>squid</tt> kullanılıyorsa, web tarayıcı programına bu
+        bilgilerin de verilmesi gerekli.(Yine merkez için: Proxy address:
+        192.168.1.254, Port: 3128)
+      </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/kablonet-nasil_check.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/kablonet-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/kablonet-nasil_the-end.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Kontrol </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Sonuç</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

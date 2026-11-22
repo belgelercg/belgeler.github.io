@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:22+03:00" /><title>Bir bölüm yerine bir dosyanın kullanılması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/cryptoloop-howto.html" title="Şifreli Geridönüş Aygıtı NASIL" /><link rel="previous" href="../howto/cryptoloop-howto-mounting-filesystem.html" title="Şifrelenmiş dosya sisteminin bağlanması" /><link rel="next" href="../howto/gpg-kullanimi.html" title="Linux'ta GPG Kullanımı" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Bir bölüm yerine bir dosyanın kullanılması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/cryptoloop-howto-mounting-filesystem.html">Önceki</a> </td><th width="60%" align="center">Şifreli Geridönüş Aygıtı NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/gpg-kullanimi.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="cryptoloop-howto-filebased" id="cryptoloop-howto-filebased"></a>Bir bölüm yerine bir dosyanın kullanılması</div><dl><dd><div class="para">
+Başka bir dosya sistemindeki bir dosyada şifrelenmiş dosya sistemi kurmak da bu kadar kolay. Bu durum eğer dosyayı DVD vs. gibi aygıtlarda yedeklemek isterseniz işinize yarayacaktır. Böylece dosyayı kolayca başka bir makineye taşıyabilirsiniz.
+    </div><div class="para">
+100MB boyutunda rasgele bilgi içeren bir dosya oluşturmak için aşağıdaki komutu kullanın:
+    </div>
+<div class="para"><div align="right"><pre class="screen">dd if=/dev/urandom of=/mystuff.aes bs=1k count=100000</pre></div></div>
+    <div class="para">
+Eğer dosyanın boyutunu değiştirmek isterseniz <i><tt>count</tt></i> değişkeninin değerini değiştirin. Yukarıdaki komut her biri 1k boyutlu 100000 blok oluşturur, ama siz istediğiniz gibi değiştirebilirsiniz. Sadece boyutun seçtiğiniz dosya sistemini taşıyamayacak kadar küçük olmamasına dikkat etmelisiniz. Elbette <tt>/dosya_ismi.aes</tt> yerine istediğiniz yolu ve dosya adını seçebilirsiniz.
+    </div><div class="para">
+Yukarda yaptığımıza benzer şekilde bu dosya içerisine şifrelenmiş dosya sistemini şu şekilde oluşturabilirsiniz:
+    </div>
+<div class="para"><div align="right"><pre class="screen">losetup -e aes-256 /dev/loop0 /mystuff.aes</pre></div></div>
+    <div class="para">
+Şimdi dosya sistemini oluşturabilirsiniz:
+    </div>
+<div class="para"><div align="right"><pre class="screen">mkfs.ext3 /dev/loop0</pre></div></div>
+    <div class="para">ve bağlayalım:</div>
+<div class="para"><div align="right"><pre class="screen">mount -t ext3 /dev/loop0 /mnt/crypto</pre></div></div>
+    <div class="para">
+Son olarak dosya sistemini ayırın ve geridönüş aygıtını çıkarın:
+    </div>
+<div class="para"><div align="right"><pre class="screen">umount /mnt/crypto
+losetup -d /dev/loop0
+</pre></div></div>
+    <div class="para">
+İhtiyacınız olduğunda dosya sistemini tekrar bağlayabilirsiniz:
+    </div>
+<div class="para"><div align="right"><pre class="screen">mount /mystuff.aes /mnt/crypto -oencryption=aes-256</pre></div></div>
+    <div class="para">
+Eğer dosyayı taşımak veya CD/DVD ye yazmak isterseniz önce <b><tt>unmount</tt></b> komutuyla dosya sistemini ayırdığınızdan emin olun.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/cryptoloop-howto-mounting-filesystem.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/cryptoloop-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/gpg-kullanimi.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Şifrelenmiş dosya sisteminin bağlanması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Linux'ta GPG Kullanımı</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

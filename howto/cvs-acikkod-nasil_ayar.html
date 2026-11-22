@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:58+03:00" /><title>CVS Sunucunun Kurulması ve Yapılandırılması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/cvs-acikkod-nasil.html" title="CVS ile Açık Kod Yazılım Geliştirme" /><link rel="previous" href="../howto/cvs-acikkod-nasil_gn.html" title="Genel Kavramlar" /><link rel="next" href="../howto/cvs-acikkod-nasil_prj.html" title="Proje Başlatmak" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">CVS Sunucunun Kurulması ve Yapılandırılması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/cvs-acikkod-nasil_gn.html">Önceki</a> </td><th width="60%" align="center">CVS ile Açık Kod Yazılım Geliştirme</th><td width="20%" align="right"> <a accesskey="n" href="../howto/cvs-acikkod-nasil_prj.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="cvs-acikkod-nasil_ayar" id="cvs-acikkod-nasil_ayar"></a>CVS Sunucunun Kurulması ve Yapılandırılması</div><dl><dd><div class="para">
+CVS, <a class="ulink" href="http://www.cvshome.org" target="_top">http://www.cvshome.org</a> sayfasından indirilip kurulabilir. FreeBSD kullananlar portlardan, Linux kullananlar ise kendi paket yöneticilerinden (<tt>.deb</tt>, <tt>.rpm</tt> gibi) yararlanabilirler. <b><tt>cvs</tt></b> paketinin açıldığı dizinde:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>./configure --prefix /usr/local</tt></b>
+# <b><tt>make</tt></b>
+# <b><tt>make install</tt></b>
+</pre></div></div>
+    <div class="para">
+komutları verilerek hızlı kurulum yapılabilir.
+    </div><div class="para">
+CVS sunucu (<b><tt>pserver</tt></b>) 2401. portta çalışır. <tt>/etc/services</tt> dosyasında aşağıdaki satırların olduğundan emin olun:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cat /etc/services | grep cvs</tt></b>
+
+cvspserver 2401/tcp #CVS network server
+cvspserver 2401/udp #CVS network server
+</pre></div></div>
+    <div class="para">
+CVS sunucusu <b><tt>inetd</tt></b> veya <b><tt>xinetd</tt></b> ile çalışır. <b><tt>inetd</tt></b> kullananlar (FreeBSD, Slackware) <tt>/etc/inetd.conf</tt> dosyasında şu satırı bulundurmalılar:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>vi /etc/inetd.conf</tt></b>
+
+cvspserver stream tcp nowait root /usr/local/bin/cvs cvs
+¬ --allow-root=/var/cvsroot pserver
+</pre></div></div>
+    <div class="para">
+Bunu yaptıktan sonra inetd'yi yeniden başlatmalısınız.
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>kill -HUP inetd</tt></b></pre></div></div>
+    <div class="para">
+<b><tt>xinetd</tt></b> kullananlar ise, <tt>/etc/xinetd.d/cvspserver</tt> dosyasına şunları yazmalı:
+    </div>
+<div class="para"><div align="right"><pre class="screen">/etc/xinetd.d/cvspserver
+
+service cvspserver
+{
+  disable = no
+  socket_type = stream
+  wait = no
+  user = cvs
+  server = /usr/local/bin/cvs
+  server_args = --allow-root=/var/cvsroot pserver
+  log_on_success += DURATION USERID
+  log_on_failure += USERID
+  nice = 10
+}
+</pre></div></div>
+    <div class="para">
+<b><tt>tcpserver</tt></b> kullanmak isteyenler için:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>/usr/local/bin/tcpserver -c 25 0 cvspserver /usr/bin/cvs</tt></b>
+¬  <b><tt>--allow-root=/var/cvsroot pserver&amp;</tt></b>
+</pre></div></div>
+    <div class="para">
+Burada <tt>/var/cvsroot</tt> olarak verilen yol <tt>CVSROOT</tt>'u yani kod deposunu gösterir. Kodlar ve CVS yönetim bilgileri bu dizindedir. <tt>CVSROOT</tt> ortam değişkenine bu değeri atamayı unutmayın.
+    </div><div class="para"><b><tt>bash</tt></b> kabuğu kullananlar:</div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>export CVSROOT=/var/cvsroot</tt></b></pre></div></div>
+    <div class="para"><b><tt>csh</tt></b> kabuğu kullananlar:</div>
+<div class="para"><div align="right"><pre class="screen">% <b><tt>set CVSROOT=/var/cvsroot</tt></b></pre></div></div>
+    <div class="para">
+<tt>/usr/local/bin/cvs</tt> ise <b><tt>cvs</tt></b>'nin çalışma yoludur (<b><tt>which cvs</tt></b> komutunu vererek bunu öğrenebilirsiniz).
+    </div><div class="para">
+CVS sunucunun <tt>cvs</tt> kullanıcısı ile çalışacağı varsayılmıştır. Bu kullanıcı hesabını açmanız gerekir.
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>groupadd cvs</tt></b>
+# <b><tt>useradd -g cvs -m -d /var/cvsroot -s /bin/bash -c "CVS" cvs</tt></b>
+</pre></div></div>
+    <div class="para">
+Bu ayarları bitirtikden sonra <tt>CVSROOT</tt> dizinini oluşturmak gerekir.
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cvs init</tt></b></pre></div></div>
+    <div class="para">
+Bu komutu çalıştırmadan önce <tt>CVSROOT</tt> değerini <b><tt>export</tt></b> veya <b><tt>set</tt></b> ile atadığınızdan emin olun. Aksi halde şu şekilde kullanmalısınız.
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cvs -d /var/cvsroot init</tt></b></pre></div></div>
+    <div class="para">
+Bu komut <tt>/var/cvsroot</tt> dizinini açacaktır. Ayrıca bu dizin altında yönetim bilgilerinin saklandığı <tt>CVSROOT</tt> dizinini de açar. Bu dizinin haklarını ayarlamayı unutmayın.
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>chown -R cvs.cvs /var/cvsroot</tt></b></pre></div></div>
+    <div class="para">
+Bundan sonra tüm projeler bu dizin altında bir dizin olarak gözükecektir. Bu dizinlerin kullanıcı haklarını da aynı şekilde ayarlamayı unutmayın.
+    </div><div class="para">
+CVS kullanıcılarını, <tt>$CVSROOT/CVSROOT/passwd</tt> dosyasında tanımlayın.
+    </div><tt>/var/cvsroot/CVSROOT/passwd</tt> dosyası:
+<div class="para"><div align="right"><pre class="screen">simsek:EvQlNsSbLl08I:cvs
+user1:WfE9wnFM6gsoQ:cvs
+user2:FfJdnVt99Ro/:cvs
+</pre></div></div>
+    <div class="para">
+Parolalar şifrelenmiş şekilde tutulur. Bu şifreleri üretmek için şu betiği kullanabilirsiniz:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>vi /usr/local/bin/sifrele</tt></b>
+
+#!/usr/bin/perl
+
+srand (time());
+my $randletter = "(int (rand (26)) + (int (rand (1) + .5) % 2 ? 65 : 97))";
+my $salt = sprintf ("%c%c", eval $randletter, eval $randletter);
+my $plaintext = shift;
+my $crypttext = crypt ($plaintext, $salt);
+
+print "${crypttext}\n";
+</pre></div></div>
+    <div class="para">
+Bundan sonra <b><tt>./sifrele </tt></b><i><tt>parolanız</tt></i> komutu ile şifrelenmiş parolayı alıp yukarıda belirtilen biçimde <tt>passwd</tt> dosyasına yazın. <tt>CVSROOT/passwd</tt> dosyasındaki satırların en sonundaki <tt>cvs</tt>, bu kullanıcının eşleştirileceği kullanıcıdır ki bu da CVS sunucunun etkin kullanıcısıdır. CVS kullanıcılarımız gerçek olmadığı için gerçek bir kullanıcıyla bu şekilde eşleştirilmesi gerekir. Şifrelenmiş parola olarak <tt>/etc/shadow</tt> dosyasındaki parolaları da kullanabilirsiniz. Oradan kendi parolanızı kopyalayıp yapıştırabilirsiniz.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/cvs-acikkod-nasil_gn.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/cvs-acikkod-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/cvs-acikkod-nasil_prj.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Genel Kavramlar </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Proje Başlatmak</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

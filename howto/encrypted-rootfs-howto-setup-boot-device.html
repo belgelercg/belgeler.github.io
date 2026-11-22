@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:22+03:00" /><title>Önyükleme Aygıtının Ayarlanması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/encrypted-rootfs-howto.html" title="Şifrelenmiş Kök Dosya Sistemi NASIL" /><link rel="previous" href="../howto/encrypted-rootfs-howto-encrypt-root-filesystem.html" title="Şifrelenmiş Kök Dosya Sisteminin Oluşturulması" /><link rel="next" href="../howto/encrypted-rootfs-howto-final-steps.html" title="Son Adımlar" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Önyükleme Aygıtının Ayarlanması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/encrypted-rootfs-howto-encrypt-root-filesystem.html">Önceki</a> </td><th width="60%" align="center">Şifrelenmiş Kök Dosya Sistemi NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/encrypted-rootfs-howto-final-steps.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="encrypted-rootfs-howto-setup-boot-device" id="encrypted-rootfs-howto-setup-boot-device"></a>Önyükleme Aygıtının Ayarlanması</div><dl><dd> <div class="head3"><a name="encrypted-rootfs-howto-initial-ramdisk" id="encrypted-rootfs-howto-initial-ramdisk"></a>Ramdisk'in oluşturulması</div><dl><dd><div class="para">
+Başlamak için, şifrelenmiş disk bölümüne hapsolmalı (<b><tt>chroot</tt></b>) ve önyükleme aygıtı için bağlama noktasını oluşturmalısınız:
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>chroot /mnt/efs</tt></b>
+# <b><tt>mkdir /loader</tt></b>
+</pre></div></div>
+        <div class="para">
+Ardından, daha sonra ihtiyacınız olacak başlangıç ramdisk'ini (<tt>initrd</tt>) oluşturun:
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>cd</tt></b>
+# <b><tt>dd if=/dev/zero of=initrd bs=1k count=4096</tt></b>
+# <b><tt>mke2fs -F initrd</tt></b>
+# <b><tt>mkdir ramdisk</tt></b>
+# <b><tt>mount -o loop initrd ramdisk</tt></b>
+</pre></div></div>
+        <div class="para">
+<b><tt>grsecurity</tt></b> kullanıyorsanız "Permission denied" hatasını alabilirsiniz. Bu durumda <b><tt>mount</tt></b> komutunu kafesin (<b><tt>chroot</tt></b>) dışında çalıştırmanız gerekir.
+        </div><div class="para">
+Dosya sistemi ağacını oluşturun ve gerekli dosyaları içine kopyalayın:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>mkdir ramdisk/{bin,dev,lib,mnt,sbin}</tt></b>
+# <b><tt>cp /bin/{bash,mount} ramdisk/bin/</tt></b>
+# <b><tt>ln -s bash ramdisk/bin/sh</tt></b>
+# <b><tt>mknod -m 600 ramdisk/dev/console c 5 1</tt></b>
+# <b><tt>mknod -m 600 ramdisk/dev/hda2    b 3 2</tt></b>
+# <b><tt>mknod -m 600 ramdisk/dev/loop0   b 7 0</tt></b>
+# <b><tt>cp /lib/{ld-linux.so.2,libc.so.6,libdl.so.2} ramdisk/lib/</tt></b>
+# <b><tt>cp /lib/{libncurses.so.5,libtermcap.so.2}    ramdisk/lib/</tt></b>
+# <b><tt>cp /sbin/{losetup,pivot_root} ramdisk/sbin/</tt></b>
+</pre></div></div>
+    <div class="para">
+Eğer "<tt>/lib/libncurses.so.5: No such file or directory</tt>" veya "<tt>/lib/libtermcap.so.2: No such file or directory</tt>" hata iletileri ile karşılaşırsanız dert etmeyin; <b><tt>bash</tt></b> bu kütüphanelerden sadece birine ihtiyaç duyar. Gerçekte hangisinin gerekli olduğunu şöyle kontrol edebilirsiniz:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>ldd /bin/bash</tt></b>
+</pre></div></div>
+    <div class="para">
+Parolanızın çekirdek iletileri (usb aygıtlarının kaydedilmesi gibi) tarafından taşırılmasını önlemek için aşağıdaki <b><tt>sleep</tt></b> programını derleyin.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>cat &gt; sleep.c &lt;&lt; "EOF"</tt></b>
+<b><tt>#include &lt;unistd.h&gt;</tt></b>
+<b><tt>#include &lt;stdlib.h&gt;</tt></b>
+
+<b><tt>int main( int argc, char *argv[] )</tt></b>
+<b><tt>{</tt></b>
+    <b><tt>if( argc == 2 )</tt></b>
+        <b><tt>sleep( atoi( argv[1] ) );</tt></b>
+
+    <b><tt>return( 0 );</tt></b>
+<b><tt>}</tt></b>
+<b><tt>EOF</tt></b>
+
+# <b><tt>gcc -s sleep.c -o ramdisk/bin/sleep</tt></b>
+# <b><tt>rm sleep.c</tt></b>
+</pre></div></div>
+    <div class="para">
+<b><tt>init</tt></b> betiğini oluşturun:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>cat &gt; ramdisk/sbin/init &lt;&lt; "EOF"</tt></b>
+<b><tt>#!/bin/sh</tt></b>
+
+<b><tt>/bin/sleep 3</tt></b>
+
+<b><tt>echo -n "Enter seed value: "</tt></b>
+<b><tt>read SEED</tt></b>
+
+<b><tt>/sbin/losetup -e aes256 -S $SEED /dev/loop0 /dev/hda2</tt></b>
+<b><tt>/bin/mount -r -n -t ext3 /dev/loop0 /mnt</tt></b>
+
+<b><tt>while [ $? -ne 0 ]</tt></b>
+<b><tt>do</tt></b>
+    <b><tt>/sbin/losetup -d /dev/loop0</tt></b>
+    <b><tt>/sbin/losetup -e aes256 -S $SEED /dev/loop0 /dev/hda2</tt></b>
+    <b><tt>/bin/mount -r -n -t ext3 /dev/loop0 /mnt</tt></b>
+<b><tt>done</tt></b>
+
+<b><tt>cd /mnt</tt></b>
+<b><tt>/sbin/pivot_root . loader</tt></b>
+<b><tt>exec /usr/sbin/chroot . /sbin/init</tt></b>
+<b><tt>EOF</tt></b>
+
+# <b><tt>chmod 755 ramdisk/sbin/init</tt></b>
+</pre></div></div>
+    <div class="para">
+Geridönüş aygıtını dosya sesteminden ayırın ve <tt>initrd</tt>'yi sıkıştırın:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>umount -d ramdisk</tt></b>
+# <b><tt>rmdir ramdisk</tt></b>
+# <b><tt>gzip initrd</tt></b>
+# <b><tt>mv initrd.gz /boot/</tt></b>
+</pre></div></div>
+    </dd></dl> <div class="head3"><a name="encrypted-rootfs-howto-bootable-cd" id="encrypted-rootfs-howto-bootable-cd"></a>CD-ROM'dan önyükleme yapılması</div><dl><dd><div class="para">
+Sisteminizi CD-ROM gibi salt okunur bir ortamı kullanarak yüklemenizi öneririm.
+        </div><div class="para">
+<tt>syslinux</tt> paketini indirin ve açın:
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+$ <b><tt>wget http://ftp.kernel.org/pub/linux/utils/boot/syslinux/syslinux-3.07.tar.bz2</tt></b>
+$ <b><tt>tar -xvjf syslinux-3.07.tar.bz2</tt></b>
+</pre></div></div>
+        <div class="para">
+<tt>isolinux</tt>'u yapılandırın:
+        </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>mkdir bootcd</tt></b>
+# <b><tt>cp /boot/{vmlinuz,initrd.gz} syslinux-3.07/isolinux.bin bootcd</tt></b>
+# <b><tt>echo "DEFAULT /vmlinuz initrd=initrd.gz ro root=/dev/ram0" &gt; bootcd/isolinux.cfg</tt></b>
+</pre></div></div>
+        <div class="para">
+Yüklenebilir cd-rom eşlemini oluşturun ve yakın:
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>mkisofs -o bootcd.iso -b isolinux.bin -c boot.cat \</tt></b>
+        <b><tt>-no-emul-boot -boot-load-size 4 -boot-info-table \</tt></b>
+        <b><tt>-J -hide-rr-moved -R bootcd</tt></b>
+
+# <b><tt>cdrecord -dev 0,0,0 -speed 4 -v bootcd.iso</tt></b>
+
+# <b><tt>rm -rf bootcd{,.iso}</tt></b>
+</pre></div></div>
+        </dd></dl> <div class="head3"><a name="encrypted-rootfs-howto-boot-partition" id="encrypted-rootfs-howto-boot-partition"></a>Sabit disk bölümünden önyükleme yapılması</div><dl><dd><div class="para">
+Eğer yükleme cd'nizi kaybederseniz sabit disk bölümünüz yükleme yapabilmeniz için elinizin altındadır. <i>Hda1 yazılabilir bir ortam olduğundan güvenilir olmadığını unutmayın ve ancak acil durumlarda kullanın!</i>
+        </div><div class="para">
+Ext2 dosya sistemini oluşturun ve bağlayın:
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>dd if=/dev/zero of=/dev/hda1 bs=8192</tt></b>
+# <b><tt>mke2fs /dev/hda1</tt></b>
+# <b><tt>mount /dev/hda1 /loader</tt></b>
+</pre></div></div>
+        <div class="para">
+Çekirdeği ve başlangıç ramdisk'ini kopyalayın:
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>cp /boot/{vmlinuz,initrd.gz} /loader</tt></b>
+</pre></div></div>
+        <div class="para">
+<b><tt>grub</tt></b> kullanıyorsanız:
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>mkdir /loader/boot</tt></b>
+# <b><tt>cp -av /boot/grub /loader/boot/</tt></b>
+# <b><tt>cat &gt; /loader/boot/grub/menu.lst &lt;&lt; EOF</tt></b>
+<b><tt>default 0</tt></b>
+<b><tt>timeout 10</tt></b>
+<b><tt>color green/black light-green/black</tt></b>
+<b><tt>title Linux</tt></b>
+    <b><tt>root (hd0,0)</tt></b>
+    <b><tt>kernel /vmlinuz ro root=/dev/ram0</tt></b>
+    <b><tt>initrd /initrd.gz</tt></b>
+<b><tt>EOF</tt></b>
+# <b><tt>grub-install --root-directory=/loader /dev/hda</tt></b>
+# <b><tt>umount /loader</tt></b>
+</pre></div></div>
+        <div class="para">
+<b><tt>lilo</tt></b> kullanıyorsanız:
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>mkdir /loader/{boot,dev,etc}</tt></b>
+# <b><tt>cp /boot/boot.b /loader/boot/</tt></b>
+# <b><tt>mknod -m 600 /loader/dev/hda  b 3 0</tt></b>
+# <b><tt>mknod -m 600 /loader/dev/hda1 b 3 1</tt></b>
+# <b><tt>mknod -m 600 /loader/dev/hda2 b 3 2</tt></b>
+# <b><tt>mknod -m 600 /loader/dev/hda3 b 3 3</tt></b>
+# <b><tt>mknod -m 600 /loader/dev/hda4 b 3 4</tt></b>
+# <b><tt>mknod -m 600 /loader/dev/ram0 b 1 0</tt></b>
+# <b><tt>cat &gt; /loader/etc/lilo.conf &lt;&lt; EOF</tt></b>
+<b><tt>lba32</tt></b>
+<b><tt>boot=/dev/hda</tt></b>
+<b><tt>prompt</tt></b>
+<b><tt>timeout=60</tt></b>
+<b><tt>image=/vmlinuz</tt></b>
+    <b><tt>label=Linux</tt></b>
+    <b><tt>initrd=/initrd.gz</tt></b>
+    <b><tt>read-only</tt></b>
+    <b><tt>root=/dev/ram0</tt></b>
+<b><tt>EOF</tt></b>
+# <b><tt>lilo -r /loader</tt></b>
+# <b><tt>umount /loader</tt></b>
+</pre></div></div>
+        </dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/encrypted-rootfs-howto-encrypt-root-filesystem.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/encrypted-rootfs-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/encrypted-rootfs-howto-final-steps.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Şifrelenmiş Kök Dosya Sisteminin Oluşturulması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Son Adımlar</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:44+03:00" /><title>Rota Bilgilendirme Sunucusu (radvd)</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/ipv6-howto-hints-daemons.html" title="IPv6 uyumlu Artalan Süreçleri İçin İpuçları" /><link rel="previous" href="../howto/ipv6-howto-hints-daemons-httpd2.html" title="Apache2 (httpd2)" /><link rel="next" href="../howto/ipv6-howto-hints-daemons-dhcpv6.html" title="Dinamik Konak Yapılandırma Protokolü v6 Sunucusu (dhcp6s)" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Rota Bilgilendirme Sunucusu (radvd)</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/ipv6-howto-hints-daemons-httpd2.html">Önceki</a> </td><th width="60%" align="center">IPv6 uyumlu Artalan Süreçleri İçin İpuçları</th><td width="20%" align="right"> <a accesskey="n" href="../howto/ipv6-howto-hints-daemons-dhcpv6.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="ipv6-howto-hints-daemons-radvd" id="ipv6-howto-hints-daemons-radvd"></a>Rota Bilgilendirme Sunucusu (radvd)</div><dl><dd><div class="para">
+Rota Bilgilendirme Sunucusu, eğer istemciler otomatik yapılandırılacaklar ise yerel ağda çok kullanışlıdır. Artalan sürecinin kendisi Linux'ta öntanımlı IPv6 ağ geçidinde çalışmalıdır (bunun aynı zamanda öntanımlı IPv4 ağ geçidi olması gerekmediğinden yerel alan ağınızdaki yönledirici bilgisinin kim tarafından gönderildiğine dikkat edin).
+  </div><div class="para">
+Bilgilendirme için bazı bilgiler ve bayraklar belirtilebilir. Sıkça kullanılanlar şunlardır:
+  </div><ul type="disc" class="itemizedlist"><li>
+Önek (gerekli)
+  </li><li>
+Önekin yaşam süresi
+  </li><li>
+Bilgilendirme gönderme sıklığı (isteğe bağlı)
+  </li></ul><div class="para">
+Uygun bir yapılandırmadan sonra <b><tt>radvd</tt></b> belirlenen arabirim üzerinden bilgilendirmeleri gönderir ve istemciler bunları alarak aldıkları önek ve öntanımlı ağ geçidi ile otomatik yapılandırılırlar.
+  </div> <div class="head4"><a name="id14" id="id14"></a><tt>radvd</tt>'nin yapılandırılması</div><dl><dd><div> <div class="head5"><a name="id114" id="id114"></a>Basit yapılandırma</div></div><div class="para">
+<b><tt>radvd</tt></b>'nin yapılandırma dosyası genellikle <tt>/etc/radvd.conf</tt>'dır ve basit örnek dosya aşağıdaki gibidir:
+  </div><div class="para"><div align="right"><pre class="screen">
+interface eth0
+{
+    AdvSendAdvert on;
+    MinRtrAdvInterval 3;
+    MaxRtrAdvInterval 10;
+    prefix 3ffe:ffff:0100:f101::/64
+    {
+        AdvOnLink on;
+        AdvAutonomous on;
+        AdvRouterAddr on;
+    };
+};
+</pre></div></div><div class="para">Bunun istemci tarafındaki sonucu:</div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>ip -6 addr show eth0</tt></b>
+3: eth0: &lt;BROADCAST,MULTICAST,UP&gt; mtu 1500 qdisc pfifo_fast qlen 100
+    inet6 3ffe:ffff:100:f101:2e0:12ff:fe34:1234/64 scope global dynamic
+       valid_lft 2591992sec preferred_lft 604792sec
+    inet6 fe80::2e0:12ff:fe34:1234/10 scope link
+</pre></div></div><div class="para">
+Yaşam süresi belirtilmediğinden çok büyük bir değer kullanılmıştır.
+  </div><div> <div class="head5"><a name="id214" id="id214"></a>Özel 6ya4 yapılandırma</div></div><div class="para">
+0.6.2pl3 sürümünden bu yana belirli bir arabirimin IPv4 adresine bağlı önekin (yeniden)-oluşturulması desteklenmektedir. Bu 6ya4 tünellemesi değiştirildiğinde bu bilginin yerel ağa duyurulmasında kullanılabilir. Genellikle dinamik istek olduğunda bağlantı yapan Linux yönlendiricilerde kullanılır. Böyle bir önekin yaşam süresi göreceli kısa olacağından (her yeni bağlantıda yeni bir önek geçerli olacaktır) yaşam süresi asgari değerler ile yapılandırılmıştır:
+  </div><div class="para"><div align="right"><pre class="screen">
+interface eth0
+{
+    AdvSendAdvert on;
+    MinRtrAdvInterval 3;
+    MaxRtrAdvInterval 10;
+    prefix 0:0:0:f101::/64
+    {
+        AdvOnLink off;
+        AdvAutonomous on;
+        AdvRouterAddr on;
+        Base6to4Interface ppp0;
+        AdvPreferredLifetime 20;
+        AdvValidLifetime 30;
+    };
+};
+</pre></div></div><div class="para">
+Bunun istemci tarafındaki sonucu (ppp0'ın yerel IPv4 adresi olarak 1.2.3.4 kullanıdığı varsayılmıştır):
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>/sbin/ip -6 addr show eth0</tt></b>
+3: eth0: &lt;BROADCAST,MULTICAST,UP&gt; mtu 1500 qdisc pfifo_fast qlen 100
+   inet6 2002:0102:0304:f101:2e0:12ff:fe34:1234/64 scope global dynamic
+      valid_lft 22sec preferred_lft 12sec
+   inet6 fe80::2e0:12ff:fe34:1234/10 scope link
+</pre></div></div><div class="para">
+Kısa yaşam süresi tanımlandığından, eğer ilgili bir bilgi alınmazsa bu önekten kısa zamanda vazgeçilir.
+  </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Eğer başlangıç betiklerinde özel 6ya4 desteği kullanmazsanız, yönlendiricinin dahili bir arabiriminde özel bir rota belirlemeniz gerekir. Aksi halde bazı geri yönlendirme sorunlarıyla karşılaşırsınız. Buradaki örnek için:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>/sbin/ip -6 route add 2002:0102:0304:f101::/64 dev eth0 metric 1</tt></b>
+</pre></div></div><div class="para">
+Bu rota önekin her değişmesinde yenilenmelidir, çünkü yeni bağlantıda dial-up arabirimine yeni IPv4 adresi atanır.
+  </div></td></tr></table></div></dd></dl> <div class="head4"><a name="id24" id="id24"></a>Hata ayıklama</div><dl><dd><div class="para">
+<b><tt>radvdump</tt></b> isimli uygulama gönderilen ya da alınan bilgilendirmeyi incelemenize yardımcı olur. Kullanımı basitçe:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>radvdump</tt></b>
+Router advertisement from fe80::280:c8ff:feb9:cef9 (hoplimit 255)
+        AdvCurHopLimit: 64
+        AdvManagedFlag: off
+        AdvOtherConfigFlag: off
+        AdvHomeAgentFlag: off
+        AdvReachableTime: 0
+        AdvRetransTimer: 0
+        Prefix 2002:0102:0304:f101::/64
+                AdvValidLifetime: 30
+                AdvPreferredLifetime: 20
+                AdvOnLink: off
+                AdvAutonomous: on
+                AdvRouterAddr: on
+        Prefix 3ffe:ffff:100:f101::/64
+                AdvValidLifetime: 2592000
+                AdvPreferredLifetime: 604800
+                AdvOnLink: on
+                AdvAutonomous: on
+                AdvRouterAddr: on
+        AdvSourceLLAddress: 00 80 12 34 56 78
+</pre></div></div><div class="para">
+Çıktı her bilgilendirme paketini okunabilir şekilde göstermektedir. Yapılandırdığınız değerleri burada görmelisiniz, aksi halde bilgilendirmeyi gönderen sizin <b><tt>radvd</tt></b>'niz olmayabilir. Bağlantıda başka bir yönlendirici olup olmadığına bakın. Bunun izini sürmeniz için bir MAC adresi olan <tt>AdvSourceLLAddress</tt> değeri size yardımcı olacaktır.
+  </div></dd></dl></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/ipv6-howto-hints-daemons-httpd2.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/ipv6-howto-hints-daemons.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/ipv6-howto-hints-daemons-dhcpv6.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Apache2 (httpd2) </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Dinamik Konak Yapılandırma Protokolü v6 Sunucusu (dhcp6s)</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

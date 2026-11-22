@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:16+03:00" /><title>Grub Önyükleme İşlemi İçin Kullanılan Yöntemler</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/grub-kullanimi.html" title="Grub Önyükleyici Yöneticisi" /><link rel="previous" href="../howto/grub-kullanimi_yukleme.html" title="Grub Önyükleyici Yöneticisinin Sisteme Yüklenmesi" /><link rel="next" href="../howto/grub-kullanimi_imgeler.html" title="Grub İmgeleri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Grub Önyükleme İşlemi İçin Kullanılan Yöntemler</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/grub-kullanimi_yukleme.html">Önceki</a> </td><th width="60%" align="center">Grub Önyükleyici Yöneticisi</th><td width="20%" align="right"> <a accesskey="n" href="../howto/grub-kullanimi_imgeler.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="grub-kullanimi_yontemler" id="grub-kullanimi_yontemler"></a>Grub Önyükleme İşlemi İçin Kullanılan Yöntemler</div><dl><dd><div class="para">
+      <b><tt>grub</tt></b> ile önyükleme işlemi için iki farklı
+      yöntem kullanılır.
+    </div>
+      <ol class="orderedlist" start="ignore" type="1"><li><div class="listitem">
+          Çekirdeğin doğrudan yüklenmesi. (Linux, *BSD vb. İşletim sistemleri
+          için)
+        </div></li><li><div class="listitem">
+          Zincirleme yükleme (Chain-Loading) yöntemi ile önyükleme işleminin
+          diğer önyükleme yükleyicisine verilmesi. (Windows, OS/2 vb. İşletim
+          sistemleri için)
+        </div></li></ol>
+    <div class="para">
+      Yukarıda bahsedilen önyükleme işlemlerini ayrıntılı olarak izah edelim.
+    </div> <div class="head3"><a name="id1" id="id1"></a>Doğrudan yükleme</div><dl><dd><div class="para">
+        Genellikle çoklu-önyükleme özelliğine sahip işletim sistemleri
+        (Linux, *BSD vb.) <b><tt>grub</tt></b> tarafından bu yöntem
+        ile yüklenirler. Bununla ilgili <tt>/etc/grub.conf</tt>
+        içerisinde yer alabilecek örnek tanımlamalar aşağıdaki gibidir.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+title Red Hat Linux
+root (hd0,4)
+kernel /boot/vmlinuz-2.4.18-14 ro root=/dev/hda5
+initrd /boot/initrd-2.4.18-14.img
+</pre></div></div>
+      <div class="para">veya,</div>
+<div class="para"><div align="right"><pre class="screen">
+title Debian
+root (hd0,6)
+kernel /boot/vmlinuz-2.2.20-idepci ro root=/dev/hda7
+</pre></div></div>
+      <div class="para">
+        Bu tanımlamalarda yer alan <tt>title</tt>, <tt>root</tt>,
+        <tt>kernel</tt> ve <tt>initrd</tt> komutlarını
+        <a href="../howto/grub-kullanimi_komutlar.html" class="xref" title="Grub Komutları">Grub Komutları</a> bölümünde ayrıntılı
+        olarak izah edeceğiz.
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Zincirleme yükleme</div><dl><dd><div class="para">
+        Bu yöntem ile Windows vb. işletim sistemlerinin yüklenmesi sağlanır.
+        <b><tt>grub</tt></b> bu yöntemde belirtilen işletim sistemlerini
+        doğrudan yüklemez, bunun yerine önyükleme işlemini söz konusu
+        işletim sisteminin önyükleme yöneticisine devreder.
+      </div><div class="para">
+        Yine bu yöntem ile <tt>grub.conf</tt>'da yer
+        alabilecek örnek satırlar aşağıdaki gibidir:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+title WinXP
+rootnoverify (hd0,0)
+chainloader +1
+</pre></div></div>
+      <div class="para">
+        Bu yöntemde yer alan <tt>rootnoverify</tt> ve
+        <tt>chainloader</tt> komutlarına ilişkin ayrıntılı
+        bilgilere <a href="../howto/grub-kullanimi_komutlar.html" class="xref" title="Grub Komutları">Grub Komutları</a> bölümünde
+        değineceğiz.
+      </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/grub-kullanimi_yukleme.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/grub-kullanimi.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/grub-kullanimi_imgeler.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Grub Önyükleyici Yöneticisinin Sisteme Yüklenmesi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Grub İmgeleri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

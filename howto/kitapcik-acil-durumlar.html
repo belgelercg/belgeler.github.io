@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:12+03:00" /><title>Acil Durum Çözümleri ve Genel Çözümler</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/kitapcik.html" title="Linux Kitapçığı" /><link rel="previous" href="../howto/kitapcik-komutlar-bilgilenme.html" title="Bilgi Edinme Komutları" /><link rel="next" href="../howto/kitapcik-adresler.html" title="Linux ile ilgili adresler" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Acil Durum Çözümleri ve Genel Çözümler</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/kitapcik-komutlar-bilgilenme.html">Önceki</a> </td><th width="60%" align="center">Linux Kitapçığı</th><td width="20%" align="right"> <a accesskey="n" href="../howto/kitapcik-adresler.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="kitapcik-acil-durumlar" id="kitapcik-acil-durumlar"></a>Acil Durum Çözümleri ve Genel Çözümler</div><dl><dd> <div class="head3"><a name="id1" id="id1"></a>Yeni bir disk bölümü oluşturmak</div><dl><dd><div class="para">
+Bu noktada Linux'un sabit diskleri nasıl tanıdığı konusunda bir şeyler açıklamakta fayda var sanırım. Linux sabit diski cinsine, hangi IDE kablosuna takılı olduğuna ve master/slave ayarlarına göre tanır. Örnek:
+</div>
+<div class="para"><pre class="literallayout">
+1. IDE kablosuna bağlı master sabit disk <tt>/dev/hda</tt>'dır
+2. IDE kablosuna bağlı slave sabit disk ise <tt>/dev/hdd</tt>'dir.
+</pre></div>
+<div class="para">
+Dolayısıyla ana sabit diskimizde yer açtığımızı düşünürsek vereceğimiz komut,
+</div>
+<div class="para"><div align="right"><pre class="screen"><tt>#</tt> <b><tt>cfdisk /dev/hda</tt></b></pre></div></div>
+<div class="para">
+olacaktır. Evet, şu anda <tt>/dev/hda</tt>'nın bölümlerini görüyoruz. Burada görmemiz gereken şey tahminen
+</div>
+<div class="para"><div align="right"><pre class="screen">
+                                       cfdisk 2.11l
+
+                                   Sabit Disk: /dev/hdb
+                                 Size: 40060403712 bytes
+                  Kafa: 255        Sektör/İz: 63         Silindir: 4870
+
+   İsim        Flama       Bölüm Türü   DS Türü        [Etiket]        Boy (MB)
+--------------------------------------------------------------------------------
+   hda1        Açılış      Birincil     Win95 FAT32                     530.11
+   hda2                    Ek           Win95 Ext'd                   38588.13
+   hda5                    Mantıksal    Win95 FAT32                    9647.0
+   hda6                    Mantıksal    Linux ext2                     9647.0
+   hda7                    Mantıksal    Linux swap                      987.97
+                           Boş alan                                   18306.20
+
+         [  Sil ]  [Yardım]  [Sığdır] [ Yeni ]  [  Yaz ]  [ Çık  ]
+         [ Türü ]  [ Birim]  [Kaydet]
+
+</pre></div></div>
+<div class="para">böyle bir ekrandır.</div><div class="para">
+</div><div class="para">
+Yeni bölüm oluştururken bizim ayarlayacağımız disk bölümü "Boş alan" ile belirtilen bölümlenmemiş alanda olacaktır. Bu yüzden ok tuşları <tt>[ Yeni ]</tt> alanının üzerine gelip &lt;Enter&gt; tuşuna basacağız. Bunu verdiğimizde <b><tt>cfdisk</tt></b> bize doğrudan bu alanı Linux olarak ayırır. Bunu yaparken de ne kadar yer ayıracağını sorar. Verdiğimiz örnekte elimizde 18306 MB boş alan bulunmakta, bunun önce 10000'ini sonra da kalanını Linux için ayıralım. Şimdi bunun için bize ayırmak istediğimiz yer sorulduğunda 10000 diyeceğiz ve otomatik olarak Linux bölümü oluşturulacak. Sonra kalan alanı için de aynı işlemi yapacağız. Son durum şöyle olacak:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+   İsim        Flama       Bölüm Türü   DS Türü        [Etiket]        Boy (MB)
+--------------------------------------------------------------------------------
+   hda1        Açılış      Birincil     Win95 FAT32                     530.11
+   hda2                    Ek           Win95 Ext'd                   38588.13
+   hda5                    Mantıksal    Win95 FAT32                    9647.0
+   hda6                    Mantıksal    Linux ext2                     9647.0
+   hda7                    Mantıksal    Linux swap                      987.97
+   hda8                    Mantıksal    Linux ext2                     9647.0
+   hda9                    Mantıksal    Linux ext2                     8835.71
+</pre></div></div>
+<div class="para">
+Yapacağımız son işlem ise <tt>[  Yaz ]</tt> seçeneğini seçip bu disk bölümlenme bilgilerini diske yazıp geçerli hale getirmek. Bu noktada isterseniz sil baştan yapıp yeniden bölümlenme yapabilirsiniz, daha hiçbir şey yazılmadı sabit diske.
+</div><div class="para">
+<tt>[ Çık  ]</tt> seçeneğini de kullandiktan sonra yapmamiz gereken,
+</div>
+<div class="para"><div align="right"><pre class="screen"><tt>#</tt> <b><tt>mke2fs -O sparse_super,filetype,has_journal /dev/hda8</tt></b></pre></div></div>
+<div class="para">
+ile Linux bölümünü ext3 dosya sistemine göre biçimlemektir. Bu işlemi <tt>/dev/hda9</tt> için de yaptıktan sonra yeni disk bölümleriniz sisteme bağlanmaya hazırdır.
+</div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Sabit diskde hata var!</div><dl><dd><div class="para">
+Sabit diskde bir hata durumunda sistem büyük ihtimalle tamir modunda açılmak için sizden
+root parolası isteyecektir. Hatta bu bile olmayabilir. Böyle bir durumda yapmanız gereken
+başka bir disk bölümündeki başka bir Linux kurulumundan ya da kurulum yaptığınız CD'den sistemi tamir kipinde başlatıp kök dosya sistemini sisteme bağlamadan (<b><tt>mount</tt></b> komutu) <b><tt>fsck</tt></b> komutu ile disk kontrolü yapmaktır. ext2 ve ext3 sistemlerde bu komutu şöyle çalıştırabilirsiniz:
+</div>
+<div class="para"><div align="right"><pre class="screen"><tt>#</tt> <b><tt>e2fsck -fy /dev/hda6</tt></b></pre></div></div>
+<div class="para">
+Büyük ihtimalle sorun hallolacaktır. ext3 dosya sistemlerinde bu işlem pek gerekmez. Çoğunlukla dosya sistemi çekirdek tarafından jurnal dosyasındaki bir önceki sorunsuz haline getirilir. Böyle bir durumun başlıca oluşma sebebi disk kafası faaliyet halindeyken enerjinin kesilmesidir. Bu bakımdan diske birşeyler yazılırken ya da okunurken sistemi makina üzerindeki düğmelerden kapatmayın. Önceki bölümlerde bahsedilen komutları kullanarak sistemi kapatın ya da yeniden başlatın. O zaman hemen hemen hiç sorun çıkmaz. Sadece arasıra çekirdek olası hatalara karşı disk denetimi yapar.
+</div></dd></dl> <div class="head3"><a name="id3" id="id3"></a>Disk bölümlerinin ve CDROM'ların sisteme bağlanması</div><dl><dd><div class="para">
+Yeni auto-mount sistemler dışında Linux'da ana dosya sisteminin parçası olmayan  sabit disk bölümleri ile çıkarılıp takılabilir ortamlara (CD, disket gibi) dosya sisteminde
+bir boş dizin oluşturulup bu dizin altına bağlanarak erişilebilir.  Örneğin DOS C:\ bölümünü kök dosya sisteminin altına bağlamaya çalışalım. Önce <tt>/mnt</tt> dizini altında bir dizin oluşturalım:
+</div>
+<div class="para"><div align="right"><pre class="screen"><tt>#</tt> <b><tt>mkdir /mnt/C:</tt></b></pre></div></div>
+<div class="para">
+Unutmayın, dosya/dizin isimlerinde her karakteri kullanabiliyoruz.
+Sonra <tt>/dev/hda1</tt> bölümünü bu dizine bağlayalım:
+</div>
+<div class="para"><div align="right"><pre class="screen"><tt>#</tt> <b><tt>mount -t auto /dev/hda1 /mnt/C:</tt></b></pre></div></div>
+<div class="para">
+artık C:\ sürücünüze ulaşmak istediğinizde yapmanız gereken <tt>/mnt/C:</tt> dizinini kullanmak olacaktır.
+</div><div class="para">
+Aynı şekilde CD ve disketleri de sisteme bağlayabiliriz. CDROM sürücünüzdeki diski sisteme bağlamak için:
+</div>
+<div class="para"><div align="right"><pre class="screen"><tt>#</tt> <b><tt>mount -t auto /dev/cdrom /mnt/cdrom</tt></b></pre></div></div>
+<div class="para">
+komutunu kullanıyoruz. Özellikle bağlı CD'ler CDROM'dan çıkarılamazlar, çıkarmak için sistemden ayrılmaları gerekir:
+</div>
+<div class="para"><div align="right"><pre class="screen"><tt>#</tt> <b><tt>umount /dev/cdrom</tt></b></pre></div></div>
+<div class="para">
+Eğer o anda kullandığınız herhangibir program CDROM'a erişiyorsa ya da  <tt>/mnt/cdrom</tt> dizininden bu işlemi yapmaya çalışıyorsanız yapamazsınız.
+Önce dizindeyseniz dizinden çıkın (en kolayı <b><tt>cd</tt></b> ile ev dizininize geçin). Başka bir yazılımın kullanıp kullanmadığını <b><tt>ps -ef</tt></b> ile
+alacağınız listede bir sürecin <tt>/mnt/cdrom/dosya.txt</tt> gibi bir dosyayı açmış olup olmadığına bakın. Böyle bir süreç varsa dosyayı bırakmasını sağlayın
+ya da süreci öldürün (hemen aşağıda nasıl öldüreceğiniz anlatılıyor). Bunu da yapıp <b><tt>umount</tt></b> komutu ile diski sistemden ayırdıktan sonra diski artık yuvasından çıkarabilirsiniz.
+</div></dd></dl> <div class="head3"><a name="id4" id="id4"></a>Sistemi öldürmeyin, süreci öldürün!</div><dl><dd><div class="para">
+Linux'da bir süreç sorun çıkardığında sistem yeniden başlatılmaz, sorun çıkaran süreç öldürülür, sistem yaşatılır. Örneğin <b><tt>mozilla</tt></b>'yı öldürmek isteyelim (çok sık başıma geliyor da).
+</div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>$</tt> <b><tt>ps -ax | grep mozilla</tt></b>
+2500 ?        S      0:01 /usr/lib/mozilla-1.2.1/mozilla-bin
+2508 pts/2    S      0:00 grep mozilla
+<tt>$</tt> <b><tt>kill -9 2500</tt></b>
+<tt>$</tt>
+</pre></div></div>
+<div class="para">
+Ya da sadece <b><tt>killall mozilla-bin</tt></b> komutuyla süreç kimliğini (PID) öğrenmeden (yazılımın tam ismini bilmeniz gerekir) süreci öldürebilirsiniz.
+</div></dd></dl> <div class="head3"><a name="id5" id="id5"></a>Ethernet kartları</div><dl><dd><div class="para">
+Çok sık rastlanan bir durum olarak, makinanıza ethernet kartı taktınız fakat hangi modülü
+kullanacağınızı bilmiyorsunuz. Bütün mevcut ethernet modüllerini listelemek için
+</div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>modprobe -l -t drivers/net -a \*</tt></b>
+</pre></div></div>
+<div class="para">
+ardından da <b><tt>lsmod</tt></b> komutu ile yüklenmiş modüllere bakıp hangisinin sizin modülünüz olduğunu görebilirsiniz.
+</div></dd></dl> <div class="head3"><a name="id6" id="id6"></a>Ağ ayarları</div><dl><dd><div class="para">
+<b><tt>ifconfig -a</tt></b> ile baktığımızda eğer <tt>eth0</tt> varsa modül düzgün çalışıyordur, ama <b><tt>ifconfig</tt></b> ile baktığımızda sadece <tt>lo</tt> gözüküyorsa, <tt>eth0</tt> gözükmüyorsa ethernetinizi yapılandırmanız gerekir.
+</div><div class="para">
+Öncelikle ağda ne kullanılıyor, sabit IP'ler mi var yoksa dinamik IP'ler mi? Mesela windows makinalarda ağ ayarlarında bir IP yazıyor mu yoksa otomatik mi alıyor?
+</div><div class="para">
+Eğer otomatikse yapacağınız şey çok kolay:
+</div>
+<div class="para"><div align="right"><pre class="screen"><tt>#</tt> <b><tt>dhclient -q eth0</tt></b></pre></div></div>
+<div class="para">
+Yok eğer böyle değilse size tahsis edilmiş olan IP'yi sistem yöneticinizden öğrenin. Büyük ihtimalle linux kurduğunuz için size bozulacaktır, umursamayın <tt>;)</tt> diyelim <tt>192.168.0.15</tt> verdi. Eğer aksini söylemezse (özellikle de şirketinizde 200 civarı makina yoksa) ağ maskeniz
+<tt>255.255.255.0</tt>'dır ama siz yine de sorun. Komutumuz:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>ifconfig eth0 192.168.0.15 netmask 255.255.255.0 broadcast 192.168.0.255</tt></b>
+</pre></div></div><div class="para">
+olacaktır. Eveet artık adresimiz var, istersek <b><tt>ifconfig -a</tt></b> ile kontrol edebiliriz.
+</div>
+Fakat hala internete çıkamıyoruz. Diyelim ki ağgeçitimiz <tt>192.168.0.1</tt> olsun. O zaman komutumuz:
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>route add default gw 192.168.0.1</tt></b></pre></div></div>
+<div class="para">olacaktır. Şimdi bakalım:</div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>ping 212.156.4.4</tt></b>
+</pre></div></div><div class="para">
+eveet internete çıkış var, fakat <b><tt>ping ns1.ttnet.net.tr</tt></b> cevap vermiyor. Şimdi de DNS ayarımız kaldı, o da <tt>/etc/resolv.conf</tt> içine:
+</div>
+<div class="para"><div align="right"><pre class="screen">nameserver 212.156.4.4</pre></div></div>
+<div class="para">satırını eklemek şeklinde olacak. Tekrar deniyoruz:
+</div><div class="para"><div align="right"><pre class="screen"><tt>#</tt> <b><tt>ping ns1.ttnet.net.tr</tt></b></pre></div></div>
+</dd></dl> <div class="head3"><a name="id7" id="id7"></a>Açık portları görmek</div><dl><dd><div class="para">
+Makinanızda açık portları görmek için vermeniz gereken komut çok basit:
+</div><div class="para"><div align="right"><pre class="screen"><tt>#</tt> <b><tt>netstat -tap</tt></b></pre></div></div>
+</dd></dl> <div class="head3"><a name="id8" id="id8"></a>Diğer kartlar</div><dl><dd><div class="para">
+Linux'un en sancılı yanlarından biri olan modül tanıtmanın en önemli yardımcısı <b><tt>lspci</tt></b> komutudur.
+</div></dd></dl> <div class="head3"><a name="id9" id="id9"></a>Çekirdek Derlemek</div><dl><dd>
+<ul type="disc" class="itemizedlist"><li>Önce <a class="ulink" href="http://www.kernel.org/" target="_top">http://www.kernel.org/</a>'dan kendinize en uygun çekirdeği indirin.</li><li>Ardından <tt>/usr/src</tt> altına açın.</li><li>Aynı dizinde bir linux sembolik bağı oluşturun:<br /><b><tt>ls -s linux-2.4.21 linux</tt></b></li><li>Şimdi bu dizine gelip <b><tt>make xconfig</tt></b> ya da <b><tt>make menuconfig</tt></b> komutunu verin. İlki X altında, diğeri
+konsolda çalışır.</li><li>Çıkan ekranlardan gerekli aygıtlarınızı seçin.</li><li><tt>Save</tt> seçin ve çıkın ve sırayla aşağıdaki komutları verin.</li><li><b><tt>make dep</tt></b> (2.6 çekirdeklerde bu komuta gerek yok)</li><li><b><tt>make clean</tt></b></li><li><b><tt>make bzImage</tt></b></li><li><b><tt>make modules</tt></b></li><li><b><tt>make modulse-install</tt></b></li><li><b><tt>make install</tt></b></li></ul><div class="para">Son komut derlenmiş çekirdeği <tt>/boot</tt> dizinine kaydedecek ve <tt>/etc/lilo.conf</tt> dosyasını yeni çekirdeğe göre güncelleyip sonra da bu ayarları etkinleştirecektir. Yine de <tt>/etc/lilo.conf</tt> dosyanızı kontrol edin ve <b><tt>lilo</tt></b> komutunu tekrar verin.
+</div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/kitapcik-komutlar-bilgilenme.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/kitapcik.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/kitapcik-adresler.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Bilgi Edinme Komutları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Linux ile ilgili adresler</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

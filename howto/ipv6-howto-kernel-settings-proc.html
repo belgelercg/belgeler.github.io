@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:43+03:00" /><title>/proc dosya sistemine erişim</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/ipv6-howto-kernel-settings.html" title="/proc dosya sisteminde çekirdek ayarlamaları" /><link rel="previous" href="../howto/ipv6-howto-kernel-settings.html" title="/proc dosya sisteminde çekirdek ayarlamaları" /><link rel="next" href="../howto/ipv6-howto-kernel-settings-proc-sys-net-ipv6.html" title="/proc/sys/net/ipv6/ dizinindeki kayıtlar" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">/proc dosya sistemine erişim</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/ipv6-howto-kernel-settings.html">Önceki</a> </td><th width="60%" align="center">/proc dosya sisteminde çekirdek ayarlamaları</th><td width="20%" align="right"> <a accesskey="n" href="../howto/ipv6-howto-kernel-settings-proc-sys-net-ipv6.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="ipv6-howto-kernel-settings-proc" id="ipv6-howto-kernel-settings-proc"></a><tt>/proc</tt> dosya sistemine erişim</div><dl><dd> <div class="head4"><a name="id11" id="id11"></a><tt>cat</tt> ve <tt>echo</tt> kullanarak</div><dl><dd><div class="para">
+<tt>/proc</tt> dosya sistemine erişmenin en kolay yolu <b><tt>cat</tt></b> ve <b><tt>echo</tt></b> kullanmaktır, bunun için bazı gereklilikler vardır:
+  </div><ul type="disc" class="itemizedlist"><li><div class="para">
+<tt>/proc</tt> dosya sistemi çekirdekte yetkilendirilmiş olmalıdır, yani aşağıdaki değer ile derlenmiş olmalıdır:
+  </div>
+<div class="para"><pre class="literallayout">   CONFIG_PROC_FS=y</pre></div>
+  </li><li><div class="para">
+<tt>/proc</tt> dosya sistemi önceden bağlanmış olmalıdır. Aşağıdaki gibi sınayabilirsiniz:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>mount | grep "type proc"</tt></b>
+none on /proc type proc (rw)
+</pre></div></div></li><li><div class="para">
+<tt>/proc</tt> dosya sisteminde okuma ve bazen yazma haklarına (elbette root için) sahip olmalısınız
+  </div></li></ul><div class="para">
+Normalde, <tt>/proc/sys/*</tt> içine yazabilirsiniz, diğer kayıtlar salt okunurdur ve sadece bilgi almak için kullanılırlar.
+  </div><div class="variablelist"><dl><dt><span class="term">Bir değeri öğrenmek</span></dt><dd class="varlist"><div class="para">
+Bir kaydın değeri <b><tt>cat</tt></b> kullanılarak öğrenilebilir:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>cat /proc/sys/net/ipv6/conf/all/forwarding</tt></b>
+0
+</pre></div></div></dd><dt><span class="term">Bir değer atamak</span></dt><dd class="varlist"><div class="para">
+Yeni bir değer <b><tt>echo</tt></b> kullanılarak atanabilir (eğer kayıt yazılabilir ise):
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>echo "1" &gt;/proc/sys/net/ipv6/conf/all/forwarding</tt></b>
+</pre></div></div></dd></dl></div></dd></dl> <div class="head4"><a name="id21" id="id21"></a><tt>sysctl</tt> kullanarak</div><dl><dd><div class="para">
+<b><tt>sysctl</tt></b> uygulaması çekirdeğe erişmek için modern bir yöntem kullanmaktadır. <tt>/proc</tt> dosya sistemi bağlı olmasa dahi kullanılması mümkündür ama bu durumda sadece <tt>/proc/sys/*</tt> dizinine erişim mümkün olabilmektedir!
+  </div><div class="para">
+<b><tt>sysctl</tt></b> uygulaması (Red Hat Linux sistemlerinde) <tt>procps</tt> paketine dahildir.
+  </div><ul type="disc" class="itemizedlist"><li><div class="para">
+<tt>sysctl</tt> arayüzü çekirdekte yetkilendirilmiş olmalıdır, yani çekirdek aşağıdaki değer ile derlenmiş olmalıdır:
+  </div>
+<div class="para"><pre class="literallayout">   CONFIG_SYSCTL=y</pre></div>
+  </li></ul>
+  <div class="variablelist"><dl><dt><span class="term">Bir değeri öğrenmek</span></dt><dd class="varlist"><div class="para">
+Bir kaydın değerini öğrenmek için:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>sysctl net.ipv6.conf.all.forwarding</tt></b>
+net.ipv6.conf.all.forwarding = 0
+</pre></div></div></dd><dt><span class="term">Bir değer atamak</span></dt><dd class="varlist"><div class="para">
+Bir değer atamak için (eğer kayıt yazılabilir ise):
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>sysctl -w net.ipv6.conf.all.forwarding=1</tt></b>
+net.ipv6.conf.all.forwarding = 1
+</pre></div></div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Değer atarken "=" den önce veya sonra boşluk kullanmayın. Bir satırda çoklu değer atanacak ise bu aşağıdaki gibi yapılmalıdır:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>sysctl -w net.ipv4.ip_local_port_range="32768 61000"</tt></b>
+net.ipv4.ip_local_port_range = 32768 61000
+</pre></div></div></td></tr></table></div></dd><dt><span class="term">Ek bilgi</span></dt><dd class="varlist"><div class="para">
+Not: Bazı <b><tt>sysctl</tt></b> sürümleri "." yerine "/" göstermektedir.
+  </div><div class="para">
+Daha fazla ayrıntı için <b><tt>sysctl</tt></b>'nin kılavuz sayfasına bakabilirsiniz.
+  </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/tip.png" /></td><th class="admon">İpucu</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Ayarlara hızlıca göz atmak için <tt>-a</tt> (tüm kayıtları göster) seçeneğini <b><tt>grep</tt></b> ile birlikte kullanın.
+  </div></td></tr></table></div></dd></dl></div></dd></dl> <div class="head4"><a name="id31" id="id31"></a><tt>/proc</tt> dosya sisteminde bulunan değerler</div><dl><dd><div class="para">
+<tt>/proc</tt> dosya sisteminde farklı biçimlere rastlanabilir:
+  </div><ul type="disc" class="itemizedlist"><li>
+MANTIKSAL: basitçe "0" (yanlış) ya da "1" (doğru)
+  </li><li>
+TAMSAYI: bir tamsayı değeri
+  </li><li>
+Çoklu değerler içeren daha karmaşık satırlar: bazen bir başlık satırı da görüntülenir, eğer bu açıklama satırı yoksa çekirdeğin kaynak koduna bakarak her değerin anlamını öğrenebilirsiniz...
+  </li></ul></dd></dl></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/ipv6-howto-kernel-settings.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/ipv6-howto-kernel-settings.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/ipv6-howto-kernel-settings-proc-sys-net-ipv6.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">/proc dosya sisteminde çekirdek ayarlamaları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> /proc/sys/net/ipv6/ dizinindeki kayıtlar</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

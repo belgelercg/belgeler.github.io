@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:46+03:00" /><title>Linux Makinanızı NCP İstemcisi Olarak Yapılandırmak</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/ipx-nasil.html" title="IPX NASIL" /><link rel="previous" href="../howto/ipx-nasil_q1.html" title="İç Ağı Yapılandırmak Zorunda mıyım?" /><link rel="next" href="../howto/ipx-nasil_ncp-server.html" title="Linux Makinanızı NCP Sunucusu Olarak Yapılandırmak" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Linux Makinanızı NCP İstemcisi Olarak Yapılandırmak</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/ipx-nasil_q1.html">Önceki</a> </td><th width="60%" align="center">IPX NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/ipx-nasil_ncp-server.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="ipx-nasil_ncp-client" id="ipx-nasil_ncp-client"></a>Linux Makinanızı NCP İstemcisi Olarak Yapılandırmak</div><dl><dd><div class="para">
+Eğer ağınızda, TCP/IP den başka protokoller kullanarak haberleşen
+makinalarınız var ise Linux'unuz bunların hepsi ile rahat bir şekilde
+haberleşecektir. En çok rastlanan ise Win95 ve WinNT dir. Bunlar ile
+haberleşmek için SMB-NASIL belgesini
+okumalısınız. Eğer bir Novell Netware sunucusu var ise o zaman bu
+belge işinizi görecektir.
+    </div><div class="para">
+Volker Lendecke <span class="email">&lt;lendecke (at) namu01.gwdg.de&gt;</span> Linux makinalarının
+Novell NCP istemcisi olabilmeleri için çekirdeğe bir modül yazmıştır.
+Bu modül ile Novell NCP dosya sunucusu üzerinde paylaştırılan bir oylumu
+Linuz makinanıza bağlayıp, bir Linux dizini gibi kullanmanızı sağlar.
+    </div><div class="para">
+Bu yazılım, Linux makinanızın normal bir Novell iş istasyonu olarak
+öykünümünü sağlar. Aynı zamanda, yazıcı aracı ile Novell yazıcılarına
+Linux'tan çıktı göndermenizi sağlar. <tt>ncpfs</tt> paketi
+Novell 3.x ve yukarısında çalışmaktadır. <tt>ncpfs</tt> ile
+Novell 4.x bağlantısı yapmak istiyorsanız, dosya sunucunuzu
+<tt>bindery</tt> öykünümünü destekleyecek şekilde
+yapılandırmalısınız, çünkü şu anda <tt>ncpfs</tt>
+<tt>NDS</tt> desteğinden yoksundur.
+    </div> <div class="head3"><a name="id1" id="id1"></a><tt>ncpfs</tt>'i Edinmek</div><dl><dd><div class="para">
+<tt>ncpfs</tt> paketini <a class="ulink" href="ftp://ftp.gwdg.de/pub/linux/misc/ncpfs/" target="_top">ftp.gwdg.de</a> adresinden veya <a class="ulink" href="ftp://sunsite.unc.edu/pub/Linux/system/filesystems/ncpfs/" target="_top">sunsite.unc.edu</a> adresinden edinebilirsiniz. Eğer RedHat 5.x veya Turkuaz kullanıyorsanız, bu paket dağıtımla birlikte gelecektir.
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a><tt>ncpfs</tt>'i Yapılandırmak ve Kullanmak</div><dl><dd> <div class="head4"><a name="id12" id="id12"></a>IPX ağ yazılımını yapılandırmak</div><dl><dd><div class="para">
+IPX yazılımını yapılandırmak için iki yöntem vardır. Siz kendiniz
+yapılandırabilir veya yapılandırmayı otomatik olatak yaptırırsınız.
+Yeni başlayanlar bunu otomatik olarak yapmalıdırlar. Bunun için şu
+komutu çalıştırın.
+</div><div class="para"><div align="right"><pre class="screen">
+# ipx_configure --auto_interface=on --auto_primary=on
+</pre></div></div><div class="para">
+(<tt># ipx_interface add [<i>arayüz</i>]
+[<i>çerçeve tipi</i>]</tt> komutunu çalıştırdınız mı?)
+Bunun normalde çalışması gerekir. Eğer çalışmaz ise o zaman el ile
+yapılandırmalısınız.
+        </div></dd></dl> <div class="head4"><a name="id22" id="id22"></a>Yapılandırmayı Test Etmek</div><dl><dd><div class="para">
+IPX ağınızı yapılandırdıktan sonra bunu test edelim. Ağınızdaki Novell
+dosya sunucularını görmek için şu komutu çalıştırın:
+</div><div class="para"><div align="right"><pre class="screen">
+# slist
+</pre></div></div><div class="para">
+Bu komut size ağınızda bulunan bütün Novell dosya sunucularının
+listesini verecektir. Eğer vermez ise o zaman yapılandırmayı siz
+kendiniz yapmalısınız. Örnek bir çıktı şöyle:
+</div><div class="para"><div align="right"><pre class="screen">
+Known NetWare File Servers                          Network   Node Address
+--------------------------------------------------------------------------
+SOSIS                                               8BB32B01  000000000001
+</pre></div></div></dd></dl> <div class="head4"><a name="id32" id="id32"></a>Novell Oylumlarını Bağlamak</div><dl><dd><div class="para">
+Eğer IPX donanımınız doğru bir şekilde yapılandırıldı ise Novell dosya
+sunucusunda paylaştırılan dizinleri Linux makinanızdaki bir dizine
+bağlayabilirsiniz. Bunu yapmak için aşağıdaki bilgilere ihtiyacınız
+olacak:
+        </div><ul type="disc" class="itemizedlist"><li><div class="para">
+Novell dosya sunucusun ismi
+         </div></li><li><div class="para">
+Dosya sunucusunda bir kullanıcı hesabı ve parolası
+         </div></li><li><div class="para">
+Linux'ta hangi dizine bağ yapacaksanız o dizinin ismi
+         </div></li></ul><div class="para">
+Linux makinanızı kapattığınızda bu bağ otomatik olarak düşecektir.
+Hemen şimdi bir örnek yapalım; SOSIS dosya sunucusunu
+<tt>/novell</tt> dizinine bağlayalım:
+</div><div class="para"><div align="right"><pre class="screen">
+#ncpmount -S SOSIS /novell -U mbaser
+Logging into SOSIS as MBASER
+Password:
+</pre></div></div><div class="para">
+Aslında burada <tt>-P [<i>parolanız</i>]</tt>
+eklemesini yapabilirsiniz. Tabii ki bu durumda parolanız ekranda
+görünecektir.
+        </div></dd></dl> <div class="head4"><a name="id42" id="id42"></a>Bağı Test Etmek</div><dl><dd><div class="para">
+Eğer başarılı bir bağ yaptıysanız, Linux'unuz bir hata vermeyecektir.
+Şimdi <tt>/novell</tt> dizinine geçip <tt>ls</tt>
+yazalım.
+</div><div class="para"><div align="right"><pre class="screen">
+#cd /novell
+#ls
+home  sys   win
+</pre></div></div><div class="para">
+Gördüğünüz gibi üç tane oylum <tt>/novell</tt> dizinine
+bağlanmış.
+        </div></dd></dl></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/ipx-nasil_q1.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/ipx-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/ipx-nasil_ncp-server.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">İç Ağı Yapılandırmak Zorunda mıyım? </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Linux Makinanızı NCP Sunucusu Olarak Yapılandırmak</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

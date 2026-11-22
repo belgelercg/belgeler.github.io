@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:25:52+03:00" /><title>İstisnaların Ele Alınması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../uygulamalar/python-tutorial_hatalar.html" title="Hatalar ve İstisnalar" /><link rel="previous" href="../uygulamalar/python-tutorial_istisnalar.html" title="İstisnalar" /><link rel="next" href="../uygulamalar/python-tutorial_istisna-olusturma.html" title="İstisna Oluşturma" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">İstisnaların Ele Alınması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../uygulamalar/python-tutorial_istisnalar.html">Önceki</a> </td><th width="60%" align="center">Hatalar ve İstisnalar</th><td width="20%" align="right"> <a accesskey="n" href="../uygulamalar/python-tutorial_istisna-olusturma.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="python-tutorial_istisnalar-daha" id="python-tutorial_istisnalar-daha"></a>İstisnaların Ele Alınması</div><dl><dd><div class="para">
+        Belirli istisnaları ele alan programlar yazmak mümkündür. Aşağıdaki örnek,
+        kullanıcıdan geçerli bir tamsayı girilene kadar kullanıcıdan giriş yapması
+        istenir. Control-C tuş kombinasyonu (ya da işletim sisteminin desteklediği
+        başka bir kombinasyon) ile kullanıcı programdan çıkabilir. Kullanıcın sebep
+        olduğu bu olay ise <tt>KeyboardInterrupt</tt> istisnasının
+        oluşmasına neden olur.
+</div><div class="para"><div align="right"><pre class="screen">
+&gt;&gt;&gt; while True:
+...     try:
+...         x = int(raw_input("Lütfen bir rakam giriniz: "))
+...         break
+...     except ValueError:
+...         print "Bu geçerli bir giriş değil.  Tekrar deneyin..."
+...
+</pre></div></div><div class="para">
+        <tt>try</tt> deyimi aşağıdaki gibi çalışır:
+      </div>
+        <ul type="disc" class="itemizedlist"><li><div class="para">
+              Önce <tt>try</tt> bloğu (<tt>try</tt> ve
+              <tt>except</tt> arasındaki ifade(ler)) işletilir.
+            </div></li><li><div class="para">
+              Hiçbir istisna oluşmaz ise <tt>except</tt> bloğu atlanır
+              ve <tt>try</tt> deyimin icrası son bulur.
+            </div></li><li><div class="para">
+              Eğer <tt>try</tt> bloğu içinde bir istisna oluşur ise
+              bloğun geri kalanı atlanır. İstisnanın türü <tt>except</tt>
+              anahtar kelimesinden sonra kullanılan ile aynı ise <tt>try</tt>
+              bloğunun kalan kısmı atlanır ve <tt>except</tt> bloğu
+              yürütülür. Programın akışı <tt>try ... except</tt> kısmından
+              sonra gelen ilk satırdan devam eder.
+            </div></li><li><div class="para">
+              Adı <tt>except</tt> bloğunda geçmeyen bir istisna oluşur
+              ise üst seviyedeki <tt>try</tt> ifadelerine geçirilir; ancak
+              bunu ele alan bir şey bulunmaz ise bu bir ele alınmamış istisna olur ve
+              yürütme işlemi yukarıda da görüldüğü gibi bir hata mesajı ile son bulur.
+            </div></li></ul>
+      <div class="para">
+        Bir <tt>try</tt> deyimi farklı istisnaları yakalayabilmek için
+        birden fazla <tt>except</tt> bloğuna sahip olabilir. Bir
+        <tt>except</tt> bloğu parantez içine alınmış bir liste ile birden
+        fazla istisna adı belirtebilir. Örnek:
+</div><div class="para"><div align="right"><pre class="screen">
+... except (RuntimeError, TypeError, NameError):
+...     pass
+</pre></div></div><div class="para">
+        Son <tt>except</tt> bloğu istisna adı belirtilmeden de
+        kullanılıp herhangi bir istisnayı yakalayabilir. Bunu çok dikkatli
+        kullanın, çünkü çok ciddi bir programlama hatasını bu şekilde gözden
+        kaçırabilirsiniz! Bu özellik bir hata mesajı bastırıp ve tekrar bir
+        istisna oluşturarak çağıranın istisnayı ele almasını da sağlamak için
+        kullanılabilir:
+</div><div class="para"><div align="right"><pre class="screen">
+import string, sys
+
+try:
+    f = open('myfile.txt')
+    s = f.readline()
+    i = int(string.strip(s))
+except IOError, (errno, strerror):
+    print "I/O error(%s): %s" % (errno, strerror)
+except ValueError:
+    print "Could not convert data to an integer."
+except:
+    print "Unexpected error:", sys.exc_info()[0]
+    raise
+</pre></div></div><div class="para">
+        <tt>try ... except</tt> ifadesinin seçimlik <tt>else</tt>
+        bloğu da vardır. Bu her <tt>except</tt> bloğunun ardına yazılır ve
+        <tt>try</tt> bloğunun istisna oluşturmadığı durumlarda icra
+        edilmesi gereken kod bulunduğu zaman kullanılır. Örnek:
+</div><div class="para"><div align="right"><pre class="screen">
+for arg in sys.argv[1:]:
+    try:
+        f = open(arg, 'r')
+    except IOError:
+        print 'cannot open', arg
+    else:
+        print arg, 'has', len(f.readlines()), 'lines'
+        f.close()
+</pre></div></div><div class="para">
+        <tt>else</tt> bloğu kullanmak <tt>try</tt> bloğuna
+        ek satırlar eklemekten iyidir çünkü bu <tt>try ... except</tt>
+        ifadesi tarafından korunan kodun oluşturmadığı bir istisnanın kazara
+        yakalanmasını engeller.
+      </div><div class="para">
+        Bir istisna meydana geldiğinde istisna argümanı olarak bilinen bir değer
+        de bulunabilir. Argümanın varlığı ve türü istisnanın türüne bağlıdır.
+        Argümanı olan istisna türleri için <tt>except</tt> bloğunda
+        istisna adından (ya da listesinden) sonra argüman değerini alacak bir
+        değişken belirtilebilir:
+</div><div class="para"><div align="right"><pre class="screen">
+&gt;&gt;&gt; try:
+...     spam()
+... except NameError, x:
+...     print 'name', x, 'undefined'
+...
+name spam undefined
+</pre></div></div><div class="para">
+        Bir istisnanın argümanı var ise ele alınmayan istisna mesajının son
+        kısmında (`ayrıntı') basılır.
+      </div><div class="para">
+        İstisna işleyiciler (exception handlers) sadece <tt>try</tt>
+        bloğu içinde meydana gelen istisnaları değil <tt>try</tt>
+        bloğundan çağırılan (dolaylı olarak bile olsa) işlevlerdeki istisnaları
+        da ele alırlar. Örnek:
+</div><div class="para"><div align="right"><pre class="screen">
+&gt;&gt;&gt; def this_fails():
+...     x = 1/0
+...
+&gt;&gt;&gt; try:
+...     this_fails()
+... except ZeroDivisionError, detail:
+...     print 'Handling run-time error:', detail
+...
+Handling run-time error: integer division or modulo
+</pre></div></div>
+      </dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../uygulamalar/python-tutorial_istisnalar.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../uygulamalar/python-tutorial_hatalar.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../uygulamalar/python-tutorial_istisna-olusturma.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">İstisnalar </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> İstisna Oluşturma</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

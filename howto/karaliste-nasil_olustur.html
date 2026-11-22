@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:48+03:00" /><title>Karaliste oluşturmak</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/karaliste-nasil.html" title="IP Karalistesi NASIL" /><link rel="previous" href="../howto/karaliste-nasil_kullanim.html" title="Kendi karalistenizi kullanmak" /><link rel="next" href="../howto/karaliste-nasil_sonuc.html" title="Sonuç" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Karaliste oluşturmak</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/karaliste-nasil_kullanim.html">Önceki</a> </td><th width="60%" align="center">IP Karalistesi NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/karaliste-nasil_sonuc.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="karaliste-nasil_olustur" id="karaliste-nasil_olustur"></a>Karaliste oluşturmak</div><dl><dd><div class="para">
+Karalisteler herhangi bir şekilde oluşturulabilir. Sonuçta, karaliste, sizin iletişim kurmak istemediğiniz bir IP numaraları listesinden ibarettir. Tabii gereksiz yere iletişim kurmayı reddetmek sizin zararınızadır, dolayısıyla karalistelerinizi sizin için uygun bir veri kümesini içerecek şekilde hazırlamalısınız.
+</div><div class="para">
+Bu karaliste için kullanılacak veri kümesinini, ağa gereksiz portlardan ulaşmaya
+çalışıp erişimi engellenen, Türk dinamik IP bloklarından gelen IP adreslerinden
+oluşturmayı düşünüyorum. Tabii ki, böyle bir veri kümesi oluşturmak istememin
+bazı sebepleri var:
+  </div><ol class="orderedlist" start="ignore" type="1"><li><div class="listitem"><div class="para">
+Kolayca elde edebiliyorum, bir yerden başlamak lazım. Dolayısıyla karalisteye
+girmeye aday veri kümesini, ağa hizmet verilmeyen portlardan (örneğin Netbios
+portları) girmeye çalışan IP'lerden oluşturuyorum.
+  </div></div></li><li><div class="listitem"><div class="para">
+Bir kullanıcı statik IP'li olabilir. Fakat eğer Netbios v.b. portundan iletişim
+kurmaya çalışıyor ise ya bilgisayarında virüs vardır ve spam yollamaya (kendi
+farkında olmaksızın) başlama ihtimali yüksektir ya da kötü niyetlidir.
+  </div></div></li><li><div class="listitem"><div class="para">
+Bir kullanıcı tamamen dinamik IP'li olabilir. O zaman bir daha bağlandığı zaman
+o IP tamamen başka bir kullanıcıya verilecektir. Fakat ne ilk, ne de sonraki
+kullanıcının bu kadar dinamik bir düzende posta sunucusu çalıştırıp posta kabul
+etmesi mümkün değildir. Eğer posta sunucusu çalıştırmak istiyorlar ise, o zaman
+statik IP başvurusu yapmışlardır (ücretsiz). Eğer (çok uzak ihtimal), dinamik
+DNS metodları ile dinamik bloklar üzerinden bir posta sunucusu çalıştırıyorlar
+ise, çok daha az zahmet ile TTNET'e başvurup bir statik IP tahsis
+ettirebilirler. Dolayısıyla tamamen dinamik IP'lerden kaynaklanan posta, spam
+olacaktır.
+  </div></div></li></ol> <div class="head3"><a name="id1" id="id1"></a>Veri Kümesinin Oluşturulması</div><dl><dd><div class="para">
+Bu örnek, birebir sizin için uygulanabilir olmayacaktır. Daha ziyade fikir vermesi amacı ile hazırlanmıştır. Donanım Zyxel ADSL router'dan oluşmaktadır. İlk önce bu donanımın günlüklerinin Linux makinası üzerinde tutulması için gereken ayarları yapacağız.
+  </div><div class="para">
+Ağa gereksiz portlardan erişmeye çalışıp erişimi engellenen IP adreslerini
+toplayacağım için güvenlik duvarı olarak kullandığım makinanın bana günlük
+kayıtlarını göndermesini sağlamalıyım. Günlük kayıtlarını Linux makinama
+<tt>local1</tt> tanımı ile göndertiyorum. Bu durumda Linux makinamdaki
+<tt>/etc/syslog.conf</tt> dosyasına,
+  </div><div class="para"><div align="right"><pre class="screen">
+local1.*                        -/var/log/firewall.log
+</pre></div></div><div class="para">
+yazarak günlük kayıtlarının ayrı bir dosyada birikmesini sağlıyorum. Ayrıca, bu
+kayıtların bir de <tt>/var/log/messages</tt> dosyasına eklenmesini
+engellemek için,
+  </div><div class="para"><div align="right"><pre class="screen">
+*.=info;*.=notice;*.=warn;  -/var/log/messages
+</pre></div></div><div class="para">
+olan tanımı,
+  </div><div class="para"><div align="right"><pre class="screen">
+*.=info;*.=notice;*.=warn;local1.none  -/var/log/messages
+</pre></div></div><div class="para">
+haline getiriyorum.
+  </div><div class="para">
+Tabii bir de günlük dosyalarının sonsuz büyümesini engellemekte fayda var.
+<tt>/etc/logrotate.d</tt> dizinine <tt>firewall</tt>
+adında bir dosya koyarak <tt>firewall.log</tt>'un ne şekilde
+tutulacağını belirliyorum:
+  </div><div class="para"><div align="right"><pre class="screen">
+/var/log/firewall.log {
+        weekly
+        missingok
+        rotate 52
+        compress
+        delaycompress
+        notifempty
+        create 640 root adm
+}
+</pre></div></div><div class="para">
+Bu, haftada bir yeni bir günlük dosyası açıp 52 haftalık günlükleri diskte
+tutacaktır. Bu şekilde ham veri kümemizi firewall.log dosyalarından toplayabileceğiz.
+  </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Veri Kümesinin İşlenmesi</div><dl><dd><div class="para">
+<tt>firewall.log</tt> dosyasından örnek satır:
+  </div><div class="para"><div align="right"><pre class="screen">
+Jan  8 01:53:53 192.168.1.1 RAS: src="81.213.17.202:4747"
+dst="XXX.XXX.XX.XXX:445"
+msg="Firewall default policy: TCP (W to W/PRESTIGE)"  note="ACCESS BLOCK"
+devID="EF63AF"
+cat="Access Control"
+</pre></div></div><div class="para">Yapacağım işlem, bu satırlardan IP adreslerini çıkartarak bu adreslerin Türk kökenli ve dinamik olduğunu kontrol etmek ve daha önce karalisteye alınmamış ise karalisteye almak.
+  </div><div class="para">
+<tt>/var/lib/rbldns/karaliste_ekle</tt> diye bir betik oluşturalım:
+</div><div class="para"><div align="right"><pre class="screen">
+#!/bin/bash
+
+grep "ACCESS BLOCK" /var/log/firewall.log.0 | \
+awk '{ if ($6 ~ /^src.*/ ) { \
+  srcip=$6; gsub(/src\=\"/,"",srcip); \
+  gsub(/\:.*/,"",srcip); \
+  gsub(/\"/,"",srcip); \
+  split(srcip,A,/\./); \
+  printf( \
+          "%s\t%s.%s.%s.%s.tr.countries.nerd.dk\
+          \t%s.%s.%s.%s.dul.dnsbl.sorbs.net\
+          \t%s.%s.%s.%s.rbl.zzz\n",\
+          srcip, \
+          A[4], A[3], A[2], A[1], \
+          A[4], A[3], A[2], A[1], \
+          A[4], A[3], A[2], A[1]) }  }'   \
+   | sort | uniq &gt; /tmp/tmp.rbl
+
+tarih=`date +%F`
+
+while read srcip tr_test dul_test rbl_test
+do
+rbl_result=`dig +short $rbl_test`
+if [[ $rbl_result != '127.0.0.2' ]] ; then
+   tr_result=`dig +short $tr_test`
+   if [[ -n $tr_result ]] ; then
+      dul_result=`dig -p 530 $dul_test`
+      if [[ -n $dul_result ]] ; then
+         printf "%s :127.0.0.2: Izinsiz erisim yapan TR dinamik IP -- %s\n" \
+                $srcip $tarih &gt;&gt; /var/lib/rbldns/rbl.zzz
+      fi
+   fi
+fi
+done &lt; /tmp/tmp.rbl
+rm -f /tmp/tmp.rbl
+</pre></div></div><div class="para">
+Bu betik, yukarıda örneğini verdiğim günlük kaydından IP adresini alıyor. Yukarıdaki örneğe uygular isek, <tt>srcip</tt> değişkeni 81.213.17.202 olacak. Daha sonra, IP kontrolünü yapabilmek için bu adresi A dizisine alıyor ve ters çevirerek <tt>/tmp/tmp.rbl</tt> dosyasına şu satırı ekliyor:
+</div><div class="para"><div align="right"><pre class="screen">
+81.213.17.202 202.17.213.81.tr.countries.nerd.dk
+¬ 202.17.213.81.dul.dnsbl.sorbs.net 202.17.213.81.rbl.zzz
+</pre></div></div><div class="para">
+Daha sonra, betik, <tt>/tmp/tmp.rbl</tt> dosyasını işleyerek bu karalisteleri kontrol ediyor ve eğer Türk kökenli ise, dinamik IP ise ve mevcut karalistede yok ise, karaliste dosyasına ekliyor.
+</div><div class="para">
+Her hafta <tt>firewall.log</tt> döndürülürken karalisteye ekleme
+yapılması makul olur.
+<tt>/etc/logrotate.d/firewall</tt> dosyasını aşağıdaki şekilde
+değiştirelim:
+    </div><div class="para"><div align="right"><pre class="screen">
+/var/log/firewall.log {
+        weekly
+        missingok
+        rotate 52
+        compress
+        delaycompress
+        notifempty
+        create 640 root adm
+        sharedscripts
+        postrotate
+                /var/lib/rbldns/karaliste_ekle
+        endscript
+}
+</pre></div></div></dd></dl> <div class="head3"><a name="id3" id="id3"></a>Internet'ten rbl.zzz Dosyasının Temini</div><dl><dd><div class="para">
+Eğer bu şekilde oluşturulan karalistenin sizin için faydalı olacağını düşünürseniz,
+</div><div class="para"><div align="right"><pre class="screen">
+$ <b><tt>rsync -az --delete rsync.belgeler.org.tr::rblzzz/rbl.zzz.gz .</tt></b>
+</pre></div></div><div class="para">
+komutu ile alabilirsiniz.
+</div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/karaliste-nasil_kullanim.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/karaliste-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/karaliste-nasil_sonuc.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Kendi karalistenizi kullanmak </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Sonuç</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

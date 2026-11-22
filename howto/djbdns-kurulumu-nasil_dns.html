@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:37+03:00" /><title>DNS Nedir?</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/djbdns-kurulumu-nasil.html" title="djbDNS Kurulumu NASIL" /><link rel="previous" href="../howto/djbdns-kurulumu-nasil_giris.html" title="Giriş" /><link rel="next" href="../howto/djbdns-kurulumu-nasil_bagimlilik.html" title="Önceden Kurulması Gerekli Yazılımlar" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">DNS Nedir?</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/djbdns-kurulumu-nasil_giris.html">Önceki</a> </td><th width="60%" align="center">djbDNS Kurulumu NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/djbdns-kurulumu-nasil_bagimlilik.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="djbdns-kurulumu-nasil_dns" id="djbdns-kurulumu-nasil_dns"></a>DNS Nedir?</div><dl><dd><div class="para">
+Domain Name System [DNS] (Alan Adı Sistemi) dağıtık yapıda bir veritabanıdır.
+Bu sistem makina isimlerini IPv4 (ya da ipv6) adreslere ya da IPv4 adresleri
+makina isimlerine çevirmeye yarar. Ayrıca bir alan için gerekli eposta
+sunucusunun adreslerini ya da alanadı sunucularının hangi IP adreslerinde
+bulunduğunu daha teknik bir ifade ile RR'ları (Resource Records - Özkaynak Kayıtları) tutar.
+DNS yapısı gereği hızlı olmalıdır. Bu yüzden yapılan sorgulamalar eğer 512
+bayttan küçük ise ya da yapılan işlem asıl DNS sunucusu ile yardımcı DNS
+sunucusu arasında bölge transferi değilse UDP üzerinden yapılacaktır.
+DNS sisteminin yazarları DNS için gerekli bilgileri diğer Internet araçlarında
+olduğu gibi RFC'lerde tanımlamışlardır (RFC 1034 ve 1035). Bu belgelere
+bakarsanız içinde bir kaç kod ve bölge soayalarının nasıl yazılacağını
+bulursunuz.
+    </div><div class="para">
+BIND'de (Berkeley Internet Name Daemon) yazılırken bu kriterler dikkate
+alınmıştır. Fakat bu sistemde gereksiz karmaşıklıkta kodlar ve bunun getirdiği
+güvenlik problemleri vardır. Fakat djbdns bu karmaşadan uzak ve güvenli bir
+yazılımdır. Bunun sonucu olarakta "two-thumbs-up bir daemon" olmaya bizce hak
+kazanmıştır. Hatta bizce bind 9.1.X ve ileriki sürümlerinde kullanılan
+"Dns-sec sistemi" bile bind için bir çözüm olmaktan çok uzaktır. Sonuçta temel
+yani "daemon Internet"in ilk zamanlarından kalmıştır. Şu an IPv4'te yaşanılan
+güvenlik sorunları da aynı sebepten oluşmaktadır.
+    </div><div class="para">
+Bu yüzden köklü bir değişim olması gerekliliği savunulmuş ve IPv6 ortaya
+atılmıştır. Bind içinde benzer model söz konusu olmadıkçca djbdns popüleritesini
+sürdürecektir. (Haklı bir popülerite !!!).
+    </div><div class="para">
+Genel olarak dns yazılımlarının yaptığı iki vazife vardır. Bind kullananlar
+eğer çok profesyenel değillerse ya da bu konu ile alakalı kitap okunmamışsa
+bu iki olguyu karıştırabilmektedirler. Bunlar:
+    </div> <div class="head3"><a name="id1" id="id1"></a>Resolving (Çözümleme): Aranılan bir kaydı bulma işlemi</div><dl><dd><div class="para">
+Mesela <tt>http://www.yildiz.edu.tr/</tt> adresine karşılık gelen
+IPv4 adresinin <tt>193.140.1.1</tt> olmasının bulunması. Çözümleme
+yapan yazılımlar iki çeşit işlem yaparlar; ardışık çözümeme ve ardışık
+olmayan çözümleme. Sorgularda gönderilen RD (recursion required - ardışık gerekli)
+bitlerine göre sorgunun türü belirlenir. Ardışık olmayan sorgulara cevap
+veren sunucular cevap olarak ardışık isim sunucuları verirler.
+      </div><div class="para">
+Sonuç olarak yapılan bir sorgu ardışık ise <tt>http://www.yildiz.edu.tr/</tt>
+için doğrudan <tt>193.140.1.1</tt> IP'si ya da "makina bulunamadı"
+cevabı verilebilir. Fakat ardışık olmayan bir sorguda cevabı bulmak için
+başka bir isim sunucusunun IP'sini verebilir. Ardışık olmayan sorgular aynı
+zamanda yinelemeli sorgular olarak daa bilinirler.
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Authoritive Nameserving (Yetkili İsim Sunumu)</div><dl><dd><div class="para">
+Bir alan hakkında bilgi bulunduran sunucudur. Mesela <tt>yildiz.edu.tr</tt>
+alanının MX, NS, A (Bunlar - Resource Record - Özkaynak Kaydı olarak bilinir)
+kayıtlarının tutulduğu isim sunucusudur.
+      </div>
+        <div class="variablelist"><dl><dt><span class="term">CANLI BIR ÖRNEK</span></dt><dd class="varlist"><div class="para">
+Bir sorgu nasıl yapılır. Mesela <tt>http://www.yildiz.edu.tr/</tt>
+adresinin IPv4 karşılığı nedir? Bunun için çözümleyici ya da sizin bilgisayarınız
+Internet'te birkaç yetkili isim sunucusunu gezmek zorundadır. İlk başta " . "
+sunucularından  <tt>tr</tt> TLD'si için yetkili isim sunucu IP'si
+bulunur. Bunun IP'si (ki bu IP'nin makina ismi ülkemiz için ns1.metu.edu.tr
+ya da ns2.metu.edu.tr'dir) alındıktan sonra bu yetkili isim sunucuya "edu.tr." i
+barındıran yetkili isim sunucu IP'si sorulacak ve bu işlem böylece devam
+edecektir ve sonuç olarak <tt>193.140.1.1</tt> adresini sizin
+makinanız ya da <tt>/etc/resolv.conf</tt> dosyanızda bulunan
+çözümleyicinin <tt>yildiz.edu.tr</tt>'nin yetkili isim sunucusundan
+aldığı bilgilere göre belleğinde belli bir müddet tutacaktır. Bu süreye TTL
+(time to live - yaşam süresi) denir. Bu süre boyunca çözümleyici gerekli
+bilgileri belleğinde saklayacaktır. DjbDNS için aksi belirtilmezse bu süre
+42 dakikadır. Kurulacak göre bu süre 5 saniye de yapılabilir. (Nitekim birden
+fazla www sunucunuz var ve bunlar arasında döner turnuva kullanarak yük dengelemesi
+yapmak istersek bu  saniye değeri kullanılacaktır).
+              </div></dd></dl></div>
+      </dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/djbdns-kurulumu-nasil_giris.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/djbdns-kurulumu-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/djbdns-kurulumu-nasil_bagimlilik.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Giriş </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Önceden Kurulması Gerekli Yazılımlar</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

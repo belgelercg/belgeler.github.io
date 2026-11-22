@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:02+03:00" /><title>Satıriçi Sembolik Makina Dili</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/linux-inline-assembly.html" title="Linux için Satıriçi Sembolik Makina Dili (Inline Assembly)" /><link rel="previous" href="../howto/linux-inline-assembly_syntax.html" title="Kısaca GNU Assembler sözdizimi" /><link rel="next" href="../howto/linux-inline-assembly_template.html" title="Sembolik Makina Dili Şablonu" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Satıriçi Sembolik Makina Dili</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/linux-inline-assembly_syntax.html">Önceki</a> </td><th width="60%" align="center">Linux için Satıriçi Sembolik Makina Dili (Inline Assembly)</th><td width="20%" align="right"> <a accesskey="n" href="../howto/linux-inline-assembly_template.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="linux-inline-assembly_iasm" id="linux-inline-assembly_iasm"></a>Satıriçi Sembolik Makina Dili</div><dl><dd><div class="para">
+      GCC Satıriçi Sembolik Makina Dili için aşağıda gösterilen özel "asm" yapısını
+      kullanır:
+    </div><div class="para">
+      <b><tt>GCC'nin "asm" yapısı</tt></b>
+    </div><div class="para"><div align="right"><pre class="screen">
+    asm (
+        assembler şablonu
+        : çıktı terimleri                         (isteğe bağlı)
+        : girdi terimleri                         (isteğe bağlı)
+        : geri dönen yazmaçlar                    (isteğe bağlı)
+        );
+</pre></div></div><div class="para">
+      Bu örnekte sembolik makina dili şablonu sembolik makina dili komutlarından
+      ibarettir. Girdi terimleri, girdi terimleri gibi çalışan C deyimleridir.
+      Çıktı terimleri sembolik makina dili komutlarının çıktılarının uygulanacağı
+      C deyimleridir.
+    </div><div class="para">
+      Satıriçi Sembolik Makina Dili yönetim yeteneği ve çıktılarını C değişkenleri
+      ile görülebilir kılması ile birinci dereceden önem kazanır. Yeteneği sayesinde
+      "asm" sembolik makina dili komutları ile onları içeren C programı arasında
+      bir arayüz niteliğindedir.
+    </div><div class="para">
+      Aralarındaki temel ve önemli fark Temel Satıriçi Sembolik Makina Dili komutlardan,
+      İleri Sembolik Makina Dili terimlerden ibarettir. Örneklendirme için aşağıdaki
+      örneğe bakın:
+    </div><dl class="example"><dt class="example"><a class="example" name="idxmp74" id="idxmp74"></a><b>Örnek 10.1. Satıriçi Sembolik Makina Dili temel yapısı</b></dt><dd class="example"><div class="para"><div align="right"><pre class="screen">
+{
+        int a=10, b;
+        asm ("movl %1, %%eax;
+              movl %%eax, %0;"
+                :"=r"(b)        /* çıktı */
+                :"r"(a)         /* girdi */
+                :"%eax");       /* geri dönen yazmaç */
+}
+</pre></div></div><div class="para">
+      Örneğimizde Sembolik Makina Dili komutları ile <tt>b</tt>'nin değerini
+      <tt>a</tt>'ya eşitledik. Aşağıdaki noktaları not edin.
+      </div><ul type="disc" class="itemizedlist"><li><div class="para">
+            <tt>b</tt> çıktı terimidir, <tt>%0</tt> ile
+            gösterilmiştir ve <tt>a</tt> girdi terimidir,
+            <tt>%1</tt> işe gösterilmiştir.
+          </div></li><li><div class="para">
+            <tt>r</tt>, <tt>a</tt> ve <tt>b</tt>'nin
+            yazmaçlarda kalmasını sağlayan belirteçtir. Şu unutulmamalıdır ki çıktı
+            teriminin belirtecinin her zaman <tt>=</tt> ile çıktı terimi
+            olduğu belirtilmelidir.
+          </div></li><li><div class="para">
+            "asm" yapısı içinde <tt>%eax</tt> yazmacını kullanmak için bir
+            tane daha <tt>%</tt> kullanılmalıdır, diğer bir deyişle
+            <tt>%%eax</tt>, "asm" <tt>%0 %1</tt> vb. değişkenleri
+            tanımlamak için kullanır. Tek <tt>%</tt>'li herşey girdi/çıktı
+            terimi olarak muamele görür.
+          </div></li><li><div class="para">
+            Geri dönen yazmaç, <tt>%eax</tt>, üçüncü iki noktanın sonunda
+            GCC'ye <tt>%eax</tt>'in "asm" içinde değiştirildiğini söyler,
+            bundan dolayı GCC diğer değerleri tutmak için <tt>%eax</tt>'i
+            kullanmayacaktır.
+          </div></li><li><div class="para">
+            <tt>movl %1, %%eax</tt>, <tt>a</tt>'nın değerini
+            <tt>%eax</tt>'e taşır ve <tt>movl %%eax,%0</tt>,
+            <tt>%eax</tt>'in değerini <tt>b</tt>'ye taşır.
+          </div></li><li><div class="para">
+            "asm" yapısının çalıştırılması bitince <tt>b</tt> çıktı terimi,
+            güncellenmiş değeri yansıtacaktır. Yani <tt>b</tt>'nin "asm"
+            içindeki değişikliklerinin "asm" dışına da yansıması beklenir.
+          </div></li></ul></dd></dl><div class="para">
+      Şimdi bu maddeleri biraz daha ayrıntılı olarak inceleyelim.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/linux-inline-assembly_syntax.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/linux-inline-assembly.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/linux-inline-assembly_template.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Kısaca GNU Assembler sözdizimi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Sembolik Makina Dili Şablonu</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

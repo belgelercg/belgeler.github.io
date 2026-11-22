@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:08+03:00" /><title>Kodlamanın Açıklaması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../termcap/termcap-Parameters.html" title="Parametreler" /><link rel="previous" href="../termcap/termcap-Parameters.html" title="Parametreler" /><link rel="next" href="../termcap/termcap-Using-Parameters.html" title="Ekran Komutlarının Parametrelerle Gönderilmesi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Kodlamanın Açıklaması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../termcap/termcap-Parameters.html">Önceki</a> </td><th width="60%" align="center">Parametreler</th><td width="20%" align="right"> <a accesskey="n" href="../termcap/termcap-Using-Parameters.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="termcap-Encode-Parameters" id="termcap-Encode-Parameters"></a>Kodlamanın Açıklaması</div><dl><dd><a class="indexterm" name="idx14" id="idx14"></a><div class="para">
+Parametre gerektiren bir uçbirim komut dizgesi, bu parametrelerin nasıl kodlanacağının bir belirtimi olarak <b><tt>%</tt></b> karakteri ile başlayan özel karakter dizileri içerir. Bu diziler <b><tt>tparam</tt></b> ve <b><tt>tgoto</tt></b> işlevlerinin eylemlerini denetim altına almak için kullanılır.
+    </div><div class="para">
+<b><tt>tparam</tt></b> ve <b><tt>tgoto</tt></b> işlevlerine aktarılacak parametre değerlerinin bir vektör biçiminde olacağı varsayılır. Bu vektör içindeki bir gösterici işlenecek sonraki paremetreyi belirler. <b><tt>%</tt></b>'li dizilerin bazıları tek bir parametreyi kodlar ve göstericiyi sonraki parametreye ilerletir. Bazıları da çıktı üretmeksizin ya göstericiyi ya da parametre değerini değiştirir.
+    </div><div class="para">
+Örneğin, bir standart ANSI uçbiriminin <b><tt>cm</tt></b> dizgesi  <b><tt>\E[%i%d;%dH</tt></b> biçiminde yazılır. (<b><tt>\E</tt></b>, &lt;<b>ESC</b>&gt;'e karşılıktır.) <b><tt>cm</tt></b> teamülen daima iki parametre gerektirir: düşey ve yatay konum; yani bu dizge iki parametrenin kodlanmasını gerektirir. Burada <b><tt>%i</tt></b> kendinden sonra gelen iki değeri 1 arttırır. <b><tt>%d</tt></b>'ler ise değerleri birer onluk sayı olarak kodlar. Eğer imleç konum değerleri 20,58 olacaksa bu dizge, sonucu <b><tt>\E[21;59H</tt></b> olacak şekilde kodlanmalıdır.
+    </div><div class="para">
+Öncelikle, bunlar çıktı üreten <b><tt>%</tt></b> dizileridir. <b><tt>%%</tt></b> dışında herbiri bir parametreyi kodlayıp göstericiyi sonraki parametreye ilerletir.
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>%%</tt></span></dt><dd class="varlist"><div class="para">
+Tek bir <b><tt>%</tt></b> çıktılar.  Sadece <b><tt>%</tt></b> işaretini çıktılamak içindir. <b><tt>%%</tt></b> bir parametre olarak değerlendirilmez.
+       </div></dd><dt><span class="term"><tt>%d</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>printf</tt></b> işlevindeki gibi parametresini onluk sayı olarak çıktılar.
+       </div></dd><dt><span class="term"><tt>%2</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>printf</tt></b> işlevindeki <b><tt>%02d</tt></b> gibidir: parametresini onluk sayı olarak çıktılar ve daima an az iki rakam kullanır.
+       </div></dd><dt><span class="term"><tt>%3</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>printf</tt></b> işlevindeki <b><tt>%03d</tt></b> gibidir: parametresini onluk sayı olarak çıktılar ve daima an az üç rakam kullanır.
+</div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para"><b><tt>%4</tt></b> ve daha büyük diziler tanımlanmamıştır.</div></td></tr></table></div>
+       </dd><dt><span class="term"><tt>%.</tt></span></dt><dd class="varlist"><div class="para">
+Parametre değerini tek bir karakterin ASCII kodu olarak yorumlar ve karakteri çıktılar. <b><tt>printf</tt></b> işlevindeki <b><tt>%c</tt></b> gibidir.
+       </div></dd><dt><span class="term"><tt>%+<i><tt>karakter</tt></i></tt></span></dt><dd class="varlist"><div class="para">
+Parametre değerini <i><tt>karakter</tt></i> karakterine ekleyerek sonucu çıktılar. Örneğin, `<b><tt>%+ </tt></b>' ile 0 değeri boşluk, 1 değeri <b><tt>!</tt></b> olarak çıktılanır.
+       </div></dd></dl></div>
+    <div class="para">
+Aşağıdaki <b><tt>%</tt></b> dizileri bir parametreyi çıktılamazlar parametrelerde (değer ya da sıralarında) değişikliğe sebep olurlar, yani sadece yan etkilerinden yararlanılır. Ayrıca gösterici konumunu açıkça belirtilmedikçe ilerletmezler. Standart Unix termcap'i sadece <b><tt>%i</tt></b>, <b><tt>%r</tt></b> ve <b><tt>%&gt;</tt></b> dizilerini tanımlamıştır. Diğerleri GNU oluşumudur.
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>%i</tt></span></dt><dd class="varlist"><div class="para">
+Sonraki iki parametrenin değerlerini 1 arttırır. Bu imleç başlangıcını 0 değilde 1 kabul eden uçbirimlerde kullanılır. Örneğin, <b><tt>%i%d,%d</tt></b> iki parametreden 0 olanını 1, 1 olanını 2 olarak çıktılayacaktır.
+       </div></dd><dt><span class="term"><tt>%r</tt></span></dt><dd class="varlist"><div class="para">
+Sonraki iki parametrenin yerlerini değiştirir. İmlecin yeri belirtilirken yatay konumun önce belirtilmesi gereken uçbirimlerde yararlıdır.
+       </div></dd><dt><span class="term"><tt>%s</tt></span></dt><dd class="varlist"><div class="para">
+Sonraki parametrenin atlanmasını sağlar. Bir çıktı üretmez.
+       </div></dd><dt><span class="term"><tt>%b</tt></span></dt><dd class="varlist"><div class="para">
+Bir parametreyi yedekler. Bu parametre son parametre ise tekrar çıktılanacak son parametre haline gelecek ve sonraki çıktı komutu tarafından kullanılacaktır. <b><tt>%b</tt></b>'i birden fazla kullanarak çok sayıda parametreyi hatta bir parametreyi defalarca yedekleyebilirsiniz.
+       </div></dd><dt><span class="term"><tt>%&gt;</tt><i><tt>c1</tt></i><i><tt>c2</tt></i></span></dt><dd class="varlist"><div class="para">
+Sonraki parametreyi koşullu arttırır. Burada <i><tt>c1</tt></i> ve <i><tt>c2</tt></i> ASCII kodları sayısal olarak verilmiş iki karakterdir. Eğer sonraki parametre <i><tt>c1</tt></i>'in ASCII kodundan büyükse, parametreye <i><tt>c2</tt></i>'nin ASCII kodu eklenir.
+       </div></dd><dt><span class="term"><tt>%a </tt><i><tt>işleç</tt></i> <i><tt>tür</tt></i> <i><tt>konum</tt></i></span></dt><dd class="varlist"><div class="para">
+Kendinden sonraki parametreye bir aritmetik işlem uygular. Burada <i><tt>işleç</tt></i> aritmetik işlemin işleci, <i><tt>tür</tt></i> ve <i><tt>konum</tt></i> ise ikisi birlikte, işleme sokulacak "diğer terimi" belirtir. Herhangi bir çıktı üretilmez.
+       </div><div class="para">
+İfade içindeki boşluklar terimleri ayırmak içindir; bu boşluklar veritabanında görünmez, sadece 5 karakter uzunlukta bir dizi bulunur.
+       </div><div class="para">
+<i><tt>işleç</tt></i> karakteri uygulanacak aritmetik işlem çeşidini belirten bir işleçtir. Şu karakterlerden biri olmalıdır:
+       </div><div class="variablelist"><dl><dt><span class="term"><tt>=</tt></span></dt><dd class="varlist"><div class="para">
+Sonraki parametreye "diğer terimi" atar, eski değer yoksayılır.
+          </div></dd><dt><span class="term"><tt>+</tt></span></dt><dd class="varlist"><div class="para">
+Sonraki parametreye "diğer terimi" ekler.
+          </div></dd><dt><span class="term"><tt>-</tt></span></dt><dd class="varlist"><div class="para">
+Sonraki parametreden "diğer terimi" çıkarır.
+          </div></dd><dt><span class="term"><tt>*</tt></span></dt><dd class="varlist"><div class="para">
+Sonraki parametre ile "diğer terimi" çarpar.
+          </div></dd><dt><span class="term"><tt>/</tt></span></dt><dd class="varlist"><div class="para">
+Sonraki parametreyi "diğer terime" böler.
+          </div></dd></dl></div>
+       <div class="para">
+"Diğer terim" bir sabit olabileceği gibi, başka bir parametre de olabilir; <i><tt>tür</tt></i> karakteri bunu belirtmek içindir. Şunlardan biri olabilir:
+       </div><div class="variablelist"><dl><dt><span class="term"><tt>p</tt></span></dt><dd class="varlist"><div class="para">
+Başka bir parametre kullanılır. <i><tt>konum</tt></i> ile hangi parametrenin kullanılacağı belirtilir. <i><tt>konum</tt></i> karakterinin ASCII kodundan 64 çıkarıldığında kalan, "diğer terim" olarak kullanılacak parametrenin bu parametreye göre (göreli) konumunu vermelidir. <i><tt>konum</tt></i> olarak <b><tt>A</tt></b> karakteri verilmişse "diğer terim" olarak sonraki parametreden sonraki parametre kullanılır. Karakter <b><tt>?</tt></b> ise sonraki parametreden önceki parametre kullanılır.
+          </div></dd><dt><span class="term"><tt>c</tt></span></dt><dd class="varlist"><div class="para">
+Değerin bir sabit olduğunu belirtir. <i><tt>konum</tt></i> karakteri ile sabitin değeri belirtilir. 0200 biti boştur, dolayısıyla 0200 sıfır için kullanılabilir.
+          </div></dd></dl></div>
+        </dd></dl></div>
+    <div class="para">
+Aşağıdaki <b><tt>%</tt></b> dizileri esrarengiz uçbirimlerin tuhaf tasarımlarına imkan vermek için kullanılan özel amaçlı dizilerdir. Genellikle sonraki bir ya da iki parametre üzerinde işlem yaparlar, başka parametre kullanmazlar ve bir çıktı üretmezler. <b><tt>%m</tt></b> bir GNU oluşumudur, diğerleri standart Unix termcap'ta tanımlıdır.
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>%n</tt></span></dt><dd class="varlist"><div class="para">
+Sonraki parametreye 0140 ile "ayrıcalıklı veya" uygular, ondan sonraki parametreye de aynısını yapar.
+       </div></dd><dt><span class="term"><tt>%m</tt></span></dt><dd class="varlist"><div class="para">
+Sonraki parametrenin bitlerinin eşleniğini alır, bunu sonraki parametreye de uygular.
+       </div></dd><dt><span class="term"><tt>%B</tt></span></dt><dd class="varlist"><div class="para">
+Sonraki parametreye BCD kodlaması uygular. Bu C deyimi yeni değerin nasıl hesaplandığını göstermektedir:
+       </div>
+<div class="para"><div align="right"><pre class="screen"><i><tt>parm</tt></i> = (<i><tt>parm</tt></i> / 10) * 16 + <i><tt>parm</tt></i> % 10;
+</pre></div></div>
+       </dd><dt><span class="term"><tt>%D</tt></span></dt><dd class="varlist"><div class="para">
+Delta Data uçbirimlerin gerektirdiği dönüşümü sonraki parametreye uygular. Bu C deyimi yeni değerin nasıl hesaplandığını göstermektedir:
+       </div>
+<div class="para"><div align="right"><pre class="screen">
+<i><tt>parm</tt></i> -= 2 * (<i><tt>parm</tt></i> % 16);
+</pre></div></div>
+      </dd></dl></div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../termcap/termcap-Parameters.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../termcap/termcap-Parameters.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../termcap/termcap-Using-Parameters.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Parametreler </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Ekran Komutlarının Parametrelerle Gönderilmesi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

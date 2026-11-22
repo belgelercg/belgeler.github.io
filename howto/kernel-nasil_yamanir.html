@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:17+03:00" /><title>Çekirdeğe Yama Uygulanması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/kernel-nasil.html" title="Çekirdeğe Yama Uygulanması ve Çekirdeğin Derlenmesi NASIL" /><link rel="previous" href="../howto/kernel-nasil.html" title="Çekirdeğe Yama Uygulanması ve Çekirdeğin Derlenmesi NASIL" /><link rel="next" href="../howto/kernel-nasil_derlenir.html" title="Çekirdeğin Derlenmesi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Çekirdeğe Yama Uygulanması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/kernel-nasil.html">Önceki</a> </td><th width="60%" align="center">Çekirdeğe Yama Uygulanması ve Çekirdeğin Derlenmesi NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/kernel-nasil_derlenir.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="kernel-nasil_yamanir" id="kernel-nasil_yamanir"></a>Çekirdeğe Yama Uygulanması</div><dl><dd> <div class="head3"><a name="id1" id="id1"></a>Yama Nedir?</div><dl><dd><div class="para">
+        <tt>patch</tt> (yama) uygulaması, iki dosya arasındaki farklılıkları
+        bulmak için kullanılan GNU'nun <tt>diff</tt> uygulaması elde edilen
+        yama dosyasını kullanarak eski dosyanın yeni sürümünü elde etmekte kullanılır.
+        <tt>diff</tt> oldukça fazla seçeneğe sahiptir fakat genellikle iki
+        dosya arasında değişen satırları listelemek ve değişen satırları orjinal
+        halleri ile göstermek için listeleyen bir dosyanın oluşturulması için
+        kullanılır. Yama asıl olarak kaynak kodu dosyalarını içeren bir dizini,
+        bütün kaynak kodunu Internet'ten indirmeden güncellemek için kullanılır.
+        Bir yamayı indirmek esas olarak sadece değişen satırları indirmektir.
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Yamanın Kullanılması</div><dl><dd><div class="para">
+        <tt>patch</tt> uygulaması, bütün seçeneklerini içeren oldukça iyi
+        hazırlanmış bir kılavuz sayfası ile beraber gelmektedir. Fakat bunların
+        sadece ikisi bütün işinizi görmek için yeterli olmaktadır.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+patch -p1 &lt; [yama_dosyası]
+
+patch -R &lt; [yama_dosyası]
+</pre></div></div>
+      <div class="para">
+        <tt>-p1</tt> seçeneği yama dosyası içindeki dosya adlarından en
+        soldakini çıkarmak için kullanılır. Bu seçeneği kullanmak için yamayı,
+        yamanacak dizine yerleştirin ve daha sonra bu dizin içinde
+</div>
+<div class="para"><div align="right"><pre class="screen">patch -p1 &lt; [yama_dosyası]</pre></div></div>
+<div class="para">
+        komutunu verin.
+      </div><div class="para">
+        Bu seçeneği daha iyi anlamak için aşağıdaki <tt>PIII.patch</tt>
+        örneğini ele alalım:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>diff -u -r -N koc-yama/linux/Documentation/Configure.help \</tt></b>
+&gt; <b><tt>linux/Documentation/Configure.help</tt></b>
+--- koc-yama/linux/Documentation/Configure.help Sat Jan 29 04:37:46 2000
++++ linux/Documentation/Configure.help Sat Jan 29 04:20:53 2000
+@@ -1637,10 +1637,10 @@
+    all x86 CPU types (albeit not optionally fast), you can specify "386" here.
+-   if you specify one of "486" or "586" or "Pentium" or "PPro", then
+-   the kernel will not necessarily run on earlier architectures (e.g. a
+-   Pentium optimized kernel will run on a Ppro, but not necessarily on
+-   a i486).
++   if you specify one of "486" or "586" or "Pentium" or "PPro" or "PIII",
++   then the kernel will not necessarily run on earlier architectures
++   (e.g. A Pentium optimized kernel will run on a Ppro, but not necessarily
++   on a i486).
+</pre></div></div>
+      <div class="para">
+        Bu şekilde hazırlanmış olan bir yamayı <tt>-p1</tt> seçeneği
+        ile uyguladığımız zaman patch uygulaması bulunduğumuz dizinde
+        <tt>Documentation</tt> adlı altdizini arar daha sonra ise
+        <tt>Configure.help</tt> adlı dosyaya bakar. Bu örnekte eksi
+        işaretli olan satır ile artı işaretli olan satır yer değiştirir.
+        <tt>Patch</tt> çalışırken çıktıyı ekrana gönderir fakat bu
+        çıktı genellikle çok hızlı ilerler. Özgün dosyalar, yeni yamanmış
+        dosyalar onların yerini alırken <tt>*.orig</tt> diye tekrar
+        isimlendirilir.
+      </div></dd></dl> <div class="head3"><a name="id3" id="id3"></a>Çekirdeğe Yama Uygulaması için Bazı Öneriler</div><dl><dd><div class="para">
+        Birçok Linux kullanıcısı <tt>patch</tt>'i çekirdek kodunu yamamak
+        için kullanır. Bunun için en kolay yol bir kabuk betiği olan
+        <tt>patch-kernel</tt>'i kullanmaktır. Bu betik çekirdeğin kaynak
+        kod dizini içinde <tt>scripts</tt> adlı altdizinde bulunur. Bu
+        betik Nick Holloway tarafindan 1995 yılında yazılmıştır. Birkaç yıl sonra
+        Adam Sulmicki bu betiğe bazı sıkıştırma algoritmaları desteğini eklemiştir.
+        Bunlar <tt>*.bz, *.bz2, compress, gzip</tt> ve normal metindir.
+        Bu betik sizin <tt>/usr/src/linux</tt> dizini içinde bulunduğunuzu
+        ve yamanızında bu dizinde olduğunu varsayar. Bu iki değeri komut satırında
+</div>
+<div class="para"><div align="right"><pre class="screen">patch-kernel [ kaynakdizini [yamadizini] ]</pre></div></div>
+<div class="para">yazarak
+        değiştirebilirsiniz. <tt>patch-kernel</tt>, herhangi bir yama
+        başarısız olursa durur. Fakat eğer yama başarılı olursa <tt>find</tt>
+        komutunu çalıştırır ve bütün <tt>*.orig</tt> dosyalarını siler.
+        Eğer komutların çıktılarını görmek veya <tt>*.orig</tt> dosyalarını
+        saklamak istiyorsaniz <tt>patch</tt> komutunu doğrudan
+        uygulayabilirsiniz. Bu yöntem ben de dahil olmak üzere birçok kişi tarafından
+        daha güvenilir bulunuyor. Sıkıştırılmış yamayı açmadan uygulamak için aşağıdaki
+        borulama (pipe) kullanılabilir:
+</div>
+<div class="para"><div align="right"><pre class="screen"># gzip -cd patchXX.gz | patch -p1</pre></div></div>
+<div class="para">veya</div>
+<div class="para"><div align="right"><pre class="screen"># bzip2 -dc patchXX.bz2 | patch -p1</pre></div></div>
+      <div class="para">
+        Yama uygulandıktan sonra işlemin uygulanamadığı dosyaları bulmak için
+        <tt>find</tt> komutu aşağıdaki şekilde kullanılır.
+</div>
+<div class="para"><div align="right"><pre class="screen"># find . -name *.rej</pre></div></div>
+      <div class="para">
+        Eğer find, <tt>*.rej</tt> dosyasını bulursa ismini ekrana basar.
+        Eğer find birşey bulamazsa yama doğru olarak uygulanmış demektir. Bir başka
+        işlem <tt>*.orig</tt> dosyalarını bulmak ve silmektir. Bunun için
+        find'i aşağıdaki şekilde kullanabiliriz:
+</div>
+<div class="para"><div align="right"><pre class="screen"># find . -name *.orig -print0 | xargs -0r rm -f</pre></div></div>
+      <div class="para">
+        Eğer bu komutu her seferinde elle yazmak istemezseniz
+        <tt>.bash_profile, .bash_login</tt> veya <tt>.profile</tt>
+        dosyasına aşağıdaki şekilde bir <tt>alias</tt> ekleyebilirsiniz:
+</div>
+<div class="para"><div align="right"><pre class="screen">alias origbul="find .-name *.orig -print0 | xargs -0r rm -f"</pre></div></div>
+      <div class="para">
+        Bu size <tt>origbul</tt> yazarak yukarıdaki komutu çalıştırmanızı
+        sağlar. Sistemden çıkmadan bu komutu çalıştırmanız için:
+</div>
+<div class="para"><div align="right"><pre class="screen"># source .profile</pre></div></div> yazmanız yeterlidir.
+      <div class="para">
+        Şimdi bu anlattıklarımıza örnek olması amacı ile
+        <tt>linux_dvd_2_2_12_diff.patch</tt> adlı yamayı uygulayalım ve
+        sonra bu yamayı kaldıralım:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# cd /usr/src/linux
+# patch -p1 &lt; linux_dvd_2.2.12_diff.patch
+patching file drivers/block/ide-cd.c
+Hunk #1 succeeded at 2097 (offset 10 lines).
+Hunk #2 succeeded at 2631 (offset 2 lines).
+patching file drivers/block/ide-cd.h
+Hunk #2 succeeded at 666 (offset 4 lines).
+Hunk #4 succeeded at 793 (offset 4 lines).
+patching file include/linux/cdrom.h
+# find . -name *.rej   =&gt; <i>(ekrana birşey basılmazsa işlem başarı ile tamamlanmış)</i>
+# find . -name *.orig
+./drivers/block/ide-cd.c.orig
+./drivers/block/ide-cd.h.orig  =&gt; <i>(yamanmış dosyaların orijinalleri)</i>
+# find . -name *.orig -print0 | xargs -0r rm -f  =&gt; <i>(bu dosyaları silmek için)</i>
+</pre></div></div>veya eğer yukarıdaki <tt>alias</tt>'ı tanımlamışsak:
+
+<div class="para"><div align="right"><pre class="screen">#origbul</pre></div></div>
+      <div class="para">
+        Buraya kadar olan komutlar ile çekirdeği yamama işlemimiz bitiyor. Şimdi
+        bu yamayı kaldıralım:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# patch -p1 -R &lt; linux_dvd_2_2_12_diff.patch
+patching file drivers/block/ide-cd.c
+Hunk #1 succeeded at 2097 (offset 10 lines).
+Hunk #2 succeeded at 2308 (offset 2 lines).
+patching file drivers/block/ide-cd.h.
+Hunk #2 succeeded at 663 (offset 4 lines).
+Hunk #4 succeeded at 784 (offset 4 lines).
+patching file include/linux/cdrom.h.
+# find . -name *.rej
+# origbul
+</pre></div></div>Böylece uygulamış olduğumuz yamayı kaldırmış olduk.
+      </dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/kernel-nasil.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/kernel-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/kernel-nasil_derlenir.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Çekirdeğe Yama Uygulanması ve Çekirdeğin Derlenmesi NASIL </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Çekirdeğin Derlenmesi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

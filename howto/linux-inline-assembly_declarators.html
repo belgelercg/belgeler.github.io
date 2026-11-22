@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:02+03:00" /><title>Terim Belirteçleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/linux-inline-assembly.html" title="Linux için Satıriçi Sembolik Makina Dili (Inline Assembly)" /><link rel="previous" href="../howto/linux-inline-assembly_returns.html" title="Geri Dönen Yazmaç Listesi " /><link rel="next" href="../howto/linux-inline-assembly_examples.html" title="Genel Satıriçi Sembolik Makina Dili Kullanım Örnekleri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Terim Belirteçleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/linux-inline-assembly_returns.html">Önceki</a> </td><th width="60%" align="center">Linux için Satıriçi Sembolik Makina Dili (Inline Assembly)</th><td width="20%" align="right"> <a accesskey="n" href="../howto/linux-inline-assembly_examples.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="linux-inline-assembly_declarators" id="linux-inline-assembly_declarators"></a>Terim Belirteçleri</div><dl><dd><div class="para">
+      Daha önce anlatıldığı gibi, "asm" yapısındaki her terim parantez içindeki bir
+      C deyimi tarafından takip edilen bir terim belirteci tarafından dizi olarak
+      açıklanmalıdır. Terim belirteçleri gerektiği gibi terimin komuttaki adresleme
+      yöntemini tespit ederler. Bunun dışında belirteçler:
+      </div><ul type="disc" class="itemizedlist"><li>
+          Terimin bir yazmaçda tutulabilirliğini ve tutulabileceği yazmaç türünü
+        </li><li>
+          Terimin bellek göstericisi mi olduğunu ve bu durumda tutabileceği adres
+          türlerini
+        </li><li>
+          Terimin direk bir sabit mi olduğunu da belirtir.
+        </li></ul><div class="para">
+      Belirteçler karşılaştırma için iki terim gerektirebilirler.
+      Geçerli bir kaç belirteç çeşitli sıklıklarda kullanılır, bunlar aşağıda
+      kısaca açıklanmıştır. Terim belirteçlerinin tam listesi için GCC ve GAS
+      kılavuzlarına başvurabilirsiniz.
+    </div><div class="para">
+      Sık kullanılan belirteçler:
+      </div><div class="variablelist"><dl><dt><span class="term">Yazmaç terimi belirteçleri (r)</span></dt><dd class="varlist"><div class="para">
+            Terimler, bu belirteç kullanılarak belirtilirse Genel Amaçlı Yazmaçlarda
+            (GPR) tutulur. Aşağıdaki örneğe bakın:
+            </div>
+<div class="para"><div align="right"><pre class="screen">asm ("movl %%cr3, %0\n" :"=r"(cr3val));</pre></div></div>
+            <div class="para">
+            Burada <tt>cr3val</tt> değişkeni yazmaçta tutulur,
+            <tt>%cr3</tt>'ün değeri bu yazmaca kopyalanır ve
+            <tt>cr3val</tt>'ın değeri bellekte bu yazmaç tarafından
+            güncelleştirilir. <tt>r</tt> belirteci belirtildiğinde
+            GCC <tt>cr3val</tt>'ın değerini uygun herhangi bir
+            Genel Amaçlı Yazmaçta (GPR) tutar. Yazmacı belirtmek için, yazmaç
+            isimlerini doğrudan özel yazmaç belirteçleri ile belirtmelisiniz.
+            </div>
+<div class="para"><div align="right"><pre class="screen">
+  a     %eax
+  b     %ebx
+  c     %ecx
+  d     %edx
+  S     %esi
+  D     %edi
+</pre></div></div>   </dd><dt><span class="term">Bellek terimi belirteçleri (m)</span></dt><dd class="varlist"><div class="para">
+            Terimler bellekteyken, onlar üzerinde yapılacak her hangi bir işlem doğrudan
+            bellek bölümüne de uygulanır, yazmaç belirteçleri ise değeri önce bir
+            yazmaçta tutarlar sonra bellek bölümüne yazarlar. Yazmaç belirteçleri
+            genelde kesin olarak gerektiklerinde veya önemli bir performans artışı
+            sağladıklarında kullanılırlar. C değişkenlerinin "asm" içinde güncellenmesi
+            gerektiğinde veya değerini bir yazmaçta tutmak istemediğiniz durumlarda
+            bellek belirteçleri çok daha verimli olurlar.
+            Örneğin <tt>sdtr</tt>'nin değeri <tt>loc</tt> bellek
+            bölümünde tutuluyor:
+            </div>
+<div class="para"><div align="right"><pre class="screen">("sidt %0\n" : :"m"(loc));</pre></div></div>
+            </dd><dt><span class="term">Karşılaştırma (rakam) belirteçleri</span></dt><dd class="varlist"><div class="para">
+            Bazı durumlarda tek bir değişken hem girdi hem de çıktı terimi olabilir.
+            Bu durum "asm"de karşılaştırma belirteçleri ile belirtilir.
+            </div>
+<div class="para"><div align="right"><pre class="screen">asm ("incl %0" :"=a"(var):"0"(var));</pre></div></div>
+            <div class="para">
+            Örneğimizde belirteçleri karşılaştırmak için <tt>%eax</tt>
+            yazmacı hem girdi hem de çıktı yazmacı olarak kullanılmıştır.
+            <tt>var</tt> girdisi <tt>%eax</tt> yazmacına atanıyor,
+            ve <tt>%eax</tt> arttırdıktan sonra <tt>var</tt>'da
+            saklanıyor. " 0 " burada 0'ıncı çıktı belirteci gibi tanımlanmıştır. Bu,
+            <tt>var</tt>'ın değerinin sadece <tt>%eax</tt>'te
+            saklanabileceğini belirtir.
+            Bu belirteç:
+            </div><ul type="disc" class="itemizedlist"><li>
+                Girdinin bir değişkenden okunduğu ve sonucun yine bu değişkene
+                yazıldığı gibi durumlarda
+              </li><li>
+                Girdi ve çıktıların ayrılmasının gerekmediği gibi durumlarda
+                kullanılabilir. Karşılaştırma belirteçlerinin önemi geçerli
+                yazmaçları verimli kullanmamızı sağlamalarındandır.
+              </li></ul></dd></dl></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/linux-inline-assembly_returns.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/linux-inline-assembly.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/linux-inline-assembly_examples.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Geri Dönen Yazmaç Listesi  </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Genel Satıriçi Sembolik Makina Dili Kullanım Örnekleri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

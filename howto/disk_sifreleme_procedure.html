@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:21+03:00" /><title>İşlemler</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/disk_sifreleme.html" title="Disk Şifreleme NASIL" /><link rel="previous" href="../howto/disk_sifreleme-giris.html" title="GİRİŞ" /><link rel="next" href="../howto/disk_sifreleme_more-data.html" title="Daha Fazla Bilgi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">İşlemler</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/disk_sifreleme-giris.html">Önceki</a> </td><th width="60%" align="center">Disk Şifreleme NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/disk_sifreleme_more-data.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="disk_sifreleme_procedure" id="disk_sifreleme_procedure"></a>İşlemler</div><dl><dd><div class="para">
+Bu yöntem şifreli verinin şifrelenmeden önce içeriğinin silinmesine göre tasarlanmıştır. Şifrelenecek veriniz diskin üzerinde ise, geçici olarak veriyi başka biryere kopyalamalısınız ve daha sonra verinizi şifreleme işleminden sonra geri kopyalayabilirsiniz. Veriyi bulunuğu yerde şifrelemek mümkündür, ancak şu an için bunun bu NASIL belgesi için çok ileri seviyede olacağını düşünüyorum. Bu yöntem ilginizi çekiyor ise, daha fazla bilgi için <a class="ulink" href="http://sourceforge.net/projects/loop-aes/" target="_top">loop-AES</a>'in <a class="ulink" href="http://loop-aes.sourceforge.net/loop-AES.README" target="_top">README</a> belgesini okuyunuz.
+    </div><div class="para">
+Aşağıdaki işlemleri yapmak için <a class="ulink" href="http://sourceforge.net/projects/loop-aes/" target="_top">loop-AES</a> destekli çekirdeğe sahip bir sisteminiz olmalı. Şayet elinizde bir tane yok ise, <a class="ulink" href="http://www.knoppix.com/" target="_top">KNOPPIX</a> kullanmanızı tavsiye ederim. KNOPPIX önyüklemeyi CD-ROM'dan yapar ve kurulmasına gerek yoktur, yani KNOPPIX soruna neden olmayacak bir seçenektir.
+    </div><div class="para">
+Bu yönergeler, basitleştirmek için anahtar zinciri ile şifrelenecek verinin aynı bilgisayarda olduğunu farzeder, fakat bu şart değil. Yönergeleri sizin için hangisi daha uygunsa o şekilde değiştirebilirsiniz.
+    </div> <div class="head3"><a name="disk_sifreleme_preparekeychain" id="disk_sifreleme_preparekeychain"></a>Anahtar Zincirinin Hazırlanması</div><dl><dd><div class="para">
+Eğer bir disk ya da bölüm şifrelemek yerine sadece bir dosya şifreleme amacında iseniz, bu bölümü atlayabilir ve doğruca <a href="../howto/disk_sifreleme_procedure.html#disk_sifreleme_Asset" class="xref" title="Şifrelenecek Verinin Hazırlanması">Şifrelenecek Verinin Hazırlanması</a> bölümü ile devam edebilirsiniz.
+      </div><div class="para">
+En ideal kurulum için <span><i>USB flash sürücü</i></span> ya da kartvizit boyutunda CD-ROM gibi önyüklemeli anahtar zinciri aygıtı kullanabilirsiniz. Bunun amacı, diskinizi mümkün olduğunca az açıkta bırakmak istiyoruz, fakat çok ufak bir önyükleme işlemi açığa vurulacaktır ya da bilgisayar hiçbir zaman çalıştırılmayacaktır. Önyükleme işlemi ancak şifresiz gerçekleştirilmesi gerektiğinden, anahtar zincirini bilgisayarda bulundurmamak daha iyidir. Birtakım nedenlerden dolayı önyüklemeli anahtar zinciri kullanamıyorsanız ya da kullanmak istemiyorsanız, o zaman bu yönergeleri yined e takip edebilirsiniz fakat anahtarları anahtar zinciri yerine diskin ufak bir önyükleme bölümü'nde bulundurabilirsiniz.
+       </div><div class="para">
+Aşağıdaki örnekte anahtar zinciri ilk SCSI sürücüsü <tt>/dev/sda</tt> olarak gözüküyor. <tt>/dev/sda</tt>'ı sürücünüzün aygıtı ile uygun olacak şekilde değiştirin.
+       </div><div class="para">
+İlk adım- anahtar zincirini sıfırlama-teknik açıdan gereksizdir, fakat <a href="../howto/disk_sifreleme_procedure.html#disk_sifreleme_Testing_and_Backup" class="xref" title="Sınama ve Yedekleme">Sınama ve Yedekleme</a>'de tavsiye edildiği gibi eğer eşlem olarak yedeklerseniz, bu anahtar zincirini daha küçük yapacaktır.
+       </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>dd if=/dev/zero of=/dev/sda</tt></b></pre></div></div>
+       <div class="para">
+Sonra, anahtar zincirini herhangi bir önyüklemeli diski bölümlediğiniz gibi bölümleyin. Bölümleme konusunda yardıma ihtiyacınız var ise <a class="ulink" href="http://www.tldp.org/HOWTO/Partition/index.html" target="_top">Linux Bölümleme NASIL</a> belgesine göz atınız.
+       </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>cfdisk /dev/sda</tt></b></pre></div></div>
+       <div class="para">
+İlk bölüme bir dosya sistemi yerleştirin.
+       </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>mkfs /dev/sda1</tt></b></pre></div></div>
+       <div class="para">
+Anahtar zincirine bağlayın.
+       </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>mkdir /tmp/keychain</tt></b>
+<tt>bash# </tt><b><tt>mount /dev/sda1 /tmp/keychain</tt></b>
+<tt>bash# </tt><b><tt>cd /tmp/keychain</tt></b>
+</pre></div></div>
+       <div class="head4"><a name="disk_encryption_buildkernel" id="disk_encryption_buildkernel"></a>Çekirdek Derleme</div><dl><dd><div class="para">
+Anahtar zincirini birden fazla bilgisayar ile birlikte kullanacaksanız, herbiri için farklı bir çekirdek derlemeniz gerekir.
+        </div><div class="para">
+Muhtemelen anahtar zinciriniz için özel bir çekirdek derlemeniz gerekecektir, böylece iki şeyden emin olabilirsiniz:
+        </div><ul type="disc" class="itemizedlist"><li><div class="para">
+<a class="ulink" href="http://sourceforge.net/projects/loop-aes/" target="_top">loop-AES</a> ile doğru şekilde yamanmıştır ve şifreleme desteği etkinleştirilmiştir.
+        </div></li><li><div class="para">
+Bilgisayarınızı önyüklemesini sağlayan ve şifrelenecek  veriye erişimi sağlayan bütün aygıt sürücüleri modül olarak eklenmek yerine çekirdeğin içinde derlenmişlerdir.
+        </div></li></ul><div class="para">
+<b><tt>initrd</tt></b> kullandığımız için aygıt sürücülerini modül olarak yükleyebilirsiniz, fakat ben önyükleme diskini mümkün olduğunca basit tutmak için çekirdeğin içine derlemeyi seçtim. Siz başka bir yol deneyebilirsiniz.
+        </div><div class="para">
+Geleneksel bir çekirdek oluşturmak için yardıma ihtiyacınız var ise <a class="ulink" href="http://www.tldp.org/HOWTO/Kernel-HOWTO/index.html" target="_top">Linux Çekidek NASIL</a> belgesini okuyabilirsiniz. Çekirdeği <tt>CONFIG_BLK_DEV_RAM</tt> içerecek şekilde oluşturduğunuzdan emin olun, böylece çekirdek <b><tt>initrd</tt></b> kullanarak önyükleme gerçekleştirebilir.
+        </div><div class="para">
+<a class="ulink" href="http://sourceforge.net/projects/loop-aes/" target="_top">loop-AES</a> ile birlikte gelen yönergeleri izleyerek döngü aygıtını oluşturun.
+Ayrıca bir kısmını daha sonra anahtar zincirine kopyalayacağımız <a class="ulink" href="http://www.kernel.org/pub/linux/utils/util-linux/" target="_top">util-linux</a> araçlarını tekrar oluşturmak için yönergeleri izleyin.
+Dağıtımınız bunları sizin için zaten yapmış olabilir (örneğin, Debian'nın <tt>loop-aes-utils</tt> ve <tt>loop-aes-source</tt> paketleri).
+        </div><div class="para">
+Çekirdeği oluşturduktan sonra, anahtar zincirine kopyalayın.
+        </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>mkdir boot</tt></b>
+<tt>bash# </tt><b><tt>cp arch/i386/boot/bzImage boot/vmlinuz-laptop</tt></b>
+</pre></div></div>
+        <div class="para">
+<a class="ulink" href="http://www.gnu.org/software/grub/grub.html" target="_top">GRUB</a>'u ya da favoriniz olan önyükleyiciyi yükleyiniz.
+        </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>grub-install --root-directory=. /dev/sda</tt></b></pre></div></div>
+        <div class="para">
+Burada GRUB için örnek bir <tt>menu.lst</tt> dosyası bulunmaktadır. Bu dosya <tt>laptop</tt> ve <tt>desktop</tt> isimli iki bilgisayar için girdi içermektedir.
+        </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/important.png" /></td><th class="admon">Önemli</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Anahtar ismini (bilgisayarın ardından isimlendirilmesini tavsiye ederim) <a href="../howto/disk_sifreleme_procedure.html#disk_sifreleme_linuxrc">linuxrc</a>'ye ilk parametre olarak aktarmak gerekmektedir.
+        </div></td></tr></table></div><dl class="example"><dt class="example"><a class="example" name="idxmp22" id="idxmp22"></a><b>Örnek 4.1. <tt>/tmp/keychain/boot/grub/menu.lst</tt></b></dt><dd class="example"><div class="para"><div align="right"><pre class="programlisting">title  laptop
+root (hd0,0)
+kernel /boot/vmlinuz-laptop root=/dev/ram0 init=/linuxrc laptop
+initrd /boot/initrd
+
+title  desktop
+root (hd0,0)
+kernel /boot/vmlinuz-desktop root=/dev/ram0 init=/linuxrc desktop
+initrd /boot/initrd.old
+</pre></div></div></dd></dl></dd></dl> <div class="head4"><a name="disk_encryption_makeinitrd" id="disk_encryption_makeinitrd"></a>initrd Oluşturma</div><dl><dd><div class="para">
+Anahtar zincirini <b><tt>initrd</tt></b>'yi kullanarak önyükleriz, böylece önyükleme başladıktan sonra anahtar zincirini çıkarabiliriz (kim bir kafeteryada otururken dizüstü bilgisayarından USB flash sürücünün sarkmasını ister ki?). Şifreli veriye ulaşabilmek için <b><tt>initrd</tt></b>'nin <tt>/dev/loop0</tt> dosyasına eklenmiş olan bir geridönüş aygıtı oluştururuz.  Aygıt dosyasını <b><tt>initrd</tt></b>'ye koymak, şifreli veri bağlı olduğu sürece <b><tt>initrd</tt></b>'nin de bağlı olması gerektiği anlamına gelir (sorun değil).
+        </div><div class="para">
+Başlangıç RAM diskleri hakkında daha fazla bilgi edinmek için <a class="ulink" href="http://www.tldp.org/HOWTO/Bootdisk-HOWTO/index.html" target="_top">Linux  Önyükleme Diski NASIL</a> ve Linux'ün <a class="ulink" href="http://linux.bkbits.net:8080/linux-2.4/anno/Documentation/initrd.txt@1.2?nav=index.html%7Csrc/%7Csrc/Documentation" target="_top"><tt>Documentation/initrd.txt</tt></a> belgelerini okuyabilirsiniz ya da bunu geçip devam edebilirsiniz.
+        </div><div class="para">
+Tamamını kullanmayacak olsak da 4MB büyüklüğünde başlangıç RAM diski seçiyoruz. Bu büyüklük geleneksel azami büyüklüktür (ve bir zararı yoktur).
+        </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>head -c 4m /dev/zero &gt; boot/initrd</tt></b>
+<tt>bash# </tt><b><tt>mke2fs -F -m0 -b 1024 boot/initrd</tt></b>
+</pre></div></div>
+        <div class="para">
+<b><tt>initrd</tt></b>'yi bağlayalım, böylece üzerinde çalışabiliriz.
+        </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>mkdir /tmp/initrd</tt></b>
+<tt>bash# </tt><b><tt>mount -o loop=/dev/loop3 boot/initrd /tmp/initrd</tt></b>
+<tt>bash# </tt><b><tt>cd /tmp/initrd</tt></b>
+</pre></div></div>
+        <div class="para">
+İhtiyacımız olan en ufak dizin yapısını oluşturalım.
+        </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>mkdir -p {bin,dev,lib,mnt/{keys,new-root},usr/sbin,sbin}</tt></b>
+</pre></div></div>
+        <div class="para">
+İhtiyacımız olan en ufak aygıt kümesini oluştalım. <tt>tty</tt>'nin parola istemi için gerekli olduğunu unutmayın. Bu komut şifrelenecek verinizin <tt>/dev/hda</tt> sürücüsü olduğunu farzeder. Bunu uygun şekilde değiştirebilirsiniz.
+        </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>cp -a /dev/{console,hda,loop0,loop1,tty} dev</tt></b></pre></div></div>
+        <div class="para">
+İhtiyacımız olan 6 yazışımı kopyalayacağız.
+        </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/tip.png" /></td><th class="admon">İpucu</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+<b><tt>which</tt></b> komutunu bir uygulamanın tam yolunu bulmak için kullanabilirsiniz, örneğin:
+        </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>which mount</tt></b>
+/bin/mount
+</pre></div></div>
+        </td></tr></table></div><div class="para">
+Uygulamaları kopyalayalım:
+        </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>cp /bin/{mount,sh,umount} bin</tt></b>
+<tt>bash# </tt><b><tt>cp /sbin/{losetup,pivot_root} sbin</tt></b>
+<tt>bash# </tt><b><tt>cp /usr/sbin/chroot usr/sbin</tt></b>
+</pre></div></div>
+        <div class="para">
+Şimdi de ugulamaların bağımlı olduğu paylaşımlı kütüphaneleri kopyalayalım.
+        </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/tip.png" /></td><th class="admon">İpucu</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Bir uygulamanın (bu örnekte <tt>/bin/sh</tt>) kullandığı paylaşımlı kütüphaneleri bulmak için:
+        </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>ldd /bin/sh</tt></b>
+        libncurses.so.5 =&gt; /lib/libncurses.so.5 (0x40020000)
+        libdl.so.2 =&gt; /lib/libdl.so.2 (0x4005c000)
+        libc.so.6 =&gt; /lib/libc.so.6 (0x4005f000)
+        /lib/ld-linux.so.2 =&gt; /lib/ld-linux.so.2 (0x40000000)
+</pre></div></div>
+        </td></tr></table></div><div class="para">
+Kütüphaneleri kopyalayalım:
+        </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>cp /lib/{ld-linux.so.2,libc.so.6,libdl.so.2,libncurses.so.5} lib</tt></b>
+</pre></div></div>
+        </dd></dl></dd></dl> <div class="head3"><a name="disk_sifreleme_Asset" id="disk_sifreleme_Asset"></a>Şifrelenecek Verinin Hazırlanması</div><dl><dd><div class="para">
+Aynı anahtar zincirini kullanarak birden fazla bilgisayarı idare etmek için bu adımları tekrarlamak mümkündür. Her bilgisayar kendi anahtarına ve bir ihtimalle kendi çekirdeğine sahip olacaktır. Bu yönergeler bilgisayar isminin <tt>laptop</tt> olduğunu farzeder; bu adımları her tekrarladığınız sefer bilgisayarınızın adını buna göre ayarlayınız.
+      </div><div class="para">
+İlk önce verinizi yedekleyin. <a class="ulink" href="http://www.tldp.org/HOWTO/Linux-Complete-Backup-and-Recovery-HOWTO/index.html" target="_top">Linux Tam Yedekleme ve Onarım NASIL</a>'ı okuyun.
+      </div><div class="para">
+Hayır, dur, beni dinle. Verinin yedeğini al. Gerçekten. Yaptığın bir hatadan dolayı şifrelediğin diskin şifresini çözememek zevk vermez. Bu araçlar kuvvetli sırdırlar; eğer verinizi uçurursanız, <i>Bilgisayar Dahilerini</i> çağırıp onların verilerinizi geri getirmelerini umamazsınız. Bu alıştırmanın ana noktası budur.
+      </div><div class="para">
+Bütün diskinizi şifreliyorsanız (tavsiye edilir), <tt>/dev/hda</tt>'yı sizin disk aygıtınız ile değiştirin.
+      </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>ln -s /dev/hda /tmp/asset</tt></b>
+</pre></div></div>
+      <div class="para">
+Eğer bir bölümü şifreliyorsanız (çoklu önyükleme durumu), <tt>/dev/hda3</tt>'ü sizin bölümünüzün aygıtı ile değiştirin.
+      </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>ln -s /dev/hda3 /tmp/asset</tt></b>
+</pre></div></div>
+      <div class="para">
+Sadece bir dosya şifreliyorsanız, <tt>~/encrypted</tt> dosyasını sizin dosyanız ile değiştirin ve <tt>/tmp/keychain</tt> isminde anahtar dosyanızı kaydedeceğiniz yeri (hazırda bulunan çıkarılabilir ortam, örneğin: <tt>/mnt/cf</tt>) işaret eden bir sembolik bağ oluşturun.
+      </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>ln -s ~/encrypted /tmp/asset</tt></b>
+<tt>bash# </tt><b><tt>ln -s /mnt/cf /tmp/keychain</tt></b>
+</pre></div></div>
+      <div class="para">
+Şifrelenecek verinizi rasgele veri ile hazırlayın. Bu saldırganın hangi bölümlerin boş alan olduğunu bulmasını zorlaştıracktır.
+      </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>shred -n 1 -v /tmp/asset</tt></b>
+</pre></div></div>
+      <div class="para">
+Burada anahtarları bulunduracak şifreli bir dosya sistemi oluşturuyoruz. Daha fazla şifreleme, ister misiniz? Evet, anahtar deponuzun çalınması durumunda (<a href="../howto/disk_sifreleme-giris.html#disk_sifreleme_Attack_Tree" class="xref" title="Tablo 4.1. Saldırı Ağacı">Tablo 4.1</a>), anahtarlarınızın ortaya çıkmasını istemezsiniz. Dosya sisteminin boyutu olarak 1 MB seçtim çünkü yuvarlak bir rakam. Anahtarlar için bu kadar bir alana ihtiyacımız olmayacak, o zaman isterseniz daha ufak bir boyut seçebilirsiniz (her anahtar 61 byte uzunluğundadır).
+      </div><div class="para">
+Tekrar rasgele veri ile ilklendirin.
+      </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>cd /tmp/initrd</tt></b>
+<tt>bash# </tt><b><tt>head -c 1m /dev/urandom &gt; keys</tt></b>
+</pre></div></div>
+      <div class="para">
+Parolayı sözlük saldırılarına dayanıklı kılmak için tohum üreteceğiz. Ne zaman <i><tt>&lt;seed&gt;</tt></i> sembolünü görürseniz, onu sizin oluşturduğunuz ile değiştirdiğinizden emin olun. Şu komut ekranda rasgele bir tohum gösterecektir.
+      </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>head -c 15 /dev/random | uuencode -m - | head -2 | tail -1</tt></b>
+</pre></div></div>
+      <div class="para">
+Tohumu kullanarak geridönüş aygıtını kurun. Parolanızı burada seçiyorsunuz. Unutmayacağınız birşey seçin. <a class="ulink" href="http://world.std.com/~reinhold/diceware.html" target="_top">Diceware</a> yöntemini güvenli bir parola seçmek için kullanmak isteyebilirsiniz.
+      </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>losetup -e AES128 -C 100 -S <i><tt>&lt;seed&gt;</tt></i> -T /dev/loop1 keys</tt></b></pre></div></div>
+      <div class="para">
+Anahtar dosya sistemini biçimlendirin ve bağlayın (<a href="../howto/disk_sifreleme_procedure.html#disk_sifreleme_decrypt.sh">decrypt.sh</a> betiği <tt>ext2</tt> dosya sistemini kullandığınızı farzeder).
+      </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>mke2fs /dev/loop1</tt></b>
+<tt>bash# </tt><b><tt>mkdir /tmp/keys</tt></b>
+<tt>bash# </tt><b><tt>mount /dev/loop1 /tmp/keys</tt></b>
+</pre></div></div>
+      <div class="para">
+Şimdi gerçek şifrelenecek verinin anahtarı için 45 byte, bilgisayarınızın oluşturabildiği kadar rasgele seçilmiş olsun. Saldırgan, şimdi sözlük saldırısı deneyebilir! Haha! Anahtarı <tt>laptop</tt> diye isimlendirdiğimiz bilgisayar adından sonra isimlendiririz. Bunun yerine bilgisayarınızın adını kullanın.
+      </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>head -c 45 /dev/random | uuencode -m - | head -2 | tail -1 &gt; /tmp/keys/laptop</tt></b>
+</pre></div></div>
+      <div class="para">
+Şifrelenecek veriye şifreli erişim sağlayan geridönüş aygıtını anahtar ile birlikte kurun.
+      </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>losetup -e AES128 -p 0 /dev/loop0 /tmp/asset &lt; /tmp/keys/laptop</tt></b>
+</pre></div></div>
+      <div class="para">
+Anahtar dosya sistemini devreden çıkarın.
+      </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>umount /tmp/keys</tt></b>
+<tt>bash# </tt><b><tt>losetup -d /dev/loop1</tt></b>
+</pre></div></div>
+       <div class="head4"><a name="disk_sifreleme_swappartition" id="disk_sifreleme_swappartition"></a>Takas Bölümü</div><dl><dd><div class="para">
+Sadece bir dosya şifreliyorsanız bu bölümü atlayın.
+        </div><div class="para">
+<b><tt>mkswap</tt></b>'a boyut parametresi vermek kritiktir, çünkü bu komutu sadece ona adanmış bir bölüm için kullanmıyoruz. İstediğiniz boyutu seçin, ben 2GB seçtim.
+        </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>mkswap /dev/loop0 $((2*1024*1024))</tt></b>
+mkswap: warning: truncating swap area to 2097144kB
+Setting up swapspace version 1, size = 2147471360 bytes
+</pre></div></div>
+        </dd></dl> <div class="head4"><a name="disk_sifreleme_rootfilesystem" id="disk_sifreleme_rootfilesystem"></a>Kök Dosya Sistemi</div><dl><dd><div class="para">
+Sadece bir dosya şifreliyorsanız, bunun gibi bir dosya sistemi ile şifreleyin ve <a href="../howto/disk_sifreleme_procedure.html#disk_sifreleme_Scripts" class="xref" title="Betikler">Betikler</a> bölümüne atlayın.
+       </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>mkfs /dev/loop0</tt></b></pre></div></div>
+       <div class="para">
+Takas alanından sonra kök 'bölümünü' oluşturacağız. 'bölüm' kelimesini tırnak içinde yazıyorum çünkü gerçek bir bölüm değildir. <b><tt>losetup</tt></b>'ın <b><tt>-o</tt></b> göreli konum argümanını kullanarak onu yanıltıyoruz.
+       </div><div class="para">
+<tt>mkswap</tt>'in takas alanın istenen boyutta olması gerekmeyen gerçek boyutunu bize nasıl belirttiğine dikkat edin. Göreli konumu kök dosya sistemine başlamak için belirlerken gerçek boyutu (yukarıdaki örnekte 2147471360 idi) kullanın.
+       </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>losetup -o <i><tt>&lt;root offset&gt;</tt></i> /dev/loop1 /dev/loop0</tt></b>
+</pre></div></div>
+        <div class="para">
+Eğer şifrelenecek veri bütün disk ya da diskin son bölümü ise, o zaman dosya sistemi için bir boyut belirliyeceğiz diye telaşa gerek yoktur. Sizin durumunuz buna uyuyor ise aşağıdakileri yapın ve <a href="../howto/disk_sifreleme_procedure.html#disk_sifreleme_initrd_Mount_Point" class="xref" title="initrd Bağlama Noktası">initrd Bağlama Noktası</a>kısmına geçin.
+        </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>mkfs /dev/loop1</tt></b></pre></div></div>
+        <div class="para">
+Şifrelenecek veri diskin son bölümü olmadığı için, <tt>mkfs</tt>'e boyut kısıtlaması vermek zorundayız ya da bunun ile diskin sonu arasındakı bütün bölümlere yazılacaktır. Tekrarlıyorum, <i>eğer <b><tt>mkfs</tt></b>'e doğru boyutta parametre vermez iseniz, veri kaybına uğrayabilirsiniz</i>.  <b><tt>mkfs</tt></b> aslında sadece bir ön uçtur, dolayısı ile azami ölçüde dikkatli olmak için gerçek bir dosya sistemi oluşturucusu seçeceğiz, bu durumda <b><tt>mke2fs</tt></b>'i.
+        </div><div class="para">
+Dosya sisteminin boyutunu öbeklerle belirtmek sureti ile kısıtlamak mümkündür, fakat <b><tt>mke2fs</tt></b> öbek boyutunu dosya sisteminin boyutuna dayanarak seçer. Klasik Catch-22! Bizim için öbek boyutun ne seçileceğini bulabilir (istediğimizden de fazlası).
+        </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>mke2fs -n -j /dev/loop1</tt></b>
+mke2fs 1.34-WIP (21-May-2003)
+Filesystem label=
+OS type: Linux
+Block size=4096 (log=2)
+Fragment size=4096 (log=2)
+9781248 inodes, 19544448 blocks
+977222 blocks (5.00%) reserved for the super user
+First data block=0
+597 block groups
+32768 blocks per group, 32768 fragments per group
+16384 inodes per group
+Superblock backups stored on blocks:
+        32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632, 2654208,
+        4096000, 7962624, 11239424
+</pre></div></div>
+        <div class="para">
+Bu durum için 4096 seçti. Ne seçerse seçsin bizim dosya sistemimiz için yakın bir değerdir. Doğru boyutu blok cinsinden hesaplayınız.
+        </div><div class="blockquote"><div class="para">
+dosya sistemi boyutu = (bölüm boyutu - takas alanın boyutu) / blok boyutu
+        </div></div><div class="para">
+Bölümün boyutunu 10GB ve takas bölümünün boyutunu 2GB farzedin. <b><tt>mke2fs</tt></b> için doğru boyut:
+        </div>
+<div class="para"><pre class="literallayout">
+(10 - 2) x 2<sup><tt>30</tt></sup> / 4096 = 2097152
+</pre></div>
+        <div class="para">
+Yanlış anlamayın! Yedekleme yapın! İki kere ölçün, bir kere biçin!
+         </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>mke2fs -j /dev/loop1 2097152</tt></b>
+</pre></div></div>
+        <div> <div class="head5"><a name="disk_sifreleme_initrd_Mount_Point" id="disk_sifreleme_initrd_Mount_Point"></a><tt>initrd</tt> Bağlama Noktası</div></div><div class="para">
+Yeni kök dosya sistemini bağlayın ve <tt>initrd</tt> bağlama noktasını oluşturun. Bu <a href="../howto/disk_sifreleme_procedure.html#disk_sifreleme_linuxrc">linuxrc</a> betiğinin <tt>pivot_root</tt> çağrısı için gereklidir.
+          </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>mount /dev/loop1 mnt/new-root</tt></b>
+<tt>bash# </tt><b><tt>mkdir mnt/new-root/initrd</tt></b>
+<tt>bash# </tt><b><tt>umount mnt/new-root</tt></b>
+</pre></div></div>
+          </dd></dl></dd></dl> <div class="head3"><a name="disk_sifreleme_Scripts" id="disk_sifreleme_Scripts"></a>Betikler</div><dl><dd><div class="para">
+Şifre çözme betiğini oluşturmak için yeterli bilgimiz var. Değişkenleri başlangıçta değiştirin (önceden ürettiğiniz tohum da dahil).
+      </div><div class="para">
+Bütün diski ya da bir bölümü şifreliyorsanız, <i><tt>ROOT_OFFSET</tt></i>'e <b><tt>mkswap</tt></b>'den aldığınız değeri atayın. Betiği  <tt>/tmp/initrd</tt> dizinine koyun ve ismini <tt>decrypt.sh</tt> olarak değiştirin.
+      </div><div class="para">
+Sadece bir dosya şifreliyorsanız, o zaman bu betik herhangi bir yerde bulunabilir. Bu durumda <i><tt>ROOT_OFFSET</tt></i>'e 0 atadığınızdan emin olun ve <i><tt>MOUNT</tt></i>'ta da uygun bir bağlama noktası atayın (muhtemelen <tt>/mnt/new-root</tt> değil).
+      </div>
+      <div class="figure"><div class="formaltitle"><b><a name="disk_sifreleme_decrypt.sh" id="disk_sifreleme_decrypt.sh"></a>Şekil 4.1. <tt>/tmp/initrd/decrypt.sh</tt></b></div><div class="para"><div align="right"><pre class="programlisting">#!/bin/sh
+
+SEED=<i><tt>&lt;seed&gt;</tt></i>
+ASSET=/dev/hda
+ROOT_OFFSET=<i><tt>&lt;root offset&gt;</tt></i>
+ROOT_TYPE=ext3
+MOUNT=/mnt/new-root
+KEY="$1"
+
+# Anahtarları açmak için parola sor (bu anahtar zinciri sahibi
+tarafından kaybedildiğinde anahtarların ortaya çıkmasını engeller).
+Kullanıcıya parolayı bilebilmesi için üç hak verin.
+
+for ((FAILED=1, TRY=1; ($FAILED != 0) &amp;&amp; (TRY &lt;= 3); TRY++))
+do
+        mount -n -t ext2 -o loop=/dev/loop1,encryption=AES128,itercountk=100,pseed=$SEED keys /mnt/keys
+        FAILED=$?
+done
+
+if [ $FAILED -ne 0 ]; then
+        echo "Üzgünüm, parolayı tahmin için sadece üç hakkınız var."
+        exit 1
+fi
+
+# Şifreli veriyi çözmek için anahtarı kullan.
+losetup -e AES128 -p 0 /dev/loop0 $ASSET &lt; "/mnt/keys/$KEY"
+
+# Anahtarları kapat.
+umount -n /mnt/keys
+losetup -d /dev/loop1
+
+# Kök dizin "bölüm" aygıtını kur.
+losetup -o $ROOT_OFFSET /dev/loop1 /dev/loop0
+
+# Kök dizin dosya sistemini bağlayın (fsck ile denetlenebilmesi için salt-okunur olmalıdır).
+mount -n -r -t $ROOT_TYPE /dev/loop1 $MOUNT</pre></div></div></div>
+
+  <div class="para">Betiği çalıştırılabilir yapın.</div>
+
+                 <div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>chmod +x decrypt.sh</tt></b></pre></div></div>
+
+      <div class="para">
+Eğer sadece bir dosya şifreliyorsanız, <a href="../howto/disk_sifreleme_procedure.html#disk_sifreleme_Testing_and_Backup" class="xref" title="Sınama ve Yedekleme">Sınama ve Yedekleme</a> bölümüne geçin. Aksi takdirde, aşağıdaki betiği <tt>linuxrc</tt> ismi ile kaydedin ve onu <tt>/tmp/initrd</tt> dizinine yerleştirin.
+      </div>
+      <div class="figure"><div class="formaltitle"><b><a name="disk_sifreleme_linuxrc" id="disk_sifreleme_linuxrc"></a>Şekil 4.2. <tt>/tmp/initrd/linuxrc</tt></b></div><div class="para"><div align="right"><pre class="programlisting">#!/bin/sh
+
+# Şifreli veriyi çöz
+source decrypt.sh "$1"
+
+#Şifreli verinin kök dizin dosya sistemini değiştir.
+cd $MOUNT
+/sbin/pivot_root . initrd
+
+# Kontrolü init'e ver.
+shift 1
+exec chroot . /sbin/init $* &lt;dev/console &gt;dev/console 2&gt;&amp;1
+</pre></div></div></div>
+      <div class="para">Betiği çalıştırılabilir yapın.</div><div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>chmod +x linuxrc</tt></b></pre></div></div><div class="para">
+Tamam, anahtar zinciri ve şifrelenen veri şimdi hazır. Herşeyi çözün.
+      </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>umount /tmp/{initrd,keychain}</tt></b></pre></div></div>
+      <div class="para">
+Şimdi boş şifreli bir dosya sisteminiz var. Yaşasın!
+      </div></dd></dl> <div class="head3"><a name="disk_sifreleme_Testing_and_Backup" id="disk_sifreleme_Testing_and_Backup"></a>Sınama ve Yedekleme</div><dl><dd><div class="para">
+Sisteminizi anahtar zincirinden önyükleme yaparak ya da <a href="../howto/disk_sifreleme_procedure.html#disk_sifreleme_decrypt.sh">decrypt.sh</a> betiğini uygun şekilde yürüterek sınayın (betiğe değiştirge olarak kullanmak istediğiniz anahtarın ismini verin). Önyüklemeden sonra <tt>/sbin/init</tt>'in varolmadığı gibi bir uyarı olabilir ama şimdilik bu sorun değil.
+      </div><div class="para">
+Kök dizininizin başarılı bir şekilde bağlanmış olduğunu kontrol edin. Herşeyin çalıştığından emin olduğunuzda, anahtar deponuzu yedekleyin. Aslında, birçok yedek alın. Şunu sorabilirsiniz, "Fakat anahtar depomun biryerlerde kopyasının olması güvenlik için tehlikeli değil mi?" Cevabı evettir, fakat anahtar deponuzu kaybetmek kadar tehlikeli değildir, eğer güvenliği "bilgime erişimi koruma" anlamında da kullanıyorsnız.
+      </div><div class="para">
+Anahtar depom ufak olduğu için bütün eşlemin yedeğini almaya karar verdim, böylece geri yüklemek kolaydır:
+      </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>bzip2 -c /dev/sda &gt; keychain.img.bz2</tt></b></pre></div></div>
+      <div class="para">
+Sadece bir dosyayı kopyalıyorsanız, arkanıza yaslanabilirsiniz çünkü işiniz bitti.
+      </div></dd></dl> <div class="head3"><a name="disk_sifreleme_Rescue_Disk" id="disk_sifreleme_Rescue_Disk"></a>Kurtarma Diski</div><dl><dd><div class="para">
+Kurtarma diskleri, bir sistemin düzgün çalışmadığı ve/veya önyükleme yapmadığı durumlarda işe yarar. Kurtarma diskinizin çekirdeğinde <a class="ulink" href="http://sourceforge.net/projects/loop-aes/" target="_top">loop-AES</a> desteği olduğundan ve <a class="ulink" href="http://www.kernel.org/pub/linux/utils/util-linux/" target="_top">util-linux</a> <b><tt>losetup</tt></b> ve <b><tt>mount</tt></b> gibi düzgün yamanmış araçlar olduğundan emin olun, aksi takdirde şifrelediğiniz veri işe yaramayacaktır. Gelecekte, bütün kurtarma diskleri bu desteği içerecekler, çünkü  2.6 çekirdeği ile birlikte standart olacak. Bu arada, <a class="ulink" href="http://www.knoppix.com/" target="_top">KNOPPIX</a> (örneğin) şimdiden gerekli desteği sağlar ve kurtarma diski olarak kullanılabilir.
+      </div><div class="para">
+Uygun bir kurtarma diski ile önyükleme yaptıktan sonra, anahtar deponuzu bağlayın ve <a href="../howto/disk_sifreleme_procedure.html#disk_sifreleme_decrypt.sh">decrypt.sh</a> betiğini yürütün.
+      </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>mkdir /tmp/{keychain,initrd}</tt></b>
+<tt>bash# </tt><b><tt>mount /dev/sda1 /tmp/keychain</tt></b>
+<tt>bash# </tt><b><tt>mount -o loop=/dev/loop3 /tmp/keychain/boot/initrd /tmp/initrd</tt></b>
+<tt>bash# </tt><b><tt>pushd /tmp/initrd</tt></b>
+<tt>bash# </tt><b><tt>./decrypt.sh laptop</tt></b>
+<tt>bash# </tt><b><tt>popd</tt></b>
+<tt>bash# </tt><b><tt>umount /tmp/{initrd,keychain}</tt></b>
+</pre></div></div>
+     <div class="para">
+Şifreli verinize şimdi <a href="../howto/disk_sifreleme_procedure.html#disk_sifreleme_decrypt.sh">decrypt.sh</a>'de tanımlanan bağlama noktasından erişebilirsiniz.
+      </div></dd></dl> <div class="head3"><a name="id6" id="id6"></a>Linux Kurma</div><dl><dd><div class="para">
+Son göreviniz yeni şifreli dosya sisteminize Linux kurmaktır. Bunu yaparken <tt>/etc/fstab</tt> dosyasında kök dizin ve takas alanı için girişlerin aşağıdaki gibi olduğundan emin olun:
+      </div><div class="para">
+        <div class="informalexample"><div class="para"><div align="right"><pre class="programlisting"># /etc/fstab: static file system information.
+#
+# &lt;file system&gt; &lt;mount point&gt;   &lt;type&gt;  &lt;options&gt;               &lt;dump&gt;  &lt;pass&gt;
+/dev/loop0      none            swap    sw                      0       0
+/dev/loop1      /               ext3    errors=remount-ro       0       1
+</pre></div></div></div>
+      </div><div class="para">
+Daha önceden başka biryerde bir kurulumunuz varsa, <a class="ulink" href="http://www.tldp.org/HOWTO/Hard-Disk-Upgrade/" target="_top">Disk Yükseltme mini-NASIL</a> belgesini nasıl kopyalama yapıldığını öğrenmek için okuyabilirsiniz.
+      </div><div class="para">
+Yeni bir Linux kurmanın yordamı dağıtımdan dağıtıma değişir. Lütfen aşağıda listelenmeyen dağıtımlar için yönergeleri bana gönderiniz ve onları buraya ekleyeceğim.
+      </div> <div class="head4"><a name="disk_sifreleme_debian" id="disk_sifreleme_debian"></a><a class="ulink" href="http://www.debian.org" target="_top">Debian</a></div><dl><dd><ol class="orderedlist" start="ignore" type="1"><li><div class="listitem"><div class="para">
+<a href="../howto/disk_sifreleme_procedure.html#disk_sifreleme_Rescue_Disk" class="xref" title="Kurtarma Diski">Kurtarma Diski</a>'de ki yönergeleri takip ederek bir kurtarma diskinden önyükleme yapın.
+        </div></div></li><li><div class="listitem"><div class="para">
+<a class="ulink" href="http://www.debian.org/releases/stable/i386/ch-preparing.en.html#s-linux-upgrade" target="_top">3.7  Unix/Linux Sisteminden Debian GNU/Linux Kurma</a> yöntemini kullanarak kurun.
+        </div></div></li></ol>
+      </dd></dl> <div class="head4"><a name="disk_sifreleme_Gentoo" id="disk_sifreleme_Gentoo"></a><a class="ulink" href="http://www.gentoo.org/" target="_top">Gentoo</a></div><dl><dd><ol class="orderedlist" start="ignore" type="1"><li><div class="listitem"><div class="para">
+<a href="../howto/disk_sifreleme_procedure.html#disk_sifreleme_Rescue_Disk" class="xref" title="Kurtarma Diski">Kurtarma Diski</a>'de ki yönergeleri takip ederek bir kurtarma diskinden (Gentoo's Live CD 1.4 çalışmayacaktır) önyükleme yapın.
+        </div></div></li><li><div class="listitem"><div class="para">
+Eğer oluşturduğunuz bir takas alanı var ise onu etkinleştirin.
+        </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>swapon /dev/loop0</tt></b></pre></div></div>
+        </div></li><li><div class="listitem"><div class="para">
+<tt>/mnt/gentoo</tt>'yu kök dizin dosya sistemine yönlendirin.
+        </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>ln -s new-root /mnt/gentoo</tt></b></pre></div></div>
+        </div></li><li><div class="listitem"><div class="para">
+<a class="ulink" href="http://www.gentoo.org/doc/en/gentoo-x86-install.xml" target="_top">Gentoo Linux 1.4 Kurulum Yönergeleri</a>'de ki<a class="ulink" href="http://www.gentoo.org/doc/en/gentoo-x86-install.xml#doc_chap8" target="_top">8. Bölüm - Aşama Tar Paketleri ve chroot</a> bölümüne atlayın.
+        </div></div></li></ol></dd></dl> <div class="head4"><a name="disk_sifreleme_Idle_Logout" id="disk_sifreleme_Idle_Logout"></a>İşlevsizlik Halinde Oturumu Kapama</div><dl><dd><div class="para">
+Sisteminizin belirli bir süre etkin olmaması durumunda otomatik olarak oturum kapanacak şekilde ayarlayın.  Bu dizüstü bilgisayarınız açıkken çalınması durumunda şifreli verinizin ortaya çıkma riskini azaltacaktır (fakat tam olarak önlemez!) (<a href="../howto/disk_sifreleme-giris.html#disk_sifreleme_Attack_Tree" class="xref" title="Tablo 4.1. Saldırı Ağacı">Tablo 4.1</a>'e bakın).
+      </div></dd></dl></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/disk_sifreleme-giris.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/disk_sifreleme.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/disk_sifreleme_more-data.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">GİRİŞ </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Daha Fazla Bilgi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

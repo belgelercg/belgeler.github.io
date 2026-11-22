@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:22+03:00" /><title>Anahtar Kullanımı</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/gpg-kullanimi.html" title="Linux'ta GPG Kullanımı" /><link rel="previous" href="../howto/gpg-kullanimi_giris.html" title="Giriş" /><link rel="next" href="../howto/gpg-kullanimi_sifreleme.html" title="Belgelerin Şifrelenmesi ve Şifresinin Çözülmesi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Anahtar Kullanımı</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/gpg-kullanimi_giris.html">Önceki</a> </td><th width="60%" align="center">Linux'ta GPG Kullanımı</th><td width="20%" align="right"> <a accesskey="n" href="../howto/gpg-kullanimi_sifreleme.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="gpg-kullanimi_anh-ynt" id="gpg-kullanimi_anh-ynt"></a>Anahtar Kullanımı</div><dl><dd> <div class="head3"><a name="id1" id="id1"></a>Yeni Bir Anahtar Çiftinin Üretilmesi</div><dl><dd><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/warning.png" /></td><th class="admon">Uyarı</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">Anahtar üretimi belleğin kilitlenmesini gerektirdiğinden (bellek kilitlemesi, işlem sırasına takas alanının kullanılmasını engeller) üretim işleminin <tt>root</tt> kullanıcısı tarafından yapılması gerekir. Böyle yapmazsanız GNUPG anahtar üretiminin güvenli olmayacağı konusunda sizi uyarır. Anahtar üretiminden sonra anahtarları normal kullanıcının ev dizinine kopyalayıp, dosyaların sahipliğini değiştirdikten sonra normal kullanıcı kimliğinizle kullanabilirsiniz.</div></td></tr></table></div><div class="para">
+Bir yeni asıl anahtar çiftini oluşturmak için <tt>--gen-key</tt> komut satırı seçeneği kullanılır.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>gpg --gen-key</tt></b>
+gpg (GnuPG) 0.9.4; Copyright (C) 1999 Free Software Foundation, Inc.
+This program comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it
+under certain conditions. See the file COPYING for details.
+
+Lütfen istediğiniz anahtarı seçiniz:
+   (1) DSA ve ElGamal (öntanımlı)
+   (2) DSA (yalnız imzalamak için)
+   (4) ElGamal (imzalamak ve şifrelemek için)
+Seçiminiz?
+</pre></div></div>
+<div class="para">
+Bu komut ilk olarak hangi şifreleme algoritmasını kullanmak istediğinizi sorar. 3 seçenek vardır. Öntanımlı değer 1. seçenekle iki anahtar çifti oluşturulur ve kullanılması tavsiye edilen seçenek de budur. Sadece imzaları üretmekte kullanılan bir DSA asıl anahtar çifti ve şifreleme için kullanılan ElGamal (ElCemal) yardımcı anahtar çifti. 2. seçenek, birinciye benzer ancak sadece bir  DSA anahtar çifti oluşturur. 4. seçenek<sup>[<a name="id22" href="#ftn.id22" id="id22">22</a>]</sup> hem imzalama hem de şifreleme için kullanılabilen bir ElGamal anahtar çifti üretir. Bütün seçenekler için imzalama ve şifreleme amacıyla ek anahtar çiftlerini daha sonra da üretmek mümkündür.
+  </div><div class="para">
+Daha sonra anahtar boyutunu sorar, öntanımlı ve tavsiye edilen değer 1024`tür.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+Yeni bir ELG-E anahtar çifti üretmek üzeresiniz.
+                   en küçük anahtar uzunluğu:  768 bit
+                  öntanımlı anahtar uzunluğu: 1024 bit
+    önerilebilecek en büyük anahtar uzunluğu: 2048 bit
+İstediğiniz anahtar uzunluğu nedir? (1024)
+</pre></div></div>
+  <div class="para">
+DSA anahtarının uzunluğu 512 ile 1024 bit arasında, ElGamal anahtarınınki ise herhangi bir uzunlukta olabilirse de GnuPG için anahtar uzunluğunun 768 bitten daha küçük olmaması gereklidir. Diğer yandan 1. seçenek için 1024 bitten daha büyük bir uzunluk belirtirseniz ki, ElGamal için sorun değildir, DSA anahtarı 1024 bitten daha uzun olmayacaktır. 1024 bitlik anahtar son kullanıcı için yeterli güvenliği sağlayacak kadar geniş bir uzay sunar.
+    </div><div class="para">
+Daha uzun anahtar, deneme-yanılmalı saldırılara (brute-force attack) karşı daha güvenlidir, ancak şifrenin kırılmasını engelleyecek yeterliliğe sahip olması gerektiğinden hemen hemen tüm amaçlar için öntanımlı anahtar uzunluğu yeterlidir. Ayrıca, anahtar uzunluğu arttığında şifreleme ve şifre çözme daha yavaş olacak ve büyük anahtar uzunluğundan imzanın uzunluğu da etkilenebilecektir. Bir kere seçildikten sonra anahtar uzunluğu asla değiştirilemez.
+    </div><div class="para">
+Daha sonra anahtarın geçerlilik süresini sorar.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+Lütfen anahtarın ne kadar süreyle geçerli olacağını belirtin.
+         0 = anahtar süresiz geçerli
+      &lt;n&gt;  = anahtar n gün geçerli
+      &lt;n&gt;w = anahtar n hafta geçerli
+      &lt;n&gt;m = anahtar n ay geçerli
+      &lt;n&gt;y = anahtar n yıl geçerli
+Anahtar ne kadar geçerli olacak? (0)
+</pre></div></div>
+    <div class="para">
+"0" girilirse anahtarın geçerlilik süresi sonsuzdur (eğer bu değer girilirse emin olup olmadığınız sorulur). Çoğu kullanıcı için zamanaşımına uğramayan bir anahtar yeterlidir. Anahtar oluşturulduktan sonra geçerlilik tarihinin değiştirilmesi mümkün olsa da genel anahtarınızı önceden almış olanların elindeki anahtarlara bu değişiklik uygulanamayacağından geçerlilik süresi baştan dikkatli seçilmelidir.
+  </div><div class="para">
+Daha sonra anahtar sahibinin gerçek adı, e-posta adresi ve ek açıklama sorulur (ek açıklama kısmına unvan, kurum gibi bilgiler girilebilir).
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+Anahtarınızın size ait olduğunu belirten bir Kullanıcı-Kimliği olmalı;
+Kullanıcı-Kimliği, Gerçek İsminiz, Bir Önbilgi ve e-Posta Adresiniz
+alanlarının bir birleşiminden oluşur. Örneğin:
+        "Fatih Sultan Mehmed (Istanbul Fatihi) &lt;padisah@osmanli.gov.tr&gt;"
+
+Adınız ve Soyadınız:
+</pre></div></div>
+    <div class="para">
+Ardından girilen tüm bilgiler sunulur ve değişiklik yapmak isteyip istemediğinizi sorulur (girilen bilgiler daha sonra "Anahtar Yönetimi" ile değiştirilebilir. Bu konuya ilerde değinilecektir). Son olarak bir parola girilir ve doğrulaması yapılır.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+Gizli anahtarınızı korumak için bir Anahtar Parolanız olmalı.
+
+Anahtar parolasını girin:
+</pre></div></div>
+    <div class="para">
+Bir anahtar parolasının uzunluğu için bir sınır yoktur ve çok dikkatli seçilmelidir. Bu parola özel anahtarınızla bir şifreleme ya da deşifreleme yapacağınız zaman sizden istenecektir, özel anahtarınızı sizden başka birisinin kullanması ihtimalini ortadan kaldırmak için bir önlemdir. İdeal olarak bir anahtar parolasında sözlüklerde bulunabilecek sözcükler bulunmamalı ve büyüklü küçüklü alfabetik karakterlerle rakamların ve sembollerin bir karışımından oluşmalıdır. İyi bir anahtar parolası GnuPG'nin güvenli kullanımı için kritik önemdedir.
+  </div><div class="para">
+Parola girildikten sonra anahtar çiftlerinin üretilmesi süreci başlar. Bu sürede farenin hareket ettirilmesi, ölü klavye tuşlarına basılması rastgele sayı üretiminde uygulamaya kaynak sağlar, sistemin etkin çalışmasında faydalıdır.
+  </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Yürürlükten Kaldırma Sertifikasının Üretimi</div><dl><dd><div class="para">
+Bir anahtar çiftini ürettikten hemen sonra <tt>--gen-revoke</tt> komut satırı seçeneğini kullanarak asıl genel anahtarınız için bir yürürlükten kaldırma sertifikası üretmelisiniz. Anahtar parolanızı unutursanız veya gizli anahtarınız bir şekilde bozulur ya da kaybolursa genel anahtarınızın artık kullanılmaması gerektiğini bildirmek için bu yürürlükten kaldırma sertifikasını yayınlayabilirsiniz. Yürürlükten kaldırılmış bir genel anahtar hala geçmişte kullandığınız imzaları doğrulamakta kullanılabilirse de gelecekte size gönderilecek belgelerin şifrelenmesinde kullanılamaz. Ayrıca, hala gizli anahtarınıza erişiminiz varsa, size geçmişte gönderilmiş şifreli belgelerin şifrelerini çözme gücünüzü etkilemez.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>gpg --output revoke.asc --gen-revoke anahtarım</tt></b>
+[...]
+</pre></div></div>
+    <div class="para">
+<i><tt>anahtarım</tt></i> argümanı anahtar çiftinizin kullanıcı kimliğinin bir parçası olabileceği gibi asıl anahtar çiftinizin anahtar kimliği de olabilir. Üretilen sertifika <tt>revoke.asc</tt> dosyasında olacaktır. <tt>--output</tt> seçeneği verilmezse sertifika standart çıktıya yazılır. Sertifika kısa olacağından isterseniz, bir yazıcı çıktısı olarak alıp bir kasada da muhafaza edebilirsiniz. Sertifika başkalarının kolayca erişebileceği yerlerde saklanmamalıdır. Aksi takdirde, yürürlükten kaldırma sertifikanız bilginiz dışında yayınlandığında geçerli olan genel anahtarınızın geçersiz hale gelebilir.
+    </div></dd></dl> <div class="head3"><a name="id3" id="id3"></a>Anahtar Değişimi</div><dl><dd><div class="para">
+Başkaları ile haberleşmek için genel anahtarlarınızı değiş tokuş etmeniz gerekir. Genel anahtarlığınızdaki anahtarların listesini almak için <tt>--list-keys</tt> seçeneğini kullanabilirsiniz.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>$</tt> <b><tt>gpg --list-keys</tt></b>
+/home/nilgun/.gnupg/pubring.gpg
+-------------------------------
+pub  1024D/86ED4767 2003-06-02 Nilgün Belma Bugüner (http://www.belgeler.org.tr) ¬
+ &lt;nilgun@superonline.com&gt;
+sub  2048g/44C1CE63 2003-06-02
+</pre></div></div>
+     <div class="head4"><a name="id13" id="id13"></a>Bir genel anahtarın ihracı</div><dl><dd><div class="para">
+Bir genel anahtarı ilgili kişiye gönderebilmek için onu önce ihraç etmelisiniz. Bu işlem için <tt>--export</tt> komut satırı seçeneği, ihraç edilecek anahtarı belirleyen bir argümanla birlikte kullanılır. Bu argüman, <tt>--gen-revoke</tt> seçeneğindeki gibi, ihraç edilecek anahtar çiftinizin kullanıcı kimliğinin bir parçası olabileceği gibi anahtar çiftinizin anahtar kimliği de olabilir.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>$</tt> <b><tt>gpg --output nilgun.gpg --export nilgun@superonline.com</tt></b>
+</pre></div></div>
+      <div class="para">
+Bu da genel anahtarınızı insanlara dağıtabilmeniz için genel anahtarınızı bir dosyaya yazma noktasında kullanacağınız bir şeydir. Bu komut seçeneksiz olarak çalıştırıldığında öntanımlı olarak çıktısını standart çıktıya verir. Bu çıktı daha sonra herhangi bir şekilde (keyserver kullanarak, kişisel web sitesine konularak vs.) insanlarla paylaşılır ve insanlar paylaştığınız açık anahtarınızı kullanarak, sizden gelen imzalı bilgileri doğrulayıp okuyabilirler, verileri yalnızca sizin deşifre edebileceğiniz şekilde şifreleyip size gönderebilirler.
+  </div><div class="para">
+Anahtar ikili biçimde ihraç edilir ancak anahtar eposta ile gönderilirken ya da web sayfasında yayınlanacaksa bu elverişli olmaz. Bunun için  <tt>--armor</tt> komut satırı seçeneği vardır. Bu seçenekle  <b><tt>uuencode</tt></b>'lu belgelere benzeyen ASCII zırhlı  (ASCII-armored) çıktı üretilebilir. Genelde GnuPG'den çıktılanacak herşey;  örneğin, anahtarlar, şifreli belgeler ve imzalar; komut satırına  <tt>--armor</tt> seçeneği eklenerek ASCII zırhlı olarak üretilebilir.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>$</tt> <b><tt>gpg --armor --export nilgun@superonline.com</tt></b>
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: GnuPG v1.2.1 (GNU/Linux)
+
+mQGiBD7bos8RBADp2Zqs/P5J187sSMCLaDfMAdcD/Z078OCvAPdPC1oHp5u5xYPq
+9NElcYLXkQyfEDc1wMUNAIAbd9MwOKsLAEsxpsS+JyzUOeK7QOrV9nqj3R7IYV/3
+8Ow3ENzljR0SouMKjeGOCjSLdwP0qCG6BpU+1ZjOr1e5O2Sakws0czECewCgtSv8
+cKXg4FMSalVVeHrQo01YfCED/jUFDa4t5eQyPpy2DHB210XI8cdmoJq+xGCb0I5Q
+pR/r5R701AYwLxmY6q0I0vFovpvZBTlL+3PEoHHQwmKi6wzB/170ZDlfSvomOkQl
+ylpZpBRraC2JocA5LxjoPFx8VVo2ZX26uBGPj1dZRXcR+IsvuNvX8PcZ+IZIq6Zs
+yUJxA/9f9UIix0n6wKUkQVlM0orpZemZGvlosACPjUMsG6fNHmgvNxr2vs6cKMhd
+DO5//W6RzqfpuB9j7GlmYfogPpHigcKxfJWqe4f7jDLrlVeRCXcxtXBpmuyMcupX
+6qu9BxubQlvreSvN7b+ehivBTPiL9XvVtY6BScrYJePn4nXc0bRJTmlsZ8O8biBC
+ZWxtYSBCdWfDvG5lciAoaHR0cDovL3d3dy5iZWxnZWxlci5vcmcpIDxuaWxndW5A
+c3VwZXJvbmxpbmUuY29tPohZBBMRAgAZBQI+26LPBAsHAwIDFQIDAxYCAQIeAQIX
+gAAKCRB2bxy7hu1HZ5qyAKCl1Lvb40QfSOpDrUjKjuf89+oqegCgkSPhdfyDBmo7
+ewcZ0MTy+uJbEKW5Ag0EPtui7hAIAKDjlz7MgzJpEid0EALJ8vwFRZrXXlxM1b+1
+mnuLI3tZg5yzNqY1eQTQdixQbK510DePbZFWDhsr4E6gg+991zJ0LyExaNCkpJps
+irLYokrls2p3QADiGq9g4GkYEcgjOX4/KMGgHOhnEup70LuXhvjFq5pwn2E4bNhX
+tcVi+bTo1lDyMZlMXUfWylkS4+ckCikvNgWeyiHTqPVVqLCWSfrXh57tlWuYjwV9
+/Ts83YKOesqXW7XCPwKiZVGl4UFKLsQadF2fZ6pT4vTL0ztkcbt20p7Y2pzBDAgj
+yz5ruYuDqnxzwquR2uqBs6WTUiogYG4ZFvCdYtQSTWOqRJwO8RcAAwUH/jTqHUol
+9alCgt+WjoEzY6RW8fyx7gZlxcFVdQgcnTK+QmwjX6RTqU+lpfzfxYrkv0vcfuSW
+zK6LzM1/f/YqWO0ofuJJuOXyYJR1BUplB2xRLRDuWhttlQksmgoDiJczK20yTlbK
+HBJ0G5BZsCq/3pz2KraII2wByNMmsB6DIs+4DMJH0foBBnx+/8GUobzMscUltIaa
+itWoogQKytt3bgsUbwGe0WXlzQwbqCzF86BFRznrEaP68nRqI4x6ZCNOW1zcZxsT
+07DqivmVXCU0aTLsqxPYrpiRkQTDrqrKl8MwUgyV9R8MOSlSCm0sLtsjyviYkxup
+OIGXvr+YumNPgCSIRgQYEQIABgUCPtui7gAKCRB2bxy7hu1HZ54fAJ4k4OkBsBgk
+s4XcwiWZzlpebjSRlACeIPple7xUNKbaDse2ii1NsTIOoq8=
+=4wmv
+-----END PGP PUBLIC KEY BLOCK-----
+</pre></div></div>
+  
+<div class="para"><div align="right"><pre class="screen">
+<tt>$</tt> <b><tt>gpg --output nilgun.sec.asc --export-secret-key 86ED4767</tt></b>
+</pre></div></div>
+  <div class="para">
+Bu komut özel anahtarı ikili olarak <tt>nilgun.sec.asc</tt> isimli dosyaya yazar. Özel anahtarın gizliliğinin sağlanması gereklidir.
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>$</tt> <b><tt>gpg --keyserver www.keyserver.net --send-keys 86ED4767</tt></b>
+</pre></div></div>
+  <div class="para">
+Ayrıca GPG, anahtarlarınızı paylaşmanız için yukarıdaki gibi bir yol sunar. Internet'e bağlıyken bu komut <i><tt>nilgun</tt></i> kullanıcısının genel anahtarını, <tt>www.keyserver.net</tt> adresindeki anahtar sunucusuna gönderir. (Bütün anahtar sunucuları anahtar havuzunu ortak kullanır, herhangi birine gönderilen bir anahtarı bir diğerinden sorgulayabilirsiniz.)
+  </div></dd></dl> <div class="head4"><a name="id23" id="id23"></a>Bir genel anahtarın ithali</div><dl><dd><div class="para">
+Bir genel anahtarı genel anahtarlığınıza <tt>--import</tt> komut satırı seçeneğini kullanarak ekleyebilirsiniz.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>$</tt> <b><tt>gpg --import <i><tt>isim</tt></i>.gpg</tt></b>
+gpg: anahtar 9E98BC16: genel anahtar alındı.
+gpg: İşlenmiş toplam miktar: 1
+gpg:                 alınan: 1
+</pre></div></div>
+  <div class="para">
+Genel anahtarını insanlarla paylaşmak istemiş (genel anahtarını ihracetmiş ve bir anahtar sunucusuna veya sayfasına koymuş ya da bir şekilde size göndermiş) bir kişinin genel anahtarını genel anahtarlığınıza dahil etmenizi sağlar. Örneğin <tt>certserver.pgp.com</tt> sunucusundan, genel anahtarına sahip olmak istediğiniz kişinin adını ya da e-posta adresini aratabilir, bulunan anahtarı bir dosyaya kopyalayabilir ve bu içeriği bu kişinin genel anahtarı olan dosyayı, yukarıdaki komutla genel anahtarlığınıza dahil edebilirsiniz. Bu işlem sonucunda siz, söz konusu kişiden gelen imzalanmış verileri doğrulayıp okuyabilir ve yalnızca onun deşifre edebileceği şekilde veri şifreleyip kendisine gönderebilirsiniz.
+  </div><div class="para">
+Bir anahtar ithal edilir edilmez doğrulanmalıdır. GnuPG ithal ettiğiniz her anahtarı kişisel olarak doğrulamanızı gerektirmeyen güçlü ve esnek bir güvence modeli kullanır. Ancak bazı anahtarlar yine de kişisel olarak doğrulanmayı gerektirebilir. Bir anahtar onun parmakizinden doğrulandıktan sonra anahtar imzalanarak geçerli bir anahtar haline gelebilir. Bir anahtarın parmakizi <tt>--fingerprint</tt> komut satırı seçeneği ile çabucak görüntülenebilir. Ancak anahtarı geçerli hale getirmek için onu düzenlemelisiniz.
+   </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>$</tt> <b><tt>gpg --fingerprint</tt></b>
+</pre></div></div>
+  <div class="para">
+Bir anahtarın parmakizi anahtarın sahibi ile doğrulanır. Bunu anahtar sahibi ile ya telefonla görüşerek veya sizin için güvenli olan herhangi bir yöntemle haberleşerek yapabilirsiniz. Eğer sizdeki parmakizi sahibinden aldığınız parmakizi ile aynıysa sizdeki anahtarın doğru kopya olduğundan emin olabilirsiniz.
+  </div><div class="para">
+Parmakizi denetimi bittikten sonra anahtarı imzalayarak onu geçerli hale getirebilirsiniz. Anahtar doğrulaması genel anahtar kriptografisinin zayıf karnı olduğundan, bir anahtarı imzalamadan önce anahtarın parmak izini <i>daima</i> anahtarın sahibi ile haberleşerek doğrulatmalı ve bu konuda çok çok dikkatli olmalısınız.
+   </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>$</tt> <b><tt>gpg --sign-key farukesk@comu.edu.tr</tt></b>
+</pre></div></div>
+  </dd></dl></dd></dl> <div class="head3"><a name="id4" id="id4"></a>Bir anahtarın silinmesi</div><dl><dd>
+<div class="para"><div align="right"><pre class="screen">
+<tt>$</tt> <b><tt>gpg --delete-key <i><tt>anh-kiml</tt></i></tt></b>
+</pre></div></div>
+  <div class="para">
+Sisteme dahil edilmiş <i><tt>anh-kiml</tt></i> anahtar akimlikli kullanıcının genel anahtarını siler. Bu kullanıcının özel anahtarı da sistemde mevcutsa ilk önce bunun silinmesi gerekir.
+  </div></dd></dl><div class="footnotes"><br /><hr width="100" align="left" /><div class="footnote"><div class="para"><sup>[<a name="ftn.id22" href="#id22" id="ftn.id22">22</a>] </sup>3. seçenek imzalamak için kullanılamayan bir tür ElGamal anahtar çifti üretir.</div></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/gpg-kullanimi_giris.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/gpg-kullanimi.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/gpg-kullanimi_sifreleme.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Giriş </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Belgelerin Şifrelenmesi ve Şifresinin Çözülmesi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:22+03:00" /><title>Çekirdeğin Yapılandırılması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/cryptoloop-howto.html" title="Şifreli Geridönüş Aygıtı NASIL" /><link rel="previous" href="../howto/cryptoloop-howto-cryptoloop-introduction.html" title="Giriş" /><link rel="next" href="../howto/cryptoloop-howto-userspace-tools.html" title="Kullanıcı araçları" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Çekirdeğin Yapılandırılması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/cryptoloop-howto-cryptoloop-introduction.html">Önceki</a> </td><th width="60%" align="center">Şifreli Geridönüş Aygıtı NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/cryptoloop-howto-userspace-tools.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="cryptoloop-howto-kernel-configuration" id="cryptoloop-howto-kernel-configuration"></a>Çekirdeğin Yapılandırılması</div><dl><dd><div class="para">
+Cryptoloop'u kullanmak için bazı çekirdek seçeneklerini etkin hale getirmelisiniz. Bu seçenekleri doğrudan çekirdek içine derleyebilir veya ayrıca modül olarak da derleyebilirsiniz. Aşağıda bu seçenekleri modül olarak derledik. Eğer bir 2.6 çekirdeği nasıl derleyeceğiniz hakkında pek bilginiz yoksa <a class="ulink" href="http://www.linuxdocs.org/HOWTOs/Kernel-HOWTO.html" target="_top">Linux Kernel HOWTO</a> belgesine bakmalısınız. Bahsedeceğimiz komutlar sadece en kısa adımları içeriyor.
+    </div><ol class="orderedlist" start="ignore" type="1"><li><div class="listitem"><div class="para">
+Çekirdek kaynak kodunu barındıran dizine gidin (genellikle <tt>/usr/src/linux/</tt>) ve yapılandırmayı başlatın:
+      </div>
+<div class="para"><div align="right"><pre class="screen">make menuconfig</pre></div></div>
+      </div></li><li><div class="listitem"><div class="para">
+Genel geridönüş aygıtı desteğini etkinleştirin.
+      </div>
+<div class="para"><div align="right"><pre class="screen">Device Drivers -&gt; Block Devices -&gt; Loopback device support</pre></div></div>
+      <div class="para">
+seçimleriyle “Loopback device support” bölümüne girin.
+      </div></div></li><li><div class="listitem"><div class="para">
+Bu bölümdeki "Cryptoloop support" seçeneğini etkinleştirin. Seçenek "general loopback support" kısmını işaretlediğinizde otomatik olarak açılacaktır.
+      </div></div></li><li><div class="listitem"><div class="para">
+Ana menüden “Cryptographic options” kısmına giderek cryptographic API'yi etkin hale getirin. Burada bulunan çoğu algoritmayı güvenle seçebilirsiniz. Ben aşağıdakileri seçmenizi öneririm:        </div>
+<div class="para"><div align="right"><pre class="screen">
+-- Cryptographic API
+  &lt;*&gt;   HMAC support
+  &lt; &gt;   Null algorithms
+  &lt;*&gt;   MD4 digest algorithm
+  &lt;*&gt;   MD5 digest algorithm
+  &lt;*&gt;   SHA1 digest algorithm
+  &lt;*&gt;   SHA256 digest algorithm
+  &lt;*&gt;   SHA384 and SHA512 digest algorithms
+  &lt;*&gt;   DES and Triple DES EDE cipher algorithms
+  &lt;*&gt;   Blowfish cipher algorithm
+  &lt;*&gt;   Twofish cipher algorithm
+  &lt;*&gt;   Serpent cipher algorithm
+  &lt;*&gt;   AES cipher algorithms
+  &lt;*&gt;   CAST5 (CAST-128) cipher algorithm
+  &lt;*&gt;   CAST6 (CAST-256) cipher algorithm
+  &lt;*&gt;   Deflate compression algorithm
+  &lt; &gt;   Testing module
+</pre></div></div>
+        <div class="para">
+Eğer bunları modül olarak derlemeye karar verirseniz gerekli modülleri (cryptoloop, aes, vs.) sistem açılışında yüklemeyi unutmayın.
+      </div></div></li><li><div class="listitem"><div class="para">
+Çekirdek ve modüllerinizi derleyin ve gerekli modülleri yükleyin. Mesela x86 makinede önyükleyici olarak lilo kullanıyorsanız, şöyle yapabilirsiniz:
+      </div>
+<div class="para"><div align="right"><pre class="screen">make
+make modules_install
+make install
+</pre></div></div>
+      </div></li><li><div class="listitem"><div class="para">
+Gereken modülleri sistem açılışında yükleyin. Bu değişik dağıtımlarda değişik yollarla ele alınır. Mesela, Gentoo'da bu dosyalar <tt>/etc/modules.autoload/kernel-2.6</tt> dosyasına eklenebilirler. Eğer Cryptoloop'u modül olarak derlediyseniz ilk olarak onun yüklenmesi gerekir. Otomatik olarak temel geridönüş aygıtı modülünü de yükleyecektir. Modülü elle şu şekilde yükleyebilirsiniz:
+      </div>
+<div class="para"><div align="right"><pre class="screen">modprobe cryptoloop</pre></div></div>
+      </div></li></ol>
+    </dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/cryptoloop-howto-cryptoloop-introduction.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/cryptoloop-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/cryptoloop-howto-userspace-tools.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Giriş </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Kullanıcı araçları</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

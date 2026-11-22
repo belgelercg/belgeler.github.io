@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:22+03:00" /><title>Geridönüş aygıtının (loop device) ayarlanması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/cryptoloop-howto.html" title="Şifreli Geridönüş Aygıtı NASIL" /><link rel="previous" href="../howto/cryptoloop-howto-userspace-tools.html" title="Kullanıcı araçları" /><link rel="next" href="../howto/cryptoloop-howto-mounting-filesystem.html" title="Şifrelenmiş dosya sisteminin bağlanması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Geridönüş aygıtının (loop device) ayarlanması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/cryptoloop-howto-userspace-tools.html">Önceki</a> </td><th width="60%" align="center">Şifreli Geridönüş Aygıtı NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/cryptoloop-howto-mounting-filesystem.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="cryptoloop-howto-loopdevice-setup" id="cryptoloop-howto-loopdevice-setup"></a>Geridönüş aygıtının (loop device) ayarlanması</div><dl><dd><div class="para">
+Cryptoloop bir dosya üzerine veya bütün bir dosya sistemi üzerine uygulanabilir. Aşağıda belirli bir bölüme nasıl uygulanabileceğini görebilirsiniz. Bu bölüm istediğiniz herhangibir bölüm olabilir; örnekte <tt>/dev/sda1</tt> kullanılıyor. Şifreleyici olarak AES'i seçtim, ama siz çekirdekte seçtiğiniz diğer şifreleyicileri de seçebilirsiniz. Şu an çalıştığınız çekirdeğinizin desteklediği algoritmaları <tt>/proc/crypto</tt> altına bakarak görebilirsiniz. Bruce Schneier'in 'Applied Cryptography' ve 'Practical Cryptography' isimli kitapları değişik kriptografik algoritmaları tartışan mükemmel kaynaklardır. AES ve Serpent mantıklı birer seçimdir. AES uzun süredir analiz edilmiştir ve şimdiye dek ciddi zayıflıkları bulunmamıştır. Serpent fazla test edilmemesine rağmen AES ten biraz daha güçlü olduğu düşünülür. Fakat Serpent aynı zamanda AES'ten biraz daha yavaştır. DES'ten uzak durun, hem yavaş hem de zayıftır. Üçlü-DES (triple-des) bir çözüm olabilir, ama AES büyük ihtimalle hem daha güvenli hem daha hızlıdır, yani aslında Üçlü-DES'i kullanmanın artık pek mantığı yok.
+    </div><ol class="orderedlist" start="ignore" type="1"><li><div class="listitem"><div class="para">
+Bir bölümde şifreli dosya sistemi kurmadan önce o bölümü biçimlemeniz ve rastgele veriyle doldurmanız tavsiye edilir. Bu, bir saldırganın şifrelenmiş diskiniz üzerinde anlamlı dizgelere/kalıplara rastlamasını zorlaştıracaktır.
+      </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/warning.png" /></td><th class="admon">Uyarı</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Bölümünüz için burada ne yazdığınıza dikkat edin. Bir hata yaparsanız, yanlış bölümü rasgele veriyle doldurabilirsiniz!
+      </div></td></tr></table></div><div class="para">
+Bir disk bölümünü şu şekilde rasgele veriyle doldurabilirsiniz:
+      </div>
+<div class="para"><div align="right"><pre class="screen">dd if=/dev/urandom of=/dev/sda1 bs=1M
+</pre></div></div>
+      <div class="para">
+Aygıtın dolduğunu bildiren bir hata iletisi alabilirsiniz. Bunu önemsemeyin.
+      </div></div></li><li><div class="listitem"><div class="para">
+Bir şifreleyici ve anahtar boyu seçin. çekirdeğiniz tarafından desteklenen şifreleyicileri <tt>/proc/crypto</tt> dosyasından öğrenebilirsiniz. Ben 256 bitlik anahtar ile AES kullanmanızı tavsiye ediyorum.
+      </div></div></li><li><div class="listitem"><div class="para">
+Geridönüş aygıtını ayarlayın. Bu, util-linux paketi ile gelen <b><tt>losetup</tt></b> komutu kullanılarak yapılır. Aşağıdaki komut <tt>/dev/sda1</tt> üzerinde <tt>loop device 0</tt> kullanarak 256 bitlik anahtar ve AES ile şifrelenmiş bir dosya sistemi oluşturur:
+      </div>
+<div class="para"><div align="right"><pre class="screen">losetup -e aes-256 /dev/loop0 /dev/sda1
+</pre></div></div>
+       <div class="para">
+Komut bir parola sorar. Güçlü bir parola seçin ve parolayı bir yere yazmadan aklınızda tutmaya çalışın. Cryptoloop ile ilgili büyük bir soruna geldik. Şifreleme anahtarı oluşturulurken parola hash' landığından parolayı ileride değiştirmek pek kolay değildir. Bunun en kolay yolu şifrelenmiş yeni bir bölüm oluşturup bütün veriyi oraya taşımaktır. Bu yüzden başlangıçta güçlü bir parola seçtiğinizden emin olun. AES güçlü bir algoritmadır, ama siz kötü bir parola seçerseniz güvenliği çöpe atmış olursunuz.
+        </div><div class="para">
+Eğer <b><tt>losetup</tt></b> bir yanlış argüman (INVALID ARGUMENT) şeklinde hata iletisi verirse util-linux paketinizde bir sorun var demektir. Yukarıda bahsettiğimiz yamalı sürümü yüklemede bir hata yapıp yapmadığınızı kontrol edin. Eski veya yamasız sürümler bu hataya sebep olabilir.
+        </div></div></li><li><div class="listitem"><div class="para">
+Bir dosya sistemi oluşturun. İstediğiniz türden dosya sistemi oluşturabilirsiniz. Aşağıda geridönüş aygıtı kullanılarak ext3 dosya sistemi oluşturulmuştur:
+       </div>
+<div class="para"><div align="right"><pre class="screen">mkfs.ext3 /dev/loop0</pre></div></div>
+      </div></li><li><div class="listitem"><div class="para">
+Şifrelenmiş dosya sistemini bağlayın. Önce bir bağlama noktası oluşturmalısınız, mesela <tt>/mnt/crypto</tt>:
+      </div>
+<div class="para"><div align="right"><pre class="screen">mkdir /mnt/crypto</pre></div></div>
+      <div class="para">
+Sonra dosya sistemini bağlamalısınız. Bu aşamada bağlayıcıya tam olarak hangi geridönüş aygıtını kullanacağını söylemelisiniz:
+      </div>
+<div class="para"><div align="right"><pre class="screen">mount -t ext3 /dev/loop0 /mnt/crypto
+</pre></div></div>
+      </div></li><li><div class="listitem"><div class="para">
+Şimdi sıkılana kadar şifrelenmiş dosya sisteminizle oynayabilirsiniz. <tt>:)</tt>
+      </div></div></li><li><div class="listitem"><div class="para">
+İşiniz bittiğinde dosya sistemini ayırın:
+      </div>
+<div class="para"><div align="right"><pre class="screen">umount /mnt/crypto</pre></div></div>
+      </div></li><li><div class="listitem"><div class="para">
+Geridönüş aygıtını çıkarın. Geridönüş aygıtı hala sizin bölümünüze bağlanmış durumdadır. Şu şekilde çıkarın:
+      </div>
+<div class="para"><div align="right"><pre class="screen">losetup -d /dev/loop0</pre></div></div>
+      </div></li></ol>
+    </dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/cryptoloop-howto-userspace-tools.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/cryptoloop-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/cryptoloop-howto-mounting-filesystem.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Kullanıcı araçları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Şifrelenmiş dosya sisteminin bağlanması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

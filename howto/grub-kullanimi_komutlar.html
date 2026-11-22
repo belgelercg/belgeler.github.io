@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:16+03:00" /><title>Grub Komutları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/grub-kullanimi.html" title="Grub Önyükleyici Yöneticisi" /><link rel="previous" href="../howto/grub-kullanimi_imgeler.html" title="Grub İmgeleri" /><link rel="next" href="../howto/grub-kullanimi_imge-yapimi.html" title="Splashimage Kullanımı ve Splashimage Yapımı" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Grub Komutları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/grub-kullanimi_imgeler.html">Önceki</a> </td><th width="60%" align="center">Grub Önyükleyici Yöneticisi</th><td width="20%" align="right"> <a accesskey="n" href="../howto/grub-kullanimi_imge-yapimi.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="grub-kullanimi_komutlar" id="grub-kullanimi_komutlar"></a>Grub Komutları</div><dl><dd><div class="para">
+      <tt>Boot</tt> menüsünde "c" tuşuna basıp komut satırına
+      geçtiğimizde ya da işletim sistemi içerisinde <b><tt>grub</tt></b>
+      yazıp &lt;enter&gt;e bastığımızda karşımıza gelen <b><tt>grub</tt></b>
+      komut satırında <b><tt>help</tt></b> yazarak <b><tt>grub</tt></b>
+      içerisinde yer alan komutların listesini görebiliriz.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>[root@serdar root]#</tt> <b><tt>grub</tt></b>
+Probing devices to guess BIOS drives. This may take a long time.
+
+GRUB version 0.92 (640K lower / 3072K upper memory)
+
+[ Minimal BASH-like line editing is supported. For the first word, TAB
+lists possible command completions. Anywhere else TAB lists the possible
+completions of a device/filename. ]
+
+<tt>grub&gt;</tt> <b><tt>help</tt></b>
+blocklist FILE boot cat FILE chainloader [--force] FILE
+color NORMAL [HIGHLIGHT] configfile FILE
+device DRIVE DEVICE displayapm
+displaymem find FILENAME geometry DRIVE [CYLINDER HEAD SECTOR [ halt [--no-apm]
+help [--all] [PATTERN ...] hide PARTITION
+initrd FILE [ARG ...] kernel [--no-mem-option] [--type=TYPE]
+makeactive map TO_DRIVE FROM_DRIVE
+md5crypt module FILE [ARG ...]
+modulenounzip FILE [ARG ...] pager [FLAG]
+partnew PART TYPE START LEN parttype PART TYPE
+quit reboot
+root [DEVICE [HDBIAS]] rootnoverify [DEVICE [HDBIAS]]
+serial [--unit=UNIT] [--port=PORT] [-- setkey [TO_KEY FROM_KEY]
+setup [--prefix=DIR] [--stage2=STAGE2_ terminal [--dumb] [--timeout=SECS] \
+[--testvbe MODE unhide PARTITION uppermem KBYTES vbeprobe [MODE]
+</pre></div></div>
+    <div class="para">
+      Yukarıda listesi görünen komutlardan en çok ihtiyaç duyulanları
+      izah etmeye çalışalım.
+    </div>
+      <div class="variablelist"><dl><dt><span class="term">cat</span></dt><dd class="varlist"><div class="para">Kullanımı:</div>
+<div class="para"><div align="center"><pre class="synopsis">
+<b><tt>cat</tt></b> <i>dosya</i>
+</pre></div></div>
+          <div class="para">
+            İstenilen <i><tt>dosya</tt></i>nın içeriğini görüntüler.
+          </div>
+            <dl class="example"><dt class="example"><a class="example" name="idxmp2" id="idxmp2"></a><b>Örnek 7.2. </b></dt><dd class="example">
+<div class="para"><div align="right"><pre class="screen">
+<tt>grub&gt;</tt> <b><tt>cat (hd0,4)/etc/fstab</tt></b>
+LABEL=/ / ext3 defaults 1 1
+none /dev/pts devpts gid=5,mode=620 0 0
+none /proc proc defaults 0 0
+none /dev/shm tmpfs defaults 0 0
+/dev/hda8 swap swap defaults 0 0
+/dev/hda6 swap swap defaults 0 0
+</pre></div></div>
+            </dd></dl>
+          </dd><dt><span class="term">chainloader</span></dt><dd class="varlist"><div class="para">Kullanımı:</div>
+<div class="para"><div align="center"><pre class="synopsis">
+<b><tt>chainloader</tt></b> [<tt>--force</tt>] <i>dosya</i>
+</pre></div></div>
+          <div class="para">
+            Belirtilen <i><tt>dosya</tt></i>yı zincirleme yükleyici olarak yükler ya da
+            <b><tt>rootnoverify</tt></b> ile belirtilen disk bölümünde
+            önyükleme imgesinin hangi sektörde bulunduğuna işaret eder.
+            <b><tt>chainloader +1</tt></b> kullanımı <b><tt>rootnoverify</tt></b>
+            ile belirtilen bölümün ilk sektöründen önyüklenmesini belirtir. Aksi
+            bir durum söz konusu ise <b><tt>chainloader --force</tt></b> ile
+            yer belirtilebilir. Bu durumda imzanın doğruluğuna bakılmaz.
+          </div></dd><dt><span class="term">color</span></dt><dd class="varlist"><div class="para">Kullanımı:</div>
+<div class="para"><div align="center"><pre class="synopsis">
+<b><tt>color</tt></b> <i>normal-renk</i> [<i>vurgulu-renk</i>]
+</pre></div></div>
+          <dl class="example"><dt class="example"><a class="example" name="idxmp3" id="idxmp3"></a><b>Örnek 7.3. </b></dt><dd class="example"><div class="para">
+              <tt>color light-gray/blue black/light-gray</tt>
+            </div><div class="para">
+            Menü rengini değiştirmek için kullanılır. İlk kısımda belirtilen
+            parametre menünün normal halinin rengini ifade eder. İkinci
+            kısımda belirtilen parametre ise imlecin belirtilen menü öğesinin
+            üzerine geldiğinde oluşacak rengi ifade eder. Yine her iki kısımdaki
+            parametrelerde kullanım şekli <tt>önalan-rengi/artalan-rengi</tt>
+            (FG/BG) şeklindedir.
+          </div></dd></dl><div class="para">
+            Örnekteki menünün seçili olmayan öğelerinini yazı rengi açık gri,
+            zemini ise mavi olacaktır. İmlecin bulunduğu menü öğesinin yazı
+            rengi siyah, zemini ise açık gri olacaktır.
+          </div><div class="para">
+            Kullanılabilecek renkler:
+          </div>
+            <ul type="disc" class="itemizedlist"><li><tt>black</tt> (siyah)</li><li><tt>blue</tt> (mavi)</li><li><tt>green</tt> (yeşil)</li><li><tt>cyan</tt> (turkuaz)</li><li><tt>red</tt> (kırmızı)</li><li><tt>magenta</tt> (mor)</li><li><tt>brown</tt> (kahverengi)</li><li><tt>light-gray</tt> (açık gri)</li><li><tt>dark-gray</tt> (koyu gri)</li><li><tt>light-blue</tt> (açık mavi)</li><li><tt>light-green</tt> (açık yeşil)</li><li><tt>light-cyan</tt> (açık turkuaz)</li><li><tt>light-red</tt> (açık kırmızı)</li><li><tt>light-magenta</tt> (açık mor)</li><li><tt>yellow</tt> (sarı)</li><li><tt>white</tt> (beyaz)</li></ul>
+          <div class="para">
+            Bu renklerden sadece ilk sekiz tanesi artalan (background) rengi
+            olarak kullanılabilir.
+          </div></dd><dt><span class="term">configfile</span></dt><dd class="varlist"><div class="para">Kullanımı:</div>
+<div class="para"><div align="center"><pre class="synopsis"><b><tt>configfile</tt></b> <i>dosya</i>
+</pre></div></div>
+          <div class="para">
+Belirtilen <i><tt>dosya</tt></i>yı yapılandırma dosyası olarak yükler.
+          </div><dl class="example"><dt class="example"><a class="example" name="idxmp4" id="idxmp4"></a><b>Örnek 7.4. </b></dt><dd class="example">
+<div class="para"><div align="right"><pre class="screen">
+<tt>grub&gt;</tt> <b><tt>configfile (hd0,4)/boot/grub/menu.lst</tt></b>
+</pre></div></div>
+          <div class="para">
+<tt>grub.conf</tt> içerisinde düzenlenen yapının <tt>boot</tt> ekranında gelecek olan halidir.
+          </div></dd></dl></dd><dt><span class="term">default</span></dt><dd class="varlist"><div class="para">Kullanımı:</div>
+<div class="para"><div align="center"><pre class="synopsis">
+<b><tt>default</tt></b> <i>sayı</i>
+</pre></div></div>
+          <div class="para">
+            <tt>grub.conf</tt> içerisinde yer alan işletim
+            sistemlerinden  kaçıncı sıradakinin öntanımlı olarak açılacağını
+            belirtir.
+          </div><dl class="example"><dt class="example"><a class="example" name="idxmp5" id="idxmp5"></a><b>Örnek 7.5. </b></dt><dd class="example">
+<div class="para"><div align="right"><pre class="screen">
+default 1
+title Red Hat Linux
+ root (hd0,4)
+ kernel /boot/vmlinuz-2.4.18-14 ro root=/dev/hda5
+ initrd /boot/initrd-2.4.18-14.img
+
+title Debian
+ root (hd0,6)
+ kernel /boot/vmlinuz-2.2.20-idepci ro root=/dev/hda7
+
+title WinXP
+ rootnoverify (hd0,0)
+ chainloader +1
+</pre></div></div>
+          <div class="para">
+            Yukarıdaki yapıda <tt>default 1</tt> değeri ile önyükleme
+            işlemi sırasında herhangi bir müdahale olmazsa öntanımlı olarak
+            "Debian" ile ilgili kısmı işleme sok anlamındadır. Yani,
+          </div>
+<div class="para"><pre class="literallayout">
+default 0   =&gt;  1. kısım (Redhat)
+default 1   =&gt;  2. kısım (Debian)
+default 2   =&gt;  3. kısım (WinXP) gibi.
+</pre></div>
+          </dd></dl></dd><dt><span class="term">fallback</span></dt><dd class="varlist"><div class="para">Kullanımı:</div>
+<div class="para"><div align="center"><pre class="synopsis">
+<b><tt>fallback</tt></b> <i>sayı</i>
+</pre></div></div>
+          <div class="para">
+            Öntanımlı olarak belirtilen kaydın önyüklemesi sırasında herhangi bir
+            hata olursa <b><tt>fallback</tt></b> ile belirtilen kayıt devreye
+            sokulur.
+          </div><dl class="example"><dt class="example"><a class="example" name="idxmp6" id="idxmp6"></a><b>Örnek 7.6. </b></dt><dd class="example">
+<div class="para"><div align="right"><pre class="screen">
+default 0
+fallback 1
+</pre></div></div>
+          <div class="para">
+            Şeklinde bir yapı belirlemiş olduğumuzu varsayarsak yukarıda
+            yer alan <tt>grub.conf</tt> içeriğimize göre ilk
+            önce "Red Hat" boot edilmek istenecek. Şayet önyükleme işleminde
+            bir hata oluşursa <b><tt>timeout</tt></b> ile belirtilen
+            süre kadar bekleyip otomatik olarak "Debian" kısmını işletecek.
+          </div></dd></dl></dd><dt><span class="term">find</span></dt><dd class="varlist"><div class="para">Kullanımı:</div>
+<div class="para"><div align="center"><pre class="synopsis">
+<b><tt>find</tt></b> <i>dosya</i>
+</pre></div></div>
+          <div class="para">
+            Belirtilen <i><tt>dosya</tt></i>yı tüm sabit disk bölümlerinde arar, bulursa
+            <i><tt>dosya</tt></i>nın bulunduğu disk bölümlerini listeler.
+          </div><dl class="example"><dt class="example"><a class="example" name="idxmp7" id="idxmp7"></a><b>Örnek 7.7. </b></dt><dd class="example">
+<div class="para"><div align="right"><pre class="screen">
+<tt>grub&gt;</tt> <b><tt>find /etc/fstab</tt></b>
+ (hd0,4)
+ (hd0,6)
+</pre></div></div>
+          <div class="para">
+            <tt>/etc/</tt> altındaki <tt>fstab</tt>
+            dosyasının yer aldığı disk bölümlerini listeler:
+            (hd0,4) ve (hd0,6).
+          </div></dd></dl></dd><dt><span class="term"><a name="grub-kullanimi_komutlar-hide" id="grub-kullanimi_komutlar-hide"></a>hide</span></dt><dd class="varlist"><div class="para">Kullanımı:</div>
+<div class="para"><div align="center"><pre class="synopsis">
+<b><tt>hide</tt></b> <i>bölüm</i>
+</pre></div></div>
+          <div class="para">
+            Belirtilen disk <i><tt>bölüm</tt></i>ünü gizlemeye yarar. Çok sayıda birincil
+            bölüm<sup>[<a name="id13" href="#ftn.id13" id="id13">13</a>]</sup>bulunan disklerde MS-DOS, Windows gibi işletim
+            sistemlerinin sadece tek birincil bölüm görmesi için diğer
+            birincil disk bölümlerini gizlemekde kullanılır.
+          </div><dl class="example"><dt class="example"><a class="example" name="idxmp8" id="idxmp8"></a><b>Örnek 7.8. </b></dt><dd class="example"><div class="para">
+            1. sabit diskin ilk bölümünde MS-DOS, ikinci bölümünde Windows
+            kurulu olduğunu ve her iki bölümünde birincil bölüm olduğunu
+            varsayıyoruz. Sistemin sadece MS-DOS yüklü bölümden açılmasını
+            istersek:
+          </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>grub&gt;</tt> <b><tt>unhide (hd0,0)</tt></b>
+<tt>grub&gt;</tt> <b><tt>hide (hd0,1)</tt></b>
+<tt>grub&gt;</tt> <b><tt>rootnoverify (hd0,0)</tt></b>
+<tt>grub&gt;</tt> <b><tt>chainloader +1</tt></b>
+<tt>grub&gt;</tt> <b><tt>makeactive</tt></b>
+<tt>grub&gt;</tt> <b><tt>boot</tt></b>
+</pre></div></div>
+          <div class="para">
+            şeklinde birinci sabit diskteki birinci bölümü öne çıkarıp
+            ikinci bölümü gizleyebiliriz.
+          </div></dd></dl></dd><dt><span class="term">initrd</span></dt><dd class="varlist"><div class="para">Kullanımı:</div>
+<div class="para"><div align="center"><pre class="synopsis">
+<b><tt>initrd</tt></b> <i>dosya</i>
+</pre></div></div>
+          <div class="para">
+            Ram disk imgesi kullananlar için imgenin yüklenmesini sağlar.
+          </div><dl class="example"><dt class="example"><a class="example" name="idxmp9" id="idxmp9"></a><b>Örnek 7.9. </b></dt><dd class="example">
+<div class="para"><div align="right"><pre class="screen">
+<tt>grub&gt;</tt> <b><tt>initrd /boot/initrd-2.4.18-14.img</tt></b>
+</pre></div></div>
+          </dd></dl></dd><dt><span class="term">kernel</span></dt><dd class="varlist"><div class="para">Kullanımı:</div>
+<div class="para"><div align="center"><pre class="synopsis">
+<b><tt>kernel</tt></b> [<tt>--type</tt>=<i>türü</i>] [<tt>--no-mem-option</tt>] <i>dosya</i> ...
+</pre></div></div>
+          <div class="para">
+            Belirtilen <i><tt>dosya</tt></i>dan birincil önyükleme imgesini yüklemeye çalışır
+            çoklu önyüklemeli a.out veya ELF, Linux zImage veya bzImage,
+            FreeBSD a.out, NetBSD a.out, vb.). satırın devamı çekirdeğe
+            komut satırı seçenekleri olarak aktarılır.
+          </div><div class="para">
+            <tt>--type</tt> seçeneği ile <i><tt>dosya</tt></i>nın çekirdek türü
+            ayrıca belirtilebilir. Burada kullanılabilecek değerler,
+             <tt>netbsd'</tt>, <tt>freebsd'</tt>,
+             <tt>openbsd</tt>, <tt>linux</tt>,
+             <tt>biglinux</tt> ve <tt>multiboot</tt>
+             olabilir. Bu seçeneği sadece  NetBSD ELF çekirdeği yüklemek
+             isterseniz kullanın, diğer çekirdekler için <b><tt>grub</tt></b>
+             çekirdek türünü kendi belirleyebilir.
+           </div><div class="para">
+             <tt>--no-mem-option</tt> seçeneği sadece Linux için
+             etkilidir. Bu seçenek belirtilmişse <b><tt>grub</tt></b>
+             <tt>mem=</tt> ile verilen değeri çekirdeğe aktarmaz.
+           </div><dl class="example"><dt class="example"><a class="example" name="idxmp10" id="idxmp10"></a><b>Örnek 7.10. </b></dt><dd class="example">
+<div class="para"><div align="right"><pre class="screen">
+<tt>grub&gt;</tt> <b><tt>kernel /boot/vmlinuz-2.2.20-idepci ro root=/dev/hda7</tt></b>
+</pre></div></div>
+           <div class="para">
+             <tt>/dev/hda7</tt>'de <tt>/boot</tt> dizininde
+             yer alan <tt>vmlinuz-2.2.20-idepci</tt> isimli imgeyi
+             yüklemesini sağlar.
+           </div></dd></dl></dd><dt><span class="term">makeactive</span></dt><dd class="varlist"><div class="para">
+             <b><tt>root</tt></b> ile belirtilen birincil disk
+             bölümünün açılış için etkinleştirilmesini sağlar. Windows vb.
+             işletim sistemleri buna ihtiyaç duyar.
+           </div><dl class="example"><dt class="example"><a class="example" name="idxmp11" id="idxmp11"></a><b>Örnek 7.11. </b></dt><dd class="example">
+<div class="para"><div align="right"><pre class="screen">
+title Windows NT / Windows 95
+ root (hd0,0)
+ makeactive
+ chainloader +1
+</pre></div></div>
+           </dd></dl></dd><dt><span class="term">map</span></dt><dd class="varlist"><div class="para">Kullanımı:</div>
+<div class="para"><div align="center"><pre class="synopsis">
+<b><tt>map</tt></b> <i>disk_n disk_m</i>
+</pre></div></div>
+           <div class="para">
+             <i><tt>disk_n</tt></i> sürücüsü ile <i><tt>disk_m</tt></i> sürücüsünü yer değiştirir. Şayet DOS
+             veya Windows'u birinci diskinize değil de ikinci diskinize
+             yüklememişseniz, ikinci diskinizin birinci disk gibi görülmesini
+             sağlayabilirsiniz:
+           </div><dl class="example"><dt class="example"><a class="example" name="idxmp12" id="idxmp12"></a><b>Örnek 7.12. </b></dt><dd class="example">
+<div class="para"><div align="right"><pre class="screen">
+<tt>grub&gt;</tt> <b><tt>map (hd0) (hd1)</tt></b>
+<tt>grub&gt;</tt> <b><tt>map (hd1) (hd0)</tt></b>
+</pre></div></div>
+           </dd></dl></dd><dt><span class="term">md5crypt</span></dt><dd class="varlist"><div class="para">Kullanımı:</div>
+<div class="para"><div align="center"><pre class="synopsis"><b><tt>md5crypt</tt></b></pre></div></div>
+           <div class="para">
+             Bir parola girilmesini bekler ve verilen parolayı MD5 biçemli
+             olarak şifreler. Bu parola <b><tt>password</tt></b>
+             komutunda kullanılabilir.
+           </div><dl class="example"><dt class="example"><a class="example" name="idxmp13" id="idxmp13"></a><b>Örnek 7.13. </b></dt><dd class="example">
+<div class="para"><div align="right"><pre class="screen">
+<tt>grub&gt;</tt> <b><tt>md5crypt</tt></b>
+
+<tt>Password:</tt> <b><tt>*****</tt></b>
+Encrypted: $1$M.P8g/$CwPjmlPRCZLo7wL5rMJyD1
+</pre></div></div>
+           </dd></dl></dd><dt><span class="term">password</span></dt><dd class="varlist"><div class="para">Kullanımı:</div>
+<div class="para"><div align="center"><pre class="synopsis">
+<b><tt>password</tt></b> [<tt>--md5</tt>] <i>parola</i> [<i>yeni-yapılandırma-dosyası</i>]
+</pre></div></div>
+           <div class="para">
+             <tt>grub.conf</tt> içerisinde istenilen işletim
+             sisteminin önyüklenmesi işleminde <i><tt>parola</tt></i> sorulmasını veya
+             "tek kullanıcılı kip" ile sistem açılmak istendiğinde <i><tt>parola</tt></i>
+             sorulması için kullanılır. İster <b><tt>md5crypt</tt></b>
+             komutu ile ürettiğimiz MD5 şifreli parolayı kullanabiliriz,
+             istersek düz metin olarak (<tt>password parolam</tt>
+             şeklinde) parolamızı belirtebiliriz.
+           </div><dl class="example"><dt class="example"><a class="example" name="idxmp14" id="idxmp14"></a><b>Örnek 7.14. </b></dt><dd class="example">
+<div class="para"><div align="right"><pre class="screen">
+password --md5 $1$M.P8g/$CwPjmlPRCZLo7wL5rMJyD1
+</pre></div></div>
+           </dd></dl></dd><dt><span class="term">root</span></dt><dd class="varlist"><div class="para">Kullanımı:</div>
+<div class="para"><div align="center"><pre class="synopsis">
+<b><tt>root</tt></b> <i>bölüm</i> [<i>sayı</i>]
+</pre></div></div>
+           <div class="para">
+             Belirtilen <i><tt>bölüm</tt></i>ü kök olarak belirtmek için kullanılır.
+           </div><dl class="example"><dt class="example"><a class="example" name="idxmp15" id="idxmp15"></a><b>Örnek 7.15. Linux'e ait kullanım örnekleri</b></dt><dd class="example">
+             <div class="para"><div align="right"><pre class="screen">root (hd0,1)</pre></div></div>
+           <div class="para">
+             Birinci diskin 2. bölümünde (/dev/hda2 veya /dev/sda2) yer alan bölümdür.
+           </div>
+             <div class="para"><div align="right"><pre class="screen">root (hd1,4)</pre></div></div>
+           <div class="para">
+             İkinci diskin 5. bölümünde (/dev/hdb5 veya /dev/sdb5) yer alan bölümdür.
+           </div></dd></dl><dl class="example"><dt class="example"><a class="example" name="idxmp16" id="idxmp16"></a><b>Örnek 7.16. BSD vb. işletim sistemlerine ait kullanım örnekleri</b></dt><dd class="example">
+             <div class="para"><div align="right"><pre class="screen">root (hd0,1,a)</pre></div></div>
+           <div class="para">
+             Birinci diskin 2. bölümünün "a" (/dev/ad1s2a) dilimini işaret eder.
+           </div>
+             <div class="para"><div align="right"><pre class="screen">root (hd1,2,d)</pre></div></div>
+           <div class="para">
+             İkinci diskin 3. bölümünün "d" (/dev/ad2s3d) dilimini işaret eder.
+           </div></dd></dl></dd><dt><span class="term">rootnoverify</span></dt><dd class="varlist"><div class="para">Kullanımı:</div>
+<div class="para"><div align="center"><pre class="synopsis">
+<b><tt>rootnoverify</tt></b> <i>bölüm</i> [<i>sayı</i>]
+</pre></div></div>
+           <div class="para">
+             Zincirleme yükleme yöntemi ile işletim sistemi ekleneceği zaman
+             (windows, dos, winxp vb.) belirtilen <i><tt>bölüm</tt></i>ün bağlanmayacağını
+             belirtir.
+           </div><dl class="example"><dt class="example"><a class="example" name="idxmp17" id="idxmp17"></a><b>Örnek 7.17. </b></dt><dd class="example">
+<div class="para"><div align="right"><pre class="screen">
+title WinXP
+ rootnoverify (hd0,0)
+ chainloader +1
+</pre></div></div>
+           </dd></dl></dd><dt><span class="term">setup</span></dt><dd class="varlist"><div class="para">Kullanımı:</div>
+<div class="para"><div align="center"><pre class="synopsis">
+<b><tt>setup</tt></b> [<tt>--force-lba</tt>] [<tt>--stage2</tt>=<i>ds_stage2_dosyası</i>] [<tt>--prefix</tt>=<i>dizin</i>]
+      <i>yükleme_aygıtı</i> [<i>aygıt_imgesi</i>]
+</pre></div></div>
+           <div class="para">
+             <b><tt>grub</tt></b>'un MBR'ye yüklenmesini sağlar.
+             Genellikle <b><tt>root</tt></b> komutu ile birlikte
+             kullanılır.
+           </div><dl class="example"><dt class="example"><a class="example" name="idxmp18" id="idxmp18"></a><b>Örnek 7.18. </b></dt><dd class="example">
+<div class="para"><div align="right"><pre class="screen">
+<tt>grub&gt;</tt> <b><tt>setup (hd0)</tt></b>
+Checking if "/boot/grub/stage1" exists... yes
+Checking if "/boot/grub/stage2" exists... yes
+Checking if "/boot/grub/e2fs_stage1_5" exists... yes
+Running "embed /boot/grub/e2fs_stage1_5 (hd0)"... 22 sectors are
+embedded.
+succeeded
+Running "install /boot/grub/stage1 (hd0) (hd0)1+22 p
+(hd0,4)/boot/grub/stage2
+/boot/grub/grub.conf"... succeeded
+Done.
+</pre></div></div>
+           </dd></dl></dd><dt><span class="term">timeout</span></dt><dd class="varlist"><div class="para">Kullanımı:</div>
+<div class="para"><div align="center"><pre class="synopsis">
+<b><tt>timeout</tt></b> <i>saniye</i>
+</pre></div></div>
+           <div class="para">
+             <b><tt>default</tt></b> ya da <b><tt>fallback</tt></b> komutlarında
+             belirtilen kısmı işleme sokmadan önce olası bir kullanıcı müdahalesine
+             karşın belirtilen SANİYE kadar bekler.
+           </div></dd><dt><span class="term">title</span></dt><dd class="varlist"><div class="para">Kullanımı:</div>
+<div class="para"><div align="center"><pre class="synopsis">
+<b><tt>title</tt></b> <i>isim</i>
+</pre></div></div>
+           <div class="para">
+             Önyükleme girdilerinden oluşan kısımların isimlendirilmesini
+             sağlar.
+           </div></dd><dt><span class="term">unhide</span></dt><dd class="varlist"><div class="para">Kullanımı:</div>
+<div class="para"><div align="center"><pre class="synopsis">
+<b><tt>unhide</tt></b> <i>bölüm</i>
+</pre></div></div>
+           <div class="para">
+<b><tt>hide</tt></b> komutunun yaptığı işin tam tersi olarak disk bölümünün görünmesini sağlar. Aynı diskte birden fazla birincil bölüm olduğu zaman istenilen birinin gizlenip edilip diğerinin görünmesi amacı ile kullanılır. Örnek için <a class="link" href="../howto/grub-kullanimi_komutlar.html#grub-kullanimi_komutlar-hide"><b><tt>hide</tt></b> komutuna bakınız</a>.
+           </div></dd></dl></div>
+    <div class="footnotes"><br /><hr width="100" align="left" /><div class="footnote"><div class="para"><sup>[<a name="ftn.id13" href="#id13" id="ftn.id13">13</a>] </sup>MS-DOS fdisk'i sadece bir birincil bölüm
+            oluşturabilir. Linux fdisk'i ise 4 birincil bölüm oluşturabilir.
+            </div></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/grub-kullanimi_imgeler.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/grub-kullanimi.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/grub-kullanimi_imge-yapimi.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Grub İmgeleri </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Splashimage Kullanımı ve Splashimage Yapımı</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

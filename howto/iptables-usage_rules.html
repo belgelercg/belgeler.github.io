@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:24+03:00" /><title>Zincir Uygulamaları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/iptables-usage.html" title="Iptables'ın Basit Kullanımı" /><link rel="previous" href="../howto/iptables-usage_nat.html" title="Iptables ile NAT (Network Address Translation) İşlemleri" /><link rel="next" href="../howto/iptables-usage_biblio.html" title="Faydalanılan kaynaklar" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Zincir Uygulamaları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/iptables-usage_nat.html">Önceki</a> </td><th width="60%" align="center">Iptables'ın Basit Kullanımı</th><td width="20%" align="right"> <a accesskey="n" href="../howto/iptables-usage_biblio.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="iptables-usage_rules" id="iptables-usage_rules"></a>Zincir Uygulamaları</div><dl><dd><div class="para">
+      Bu bölümde uygulamalarla iptables'da zincirlerin ve kuralların nasıl
+      kullanıldığına değineceğim. Benim bir konuyu en iyi anlama yöntemim
+      örnek üzerinde çalışmaktır o yüzden bende örnekler üzerinde anlatacağım.
+    </div> <div class="head3"><a name="id1" id="id1"></a>INPUT uygulaması</div><dl><dd>
+<div class="para"><div align="right"><pre class="screen">
+iptables -t INPUT -p ! tcp --sport ! 21 -s ! 192.168.1.1/255.255.255.0 -d ! 192.168.0.1/255.255.255.0 -i ! ppp0 -j DROP
+</pre></div></div>
+      <div class="para">
+        Bu örnekte ilk olarak <tt>-t INPUT</tt> parametresini
+        kullandık bu bize kuralın INPUT yani girişler üzerinde geçerli
+        olacağını gösteriyor. Makinamıza bir paket geldiğinde çekirdek
+        <tt>INPUT</tt> zincirine bakıyor. Eğer tanımladığımız bir
+        kural bulursa uyguluyor yoksa devam ediyor.
+      </div><div class="para">
+        Daha sonra ise <tt>-p ! tcp</tt> parametresi kullanılmış.
+        Bu ise uygulanacak kuralda <tt>tcp</tt> protokolü haricindeki
+        protokolleri kullanacağımızı belirtiyor. Burada <tt>tcp</tt>
+        yerine <tt>udp</tt>, <tt>icmp</tt> yada
+        <tt>all</tt> kullanabilirdik. <tt>all</tt> kuralın
+        tüm protokoller üzerinde etkili olacağını gösterir.
+      </div><div class="para">
+        <tt>--sport 21</tt> kuralda incelenecek hedef port'un 21
+        olmaması gerekmektedir.
+      </div><div class="para">
+        <tt>-s ! 192.168.1.1/255.255.255.0</tt> parametresi ise
+        kuralımızın uygulanması için kaynak adresin <tt>192.168.1.1</tt>
+        haricinde olması gerektiğini gösteriyor. Yani bir paket geldiğinde
+        ip adresi <tt>192.168.1.1</tt> değilse bu kural uygulanacaktır.
+        Burada ip yerine direkt dns adreside kullanabiliriz.
+      </div><div class="para">
+        <tt>-d ! 192.168.0.1/255.255.255.0</tt> parametresi kuralımızın
+        hedef ip'sinin <tt>192.168.0.1</tt> hariç tüm adresler olduğunu
+        gösteriyor. Kural, paketimiz <tt>192.168.0.1</tt>'e gitmiyorsa
+        uygulanacak. Burada da yine ip yerine dns adresini kullanabiliyoruz.
+      </div><div class="para">
+        <tt>-i ! ppp0</tt> kuralın uygulanması için paketin geldiği
+        arabirimin <tt>ppp0</tt> olmaması gerektiğini gösteriyor.
+        Burada <tt>ppp0</tt> yerine <tt>ppp+</tt> da
+        kullanabiliyoruz bu bize <tt>ppp</tt> ile başlayan tüm
+        arabirimlerde kuralların uygulanmasını sağlar.
+      </div><div class="para">
+        Ve son olarak <tt>-j DROP</tt> kullanmışız bu ise kuralın
+        uygulanması sonucunda paketin engellenmesini sağlar. Burada
+        kullanabileceğimiz bazı parametreler <tt>ALLOW</tt>,
+        <tt>REJECT</tt>'dir. Burada <tt>ALLOW</tt>
+        paketi kabul eder. <tt>REJECT</tt> paketi kabul etmez
+        fakat geri sinyal gönderir. <tt>DROP</tt> ile
+        <tt>REJECT</tt> arasındaki fark <tt>DROP</tt>
+        paketi geçirmez fakat geri sinyal göndermez, <tt>REJECT</tt>
+        ise <tt>--reject-with</tt> ile verilen sinyali gönderir.
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>OUTPUT uygulaması</div><dl><dd>
+<div class="para"><div align="right"><pre class="screen">
+iptables -t OUTPUT -p ! tcp --dport ! 21 -s ! 192.168.1.1/255.255.255.0 -d ! 192.168.0.1/255.255.255.0 -o ! ppp0 -j DROP
+</pre></div></div>
+      <div class="para">
+        Bu örnekte farklı olarak:<br />
+        <tt>-t OUTPUT</tt>, <tt>-o ! ppp0</tt> ve
+        <tt>--dport ! 21</tt> parametreleri kullanılmıştır.
+      </div><div class="para">
+        Bu kural bize giden paketlerin:<br />
+        tcp protokolünde olmayan, hedef portu 21 olmayan, kaynak adresi
+        <tt>192.168.1.1</tt> ve ağmaskesi (netmask)
+        <tt>255.255.255.0</tt> olmayan, hedef adresi
+        <tt>192.168.0.1</tt> ve ağmaskesi (netmask)
+        <tt>255.255.255.0</tt> olmayan ve çıkış arabirimi
+        <tt>ppp0</tt> olmayan paketlerin geçişinde
+        <tt>DROP</tt> kuralının uygulanmasını yani geçememesini
+        sağlamaktadır.
+      </div></dd></dl> <div class="head3"><a name="id3" id="id3"></a>NAT uygulamaları</div><dl><dd>
+<div class="para"><div align="right"><pre class="screen">
+# iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to 192.168.1.1
+</pre></div></div>
+<div class="para">
+        Kaynak adresi <tt>192.168.1.1</tt> yaparak paketi yollar.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to 192.168.1.1-192.168.1.3
+</pre></div></div>
+<div class="para">
+        Kaynak adresi <tt>192.168.1.1</tt> ile
+        <tt>192.168.1.3</tt> arasında bir değer yaparak yollar.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# iptables -t nat -A POSTROUTING -p tcp -o eth0 -j SNAT --to 192.168.1.1:1-1023
+</pre></div></div>
+<div class="para">
+        Kaynak adresi <tt>192.168.1.1</tt>, hedef portu ise
+        <tt>1</tt> ile <tt>1023</tt> arasında bir değere
+        çevirip paketi yollar.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# iptables -t nat -A POSTROUTING -o ppp0 -j MASQUERADE
+</pre></div></div>
+<div class="para">
+        Çıkış arabirimi <tt>ppp0</tt> olan paketlerde maskeleme yapar.
+        Burada <tt>ppp+</tt> kullanmamız halinde tüm
+        <tt>ppp</tt>'lerde işlem yapacaktır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# iptables -t nat -A PREROUTING -i eth0 -j DNAT --to 192.168.1.1
+</pre></div></div>
+<div class="para">
+        Hedef adresi <tt>192.168.1.1</tt> yaparak paketi yollar.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# iptables -t nat -A PREROUTING -i eth0 -j DNAT --to 192.168.1.1-192.168.1.3
+</pre></div></div>
+<div class="para">
+        Hedef adresi <tt>192.168.1.1</tt> ile
+        <tt>192.168.1.3</tt> arasında bir değer yaparak yollar.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# iptables -t nat -A PREROUTING -p tcp --dport 80 -i eth0 -j DNAT --to 192.168.1.1:8080
+</pre></div></div>
+<div class="para">
+        <tt>eth0</tt> arabiriminden <tt>80</tt> portuna
+        giden istekleri hedef adresini <tt>192.168.1.1</tt> ve hedef
+        portu <tt>8080</tt> yaparak yollar.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# iptables -t nat -A PREROUTING -i eth1 -p tcp --dport 80 -j REDIRECT --to-port 3128
+</pre></div></div>
+<div class="para">
+        <tt>eth1</tt> arabiriminden <tt>80</tt> portuna
+        gelen tüm istekleri <tt>3128</tt> portuna yönlendirir.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# iptables -t nat -A POSTROUTING -s 192.168.1.0/24 -o eth1 -j SNAT --to 1.2.3.0/24
+</pre></div></div>
+<div class="para">
+        <tt>eth1</tt> arabirimi ve <tt>192.168.1.x</tt>
+        ağından gelen tüm istekleri kaynak ağı <tt>1.2.3.x</tt>
+        olarak değiştirip yollar.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# iptables -t nat -A POSTROUTING -s 192.168.1.0/24 -o eth1 -j SNAT --to 1.2.3.0-1.2.3.4 --to 1.2.3.6-1.2.3.254
+</pre></div></div>
+<div class="para">
+        <tt>eth1</tt> arabirimi ve <tt>192.168.1.x</tt>
+        ağından gelen tüm istekleri kaynak ağı <tt>1.2.3.x</tt> ağında
+        <tt>1.2.3.5</tt> hariç olmak üzere değiştirir ve yollar.
+      </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/iptables-usage_nat.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/iptables-usage.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/iptables-usage_biblio.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Iptables ile NAT (Network Address Translation) İşlemleri </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Faydalanılan kaynaklar</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

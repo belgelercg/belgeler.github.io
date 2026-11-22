@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:38+03:00" /><title>DjbDNS Komutları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/djbdns-kurulumu-nasil.html" title="djbDNS Kurulumu NASIL" /><link rel="previous" href="../howto/djbdns-kurulumu-nasil_axfrdns.html" title="axfrdns-get (Bölge Transfer İstemcisi)" /><link rel="next" href="../howto/djbdns-kurulumu-nasil_ekbilgi.html" title="Yardımcı Bilgiler" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">DjbDNS Komutları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/djbdns-kurulumu-nasil_axfrdns.html">Önceki</a> </td><th width="60%" align="center">djbDNS Kurulumu NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/djbdns-kurulumu-nasil_ekbilgi.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="djbdns-kurulumu-nasil_komutlar" id="djbdns-kurulumu-nasil_komutlar"></a>DjbDNS Komutları</div><dl><dd><div class="para">
+Şu an kadar anlatılanlar neyin nasıl yapılacağı hususunda genel bir bilgi vermek
+içindi. Bu bölümde anlatılacak olanlar djbdns ile gelen programların (hepsinin)
+teker teker kısaca bir açıklaması olacak. DjbDNS ile gelen bir çok komut var.
+Bunların aklınızda biraz daha kolay yer etmesi ve bu belgenin bir başvuru
+belgesi kabul edilmesi için bu tarz bir uygulama yapıyorum.
+    </div> <div class="head3"><a name="id1" id="id1"></a>dnscache</div><dl><dd><div class="para">
+Kısaca çözümleyici olarak kullanılmaktadır. Çözülen her isteği aynı zamanda
+bellekleyerek cevap verme süresinin azalmasını sağlar. Ağ ortamından gelen
+isteklere cevap verecek şekilde ayarlanabileceği gibi yerel çözümleyici
+olarakta kullanılabilir.
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>tinydns</div><dl><dd><div class="para">
+Yetkili bir isim sunucusudur. UDP altında çalışır. Örnek vermek gerekirse
+yildiz.edu.tr alanı için gelebilecek tüm sorgulara cevap verecek şekilde
+ayarlanabilir. 512 byte ve üzeri isteklere cevap vermez. Bunun sebebi
+sadece UDP altında çalışması ve DNS yapılandırmasının bu şekilde olmasıdır.
+      </div></dd></dl> <div class="head3"><a name="id3" id="id3"></a>walldns</div><dl><dd><div class="para">
+WallDNS tersinir bir DNS duvarıdır. Yani sisteminiz gerisindeki Internet IP'ye
+sahip makinaların isimlerini saklamakta kullanılabilir. Güvenlik duvarı mantığı
+ile örtüşür. Bazı ftp sunucuları kendine gelen istekleri kabul etmek için
+mutlaka ters kaydın o makina için tanımlı olmasını isterler. Bu durumlar için
+walldns kullanılabilir.
+      </div></dd></dl> <div class="head3"><a name="id4" id="id4"></a>dnsq</div><dl><dd><div class="para">
+tinydns gibi yetkili isim sunucularını sorgulamak için kullanılır.
+</div><div class="para"><div align="right"><pre class="screen">
+# dnsq type FQDN server
+# dnsq MX yildiz.edu.tr 193.140.1.1
+</pre></div></div><div class="para">
+193.140.1.1 sunucusuna yildiz.edu.tr için kayıtlı mx kayıdını sorar.
+      </div></dd></dl> <div class="head3"><a name="id5" id="id5"></a>dnsqr</div><dl><dd><div class="para">
+Bu komut dnsq'ya benzer fakat yetkili isim sunucusu sorgulaması yerine
+dnscache gibi depoları sorgulamaya yarar.
+</div><div class="para"><div align="right"><pre class="screen">
+#dnqr ns http://www.yildiz.edu.tr/
+</pre></div></div><div class="para">
+Depoya yildiz.edu.tr'nin ns kaydını sorar.
+      </div></dd></dl> <div class="head3"><a name="id6" id="id6"></a>dnsfilter</div><dl><dd><div class="para">
+Bu komut dnsname gibidir. Fakat aynı anda çoklu sorgulama yapabilir.
+dnsname sadece bulduğu ilk girdiyi listeler.
+</div><div class="para"><div align="right"><pre class="screen">
+# dnsfilter
+193.140.1.1                                     {Bizim girdimiz}
+193.140.1.1=smurf.cc.yildiz.edu.tr
+193.140.1.3                                     {Bizim girdimiz}
+193.140.1.3=ogis.cc.yildiz.edu.tr
+</pre></div></div>
+      </dd></dl> <div class="head3"><a name="id7" id="id7"></a>axfrdns</div><dl><dd><div class="para">
+Bölge transferi için kullanılır. Çeşitli ikincil isim sunucular için bölge
+transfer sunucusu olarak vazife yapar. Tinydns'in çalıştığı IP'de çalışabilir.
+TCP kullanır.
+      </div></dd></dl> <div class="head3"><a name="id8" id="id8"></a>dnstrace</div><dl><dd><div class="para">
+Belirtilen kök isim sunucusundan başlayarak ( r ) bir alan altında ( fqdn )
+istenenen tipte ( t ) sorguları bulur ve ilişki kurduğu bütün sunucuları
+standart çıktıya yazar. Fakat karmaşık bir biçemde.
+</div><div class="para"><div align="right"><pre class="screen">
+# dnstrace t fqdn r
+# dnstrace any www.yildiz.edu.tr  a.root-servers.net &gt; yildiz &amp;
+</pre></div></div>
+      </dd></dl> <div class="head3"><a name="id9" id="id9"></a>dnstracesort</div><dl><dd><div class="para">
+dnstrace komutunun çıktısını okuyabilieceğimiz şekilde listeler.
+</div><div class="para"><div align="right"><pre class="screen">
+# dnstracesort &lt; yildiz | less
+</pre></div></div><div class="para">
+Ya da doğrudan:
+</div><div class="para"><div align="right"><pre class="screen">
+# dnstrace any www.yildiz.edu.tr  a.root-servers.net | dnstracesort | less
+</pre></div></div>
+      </dd></dl> <div class="head3"><a name="id10" id="id10"></a>axfr-get</div><dl><dd><div class="para">
+İkincil sunucularda kullanılmak üzere tasarlanmıştır. Birincil sunucudan
+bölge transferinde kullanılır.
+      </div><div class="para">
+Ayrıca birkaç da betik vardır: dnsmx, dnsip, dnsname
+      </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/djbdns-kurulumu-nasil_axfrdns.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/djbdns-kurulumu-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/djbdns-kurulumu-nasil_ekbilgi.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">axfrdns-get (Bölge Transfer İstemcisi) </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Yardımcı Bilgiler</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:00+03:00" /><title>Kütüphaneler ve GCC</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/gcc-baslangic.html" title="GNU C Derleyicisi Kullanımı" /><link rel="previous" href="../howto/gcc-baslangic-basit.html" title="Basit GCC Kullanımı" /><link rel="next" href="../howto/gdb-NASIL.html" title="GNU Debugger Kullanımı" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Kütüphaneler ve GCC</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/gcc-baslangic-basit.html">Önceki</a> </td><th width="60%" align="center">GNU C Derleyicisi Kullanımı</th><td width="20%" align="right"> <a accesskey="n" href="../howto/gdb-NASIL.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="gcc-baslangic-libs" id="gcc-baslangic-libs"></a>Kütüphaneler ve GCC</div><dl><dd><div class="para">
+Yazılım kütüphaneleri, daha sonra yeni geliştirilecek yazılımlara dahil edilmek üzere saklanan derlenmiş hazır kod ve veri dosyalarıdır. Kütüphane dosyaları, modüler yazılım geliştirmeye olanak sağlarlar
+  </div> <div class="head3"><a name="id1" id="id1"></a>Statik Kütüphaneler</div><dl><dd><div class="para">
+Statik kütüphaneler, yeniden derlenmeye ihtiyaç duymaksızın yazılıma derleme aşamasında yani çalıştırılmadan önce eklenir. <tt>lib</tt> dizinlerindeki “<tt>.a</tt>” uzantılı dosyalar statik kütüphanelerdir. Derleme zamanını azaltmak için yakın geçmişe kadar statik kütüphaneler kullanılıyordu. Ancak günümüzün hızlı bilgisayarları için derleme zamanı sorun olmaktan çıktı. Bu nedenle statik kütüphaneler artık tercih edilmemektedir. Ancak yine de kütüphane kodlarını açmak istemeyenler için kullanışlıdır.
+    </div><div class="para">
+Statik kütüphane oluşturmak için <b><tt>ar</tt></b>(1) komutu kullanılır.
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>ar rc libtest.a test.o util.o</tt></b></pre></div></div>
+    <div class="para">
+Bu komut <tt>libtest.a</tt> kütüphanesini oluşturur, <tt>test.o</tt> ve <tt>util.o</tt> nesne dosyalarını bu kütüphaneye ekler. <tt>c</tt> seçeneği ile eğer kütüphane yoksa oluşturulması belirtilmiş olunur. Eğer varsa nesne dosylarını bu kütüphaneye ekler. <tt>r</tt> seçeneği ile eski nesne dosyalarının yenileri ile değiştirilmesi talep edilir.
+    </div><div class="para">
+Yeni oluşturulan veya değiştirilen bir kütüphane dosyasını yeniden indekslemek gerekir. Bu işlem derleme sırasında derleyicinin sembolleri denetlemesini hızlandırmak içindir. İndeks oluşturmak için <b><tt>ranlib</tt></b>(1) kullanılır.
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>ranlib libtest.a</tt></b></pre></div></div>
+    <div class="para">
+Derlenecek bir yazılıma daha önce oluşturduğumuz bir kütüphaneyi dahil etmek için <b><tt>gcc</tt></b>‘ye <tt>–l</tt> seçeneği ile kütüphane ismi parametre olarak verilmelidir. Bu işlem için tercih edilmese de doğrudan <b><tt>ld</tt></b>(1) kullanılabilir.
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>gcc prog.o –L/home/simsek/libtest –ltest</tt></b></pre></div></div>
+    <div class="para">
+<tt>-l</tt> ile kütüphane ismini verirken dosya isminin başındaki <tt>lib</tt>'in kaldırıldığına dikkat edilmeli. <tt>–L</tt> seçeneği ile <b><tt>gcc</tt></b>'ye kütüphaneleri ararken hangi dizinleri kullanacağı bildirilir.
+    </div><div class="para">
+Aşağıda bir kütüphane oluşturma ve kullanma senaryosu mevcut:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cat main.c</tt></b>
+
+#include &lt;stdio.h&gt;
+
+/* işlevler external bildirilmeli */
+extern void test();
+extern void util();
+
+int main() {
+  printf("main içinde\n");
+  /* Kütüphane içinden işlev çağıralım */
+  test();
+  util();
+  return 0;
+}
+
+# <b><tt>cat test.c</tt></b>
+
+int test() {
+  printf("Test içerisinde\n");
+  return 0;
+}
+
+# <b><tt>cat util.c</tt></b>
+
+int util() {
+  printf("Util içerisinde\n");
+  return 0;
+}
+
+# <b><tt>gcc -c test.c</tt></b>
+# <b><tt>gcc –c util.c</tt></b>
+# <b><tt>ar rc libtest.a test.o util.o</tt></b>
+# <b><tt>ranlib libtest.a</tt></b>
+# <b><tt>gcc -c main.c</tt></b>
+# <b><tt>gcc main.o -L /home/simsek -ltest -o testprog</tt></b>
+</pre></div></div>
+    <div class="para">
+Son satırda kütüphane işlevlerini kullanan yazılım derlenip <b><tt>testprog</tt></b> isimli çalışabilir dosya derleyici tarafından oluşturuldu. <b><tt>testprog</tt></b> çalıştırıldığında aşağıdaki çıktıyı verecektir:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>./testprog</tt></b>
+main içinde
+Test içerisinde
+Util içerisinde
+</pre></div></div>
+    </dd></dl> <div class="head3"><a name="id2" id="id2"></a>Paylaşımlı (Shared) Kütüphaneler</div><dl><dd><div class="para">
+Paylaşımlı kütüphaneler, yazılım çalıştırıldığında sürece dahil edilirler. Yazılımın içerisine gerçekten kod eklenmez. Paylaşımlı kütüphaneden bir işlev cağrılan yerlere, kütüphaneye bir referans verilir. Kütüphaneyi kullanan bütün yazılımlar bu şekilde aynı işlev kütüphanesini ortak kullanırlar.
+    </div><div class="para">
+Paylaşımlı her kütüphane “so ismi” (soname) denilen bir özel isme sahiptir. “so ismi” kütüphanenin gerçek dosya ismine sembolik bağdır. Ayrıca derleyicinin bir kütüphaneyi talep ettiğinde kullandığı bir de ilintileyici ismi vardır. Bu, sürüm numarası olmayan bir so ismi olarak düşünülebilir.
+    </div>
+<div class="para"><div align="right"><pre class="screen">simsek@mail:/usr/lib$ <b><tt>ls libz*</tt></b>
+libz.a libz.so.1@ libz.so.1.2.1.1*
+</pre></div></div>
+    <div class="para">
+Listede görülen <tt>libz.a</tt> statik kütüphaneye aittir. <tt>libz.so.1</tt> ise <tt>libz.so.1.2.1.1</tt> paylaşımlı kütüphanesine sembolik bağ olarak kütüphanenin so ismidir. Bu kütüphane için ilintileyici ismi <tt>libz.so</tt>'dur.
+    </div><div class="para">
+Yazılımlar içerisinde kütüphanelerin so isimleri tutulur. Bu sayede kütüphanede bir değişiklik yapıldığında yeni kütüphane kullanıma alınmış olunur.
+    </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/gcc-baslangic-basit.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/gcc-baslangic.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/gdb-NASIL.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Basit GCC Kullanımı </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> GNU Debugger Kullanımı</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

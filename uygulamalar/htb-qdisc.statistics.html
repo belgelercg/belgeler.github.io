@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:25:42+03:00" /><title>İstatistikleri Yorumlamak</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../uygulamalar/htb-qdisc.html" title="II. Oylum - HTB Linux Kuyruklama Düzeni Kullanıcı Kılavuzu" /><link rel="previous" href="../uygulamalar/htb-qdisc.priorizing.html" title="Paylaşımda Öncelik" /><link rel="next" href="../uygulamalar/htb-qdisc.feedback.html" title="Yamama, Hata Ayıklama ve Hata Raporu Gönderme" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">İstatistikleri Yorumlamak</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../uygulamalar/htb-qdisc.priorizing.html">Önceki</a> </td><th width="60%" align="center">II. Oylum - HTB Linux Kuyruklama Düzeni Kullanıcı Kılavuzu</th><td width="20%" align="right"> <a accesskey="n" href="../uygulamalar/htb-qdisc.feedback.html">Sonraki</a></td></tr></table></td></tr></table><div class="chapter"><div class="titlepage"><div><div class="head2" style="clear: both;"><a name="htb-qdisc.statistics" id="htb-qdisc.statistics"></a>İstatistikleri Yorumlamak</div></div></div><dl><dd><div class="para">
+<b><tt>tc</tt></b> aracı Linux'taki kuyruklama düzenlerinin istatistiklerini toplamayı mümkün kılar. Talihsizliğe bakın ki, istatistik sonuçları yazarlar tarafından açıklanmamıştır (Neyi açıklamışlar ki zaten; tc bir sır küpü) dolayısıyla çoğunlukla onları kullanamazsınız. Burada HTB istatistiklerini anlamanıza yardımcı olmaya çalışacağım. Önce HTB istatistiklerine bir bütün olarak bakalım. Aşağıdaki satırlar <a href="../uygulamalar/htb-qdisc.hierarchy.html" class="xref" title="Paylaşım Hiyerarşisi">Paylaşım Hiyerarşisi</a> bölümündeki bireştirim sırasında alınmıştır.
+</div><div class="para"><div align="right"><pre class="screen">
+# <b><tt>tc -s -d qdisc show dev eth0</tt></b>
+ qdisc pfifo 22: limit 5p
+ Sent 0 bytes 0 pkts (dropped 0, overlimits 0)
+
+ qdisc pfifo 21: limit 5p
+ Sent 2891500 bytes 5783 pkts (dropped 820, overlimits 0)
+
+ qdisc pfifo 20: limit 5p
+ Sent 1760000 bytes 3520 pkts (dropped 3320, overlimits 0)
+
+ qdisc htb 1: r2q 10 default 1 direct_packets_stat 0
+ Sent 4651500 bytes 9303 pkts (dropped 4140, overlimits 34251)
+</pre></div></div><div class="para">
+İlk üç düzen HTB'nin çocuklarıdır. PFIFO istatistikleri kendilerini zaten açıkladıkları için onları yoksayabiliriz.
+</div><div class="para">
+<tt>overlimits</tt>, düzenin bir paketi kaç kere geciktirdiğini söyler.
+</div><div class="para">
+<tt>direct_packets_stat</tt>,  kaç paketin doğrudan kuyruktan gönderildiğini söyler. Diğer istatistikler kendi kendilerini zaten açıklıyor. Sınıfların istatistiklerine bakalım:
+</div><div class="para"><div align="right"><pre class="screen">
+<b><tt>tc -s -d class show dev eth0</tt></b>
+class htb 1:1 root prio 0 rate 800Kbit ceil 800Kbit burst 2Kb/8 mpu 0b
+    cburst 2Kb/8 mpu 0b quantum 10240 level 3
+ Sent 5914000 bytes 11828 pkts (dropped 0, overlimits 0)
+ rate 70196bps 141pps
+ lended: 6872 borrowed: 0 giants: 0
+
+class htb 1:2 parent 1:1 prio 0 rate 320Kbit ceil 4000Kbit burst 2Kb/8 mpu 0b
+    cburst 2Kb/8 mpu 0b quantum 4096 level 2
+ Sent 5914000 bytes 11828 pkts (dropped 0, overlimits 0)
+ rate 70196bps 141pps
+ lended: 1017 borrowed: 6872 giants: 0
+
+class htb 1:10 parent 1:2 leaf 20: prio 1 rate 224Kbit ceil 800Kbit burst ¬
+2Kb/8 mpu 0b
+    cburst 2Kb/8 mpu 0b quantum 2867 level 0
+ Sent 2269000 bytes 4538 pkts (dropped 4400, overlimits 36358)
+ rate 14635bps 29pps
+ lended: 2939 borrowed: 1599 giants: 0
+</pre></div></div><div class="para">
+Çıktıyı kısaltmak için 1:11 ve 1:12 sınıflarını sildim. Gördüğünüz gibi bizim ayarladığımız parametreler var. Ayrıca <tt>level</tt> (seviye) ve DRR <tt>quantum</tt> (katkıpayı) bilgileri de var.
+</div><div class="para">
+<tt>overlimits</tt>, sınıfın paketi kaç kere göndermek istediğini fakat hız/tavan sınırlamalarından dolayı yapamadığını gösterir (şu an sadece terkedilenler sayılmış).
+</div><div class="para">
+<tt>rate</tt> ve <tt>pps</tt> sınıf üzerinden giden güncel hızı (10 saniyelik ortalama) söyler. Bu geçit tarafından kullanılan hızla aynıdır.
+</div><div class="para">
+<tt>lended</tt>, bu sınıf tarafından (hızından) bağışlanmış paket sayısıdır. <tt>borrowed</tt> sınıfa atadan bağışlanan paket sayısıdır. Başka sınıflara bağışlananlar daima yardımlaşma geçişliyken sınıf için hesaplanır (1:10, 1:2'den bağış alırken 1:2 de 1:1'den bağış alır; 1:10 ve 1:2 bağış sayaçlarının ikisi de arttırımlıdır).
+</div><div class="para">
+<tt>giants</tt>, <b><tt>tc</tt></b> komutunda ayarlı MTU'dan büyük olan paketlerin sayısıdır. HTB bunlarla çalışır fakat hızlar hepsinde doğru olmayacaktır. <b><tt>tc</tt></b>'nize MTU ekleyin (öntanımlı olarak 1600 bayttır).
+</div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../uygulamalar/htb-qdisc.priorizing.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../uygulamalar/htb-qdisc.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../uygulamalar/htb-qdisc.feedback.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Paylaşımda Öncelik </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Yamama, Hata Ayıklama ve Hata Raporu Gönderme</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:23+03:00" /><title>İmzalama ve Doğrulama</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/gpg-kullanimi.html" title="Linux'ta GPG Kullanımı" /><link rel="previous" href="../howto/gpg-kullanimi_sifreleme.html" title="Belgelerin Şifrelenmesi ve Şifresinin Çözülmesi" /><link rel="next" href="../howto/gpg-kullanimi_kavramlar.html" title="Kavramlar" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">İmzalama ve Doğrulama</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/gpg-kullanimi_sifreleme.html">Önceki</a> </td><th width="60%" align="center">Linux'ta GPG Kullanımı</th><td width="20%" align="right"> <a accesskey="n" href="../howto/gpg-kullanimi_kavramlar.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="gpg-kullanimi_imzalama" id="gpg-kullanimi_imzalama"></a>İmzalama ve Doğrulama</div><dl><dd><div class="para">
+Bir sayısal imza bir belgeyi onaylamak ve tarih damgası vurmak için kullanılır. Bir belge herhangi bir şekilde imzalamanın ardından değiştirilirse, imzanın doğrulanması başarısız olur. Bir sayısal imza, bir elyazısı imzanın kullanım amacına ek olarak değişikliğe dirençlilik gibi bir yararı da beraberinde sunar. Örneğin, GnuPG kaynak paketi imzalı dağıtılır; paketlendikten sonra kaynak kodu değişikliğe uğramışsa, imza doğrulaması başarısız olacaktır.
+    </div><div class="para">
+İmzaların oluşturulması ve doğrulanmasında genel/gizli anahtar çifti ile şifreleme ve şifre çözmeden farklı bir işlem uygulanır. Bir imza, imzalayanın gizli anahtarı kullanılarak oluşturulur. İmzanın doğrulaması ise karşılığı olan genel anahtar kullanılarak yapılır. Örneğin,  Murat yazdığı son makaleyi gönderirken kendi gizli anahtarı ile ürettiği imza ile imzalamalıdır. Dergi editörü makalenin üzerindeki imzanın Murat'a ait olup olmadığını ve Murat'ın makalesinde değişiklik olup olmadığını Murat'ın genel anahtarını kullanarak anlayabilir. Sayısal imzaların kullanımının bir önemi de uzlaşma için gizli anahtarın açıklanması gerektiğinden yapılan sayısal imzanın yalanlanmasındaki zorluktur.
+    </div> <div class="head3"><a name="id1" id="id1"></a>İmzalama</div><dl><dd><div class="para">
+<tt>--sign</tt> komut satırı seçeneği sayısal imzaları üretmekte kullanılır. İmzalanacak belge girdi olarak alınır ve imzalı belge çıktılanır.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>$</tt> <b><tt>gpg --output makale.sig --sign makale</tt></b>
+</pre></div></div>
+    <div class="para">
+Bu komut veriyi imzalar ve sıkıştırır. Çıktı <tt>sig</tt> uzantılı okunamaz bir dosyadır. Komuta eklenecek <b><tt>--clearsign</tt></b> parametresi, çıktının okunabilir bir <tt>asc</tt> uzantılı dosyaya saklanmasını sağlar.
+   </div><dl class="example"><dt class="example"><a class="example" name="idxmp25" id="idxmp25"></a><b>Örnek 7.3. </b></dt><dd class="example">
+<div class="para"><div align="right"><pre class="screen">
+<tt>$</tt> <b><tt>gpg -u <i><tt>gönderen</tt></i> -r <i><tt>alıcı</tt></i> --armor --sign --encrypt <i><tt>veri</tt></i></tt></b>
+</pre></div></div>
+    <div class="para">
+Bu komut <i><tt>veri</tt></i> dosyasındaki veriyi şifreler, imzalar ve çıktısını <i><tt>veri.asc</tt></i> dosyasına ASCII biçimde yazar.
+    </div></dd></dl></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Doğrulama</div><dl><dd><div class="para">
+Bir imzalı belge aldığınızda hem imzayı denetleyebilir hem de imzayı denetleyip özgün belgeyi açabilirsiniz. İmza denetimi için <tt>--verify</tt> komut satırı seçeneği kullanılır. İmzayı doğrulayıp belgeyi açmak için ise <tt>--decrypt</tt> seeneği kullanılır. Doğrulanacak ve açılacak imzalı belge girdi olarak alınır ve açılan belge çıktılanır.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>$</tt> <b><tt>gpg --output belge --decrypt belge.sig</tt></b>
+</pre></div></div>
+    </dd></dl> <div class="head3"><a name="id3" id="id3"></a>Açık imzalı belgeler</div><dl><dd><div class="para">
+Sayısal imzaların genellikle kullanıldığı yerlerden bazıları da eposta iletileri ve haber gruplarına gönderilen postalardır. Bu tür metinler imzalanırken sıkıştırılmaları istenmez. <tt>--clearsign</tt> komut satırı seçeneği kullanılarak metin ASCII zırhlı bir imza ile sarmalanır, ancak bu takdirde metnin değiştirilememesi sağlanır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>$</tt> <b><tt>gpg --clearsign belge</tt></b>
+</pre></div></div>
+      </dd></dl> <div class="head3"><a name="id4" id="id4"></a>Ayrık imzalar</div><dl><dd><div class="para">
+Bir imzalı belgenin kullanışlılığı sınırlıdır.  İmzalı belgeden orjinal belgeyi elde etmek isteyen kullanıcılar, belge açık imzalı olsa bile, imzalı belgeyi düzenlemek zorundadır. Bu nedenle, bir belgeyi imzalamak için üçüncü bir yol bulunmuştur. Bu imzalama türünde ayrı bir dosya olarak bir ayrık imza oluşturulur. Bir ayrık imza <tt>--detach-sig</tt>  komut satırı seçeneği kullanılarak oluşturulur.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>$</tt> <b><tt>gpg --output belge.sig --detach-sig belge</tt></b>
+</pre></div></div>
+      <div class="para">
+İmzayı doğrulamak için belge ve ayrık imza birlikte kullanılır. İmzayı denetlemekte <tt>--verify</tt> seçeneği kullanılır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>4</tt> <b><tt>gpg --verify belge.sig belge</tt></b>
+</pre></div></div>
+    </dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/gpg-kullanimi_sifreleme.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/gpg-kullanimi.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/gpg-kullanimi_kavramlar.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Belgelerin Şifrelenmesi ve Şifresinin Çözülmesi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Kavramlar</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

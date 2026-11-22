@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:23+03:00" /><title>Zincirlerde kullanılan seçenek ve parametrelere genel bakış</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/iptables-usage.html" title="Iptables'ın Basit Kullanımı" /><link rel="previous" href="../howto/iptables-usage_options.html" title="Zincir yönetiminde kullanılan seçenekler ve parametreler" /><link rel="next" href="../howto/iptables-usage_nat.html" title="Iptables ile NAT (Network Address Translation) İşlemleri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Zincirlerde kullanılan seçenek ve parametrelere genel bakış</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/iptables-usage_options.html">Önceki</a> </td><th width="60%" align="center">Iptables'ın Basit Kullanımı</th><td width="20%" align="right"> <a accesskey="n" href="../howto/iptables-usage_nat.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="iptables-usage_optdescr" id="iptables-usage_optdescr"></a>Zincirlerde kullanılan seçenek ve parametrelere genel bakış</div><dl><dd><div class="para">
+      Iptables kuralları yazılırken çeşitli temel seçenek ve parametreler
+      kullanılır. Bunların bazılarını 3. bölümde anlatmıştım. Şimdi ise
+      bunları genel başlıklar altında anlatmaya çalışacağım.
+    </div><div class="para">
+      Açıklamalardaki "!" işareti bir işlemin olmaması yani ters işlem
+      görmesi anlamına geliyor. Örneğin:<br />
+      <tt>-s 192.168.1.1</tt> kaynak adresi
+      <tt>192.168.1.1</tt> demekken
+      <tt>-s ! 192.168.1.1</tt> kaynak adresi
+      <tt>192.168.1.1</tt> olmayan demektir.
+    </div> <div class="head3"><a name="id1" id="id1"></a>Protokol türü (-p)</div><dl><dd><div class="para">
+        Bu parametre ile kullanacağımz protokol türünü belirliyoruz. Burada
+        kullanabileceğimiz türler : <tt>tcp</tt>,
+        <tt>udp</tt>, <tt>icmp</tt> ve
+        <tt>all</tt>
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Portun belirtilmesi</div><dl><dd><div class="para">
+        <tt>--source-port [!] port[:port]</tt><br />
+        <tt>--sport</tt> Kullanılacak kaynak portu belirler.<br />
+        <br />
+        <tt>--destination-port [!] port[:port]</tt><br />
+        <tt>--dport</tt> Kullanılacak hedef portu belirler.
+      </div></dd></dl> <div class="head3"><a name="id3" id="id3"></a>Hedef ve Kaynak adresler</div><dl><dd><div class="para">
+        <tt>-s [!] adres[/ağmaskesi]</tt> ile belirttiğimiz parametre
+        ile kaynak adresi belirliyoruz.<br />
+        <tt>-d [!] adres[/ağmaskesi]</tt> ile belirttiğimiz parametre ile
+        hedef adresi belirliyoruz.
+      </div><div class="para">
+        Bu adres belirleme işleminde IP adresi kullanılabildiği gibi konak ismi de
+        kullanılabilir. Örneğin:<br />
+        <tt>-s 192.168.1.0/255.255.255.0</tt> Kaynak adresi
+        <tt>192.168.1.0</tt> ve ağmaskesi
+        <tt>255.255.255.0</tt> olan adresler<br />
+        <tt>-s ! 192.168.1.0/255.255.255.0</tt> Kaynak adresi
+        <tt>192.168.1.0</tt> ve ağmaskesi
+        <tt>255.255.255.0</tt> olmayan adresler<br />
+        <tt>-s ! mail.yahoo.com</tt> Konak ismi
+        <tt>mail.yahoo.com</tt> olmayan adresler
+      </div></dd></dl> <div class="head3"><a name="id4" id="id4"></a>Kullanılacak Arabirim</div><dl><dd><div class="para">
+        <tt>-o</tt> ve <tt>-i</tt> parametreleri ile
+        kullanılacak giriş (<tt>INPUT</tt>) yada çıkış
+        (<tt>OUTPUT</tt>) arabirimini tanımlıyoruz.
+        Burada doğal olarak <tt>INPUT</tt> zinciri ile sadece
+        <tt>-i</tt>, <tt>OUTPUT</tt> zinciri ile sadece
+        <tt>-o</tt> kullanılıyor.<br />
+        Örnekler:<br />
+        <tt>-i ppp0</tt> Kullanılacak giriş birimi ppp0<br />
+        <tt>-o eth0</tt> Kullanılacak çıkış birimi eth0<br />
+        <tt>-i ppp+</tt> ppp ile başlayan giriş birimleri<br />
+        <tt>-o eth+</tt> eth ile başlayan çıkış birimleri
+      </div></dd></dl> <div class="head3"><a name="id5" id="id5"></a>Kuralın davranış şekli</div><dl><dd><div class="para">
+        <tt>-j</tt> parametresi ile kuralın sonucunda davranış şeklini
+        belirliyoruz. Bu parametre ile kullandığımız temel davranışlar:
+        <tt>ACCEPT</tt>, <tt>DROP</tt> ve
+        <tt>REJECT</tt>'dir.
+      </div><div class="para">
+        <b><tt>ACCEPT</tt></b> bir zincirdeki
+        varsayılan seçenek olarak uygulanır.<br />
+        <b><tt>DROP</tt></b> zincir kuralının
+        uygulanması halinde paketin engelleneceğini belirtir.<br />
+        <b><tt>REJECT</tt></b> ise
+        <tt>DROP</tt> gibi paketi engeller fakat sonucunda
+        <tt>--reject-with </tt> ile istediğimiz
+        bir sinyali geri döndürür.
+      </div><div class="para">
+        Bunlar:
+</div>
+<div class="para"><pre class="literallayout">
+    icmp-net-unreachable
+    net-unreach                 Ağa ulaşılamıyor.
+    icmp-host-unreachable
+    host-unreach                Sunucuya ulaşılamıyor.
+    icmp-proto-unreachable
+    proto-unreach               Protokole ulaşılamıyor.
+    icmp-port-unreachable
+    port-unreach                Port'a ulaşılamıyor (Öntanımlı)
+    icmp-net-prohibited
+    net-prohib                  Ağa ulaşım yasak
+    icmp-host-prohibited
+    host-prohib                 Sunucuya ulaşım yasak
+    tcp-reset
+    tcp-reset                   TCP Bağlantı sonlandırma
+</pre></div>
+      <div class="para">
+        Burada kullanılan <tt>ICMP</tt> ve <tt>TCP</tt>
+        tanımları hangi protokol ile kullanılması gerektiğidir.
+      </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/iptables-usage_options.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/iptables-usage.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/iptables-usage_nat.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Zincir yönetiminde kullanılan seçenekler ve parametreler </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Iptables ile NAT (Network Address Translation) İşlemleri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

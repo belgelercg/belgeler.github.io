@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:22+03:00" /><title>Sistemin Hazırlanması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/encrypted-rootfs-howto.html" title="Şifrelenmiş Kök Dosya Sistemi NASIL" /><link rel="previous" href="../howto/encrypted-rootfs-howto.html" title="Şifrelenmiş Kök Dosya Sistemi NASIL" /><link rel="next" href="../howto/encrypted-rootfs-howto-encrypt-root-filesystem.html" title="Şifrelenmiş Kök Dosya Sisteminin Oluşturulması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Sistemin Hazırlanması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/encrypted-rootfs-howto.html">Önceki</a> </td><th width="60%" align="center">Şifrelenmiş Kök Dosya Sistemi NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/encrypted-rootfs-howto-encrypt-root-filesystem.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="encrypted-rootfs-howto-preparing-system" id="encrypted-rootfs-howto-preparing-system"></a>Sistemin Hazırlanması</div><dl><dd> <div class="head3"><a name="encrypted-rootfs-howto-partition-layout" id="encrypted-rootfs-howto-partition-layout"></a>Bölümleme düzeninin hazırlanması</div><dl><dd><div class="para">
+Sabit diskiniz (hda) en azından aşağıdaki üç bölümden oluşmalıdır:
+        </div><ul type="disc" class="itemizedlist"><li><tt>hda1</tt>: Bu küçük şifrelenmemiş disk bölümü şifrelenmiş kök dosya sistemini bağlayabilmeniz için gerekli parolayı soracaktır.
+            </li><li><tt>hda2</tt>: Bu bölüm şifrelenmiş kök dosya sisteminiz olacak, yeterince büyük olduğundan emin olun.
+            </li><li><tt>hda3</tt>: Bu bölüm çalışan GNU/Linux sisteminizdir.
+            </li></ul><div class="para">
+Bu aşamada <tt>hda1</tt> ve <tt>hda2</tt> kullanılmamaktadır. <tt>hda3</tt> ise kurulu Linux dağıtımınızın bulunduğu dizindir. <tt>/usr</tt> ve <tt>/boot</tt> farklı disk bölümleri <i>olmamalıdır.</i>
+        </div><div class="para">
+Bölümleme düzeniniz aşağıdaki örneğe benzemelidir:
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>fdisk -l /dev/hda</tt></b>
+
+Disk /dev/hda: 255 heads, 63 sectors, 2432 cylinders
+Units = cylinders of 16065 * 512 bytes
+
+   Device Boot    Start       End    Blocks   Id  System
+/dev/hda1             1         1      8001   83  Linux
+/dev/hda2             2       263   2104515   83  Linux
+/dev/hda3           264       525   2104515   83  Linux
+/dev/hda4           526      2047  12225465   83  Linux
+</pre></div></div>
+        </dd></dl> <div class="head3"><a name="encrypted-rootfs-howto-debian-packages" id="encrypted-rootfs-howto-debian-packages"></a>Gerekli paketler</div><dl><dd><div class="para">
+Eğer Debian kullanıyorsanız, aşağıdaki paketleri kurmak zorundasınız:
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>apt-get install gcc make libncurses5-dev patch bzip2 wget</tt></b>
+</pre></div></div>
+        <div class="para">
+Kopyala/yapıştır işlemlerini kolaylaştırmak için şu paketleri de kursanız iyi olur:
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>apt-get install lynx gpm</tt></b>
+</pre></div></div>
+        </dd></dl> <div class="head3"><a name="encrypted-rootfs-howto-install-kernel-2.4" id="encrypted-rootfs-howto-install-kernel-2.4"></a>Linux-2.4.29 çekirdeğinin kurulması</div><dl><dd><div class="para">
+Çekirdekte geridönüş şifreleme desteği veren iki temel proje bulunmaktadır: <tt>cryptoloop</tt> ve <tt>loop-AES</tt>. Bu belgede <tt>loop-AES</tt> temel alınmıştır. Bunu nedeni oldukça hızlı olması, Rijndael'in çevirici dilinde en iyi şekilde kullanılmış hali olması ve IA-32 (x86) işlemcilerde en iyi performansı vermesidir. Bunun yanında <tt>cryptoloop</tt> ile ilgili <a class="ulink" href="http://groups.google.com/groups?selm=1emrG-1Ck-25%40gated-at.bofh.it" target="_top">güvenlik sorunları</a> da vardır.
+        </div><div class="para">
+Öncelikle, <tt>loop-AES</tt> paketini indirin ve açın::
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+$ <b><tt>cd /usr/src</tt></b>
+$ <b><tt>wget http://loop-aes.sourceforge.net/loop-AES/loop-AES-v3.0b.tar.bz2</tt></b>
+$ <b><tt>tar -xvjf loop-AES-v3.0b.tar.bz2</tt></b>
+</pre></div></div>
+        <div class="para">
+Ardından çekirdeğin kaynak kodunu indirip yamayı uygulayın:
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+$ <b><tt>wget http://ftp.kernel.org/pub/linux/kernel/v2.4/linux-2.4.29.tar.bz2</tt></b>
+$ <b><tt>tar -xvjf linux-2.4.29.tar.bz2</tt></b>
+$ <b><tt>cd linux-2.4.29</tt></b>
+$ <b><tt>rm include/linux/loop.h drivers/block/loop.c</tt></b>
+$ <b><tt>patch -Np1 -i ../loop-AES-v3.0b/kernel-2.4.28.diff</tt></b>
+</pre></div></div>
+        <div class="para">
+Klavye düzeninizi ayarlayın:
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+$ <b><tt>dumpkeys | loadkeys -m - &gt; drivers/char/defkeymap.c</tt></b>
+</pre></div></div>
+        <div class="para">
+Çekirdeğinizi aşağıdaki seçenekleri de dahil ederek yapılandırın:
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+$ <b><tt>make menuconfig</tt></b>
+
+    Block devices  ---&gt;
+
+        &lt;*&gt; Loopback device support
+        [*]   AES encrypted loop device support (NEW)
+
+        &lt;*&gt; RAM disk support
+        (4096)   Default RAM disk size (NEW)
+        [*]   Initial RAM disk (initrd) support
+
+    File systems  ---&gt;
+
+        &lt;*&gt; Ext3 journalling file system support
+        &lt;*&gt; Second extended fs support
+
+(<i>ÖNEMLİ: /dev dosya sistemi desteğini etkinleştirmeyin.</i>)
+</pre></div></div>
+        <div class="para">
+Çekirdeği derleyin ve kurun:
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+$ <b><tt>make dep bzImage</tt></b>
+$ <b><tt>make modules</tt></b>
+# <b><tt>make modules_install</tt></b>
+# <b><tt>cp arch/i386/boot/bzImage /boot/vmlinuz</tt></b>
+</pre></div></div>
+        <div class="para">
+Eğer önyükleyici olarak <b><tt>grub</tt></b> kullanıyorsanız, <tt>/boot/grub/menu.lst</tt> veya <tt>/boot/grub/grub.conf</tt> dosyasını güncelleyin:
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>cat &gt; /boot/grub/menu.lst &lt;&lt; EOF</tt></b>
+<b><tt>default 0</tt></b>
+<b><tt>timeout 10</tt></b>
+<b><tt>color green/black light-green/black</tt></b>
+<b><tt>title Linux</tt></b>
+    <b><tt>root (hd0,2)</tt></b>
+    <b><tt>kernel /boot/vmlinuz ro root=/dev/hda3</tt></b>
+<b><tt>EOF</tt></b>
+</pre></div></div>
+        <div class="para">
+Lilo kullanıyorsanız <tt>/etc/lilo.conf</tt> dosyasını güncelleyin ve <b><tt>lilo</tt></b> komutunu çalıştırın:
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>cat &gt; /etc/lilo.conf &lt;&lt; EOF</tt></b>
+<b><tt>lba32</tt></b>
+<b><tt>boot=/dev/hda</tt></b>
+<b><tt>prompt</tt></b>
+<b><tt>timeout=60</tt></b>
+<b><tt>image=/boot/vmlinuz</tt></b>
+    <b><tt>label=Linux</tt></b>
+    <b><tt>read-only</tt></b>
+    <b><tt>root=/dev/hda3</tt></b>
+<b><tt>EOF</tt></b>
+# <b><tt>lilo</tt></b>
+</pre></div></div>
+        <div class="para">
+Artık sisteminizi yeniden başlatabilirsiniz.
+        </div></dd></dl> <div class="head3"><a name="encrypted-rootfs-howto-install-kernel-2.6" id="encrypted-rootfs-howto-install-kernel-2.6"></a>Linux-2.6.10 çekirdeğinin kurulması</div><dl><dd><div class="para">
+Yukarıdaki işlemleri <tt>loop-aes</tt>'in <tt>kernel-2.6.10.diff</tt> yamasını kullanarak yerine getirin ve <tt>cryptoloop</tt> desteğinin etkin olmadığından emin olun. Modül desteğinin <tt>module-init-tools</tt> paketine ihtiyaç duyduğunu unutmayın.
+        </div></dd></dl> <div class="head3"><a name="encrypted-rootfs-howto-install-util-linux" id="encrypted-rootfs-howto-install-util-linux"></a>Util-linux-2.12p paketinin kurulması</div><dl><dd><div class="para">
+util-linux paketinin bir parçası olan <b><tt>losetup</tt></b> programının güçlü kriptografi desteğine sahip olması için yamanması ve yeniden derlenmesi gerekir. util-linux paketini indirip, açın ve yamayın:
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+$ <b><tt>cd /usr/src</tt></b>
+$ <b><tt>wget http://ftp.kernel.org/pub/linux/utils/util-linux/util-linux-2.12p.tar.bz2</tt></b>
+$ <b><tt>tar -xvjf util-linux-2.12p.tar.bz2</tt></b>
+$ <b><tt>cd util-linux-2.12p</tt></b>
+$ <b><tt>patch -Np1 -i ../loop-AES-v3.0b/util-linux-2.12p.diff</tt></b>
+</pre></div></div>
+        <div class="para">
+20 karakterden daha kısa parolalar kullanabilmek için aşağıdaki komutu girin:
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+CFLAGS="-O2 -DLOOP_PASSWORD_MIN_LENGTH=8"; export CFLAGS
+</pre></div></div>
+        <div class="para">
+Temel kaygınız güvenlik olduğundan lütfen 20 karakterden daha kısa parolaları girebilmeyi etkin yapmayın. Bilgi gizliliği bedava değildir, uzun parolalar bunun 'bedeli'dir.
+        </div><div class="para">
+<b><tt>losetup</tt></b>'ı derleyin ve root olarak kurun:
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+$ <b><tt>./configure &amp;&amp; make lib mount</tt></b>
+# <b><tt>mv -f /sbin/losetup /sbin/losetup~</tt></b>
+# <b><tt>rm -f /usr/share/man/man8/losetup.8*</tt></b>
+# <b><tt>cd mount</tt></b>
+# <b><tt>gzip losetup.8</tt></b>
+# <b><tt>cp losetup /sbin</tt></b>
+# <b><tt>cp losetup.8.gz /usr/share/man/man8/</tt></b>
+# <b><tt>chattr +i /sbin/losetup</tt></b>
+</pre></div></div>
+        </dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/encrypted-rootfs-howto.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/encrypted-rootfs-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/encrypted-rootfs-howto-encrypt-root-filesystem.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Şifrelenmiş Kök Dosya Sistemi NASIL </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Şifrelenmiş Kök Dosya Sisteminin Oluşturulması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

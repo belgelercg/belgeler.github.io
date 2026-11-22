@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:25:48+03:00" /><title>İşlev Tanımlama</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../uygulamalar/python-tutorial_akis-denetimi.html" title="Akış Denetimi" /><link rel="previous" href="../uygulamalar/python-tutorial_pass.html" title="pass Deyimi" /><link rel="next" href="../uygulamalar/python-tutorial_func-more.html" title="İşlev Tanımları Üzerine Daha Fazla Bilgi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">İşlev Tanımlama</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../uygulamalar/python-tutorial_pass.html">Önceki</a> </td><th width="60%" align="center">Akış Denetimi</th><td width="20%" align="right"> <a accesskey="n" href="../uygulamalar/python-tutorial_func-more.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="python-tutorial_func" id="python-tutorial_func"></a>İşlev Tanımlama</div><dl><dd><div class="para">
+        Herhangi bir değere kadar Fibonacci serisi yazan bir işlev yazalım:
+</div><div class="para"><div align="right"><pre class="screen">
+&gt;&gt;&gt; def fib(n):     # n'e kadar Fibonacci serisini yazdır
+...     "n'e kadar Fibonacci serisini yazdır"
+...     a, b = 0, 1
+...     while b &lt; n:
+...         print b,
+...         a, b = b, a+b
+...
+&gt;&gt;&gt; # Tanımladığımız işlevi çağıralım:
+... fib(2000)
+1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987 1597
+</pre></div></div><div class="para">
+        <tt>def</tt> anahtar kelimesi bir işlev tanımını başlatır.
+        Bu deyimden sonra bir işlev adı ve parantez içinde parametreler yazılır.
+        İşlevin gövdesini oluşturan program satırları sonraki satırdan itibaren
+        girintili olarak yazılırlar. İşlev gövdesinin ilk satırı bir dizge de
+        olabilir; bu dizge işlevin belgelenmesinde kullanılır (docstring).
+      </div><div class="para">
+        İşlevlerin belgelenmesinde kullanılan dizgeleri (docstring) otomatik
+        olarak çevrim içi ya da basılı belgeler oluşturmak için kullanan
+        yazılımlar vardır. Ayrıca bazı geliştirme ortamları bunları program
+        yazarken kolaylık sağlaması için etkileşimli olarak programcıya
+        sunarlar. Yazdığınız işlevlere bunları eklemeyi bir alışkanlık haline
+        getirmeniz faydalı olur.
+      </div><div class="para">
+        Bir işlevin çağrılması (çalıştırılması) bu işlevdeki yerel değişkenlerin
+        olduğu bir simge tablosu oluşturur. İşlev içerisinde bütün değer atama
+        işlemlerinde değerler yerel simge tablosuna kaydedilir. Bir değişkene
+        başvuru durumunda ise önce yerel (local), sonra genel (global) ve en son
+        yerleşik (built-in) simge tablosunda arama yapılır. Bu yüzden genel
+        değişkenlere doğrudan değer atama yapılamaz (eğer <tt>global</tt>
+        ifadesi içinde kullanılmamışlar ise); ancak bunlara başvuru yapılabilir
+        (reference).
+      </div><div class="para">
+        İşlev çağırıldığında işlevin parametreleri yerel simge tablosuna eklenirler;
+        yani parametreler işleve değeri ile çağrı (call by value) kullanılarak
+        iletilirler (yani parametreye yapılan değişiklikler yereldir, çağıran
+        işlevdeki argümanlarda bir değişme olmaz).
+        <sup>[<a name="id85" href="#ftn.id85" id="id85">85</a>]</sup>
+      </div><div class="para">
+        Bir işlev başka bir işlevi çağırdığında bu çağrı için yeni bir yerel simge
+        tablosu oluşturulur.
+      </div><div class="para">
+        Bir işlev tanımı işlev adının yürürlükte olan simge tablosuna eklenmesine
+        sebep olur. İşlevin adı yorurumlayıcı tarafından kullanıcı tanımlı işlev
+        veri türü olarak tanınır. Bu değer başka bir isime atanabilir ve bu da bir
+        işlev olarak kullanılabilir. Bu genel bir isim değiştirme yolu olabilir:
+</div><div class="para"><div align="right"><pre class="screen">
+&gt;&gt;&gt; fib
+&lt;function object at 10042ed0&gt;
+&gt;&gt;&gt; f = fib # f de fib işlevi olur
+&gt;&gt;&gt; f(100)
+1 1 2 3 5 8 13 21 34 55 89
+</pre></div></div><div class="para">
+        <tt>fib</tt>'in bir işlev olmayıp bir yordam (procedure)
+        olduğunu düşünebilirsiniz. Python'da yordamlar, çağıran işleve
+        değer geri döndürmeyen işlevlerdir. Aslında yordamlar da bir değer
+        geri döndürürler, ama bu sıkıcı bir konudur. Bu değere
+        <tt>None</tt> denir ve yerleşik bir değişkendir.
+        Yorumlayıcı yazılacak tek değer bu ise normalde <tt>None</tt>
+        yazmaz. Bunu görmeyi çok istiyorsanız şunu deneyin:
+</div><div class="para"><div align="right"><pre class="screen">
+&gt;&gt;&gt; print fib(0)
+None
+</pre></div></div><div class="para">
+        Fibonacci serisini yazdırmak yerine, bunu bir liste şeklinde geri
+        döndüren işlev yazmak basittir:
+</div><div class="para"><div align="right"><pre class="screen">
+&gt;&gt;&gt; def fib2(n): # n e kadar fibonacci serisi geri döndürür
+...     " n e kadar fibonacci serisi içeren liste geri döndürür"
+...     sonuc = []
+...     a, b = 0, 1
+...     while b &lt; n:
+...         sonuc.append(b)    # değeri listeye ekle
+...         a, b = b, a+b
+...     return sonuc
+...
+&gt;&gt;&gt; f100 = fib2(100)    # işlevi çağır
+&gt;&gt;&gt; f100                # sonucu yazdır
+[1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89]
+</pre></div></div><div class="para">
+        Bu örnekte de bazı yeni Python özelliklerini görüyoruz:
+      </div>
+        <ul type="disc" class="itemizedlist"><li><div class="para">
+              <tt>return</tt> deyimi bir işlevden değer geri döndürür.
+              Parametresi olmayan bir <tt>return</tt> deyimi
+              <tt>None</tt> geri döndürür. Sona eren bir yordam
+              (procedure) da <tt>None</tt> geri döndürür.
+            </div></li><li><div class="para">
+              <tt>sonuc.append(b)</tt> ifadesi sonuç liste nesnesinin
+              bir yöntemini çağırmaktadır. Bir yöntem bir nesneye `ait olan' ve
+              <tt>nesne.yöntemAdı</tt> şeklinde adlandırılan bir
+              işlevdir. <tt>nesne.yöntemAdı</tt> ifadesinde nesne
+              herhangi bir nesne (bir ifade de olabilir) ve <tt>yöntemAdı</tt>
+              da nesnenin türüne bağlı bir yöntemdir. Farklı veri türleri farklı
+              yöntemlere sahiptirler. Farklı veri türlerinin ayni isimli
+              yöntemleri olabilir. Sonraki bölümlerde anlatılacağı gibi, kendi
+              veri türlerinizi ve yöntemlerinizi oluşturmanız mümkündür.
+              Yukarıdaki örnekte görülen <tt>append()</tt> yöntemi
+              liste nesneleri için tanımlıdır ve bir listenin sonuna yeni
+              elemanlar ekler. Bu örnekte bu <tt>sonuc = sonuc + [b]</tt>
+              ifadesinin yaptığını yapar; ancak daha verimlidir.
+            </div></li></ul>
+      <div class="footnotes"><br /><hr width="100" align="left" /><div class="footnote"><div class="para"><sup>[<a name="ftn.id85" href="#id85" id="ftn.id85">85</a>] </sup>
+            Aslında nesne başvurusu ile çağrı daha iyi bir tanım olur, çünkü
+            işleve değiştirilebilir bir nesne aktarılırsa çağıran çağrılanın o
+            nesneye uyguladığı tüm değişiklikleri görür (listeye eklenen
+            elemanlar gibi).
+          </div></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../uygulamalar/python-tutorial_pass.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../uygulamalar/python-tutorial_akis-denetimi.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../uygulamalar/python-tutorial_func-more.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">pass Deyimi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> İşlev Tanımları Üzerine Daha Fazla Bilgi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>
