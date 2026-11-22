@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:11+03:00" /><title>Örnekler</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/opengl-giris.html" title="30 Dakikada OpenGL'e Giriş" /><link rel="previous" href="../howto/opengl-giris_islevler.html" title="Bazı OpenGL İşlevlerinin Tanıtımı" /><link rel="next" href="../howto/opengl-giris_ekler.html" title="A. Örnek Programlar" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Örnekler</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/opengl-giris_islevler.html">Önceki</a> </td><th width="60%" align="center">30 Dakikada OpenGL'e Giriş</th><td width="20%" align="right"> <a accesskey="n" href="../howto/opengl-giris_ekler.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="opengl-giris_ornekler" id="opengl-giris_ornekler"></a>Örnekler</div><dl><dd>
+      <div class="variablelist"><dl><dt><span class="term">glilk.c</span></dt><dd class="varlist">
+<div class="para"><div align="right"><pre class="screen">
+#include &lt;GL/glut.h&gt;
+
+void myDisplay()
+{
+  glClear(GL_COLOR_BUFFER_BIT);
+  glColor3f (0,0,1);
+  glBegin(GL_POLYGON);
+    glVertex2f (0.0, 0.0);
+    glVertex2f (0.2, 0.0);
+    glVertex2f (0.2, 0.5);
+  glEnd();
+
+  glFlush();
+}
+
+int main (int argc, char ** argv)
+{
+  glutInit (&amp;argc,argv);
+  glutCreateWindow("Iste ilk pencerem!");
+  glutDisplayFunc(myDisplay);
+  glutMainLoop();
+  return(0);
+}
+</pre></div></div>
+              <div class="mediaobject"><img src="images/openglbeginner/glilk.png" class="imagedata" alt="" /></div>
+            </dd><dt><span class="term">glKesikCizgi.c</span></dt><dd class="varlist">
+<div class="para"><div align="right"><pre class="screen">
+#include &lt;GL/glut.h&gt;
+
+void display(void)
+{
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  glColor3f(1,1,1);// white
+  glEnable(GL_LINE_STIPPLE);
+  glLineStipple (2, 0x0C0F);
+  glBegin(GL_LINE_STRIP);
+    glVertex2f(0,-1);
+    glVertex2f(0,1);
+  glEnd();
+
+glFlush();
+}
+
+int main(int argc, char **argv)
+{
+  glutInit(&amp;argc, argv);
+  glutCreateWindow("Kesik Cizgi");
+  glutDisplayFunc(display);
+  glutMainLoop();
+  return(0);
+}
+</pre></div></div>
+              <div class="mediaobject"><img src="images/openglbeginner/kesikcizgi.png" class="imagedata" alt="" /></div>
+            </dd><dt><span class="term">glCember.c</span></dt><dd class="varlist">
+<div class="para"><div align="right"><pre class="screen">
+#include &lt;GL/glut.h&gt;
+#include &lt;math.h&gt;
+#include &lt;stdio.h&gt;
+
+#define RADIUS 0.75
+
+void cember(void);
+
+int main(int argc, char ** argv)
+{
+  glutInit(&amp;argc, argv);
+  glutCreateWindow("Cember");
+  glutDisplayFunc(cember);
+  glutMainLoop();
+  return(0);
+}
+
+void cember(void)
+{
+  double x,y;
+  int i;
+
+  glClearColor(1.0,1.0,0.0,0.0);
+  glClear(GL_COLOR_BUFFER_BIT);
+  glColor3f(0,0,1);// blue
+
+  glPointSize(10.0);
+  glBegin(GL_POINTS);
+    for(i = 1; i &lt; 360; i++){
+      x = RADIUS * sin(((double)i)*M_PI/180);
+      y = RADIUS * cos(((double)i)*M_PI/180);
+      #ifdef DEBUG
+        fprintf(stderr, "(%f, %f)\n", x, y);
+      #endif
+      glVertex2f(x,y);
+    }
+  glEnd();
+
+  glFlush();
+}
+</pre></div></div>
+              <div class="mediaobject"><img src="images/openglbeginner/cember.png" class="imagedata" alt="" /></div>
+            </dd><dt><span class="term">glRenkliCizgi.c</span></dt><dd class="varlist">
+<div class="para"><div align="right"><pre class="screen">
+#include &lt;GL/glut.h&gt;
+#include &lt;math.h&gt;
+
+void RenkliCiz(void);
+
+#define RADIUS 0.75
+
+int main(int argc, char **argv)
+{
+  glutInit(&amp;argc, argv);
+  glutCreateWindow("Renkli Cizgi");
+  glClearColor (0.1, 0.1, 0.1, 0.0);
+  glutDisplayFunc(RenkliCiz);
+  gluOrtho2D (-5.0, 5.0, -5.0, 5.0);
+  glutMainLoop();
+  return(0);
+}
+
+void RenkliCiz (void)
+{
+  int i, j, k, tur;
+  double x, y;
+  int teta=0;
+
+  glClear(GL_COLOR_BUFFER_BIT);
+  glPointSize(12.0);
+  glBegin(GL_POINTS);
+    for(i = 0; i &lt;= 10; i++){
+      for(j = 0; j &lt;= 10; j++){
+        for(k = 0; k &lt;= 10; k++){
+          glColor3f (i*0.1, j*0.1, k*0.1);
+          x = teta; y = x;
+          #ifdef DEBUG
+            fprintf(stderr, "teta: %d, Color: %f, %f, %f; (%f, %f)\n",
+                    teta, i*0.1, j*0.1, k*0.1, x,y);
+          #endif
+          tur = teta/360;
+          x = RADIUS*(tur+1)*sin(((double)(teta-tur*360))*M_PI/180);
+          y = RADIUS*(tur+1)*cos(((double)(teta-tur*360))*M_PI/180);
+          glVertex2f(x,y);
+
+          teta++;
+        }
+      }
+    }
+  glEnd();
+
+  glFlush();
+}
+</pre></div></div>
+              <div class="mediaobject"><img src="images/openglbeginner/renklicizgi.png" class="imagedata" alt="" /></div>
+            </dd><dt><span class="term">glKare.c</span></dt><dd class="varlist">
+<div class="para"><div align="right"><pre class="screen">
+#include &lt;GL/glut.h&gt;
+#include &lt;GL/gl.h&gt;
+#include &lt;GL/glu.h&gt;
+#include &lt;math.h&gt;
+#include &lt;stdio.h&gt;
+
+#define RADIUS 0.75
+
+#define X0 -1
+#define Y0 -1
+#define X1 1
+#define Y1 1
+
+
+void cember (void);
+void dondur (unsigned char ,int, int);
+
+int teta;
+int viewX0, viewY0, viewX1, viewY1;
+
+int
+main(int argc, char **argv)
+{
+  printf("Kullanim sekli:\n");
+  printf("a: sol,          d: sag,         s: asagi,      w: yukari\n");
+  printf("u: yukari cevir, n: asagi cevir, h: sola cevir, j: saga cevir\n");
+  printf("b: duzlemde sola dondur,         m: duzlemde saga dondur\n");
+  printf("-: goruntuyu kucult,             +: goruntuyu buyut\n");
+  printf("r: goruntuyu ilk duruma getir, ESC: Cikis\n");
+
+  teta=0;
+  viewX0 = -2; viewX1 = 2; viewY0 = -2; viewY1 = 2;
+  glutInit(&amp;argc, argv);
+  glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB);
+  glutCreateWindow("Kare &amp; Cember");
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  gluOrtho2D(viewX0, viewX1, viewY0, viewY1);
+
+  glutDisplayFunc(cember);
+  glutKeyboardFunc(dondur);
+  glutMainLoop();
+  return(0);
+}
+
+void cember(void)
+{
+  double x, y;
+  int i;
+
+  glClearColor(0.0, 0.0, 0.0, 0.0);
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  glColor3f(1, 1, 1);// blue
+
+  glBegin(GL_POINTS);
+    for(i = 1; i &lt; 360; i++){
+      x = RADIUS * sin(((double)i) * M_PI / 180);
+      y = RADIUS * cos(((double)i) * M_PI / 180);
+      glVertex2f(x, y);
+    }
+  glEnd();
+
+  glColor3f(1, 1, 1);// white
+  glEnable(GL_LINE_STIPPLE);
+  glLineStipple (2, 0x0C0F);
+  glBegin(GL_LINE_STRIP);
+    glVertex2f(0, -1);
+    glVertex2f(0, 1);
+  glEnd();
+  glBegin(GL_LINES);
+    glVertex2f(-1, 0);
+    glVertex2f (1, 0);
+  glEnd();
+
+  glColor3f(1.0, 1.0, 1.0);
+
+  glRectf(-0.5, -0.5, 0.5, 0.5);
+  glBegin(GL_LINES);
+    glVertex2f(-1, 0);
+    glVertex2f (1, 0);
+  glEnd();
+
+  glutSwapBuffers();
+}
+
+void dondur (unsigned char tus, int x, int y)
+{
+  if (tus == 'd'){
+   glTranslatef (1.0, 0.0, 0.0);
+  } else if (tus == 'a'){
+     glTranslatef (-1.0, 0.0, 0.0);
+  } else if (tus == 'w'){
+     glTranslatef (0.0, 1.0, 0.0);
+  } else if (tus == 's'){
+     glTranslatef (0.0, -1.0, 0.0);
+  } else if (tus == 'u'){
+     glRotatef(15,1.0, 0.0, 0.0);
+  } else if (tus == 'n'){
+     glRotatef(15,-1.0, 0.0, 0.0);
+  } else if (tus == 'h'){
+     glRotatef(15, 0.0, 1.0, 0.0);
+  } else if (tus == 'j'){
+     glRotatef(15, 0.0, -1.0, 0.0);
+  } else if (tus == 'b'){
+     glRotatef(15, 0.0, 0.0, 1.0);
+  } else if(tus == 'm'){
+     glRotatef(15, 0.0, 0.0, -1.0);
+  } else if (tus == '+'){
+     glScalef(1.5, 1.5, 1.5);
+  } else if (tus == '-'){
+     glScalef(0.5, 0.5, 0.5);
+  } else if (tus == 'r'){
+     glLoadIdentity();
+  } else if (tus == 27){
+     exit(0);
+  }
+  cember();
+}
+</pre></div></div>
+              <div class="mediaobject"><img src="images/openglbeginner/kare.png" class="imagedata" alt="" /></div>
+            </dd></dl></div>
+    </dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/opengl-giris_islevler.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/opengl-giris.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/opengl-giris_ekler.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Bazı OpenGL İşlevlerinin Tanıtımı </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> A. Örnek Programlar</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

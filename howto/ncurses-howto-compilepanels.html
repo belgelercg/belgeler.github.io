@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:08+03:00" /><title>Panel Kütüphanesi ile derleme</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/ncurses-howto-panels.html" title="Panel Kütüphanesi" /><link rel="previous" href="../howto/ncurses-howto-panelbasics.html" title="Temel Bilgiler" /><link rel="next" href="../howto/ncurses-howto-panelbrowsing.html" title="Panel Penceresinde Gezinmek" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Panel Kütüphanesi ile derleme</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/ncurses-howto-panelbasics.html">Önceki</a> </td><th width="60%" align="center">Panel Kütüphanesi</th><td width="20%" align="right"> <a accesskey="n" href="../howto/ncurses-howto-panelbrowsing.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="ncurses-howto-compilepanels" id="ncurses-howto-compilepanels"></a>Panel Kütüphanesi ile derleme</div><dl><dd><div class="para">
+Panel kütüphanesi işlevlerini kullanabilmek için <tt>panel.h</tt> başlık dosyası programa dahil edilmeli ve programı panel kütüphanesi ile ilintili derlemek için <tt>-lpanel -lncurses</tt> seçenekleri kullanılmalıdır.
+</div>
+<div class="para"><div align="right"><pre class="programlisting">
+#include &lt;panel.h&gt;.
+.
+.
+
+derleme ve ilintileme: <b><tt>gcc</tt></b> <i>program dosyası</i> <b><tt>-lpanel -lncurses</tt></b>
+</pre></div></div>
+<dl class="example"><dt class="example"><a class="example" name="idxmp88" id="idxmp88"></a><b>Örnek 12.14. Panellerin temelleri</b></dt><dd class="example">
+<div class="para"><div align="right"><pre class="programlisting">
+#include &lt;panel.h&gt;
+
+int main()
+{ WINDOW *my_wins[3];
+  PANEL  *my_panels[3];
+  int lines = 10, cols = 40, y = 2, x = 4, i;
+
+  initscr();
+  cbreak();
+  noecho();
+
+  /* Paneller için pencereler oluşturun */
+  my_wins[0] = newwin(lines, cols, y, x);
+  my_wins[1] = newwin(lines, cols, y + 1, x + 5);
+  my_wins[2] = newwin(lines, cols, y + 2, x + 10);
+
+  /*
+   * Pencereler etrafında çerçeve oluşturun
+   * böylece Panel etkilerini görebilirsiniz
+   */
+  for(i = 0; i &lt; 3; ++i)
+          box(my_wins[i], 0, 0);
+
+  /* Her pencereyi bir panele bağlayın. Sıralama alttan üste doğru */
+  my_panels[0] = new_panel(my_wins[0]);   /* 0'a  it, sıra: stdscr-0 */
+  my_panels[1] = new_panel(my_wins[1]);   /* 1'e  it, sıra: stdscr-0-1 */
+  my_panels[2] = new_panel(my_wins[2]);   /* 2'ye it, sıra: stdscr-0-1-2 */
+
+  /* Yığın sıralamasını güncelle. 2. panel en üstte olacak */
+  update_panels();
+
+  /* Ekranda göster */
+  doupdate();
+
+  getch();
+  endwin();
+}
+</pre></div></div></dd></dl><div class="para">
+Gördüğünüz gibi yukarıdaki program açıklandığı gibi basit bir akış takip etmektedir. Pencereler <tt>newwin()</tt> ile oluşturulup <tt>new_panel()</tt> ile panellere bağlanmıştır. Bir paneli diğeri ardına bağladığımızda, panel yığını güncellenmektedir. Bunları ekrana yazdırmak için <tt>update_panels()</tt> ve göstermek için <tt>doupdate()</tt> işlevleri çağrılmıştır.
+</div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/ncurses-howto-panelbasics.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/ncurses-howto-panels.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/ncurses-howto-panelbrowsing.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Temel Bilgiler </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Panel Penceresinde Gezinmek</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

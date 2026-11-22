@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2019-10-17T22:36:15+03:00" /><title>/var/qmail/rc Dosyası ve Maildir</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/qmail-kurulumu-nasil.html" title="QMAIL Kurulumu NASIL" /><link rel="previous" href="../howto/qmail-kurulumu-nasil_ekkur.html" title="Gerekli Paketlerin Kurulumu" /><link rel="next" href="../howto/qmail-kurulumu-nasil_qmail-init.html" title="Qmail'in Başlatılması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">/var/qmail/rc Dosyası ve Maildir</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/qmail-kurulumu-nasil_ekkur.html">Önceki</a> </td><th width="60%" align="center">QMAIL Kurulumu NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/qmail-kurulumu-nasil_qmail-init.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="qmail-kurulumu-nasil_qmail-rc" id="qmail-kurulumu-nasil_qmail-rc"></a>/var/qmail/rc Dosyası ve Maildir</div><dl><dd><div class="para">
+<tt>/var/qmail/rc</tt> dosyası, <tt>qmail-send</tt>'i
+çalıştırmak için kullanılan dosyadır. <tt>/var/qmail/boot</tt>
+altında değişik örnekleri mevcuttur.
+    </div><div class="para">
+Bizim örnek <tt>/var/qmail/rc</tt> dosyamız şöyle olacaktır:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+#!/bin/sh
+exec env - PATH="/var/qmail/bin:$PATH" \
+qmail-start ./Maildir/
+</pre></div></div>
+    <div class="para">
+Eğer 1. kurulum yöntemini seçtiyseniz ve <tt>dot-forward</tt>
+paketini kurduysanız, <tt>.forward</tt> dosyasının qmail ile
+çalışması için <tt>/var/qmail/rc</tt> şöyle olmalıdır:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+#!/bin/sh
+exec env - PATH="/var/qmail/bin:$PATH" \
+qmail-start   '|dot-forward .forward ./Maildir/'
+</pre></div></div>
+<div class="para">
+Bu bilgileri istediğiniz bir metin düzenleyici ile yazdıktan sonra
+<tt>/var/qmail/rc</tt> dosyası olarak kaydedip aşağıdaki
+komutları verin:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# chmod 755 /var/qmail/rc
+# mkdir /var/log/qmail
+</pre></div></div>
+    <div class="para">
+<tt>Maildir</tt> gelen postaların saklanma yeridir.
+<tt>Maildir</tt> bir dizindir ve kullanıcıların postaları
+sendmail'deki gibi <tt>/var/spool/mail/kullanıcı_adı</tt>
+dosyasında değil de her kullanıcının ev dizininde bulunur ve
+postalar bu dizin altında saklanır.
+    </div><div class="para">
+Getirileri:
+    </div><ul type="disc" class="itemizedlist"><li>Kilitlenme (locking) söz konusu değildir</li><li>Qmail ile gelen pop3 ile kullanılabilir</li><li>
+Sendmail'deki gibi her posta geldiğinde tümden <tt>mbox</tt>
+dosyasını açmaz. Bu sayede daha fazla performans sağlar.
+(Düşünsenize mbox dosyasında binlerce posta varsa bu kaç dakikada açılır...)
+        </li><li>Güvenlidir</li></ul><div class="para">
+Götürüleri:
+      </div><ul type="disc" class="itemizedlist"><li>
+Her posta ayrı bir dosya olarak saklandığı için çok fazla posta
+geldiğinde dosya endekslerinin sayısı çok fazla olacaktır.
+        </li></ul></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/qmail-kurulumu-nasil_ekkur.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/qmail-kurulumu-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/qmail-kurulumu-nasil_qmail-init.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Gerekli Paketlerin Kurulumu </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Qmail'in Başlatılması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

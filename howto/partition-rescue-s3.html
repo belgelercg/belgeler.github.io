@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:16+03:00" /><title>Sorunun çözümü</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/partition-rescue.html" title="Disk Bölümü Kurtarmak NASIL" /><link rel="previous" href="../howto/partition-rescue-s2.html" title="Teknik Bilgi" /><link rel="next" href="../howto/partition-rescue-s4.html" title="Kaynaklar" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Sorunun çözümü</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/partition-rescue-s2.html">Önceki</a> </td><th width="60%" align="center">Disk Bölümü Kurtarmak NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/partition-rescue-s4.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="partition-rescue-s3" id="partition-rescue-s3"></a>Sorunun çözümü</div><dl><dd>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/caution.png" /></td><th class="admon">Lütfen dikkat!</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">Burada açıklananları uygulamak şu anda yüklü sisteminizi kaybetmenize ve eğer mevcutsa bir önceki sisteme dönmenize neden olacaktır! Seçim sizin...</div></td></tr></table></div> <div class="head3"><a name="id1" id="id1"></a>Kolay yöntem</div><dl><dd><div class="para">
+İşi kolayca halletmek için elinizde olması gerekenler:
+</div><ul type="disc" class="itemizedlist"><li><div class="para">
+Kendi kendine bir linux sistemi başlatabilecek ve <b><tt>fdisk</tt></b> programı mevcut olan bir disk (floppy veya CD) - son zamanlarda çıkan dağıtımların çoğunun oluşturduğu kurtarma diskleri bu işi görecektir.
+</div></li><li><div class="para">
+<b><tt>fdisk -l</tt></b> ve <b><tt>fdisk -ul</tt></b> komutlarının çıktılarının yazılı olduğu bir kağıt.
+</div></li></ul><div class="para">
+Bu kadarı</div><ol class="orderedlist" start="ignore" type="1"><li><div class="listitem">Linux'u başlatmaya,</div></li><li><div class="listitem"><b><tt>fdisk /dev/hda</tt></b> (veya hangi disk kurtarılacaksa, yani <tt>/dev/hdx</tt>) komutu ile <b><tt>fdisk</tt></b>'i başlatmaya,</div></li><li><div class="listitem"><b><tt>fdisk</tt></b>'i kullanarak zarar görmüş diskteki tüm bölümleri silmeye (<tt>d</tt> seçeneği ile),</div></li><li><div class="listitem">Kağıdınızdaki bilgi ve <b><tt>fdisk</tt></b> kullanarak tüm birincil (1 - 4) bölümleri oluşturmaya,</div></li><li><div class="listitem">bu bölümlere uygun etiketleri (<tt>t</tt> seçeneği ile, mesela Linux Swap için 82, Linux ext3 için 83, MS Windows Fat32 için c gibi etiketler vardır, <tt>L</tt> seçeneği bütün listeyi gösterir) vermeye,</div></li><li><div class="listitem">gerekli mantıksal bölümleri oluşturmaya</div></li></ol><div class="para">yeterlidir.</div><div class="para">
+Şu an yüklü SuSE sistemimde ve bu işlemi başka kişilerin bilgisayarlarında denediğimde iyi sonuç aldım.
+</div><div class="para">
+Daha önce bazı <b><tt>fdisk</tt></b> sürümlerinin diski silindir yerine sektör cinsinden ele aldığından bahsetmiştim. Kağıdınızdaki <b><tt>fdisk -ul</tt></b> kısmı bu iş içindir, yani bölümleme tablosu sektör cinsinden bloklarla gösterecektir.
+</div><div class="para">
+<b><tt>fdisk -ul</tt></b> listesini kullanacak şekilde başlatmak için <b><tt>fdisk</tt></b>'i <b><tt>fdisk -u</tt></b> ile başlatmalısınız. Bana göre sektörle çalışmak çok kötü bir fikir, çünkü silindirleri akılda tutmak sektörlere göre çok daha kolay, ama bilgim dışında gerçekten kullanışlı olan bir yönü olabilir.<sup>[<a name="id68" href="#ftn.id68" id="id68">68</a>]</sup>
+</div><div class="para">
+<b><tt>fdisk</tt></b> küçük ve akıllı bir programdır. Çeşitli sürümleri var, ama her zaman Linux sürümlerini tercih ederim.
+</div><div class="para">
+<b><tt>fdisk</tt></b> programını kullanırken <tt>w</tt> tuşuna dikkat etmelisiniz, bu disk bölüm tablosuna diske yazar, eğer bir yanlışlık yaptığınızı düşünüyorsanız <tt>q</tt> (quit) tuşu veya <tt>Ctrl+C</tt> ile yaptığınız değişiklikler diske yazılmadan çıkabilirsiniz.
+</div><div class="para">
+Yeni bölüm tablonuzu oluşturduğunuzda (yukarıda bahsettiğimiz gibi) Linux'unuzu başlatın. Büyük ihtimalle bunu başaramayabilirsiniz: önyükleyiciniz de (lilo/grub) bozulmuş olabilir, bu durumda bir başlatma disketine veya bilgisayarınızı başlatabileceğiniz bir CD'ye ("booting the installed partition" (yüklü bölümden başlat) seçeneği seçilmeli) ihtiyacınız olacaktır.
+</div><div class="para">
+Eğer lilo kullanıyorsanız, root olarak giriş yaptıktan sonra hemen "lilo" komutunu girin ve önyükleyicinizi tekrar kurun. Elbette Grub kullanıyorsanız Grub'u yüklemelisiniz.
+</div><div class="para">
+Linux'unuza kavuşmuş olmalısınız, test edin. Eğer çalışabilir durumdaysa MS Windows'u başlatmayı da deneyin. Eğer yapamıyorsanız küçük bir şansla windows bölümündeki verilerinizi Linux'tan sektörler halinde okuyabilirsiniz. Eğer verinizin bulunduğu disk sektörlerini belirleyebilirseniz <b><tt>dd</tt></b> kullanarak verilerinizi bir dosyaya kopyalayabilirsiniz. Bu kurtarma operasyonu bu mini-NASIL belgesinin konusu dışında kalıyor.
+</div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Pek kolay olmayan yöntem</div><dl><dd> <div class="head4"><a name="id12" id="id12"></a>El ile yapmak</div><dl><dd><div class="para">
+Burada anlatılanlar önceki bölümdeki durum kullanılamadığında uygulanmalıdır. Mesela <b><tt>fdisk</tt></b> çıktısı kağıdınız olmadığında.
+</div><div class="para">
+Öncelikle fdisk dışında diske yazma gerçekleştirmeden önce bilgilerinizi silmediğinizden emin olun, böylece blok blok deneme yöntemini kullanabilirsiniz. Bunun için deneyeceğiniz bölümün ilk bloğunu bilmelisiniz. Mesela eğer 153 uymazsa 154'ü, 154 olmazsa 155'i şeklinde ilerleyerek deneyebilirsiniz.
+</div><div class="para">
+Bu biraz yorucu olabilir, ama eğer Linux bölümünüzün boyutunu biliyorsanız, kazanmak için bir şansını olabilir.
+</div></dd></dl> <div class="head4"><a name="id22" id="id22"></a>Linux hakkında bilgi ve diğer ipuçları</div><dl><dd><div> <div class="head5"><a name="id122" id="id122"></a>Çekirdek</div></div><div class="para">
+Eğer bölüm tablonuzu bozdunuz ama henüz bilgisayarı yeniden başlatmadıysanız, hala çekirdekte saklı bölüm bilgisini geri alabilirsiniz:
+</div><div class="para">
+<b><tt>cat /proc/partitions</tt></b> komutu ile:
+</div>
+<div class="para"><pre class="literallayout">major minor #blocks  name
+3     0     19535040 hda
+3     1      2096451 hda1
+3     2      4980150 hda2
+3     3            1 hda3 &lt;----- bu bir ek bölümü temsil eder
+3     5      4980118 hda5
+3     6      4972086 hda6
+</pre></div>
+<div> <div class="head5"><a name="id222" id="id222"></a>hdparm</div></div>
+<div class="para"><div align="right"><pre class="screen">hdparm -g /dev/hda1/dev/hda1
+
+geometry = 2432/255/63, sectors = 4192902, start = 63
+</pre></div></div>
+<div class="para">
+Birkaç birim dönüştürmesi yapmanız gerekecek. Bloklar genellikle 1K uzunluğundadır. Sektörler disk sektörleridir ve genellikle 512 bayt uzunluğundadırlar. Ama genellikle disk bölümleme araçları silindirler ile çalışırlar (burada 255*63=16065 sektör) Bu bilgiyi kullanarak yeni bir bölüm tablosu oluşturabilirsiniz.
+</div><div> <div class="head5"><a name="id322" id="id322"></a>Bölümün başlangıcını biliyorum, ama sonu?</div></div><div class="para">
+Linux bölümünün sonunu bilmiyor ama başlangıcını biliyorsanız, hala bölümü bağlayabilir ve yapısı hakkında bilgi sahibi olabilirsiniz. Bölüm tablosunda başlangıç kısmına doğru değeri girin ve bitiş kısmına çok büyük bir değer girin. Aşağıdaki komut ile doğru girip girmediğinizi kontrol edin:
+</div>
+<div class="para"><div align="right"><pre class="programlisting">e2fsck -n /dev/hd??
+</pre></div></div>
+<div class="para">
+Hatta bölümü bağlayıp boyutunu kontrol edebilirsiniz:
+</div>
+<div class="para"><div align="right"><pre class="programlisting">mount -r /dev/hd?? /mnt
+df -T
+</pre></div></div>
+<div class="para">
+Bu doğrudan diğer bölümün nerde başlayacağını göstermez ama yaklaşmanıza yardımcı olabilir.
+Sistemi sadece-okuma modunda işletmek için <tt>-n</tt> ve <tt>-r</tt> seçeneklerine dikkat edin!!!
+</div><div> <div class="head5"><a name="id422" id="id422"></a>Bölüm bilgisinin bulunduğu diğer kısımlar</div></div><div class="para">
+Bazı dağıtımlar bölüm bilgisini bir dosyaya kaydederler. Elbette ihtiyacınız olduğunda bu dosyaya ulaşamayabilirsiniz. Her ihtimale karşı:
+</div>
+<div class="para"><pre class="literallayout">    SuSE: /var/lib/YaST/install.inf
+</pre></div>
+<div class="para">
+(Eğer başka dosyalar biliyorsanız lütfen bu belgenin yazarına bir eposta atın)
+</div></dd></dl> <div class="head4"><a name="id32" id="id32"></a>gpart</div><dl><dd><div class="para">
+Ama eğer hala internete erişebiliyorsanız veya elinizde çoğu dağıtımda mevcut olan ve freshmeat.net sitesinden veya <a class="ulink" href="http://www.stud.uni-hannover.de/user/76201/gpart/" target="_top">http://www.stud.uni-hannover.de/user/76201/gpart/</a>  adresinden alabileceğiniz <b><tt>gpart</tt></b> varsa daha iyi bir yöntem vardır.
+</div><div class="para">
+<b><tt>man gpart</tt></b> komutundan aldığımız çıktının ilk satırı şu: "gpart - guess PC-type hard disk partitions" yani gpart - PC-türü sabit disk bölümlerini tahmin eder.
+</div><div class="para">
+"<b><tt>gpart</tt></b> bir sabit diskte hangi bölümler olduğunu tahmin etmeye çalışır. Eğer temel bölümleme tablosu kayıpsa, üzerine yazılmışsa veya halen disk üzerinde bulunan bölümler zarar görmüşse ve işletim sistemi bu bölümlere ulaşamıyorsa." Tam olarak ihtiyacımız olan budur.
+</div><div class="para"><b><tt>gpart</tt></b> çok iyi bir araçtır.
+</div><div class="para">
+Sorun şu: bütün bölümlerin ilk bloğu işaretlenmiştir. Fakat üzerine yazılmadıkça "işaretsiz" duruma gelmezler. Yani eski bir diskte çok sayıda "eskiden işaretlenmiş ilk blok" bulunur ve <b><tt>gpart</tt></b> sadece aralarından en iyisini seçmeye çalışır. Nitekim denemek o kadar da zor değildir, <b><tt>gpart</tt></b> tarafından diske yazılan birşey yoktur.
+</div><div class="para">
+İşte daha önce gördüğümüz hdb diskinin <b><tt>gpart</tt></b> sonuçları:
+</div>
+<div class="para"><div align="right"><pre class="programlisting">[root@charles:/home/jdd &gt; <b><tt>gpart /dev/hdb</tt></b>
+Begin scan...
+Possible partition(Linux ext2), size(1200Mb), offset(0Mb)
+Possible partition(Windows NTFS), size(1200Mb), offset(1200Mb)
+Possible partition(Linux ext2), size(1004Mb), offset(2402Mb)
+Possible partition(Windows NTFS), size(1600Mb), offset(4102Mb)
+End scan.
+Checking partitions...
+* Warning: partition(OS/2 HPFS, NTFS, QNX or Advanced UNIX) ends beyond disk end .
+Partition(Linux ext2 filesystem): primary
+Partition(OS/2 HPFS, NTFS, QNX or Advanced UNIX): primary
+Partition(Linux ext2 filesystem): primary
+Partition(OS/2 HPFS, NTFS, QNX or Advanced UNIX): invalid primary
+Ok.
+Guessed primary partition table:
+Primary partition(1)
+type: 131(0x83)(Linux ext2 filesystem)
+size: 1200mb #s(2457880) s(63-2457942)
+chs: (0/1/1)-(152/254/61)d (0/1/1)-(152/254/61)r
+Primary partition(2)
+type: 007(0x07)(OS/2 HPFS, NTFS, QNX or Advanced UNIX)
+size: 1200mb #s(2457880) s(2457944-4915823)
+chs: (152/254/63)-(305/253/60)d (152/254/63)-(305/253/60)r
+Primary partition(3)
+type: 131(0x83)(Linux ext2 filesystem)
+size: 1004mb #s(2056256) s(4919781-6976036)
+chs: (306/61/49)-(434/60/47)d (306/61/49)-(434/60/47)r
+Primary partition(4)
+type: 000(0x00)(unused) size: 0mb #s(0) s(0-0) chs: (0/0/0)-(0/0/0)d (0/0/0)-(0/0/0)r
+</pre></div></div>
+<div class="para">
+Gördüğünüz gibi birincil bölümler kurtarılabildi, ama ek bölümler için hala yapılacak şeyler var.
+</div><div class="para">
+Dos bölümleri "windows NTFS" olarak etiketlenmiş, çünkü MS Windows 2000 (çok kötü bir deneyim!) kurmaya çalışırken oluşturulmuşlar. Fakat "hatalı" olan kısımlar ek bölümler.
+</div><div class="para">
+Bu sonuç ile <b><tt>fdisk</tt></b> kullanarak bölümleme tablosunu yeniden oluşturabilirsiniz (Unutmayın bu durumda risk alabilirsiniz, orjinal tablonuz zaten bozulmuştu).
+</div><div class="para">
+<b><tt>gpart</tt></b> haftalık olarak güncellenen bir program <tt>:-)</tt> yeni sürümleri, bildiğimden daha güçlü olabilir.
+</div><div> <div class="head5"><a name="id132" id="id132"></a>Bir ek bölüm içindeki mantıksal bölümleri kurtarmak</div></div><div class="para">
+Ek bölüm bilgisi disk üzerinde belli bir yerde değildir, birincil bölümlerle beraber kaydedilmez. Kurtarabilmek için genellikle daha fazlası gerekir. Yapılacak işlem ise şudur:
+</div><ol class="orderedlist" start="ignore" type="1"><li><div class="listitem"><div class="para">
+<b><tt>gpart</tt></b>'ın <tt>-k</tt> seçeneğini kullanarak ilk bölümün başlangıcından itibaren tarama yapın.
+</div></div></li><li><div class="listitem"><div class="para">
+Sahte bir bitiş noktası olan ama başlangıç noktası doğru olan bir geçici birincil bölüm oluşturun (bu sizi varolan bir birincil bölümü silmeye zorlayabilir - eğer silinen bölümün sektörlerini tekrar kullanmayacaksanız risk alabilirsiniz.)
+</div></div></li><li><div class="listitem"><div class="para">
+<b><tt>e2fsk -n</tt></b>, <b><tt>mount -r</tt></b> ve <b><tt>df</tt></b> kullanarak doğru bitiş noktasını tahmin etmeye çalışın. Bu değeri bir kenara yazın.
+</div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/warning.png" /></td><th class="admon">Uyarı</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">Bahsedilen her programın man sayfalarını okumalı ve programları salt-okuma kipinde çalıştırmalısınız, tüm bölümleriniz doğru yerine oturmadan diske yazmamaya çalışın.</div></td></tr></table></div>
+</div></li><li><div class="listitem"><div class="para">
+Bu işlemleri kurtarılacak tüm bölümler için uygulayın.
+</div></div></li><li><div class="listitem"><div class="para">
+En baştan doğru bir bölüm tablosu oluşturun.
+</div></div></li></ol>
+<div> <div class="head5"><a name="id232" id="id232"></a>Eğer diskinizde hatalar varsa</div></div><div class="para">
+Eğer sabit diskinizde hatalar varsa, veriyi kullanmada, bölümü bağlamada veya kontrol etmede gerçekten sorun yaşıyor olabilirsiniz (sürücü okuma hataları karşınıza çıkabilir). Hatta <b><tt>gpart</tt></b> birşey bulamayabilir. Ama eğer bölümün başlangıcını bilirseniz, verilerinizi başka bir diskteki geçici bir dosyaya kolayca kopyalayabilirsiniz. Bu işlem ile okuma hataları olan sektörler genellikle sıfıra ayarlanır:
+</div><ul type="disc" class="itemizedlist"><li><div class="para">
+Bölümdeki veriyi bir dosyaya kopyalamak. Bölümün başlangıç bloğunu bilmelisiniz;
+</div></li></ul>
+
+<div class="para"><div align="right"><pre class="programlisting">dd if=/dev/hd?? of=/tmp/recover_hd?? bs=512 skip=XXXX count=YYY
+</pre></div></div>
+<div class="para">
+<tt>XXX</tt> sektör başlangıcı ve <tt>YYY</tt> sektör sayısıdır (tahmin yürütülebilir).
+</div><ul type="disc" class="itemizedlist"><li><div class="para">
+Dosyayı bir geridönüş dosya sistemi (loop fs) olarak bağlayın.
+</div></li></ul>
+
+<div class="para"><div align="right"><pre class="programlisting">mount -r -t ext2 -o loop /tmp/recover_hd?? /mnt/recover
+</pre></div></div>
+</dd></dl></dd></dl> <div class="head3"><a name="id3" id="id3"></a>Zengin adam çözümü :)</div><dl><dd><div class="para">
+Partition Magic ticari bir üründür, verdiği küçük hizmete karşı pek ucuz değildir (yaklaşık 100 Frank) ama bayağı ünlü bir programdır. Her nasılsa, hiç kullanmam ve onaylamam. Söylenene göre bölümlerle ilgili herşeyi yapabiliyormuş, buna bölümü eski durumuna getirmek de dahil.
+</div><div class="para">Ralf'ın bir belgesi olan orjinal bölüm-kurtarma mini NASIL belgesi esasen Partition Magic programı üzerinde duruyordu, yani eğer Linux bölümünüzde değerli bilgileriniz varsa ve Linux bilginiz yeterli değilse bu programın çok iyi bir çözüm olduğunu söyleyebilirim. Fakat Partition Magic programının bir çok sürümü var, sizin için kılavuzu okumak iyi olacaktır.
+</div></dd></dl><div class="footnotes"><br /><hr width="100" align="left" /><div class="footnote"><div class="para"><sup>[<a name="ftn.id68" href="#id68" id="ftn.id68">68</a>] </sup>Ç.N. - Disk bölümleri silindir sınırlarında başlamak ve bitmek zorundadır. Sektörlerle bölümleme yaparsanız, "Ayırdığınız bölüm silindirin başlangıcından/bitişinden önce/sonra başlıyor/bitiyor" gibi hata iletileri alabilirsiniz. Bunu sektörlerle ayarlamak çok zordur. Silindir cinsinden bölümlemeyi tercih edin.</div><div class="para">Ayrıca, <b><tt>fdisk</tt></b>'in kullanımı zordur, dolayısıyla kolayca yanlış birşey yapabilirsiniz. Etkileşimli bir arayüzü olan <b><tt>cfdisk</tt></b>'in kullanımı daha kolaydır ve hata yapmak daha zordur. Eğer Linux'unuzu Türkçe kullanıyorsanız, <b><tt>cfdisk</tt></b>'in de Türkçe arayüze sahip olduğunu göreceksiniz.</div></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/partition-rescue-s2.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/partition-rescue.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/partition-rescue-s4.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Teknik Bilgi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Kaynaklar</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:09+03:00" /><title>Çok Değerli Menüler</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/ncurses-howto-menus.html" title="Menü Kütüphanesi" /><link rel="previous" href="../howto/ncurses-howto-multicolumn.html" title="Çok Sütunlu Menüler" /><link rel="next" href="../howto/ncurses-howto-menuopt.html" title="Menü Seçenekleri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Çok Değerli Menüler</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/ncurses-howto-multicolumn.html">Önceki</a> </td><th width="60%" align="center">Menü Kütüphanesi</th><td width="20%" align="right"> <a accesskey="n" href="../howto/ncurses-howto-menuopt.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="ncurses-howto-multivaluemenus" id="ncurses-howto-multivaluemenus"></a>Çok Değerli Menüler</div><dl><dd><div class="para">
+<tt>O_ONEVALUE</tt> seçeneğini kapattığımızda ne olur diye merak ediyor olabilirsiniz. Bunun anlamı birden çok öğe seçebilirsiniz demektir. Bu da bizi <tt>REQ_TOGGLE_ITEM</tt> isteğine getirmektedir. Bir örnekle görelim:
+</div><dl class="example"><dt class="example"><a class="example" name="idxmp96" id="idxmp96"></a><b>Örnek 12.22. Çok Değerli Menü Örneği</b></dt><dd class="example">
+<div class="para"><div align="right"><pre class="programlisting">
+#include &lt;curses.h&gt;
+#include &lt;menu.h&gt;
+
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
+#define CTRLD   4
+
+char *choices[] = {
+  "Choice 1",
+  "Choice 2",
+  "Choice 3",
+  "Choice 4",
+  "Choice 5",
+  "Choice 6",
+  "Choice 7",
+  "Exit",
+};
+
+int main()
+{ ITEM **my_items;
+  int c;
+  MENU *my_menu;
+  int n_choices, i;
+  ITEM *cur_item;
+
+  /* Curses kipini ilklendir */
+  initscr();
+  cbreak();
+  noecho();
+  keypad(stdscr, TRUE);
+
+  /* Öğeleri ilklendir */
+  n_choices = ARRAY_SIZE(choices);
+  my_items = (ITEM **)calloc(n_choices + 1, sizeof(ITEM *));
+  for(i = 0; i &lt; n_choices; ++i)
+    my_items[i] = new_item(choices[i], choices[i]);
+  my_items[n_choices] = (ITEM *)NULL;
+
+  my_menu = new_menu((ITEM **)my_items);
+
+  /* Menüyü çok değerli yap */
+  menu_opts_off(my_menu, O_ONEVALUE);
+
+  mvprintw(LINES - 3, 0,
+    "&lt;SPACE&gt;'i seçmek veya seçileni iptal için kullanın.");
+  mvprintw(LINES - 2, 0,
+    "&lt;ENTER&gt; 'ı o anki seçileni görmek için kullanın "
+    "(Çıkmak için F1)");
+  post_menu(my_menu);
+  refresh();
+
+  while((c = getch()) != KEY_F(1))
+  { switch(c)
+    { case KEY_DOWN:
+        menu_driver(my_menu, REQ_DOWN_ITEM);
+        break;
+      case KEY_UP:
+        menu_driver(my_menu, REQ_UP_ITEM);
+        break;
+      case ' ':
+        menu_driver(my_menu, REQ_TOGGLE_ITEM);
+        break;
+      case 10:        /* Enter */
+      { char temp[200];
+        ITEM **items;
+
+        items = menu_items(my_menu);
+        temp[0] = '\0';
+        for(i = 0; i &lt; item_count(my_menu); ++i)
+          if(item_value(items[i]) == TRUE)
+          { strcat(temp, item_name(items[i]));
+            strcat(temp, " ");
+          }
+        move(20, 0);
+        clrtoeol();
+        mvprintw(20, 0, temp);
+        refresh();
+      }
+      break;
+    }
+  }
+
+  free_item(my_items[0]);
+  free_item(my_items[1]);
+  free_menu(my_menu);
+  endwin();
+}
+</pre></div></div></dd></dl><div class="para">
+Vay canına, bir sürü yeni işlev daha. Teker teker her birini ele alalım. İlk olarak <tt>REQ_TOGGLE_ITEM</tt> ile başlayalım. Çok değerli bir menüde kullanıcı birden fazla öğe seçebilmeli veya seçimi iptal edebilmelidir. <tt>REQ_TOGGLE_ITEM</tt> isteği o anki seçimi değiştirir (etkinleştirme veya iptal etme). Bu durumda space tuşuna basıldığında <tt>REQ_TOGGLE_ITEM</tt> isteği <tt>menu_driver</tt>'a sonucu gerçekleştirmek için gönderilir.
+</div><div class="para">
+İşte şimdi kullanıcı &lt;ENTER&gt;'a bastığında onun seçtiği öğeleri görürüz. Önce menü ile ilişiklendirilmiş öğeleri <tt>menu_items()</tt> işlevini kullanarak bulduk. Daha sonra öğenin seçili mi değil mi olduğunu anlamak için öğeler üzerinde gezindik. Eğer öğe seçiliyse <tt>item_value()</tt> işlevi <tt>TRUE</tt> döndürür. <tt>item_count()</tt> işlevi menüdeki öğe sayısını döndürür. Ayrıca öğe açıklamalarını <tt>item_description()</tt> ile alabilirsiniz.
+</div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/ncurses-howto-multicolumn.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/ncurses-howto-menus.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/ncurses-howto-menuopt.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Çok Sütunlu Menüler </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Menü Seçenekleri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

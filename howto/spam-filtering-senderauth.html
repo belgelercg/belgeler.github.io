@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:29+03:00" /><title>Gönderici Yetkilendirme Şemaları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/spam-filtering-techniques.html" title="Teknikler" /><link rel="previous" href="../howto/spam-filtering-greylisting.html" title="Grilisteleme" /><link rel="next" href="../howto/spam-filtering-datachecks.html" title="İleti verisinin sınanması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Gönderici Yetkilendirme Şemaları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/spam-filtering-greylisting.html">Önceki</a> </td><th width="60%" align="center">Teknikler</th><td width="20%" align="right"> <a accesskey="n" href="../howto/spam-filtering-datachecks.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="spam-filtering-senderauth" id="spam-filtering-senderauth"></a>Gönderici Yetkilendirme Şemaları</div><dl><dd><div class="para">
+Gönderici adresinin sınanması anlamında, sadece göndericinin varlığının değil, ayrıca kimliğinin de kanıtlanmasını sağlayacak çeşitli kullanıcı doğrulama şemaları geliştirilmiştir. İnternet alanının sahibi kendi alanındaki göndericilerden teslimata yetkili olanları belirleyen bazı kurallar belirtir.
+    </div><div class="para">
+Bu şemaların ilklerinden iki örnek:
+    </div>
+    <ul type="disc" class="itemizedlist"><li><div class="para">
+<tt>MAIL-FROM</tt> MX kayıtları, Paul Vixie <span class="email">&lt;paul (at) vix.com&gt;</span> tarafından tasarlanmıştır.
+      </div></li><li><div class="para">
+Ters Posta Alıcısı (RMX - Reverse Mail Exchanger) kayıtları (DNS'ye ek olarak); Hadmut Danisch <span class="email">&lt;hadmut (at) danisch.de&gt;</span> tarafından tasarlanmış ve yayınlanmıştır.
+      </div></li></ul>
+    <div class="para">
+Bu iki şema altında, <tt>kullanıcı@alanadı.dom</tt> adresli tüm postalar <tt>alanadı.dom</tt>'un DNS kayıtlarında bulunan konaklardan gelmek zorundadır.
+    </div><div class="para">
+Bu iki şema gelişmiş, hatta benzer çalışmalara çatallanmıştır.
+    </div> <div class="head4"><a name="spam-filtering-spf" id="spam-filtering-spf"></a>Gönderici Yetkilendirme Dizgesi (SPF)</div><dl><dd><div class="para">
+SPF (“Sender Policy Framework” veya “Sender Permitted From” kısaltması), gönderici yetkilendirme için en iyi bilinen şemalardan biridir. Yukarıdaki şemalardan hareketle ortaya çıkmıştır ama kuralları belirtmek bakımından biraz daha esnek bir yapıdadır.
+      </div><div class="para">
+SPF bilgisi bir alan adının üst düzey DNS kayıtları arasında bir <tt>TXT</tt> kaydı olarak görünür. Bu kayıt bu alanın kullanıcısının ağzından basitçe şunu der: "Ben postamı sadece bu makinelerden gönderiyorum. Eğer başka bir makine benim postamı oradan gönderdiğini iddia ediyorsa, o bir yalancıdır." Bu kayıtta şunlar belirtilmiş olabilir:
+      </div>
+      <ul type="disc" class="itemizedlist"><li>
+bu alandan posta göndermesine izin verilen makineler
+        </li><li>
+bu alandan giden postada zorunlu bir GPG imzasının varlığı
+        </li><li>
+diğer kurallar; ayrıntılar için <a class="ulink" href="http://www.openspf.org/" target="_top">http://www.openspf.org/</a> adresine bakınız.
+        </li></ul>
+      <div class="para">
+Bu <b><tt>TXT</tt></b> kaydının geliştirilmesi hala sürmektedir, yine de temel özellikler yukarıda bahsedildiği gibidir. Bir <tt>v=spf1</tt> dizgesi ile başlar ve şu belirteçlerden bazıları ya da hepsi kullanılabilir:
+      </div>
+      <ul type="disc" class="itemizedlist"><li><div class="para">
+<tt>a</tt> - geçerli gönderici makine bu alanın kendi IP adresidir.
+        </div></li><li><div class="para">
+<tt>mx</tt> - bu alanın posta alıcıları, ayrıca geçerli göndericilerdir.
+        </div></li><li><div class="para">
+<tt>ptr</tt> - eğer gönderenin IP adresi için ters DNS kaydındaki isim, gönderici adresin alan adı kısmındaki isimle eşleşiyorsa, gönderen konak geçerli göndericidir.
+        </div></li></ul>
+      <div class="para">
+Bu belirteçlerin herbirinin önüne bir yetkili kaynak olduğunu belirtmek için bir artı işareti (bu öntanımlıdır), yetkisiz olduğunu belirtmek için bir eksi işareti, yetki bakımından nötr olduğunu belirtmek için soru işareti veya yetkisiz olarak değerlendirilebilineceğini belirtmek üzere bir yaklaşık işareti (~) konabilir.
+      </div><div class="para">
+Her belirteç bir ikinokta üstüste işaretinden sonra bir alan adı belirtmek üzere kullanılabilir. Örneğin, bir Comcast müşterisiyseniz, sizin DNS kayıtlarınız arasında “<tt>v=spf1 -ptr:client.comcast.net ptr:comcast.net -all</tt>” şeklinde bir <b><tt>TXT</tt></b> kaydı olabilir. Bu kayıt, bu alandan posta gönderen makinenin IP adresi çözümlendiğinde elde edilen isim <i><tt>birşey</tt></i>.client.comcast.net şeklindeyse bu adres yetkisizdir, <i><tt>birşey</tt></i>.comcast.net şeklindeyse yetkilidir, belirtilenler dışında kalanlar da yetkisizdir ("-all") anlamına gelir.
+      </div><div class="para">
+Her alan adı için bir SPF kaydı bulunmalıdır. Bazı büyük siteler artık bu kaydın bulunmadığı alanlardan posta kabul etmemektedir.
+      </div><div class="para">
+Gönderici yetkilendirme şemaları genelde kabul görmemiş olmasına rağmen SPF evrensel olarak büyük oranda kabul görmüştür. SPF'ye karşı çıkanlar, alan adı sahiplerinin posta gönderen müşterileri/kullanıcıları üzerinde bir tekel kurmak için bunu kullanabileceklerini ileri sürmektedirle<sup>[<a name="id38" href="#ftn.id38" id="id38">38</a>]</sup>.
+      </div><div class="para">
+Diğer bir idda, SPF'nin geleneksel eposta yönlendirmesini bozduğu şeklindedir; yönlendiren konak, zarf göndericisinin alan adındaki SPF kaydında yetkisiz olabilir. Bu sorun, <a class="ulink" href="http://www.openspf.org/srs.html" target="_top">Göndericiyi Yeniden Yazma Şeması</a> (SRS - Sender Rewriting Scheme) ile kısmen halledilebilir. SRS'de postanın yönlendiricisi <a href="../howto/spam-filtering-glossary.html#spam-filtering-envfrom" class="xref" title="Zarf Göndericisi">Zarf Göndericisi</a> adresinin biçimini değiştirir:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<i>kullanıcı</i>=<i>kaynak.alanadı</i>@<i>yönlendirici.alanadı</i>
+</pre></div></div>
+      </dd></dl> <div class="head4"><a name="spam-filtering-ms-cide" id="spam-filtering-ms-cide"></a>Epostalar için Microsoft Çağrı Kimliği</div><dl><dd><div class="para">
+Kurallarının gönderici alan adının DNS bilgileri arasında bir TXT kaydı olarak görünmesi bakımından SPF'ye benzer. Ancak, basit anahtar sözcükler yerine, XML olarak kodlanmış oldukça geniş kapsamlı MS CIDE bilgilerinden oluşur. Bu XML şeması Microsoft tarafından bir lisans altında yayınlanmıştır.
+      </div><div class="para">
+SPF, bir postanın sadece <a href="../howto/spam-filtering-glossary.html#spam-filtering-envfrom" class="xref" title="Zarf Göndericisi">Zarf Göndericisi</a> adresine bakarak çalışırken, MS CIDE iletinin <a class="link" href="../rfc/rfc2822.html" title="Genel Ağ İleti Biçimi">RFC 2822</a> başlıklarını değerlendiren bir araç olarak karşımıza çıkar. Böyle bir sınamanın SMTP aktarımında yapılabileceği en erken nokta, ileti verisi alındıktan sonra ve son <b><tt>250</tt></b> yanıtını göndermeden öncedir.
+      </div><div class="para">
+Dobra dobra ölü doğmuş denebilir. Patentiyle ve karmaşıklığıyla bir engelli olarak doğmuş da denebilir.
+      </div><div class="para">
+<a class="ulink" href="http://www.openspf.org/" target="_top">http://www.openspf.org/</a>'da SPF'ye ek olarak MS Çağrı kimliğini de (MS CIDE) sınayacak araçlar bulabilirsiniz.
+      </div></dd></dl> <div class="head4"><a name="spam-filtering-rmxplus" id="spam-filtering-rmxplus"></a>RMX++</div><dl><dd><div class="para">
+Basit Çağrıcı Yetkilendirme Yapısının (SCAF - Simple Caller Authorization Framework) bir parçası. Bu şema, zaten özgün RMX'in tasarımcısı olan Hadmut Danisch tarafından geliştirilmiştir.
+      </div><div class="para">
+RMX++, HTTP sunucular üzerinden özdevimli yetkilendirmeyi mümkün kılar. Alanadı sahibi DNS üzerinden bir sunucu belirtir ve posta alıcısı konak bu sunucuya bağlanarak göndericinin geçerliliğini saptamak için oradan bir yetkilendirme kaydı elde etmeye çalışır.
+      </div><div class="para">
+Bu şema alanadı sahibine gönderici adreslerini yetkilendirmede kullanılacak kuralları daha ayrıntılı belirleme imkanı verir (SPF kayıtlarıyla, ağının yapısını kamuya açık alanlarda ilan etmeksizin). Hadmut'tan bir örnek: Hergün iş saatleri dışında belli bir adresten beş iletiden fazlasına izin vermeyen bir yetkilendirme sunucusu bu sınır aşıldığında bir uyarı verecektir.
+      </div><div class="para">
+Keza, SCAF epostalarla sınırlı değildir, ayrıca IP üzerinden sesli iletişim (VoIP) gibi hizmetler için çağrıcı yetkilendirmesi için kullanılabilir.
+      </div><div class="para">
+Rick Stewart <span class="email">&lt;rick.stewart (at) theinternetco.net&gt;</span> RMX++'nın makine ve ağ kaynaklarına etkisine dikkat çekerek RMX++'in perde arkasında kalan bir olasılıktan sözetmiştir: HTTP sunucularının yanıtları DNS sunucularının ki gibi geniş çapta önbelleklenmediğinden bir HTTP isteği yapmak bir DNS isteğinden kat kat pahalıya malolacaktır.
+      </div><div class="para">
+Rick devam ediyor, RMX++'nın özdevimli doğası bir başarısızlığın nedenlerinin bulunmasını da zorlaştıracaktır. Eğer günlük beş iletilik bir sınır varsa, bu sınır, tek bir iletinin beş kere sınanması ile dolacaktır. Yani şema, bir iletinin defalarca sınanmasına imkan vermiyor.
+      </div><div class="para">
+RMX, RMX++ ve SCAF hakkında daha fazla bilgi edinmek için<br /><a class="ulink" href="http://www.danisch.de/work/security/antispam.html" target="_top">http://www.danisch.de/work/security/antispam.html</a> adresine bakınız.
+      </div></dd></dl><div class="footnotes"><br /><hr width="100" align="left" /><div class="footnote"><div class="para"><sup>[<a name="ftn.id38" href="#id38" id="ftn.id38">38</a>] </sup>Ç.N.: Alan adı sahibi olmak hiçte zor olmadığından bu iddia sönük kalmakta, ayrıca İSS gibi kurumların müşterilerinin dinamik adreslerden gönderdikleri postaların genel bir kabul olarak spam olarak değerlendirildiği de gözönüne alındığında bu iddia iyice mesnetsiz kalmaktadır.</div></div></div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/spam-filtering-greylisting.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/spam-filtering-techniques.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/spam-filtering-datachecks.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Grilisteleme </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> İleti verisinin sınanması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:56+03:00" /><title>Doğru Küresel Zaman Eşzamanlaması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/time-precision-howto.html" title="Kesin Tarih ve Zaman Yönetimi" /><link rel="previous" href="../howto/time-precision-howto-set.html" title="Linux Makinanız için Doğru Ayarlar" /><link rel="next" href="../howto/time-precision-howto-ntp.chrony.html" title="chrony  programıyla Kesin Zaman" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Doğru Küresel Zaman Eşzamanlaması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/time-precision-howto-set.html">Önceki</a> </td><th width="60%" align="center">Kesin Tarih ve Zaman Yönetimi</th><td width="20%" align="right"> <a accesskey="n" href="../howto/time-precision-howto-ntp.chrony.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="time-precision-howto-ntp" id="time-precision-howto-ntp"></a>Doğru Küresel Zaman Eşzamanlaması</div><dl><dd><div class="para">
+Tüm sisteminizde kesin zamana sahip olmak katı ağ güvenliği stratejisine (basit bir güvenlik duvarı kutusundan daha fazlasıyla elde edilir) sahip olmak kadar önemlidir.  Bu, iyi bir sistem yönetiminin birincil bileşenlerinden biridir ve organizasyonun ve güvenliğin başında gelir. Özellikle dağıtık uygulamaların yönetiminde, sanalyöre servislerinde ve hatta dağıtık güvenlik aracında kesin zaman gereklidir.
+</div> <div class="head3"><a name="time-precision-howto-ntp.ntp" id="time-precision-howto-ntp.ntp"></a>NTP: Ağ Zaman Protokolü</div><dl><dd><div class="para">
+Burada protokolü incelemeyeceğiz, fakat bu harika buluşun Internete nasıl bir yaygınlık kazandırdığı bizim işimize yarayacak. Daha fazlasını <a class="ulink" href="http://www.ntp.org/" target="_top">http://www.ntp.org/</a> adresinde bulabilirsiniz.
+</div><div class="para">
+Bir kez sisteminiz uygun bir şekilde kurulduğunda, NTP, çalışan uygulamaları etkilememek için ufak ayarlamalar yaparak zamanın doğru olmasını sağlar.
+</div><div class="para">
+Kesin zaman atomların elektron frekanslarını temel alan donanım saatinden elde edilebilir. Ayrıca  GPS (Küresel Konumlandırma Sistemi) tabanlı yöntemler de mevcuttur. Birincisi daha kesindir fakat ikincisi de oldukça iyidir. Atomik saatler çok özel ve pahalı ekipmanlar gerektirir, fakat geliştiricileri (genellikle üniversiteler ve araştırma labarotuvarları) onları NTP çalıştıran bilgisayarlara bağlarlar ve sonuçta onları ücretsiz olarak kullanmamıza izin verirler. Sistemimizi bu şekilde eşzamanlarız.
+</div></dd></dl> <div class="head3"><a name="time-precision-howto-ntp.arch" id="time-precision-howto-ntp.arch"></a>Basit bir Eşzamanlama Mimarisi Oluşturmak</div><dl><dd><div class="para">Şunlara ihtiyacınız olacak:
+</div><ol class="orderedlist" start="ignore" type="1"><li><div class="listitem"><div class="para">
+İnternet'e doğrudan veya dolaylı (güvenlik duvarı üzerinden) bağlantı.
+  </div></div></li><li><div class="listitem"><div class="para">
+NTP sunucuları seçin. Kamuya açık <a class="ulink" href="http://www.fortytwo.ch/time/" target="_top">pool.ntp.org</a> sunucusunu kullanabilirsiniz veya NTP sanalyöresindeki <a class="ulink" href="http://www.eecis.udel.edu/~mills/ntp/clock2a.html" target="_top">katman 2 kamuya açık zaman sunucularından</a> birini seçebilirsiniz. Eğer İnternet erişiminiz yoksa, WAN yöneticiniz (zeki biri olmalı) size bazı dahili adresler sağlayabilir.
+  </div></div></li><li><div class="listitem"><div class="para">
+Eşzamanlamak istediğiniz tüm sistemler için NTP paketiniz olsun. Gözde Linux dağıtımınızın CDsinde RPM olarak bulabilirsiniz veya <a class="ulink" href="http://rpmfind.net/" target="_top">rpmfind.net</a>'de <a class="ulink" href="http://rpmfind.net/linux/rpm2html/search.php?query=ntp" target="_top">arama yapın</a>.
+</div></div></li></ol>
+<div class="para">
+Güzel bir mimari örneği:
+</div>
+<div class="figure"><div class="formaltitle"><b>Şekil 9.1. NTP sunucu için Yerel Nakil Sunucu</b></div><div class="para"><img src="images/time-precision/ntp.png" class="graphic" align="middle" width="1%" alt=" " /></div></div>
+<div class="para">
+Eğer eşzamanlanacak bir çok makinanız varsa hepsini seçtiğiniz uzak NTP sunucuya <i>yönlendirmeyin</i>.  Sunucularınızdan sadece ikisi uzak  NTP sunucuya erişmeli ve diğerleri bu ikisiyle eşitlenmeli.  Bunlara <i>Nakil Sunucuları</i> diyeceğiz.
+</div><div class="para">
+Nakil sunucunuz ağda ulaşılabilen herhangi bir makina olabilir. NTP düşük bellek ve işlemci harcar. Bunun için bu işe adanmış bir makinaya gerek yoktur.
+</div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/tip.png" /></td><th class="admon">İpucu</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Yerel Nakil Sunucunuz için ntp1.my.com ve ntp2.my.com gibi bir mahlas oluşturmak iyi bir fikirdir. İstemci makinaları yapılandırırken yalnızca bu isimleri kullanın. Bu yolla NTP işlevselliğini farklı bir Nakil Sunucuya (farklı IP ve konak ismiyle) istemcileri yeniden yapılandırmadan taşıyabilirsiniz. Bu tür mahlaslar oluşturmak için DNS yöneticisine başvurun.
+</div></td></tr></table></div>
+</dd></dl> <div class="head3"><a name="time-precision-howto-ntp.configs" id="time-precision-howto-ntp.configs"></a>NTP Yapılandırması</div><dl><dd><div class="variablelist"><dl><dt><span class="term"><i>Nakil Sunucunuz için</i></span></dt><dd class="varlist"><div class="para">
+<tt>/etc/ntp.conf</tt> dosyasını düzenleyin ve seçtiğiniz uzak sunucuları ekleyin:
+</div><dl class="example"><dt class="example"><a class="example" name="idxmp58" id="idxmp58"></a><b>Örnek 9.5. Nakil sunucunun <tt>/etc/ntp.conf</tt> dosyası</b></dt><dd class="example"><div class="para"><div align="right"><pre class="programlisting">
+..
+server  otherntp.server.org     # server.org'daki bir katman 1 sunucu
+server  ntp.research.gov        # research.gov'daki bir katman 2 sunucu
+..
+</pre></div></div></dd></dl><div class="para">
+Yine <a class="ulink" href="http://www.fortytwo.ch/time/" target="_top">pool.ntp.org</a> kamu sunucusunu kullanabilirsiniz veya NTP sanalyöresinde <a class="ulink" href="http://www..eecis.udel.edu/~mills/ntp/clock2a.html" target="_top">katman 2 kamuya açık zaman sunucuları</a>nın listesini alabilirsiniz.
+  </div></dd><dt><span class="term"><i>İstemcileriniz için</i></span></dt><dd class="varlist"><div class="para">
+<tt>/etc/ntp.conf</tt> dosyasını düzenleyin ve Nakil Sunucularınızı standart ismiyle ekleyin:
+</div>
+<dl class="example"><dt class="example"><a class="example" name="idxmp59" id="idxmp59"></a><b>Örnek 9.6. İstemci makinanın <tt>/etc/ntp.conf</tt> dosyası</b></dt><dd class="example"><div class="para"><div align="right"><pre class="programlisting">
+..
+server  ntp1.my.com             # İlk yerel Nakil Sunucum
+server  ntp2.my.com             # İkinci yerel Nakil Sunucum
+..
+..</pre></div></div></dd></dl>
+    </dd></dl></div><div class="para">
+Makinanızın NTP sunucularıyla karşılaştırıldığında birkaç dakikadan daha büyük farklılık gösteren UTC'ye sahipse NTP çalışmayacaktır. Bu yüzden önce tam eşleme yapmalısınız ve bunu yoğun olmayan zamanda yapmanızı tavsiye ederim. Bu sadece ilk NTP kurulumu sırasında gereklidir. Bir daha yapmanıza gerek yoktur:
+</div><dl class="example"><dt class="example"><a class="example" name="idxmp60" id="idxmp60"></a><b>Örnek 9.7. İlk eşzamanlama</b></dt><dd class="example">
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>ntpdate otherntp.research.gov</tt></b> <a name="time-precision-howto-sync1" id="time-precision-howto-sync1"></a><b style="background: transparent url(&quot;../images/xsl/callouts/1.png&quot;) no-repeat left 40%;">  </b>
+24 Mar 18:16:36 ntpdate[10254]: step time server 200.100.20.10 offset
+¬ -15.266188 sec
+<tt>bash# </tt><b><tt>ntpdate otherntp.research.gov</tt></b> <a name="time-precision-howto-sync2" id="time-precision-howto-sync2"></a><b style="background: transparent url(&quot;../images/xsl/callouts/2.png&quot;) no-repeat left 40%;">  </b>
+24 Mar 18:16:43 ntpdate[10255]: adjust time server 200.100.20.10 offset
+¬ -0.000267 sec
+</pre></div></div>
+<div class="para">
+  <div class="calloutlist"><table border="0" summary="Dikkat edilecek hususlar" cellspacing="0" cellpadding="3" width="100%"><tr><td width="15" valign="top" align="left" class="coimage"><a href="#time-precision-howto-sync1"><img src="../images/xsl/callouts/1.png" alt="1" border="0" /></a> </td><td valign="top" align="left"><div class="para">
+İlk tam eşzamanlama. 15 saniye gerideyiz.
+  </div></td></tr><tr><td width="15" valign="top" align="left" class="coimage"><a href="#time-precision-howto-sync2"><img src="../images/xsl/callouts/2.png" alt="2" border="0" /></a> </td><td valign="top" align="left"><div class="para">
+İkinci tam eşzamanlama sadece emin olmak için.  Şimdi tam olarak 0 saniye fark var.
+  </div></td></tr></table></div>
+</div></dd></dl><div class="para">
+Son adım her iki makinada da NTP'yi yeniden başlatmak:
+</div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>service ntpd restart</tt></b>
+</pre></div></div>
+</dd></dl> <div class="head3"><a name="time-precision-howto-ntp.watch" id="time-precision-howto-ntp.watch"></a>Makinanızın eşzamanlanmasını izlemek</div><dl><dd><div class="para">
+Şimdi herşey kurulmuş durumda. NTP yumuşak bir biçimde makinanızı eşzamanlı tutacak. Bu işlemi NTP Sorgusu (<b><tt>ntpq</tt></b> komutu) kullanarak izleyebilirsiniz:
+</div><dl class="example"><dt class="example"><a class="example" name="idxmp61" id="idxmp61"></a><b>Örnek 9.8. Örnek bir eşzamanlama durumu</b></dt><dd class="example">
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>ntpq -p</tt></b>
+     remote           refid      st t when poll reach   delay   offset  jitter
+==============================================================================
+-jj.cs.umb.edu   gandalf.sigmaso  3 u   95 1024  377   31.681  -18.549   1.572
+ milo.mcs.anl.go ntp0.mcs.anl.go  2 u  818 1024  125   41.993  -15.264   1.392
+-mailer1.psc.edu ntp1.usno.navy.  2 u  972 1024  377   38.206   19.589  28.028
+-dr-zaius.cs.wis ben.cs.wisc.edu  2 u  502 1024  357   55.098    3.979   0.333
++taylor.cs.wisc. ben.cs.wisc.edu  2 u  454 1024  347   54.127    3.379   0.047
+-ntp0.cis.strath harris.cc.strat  3 u  507 1024  377  115.274   -5.025   1.642
+*clock.via.net   .GPS.            1 u  426 1024  377  107.424   -3.018   2.534
+ ntp1.conectiv.c 0.0.0.0         16 u    - 1024    0    0.000    0.000 4000..00
++bonehed.lcs.mit .GPS.            1 u  984 1024  377   25.126    0.131  30.939
+-world.std.com   204.34.198.40    2 u  119 1024  377   24.229   -6.884   0.421
+</pre></div></div></dd></dl><div class="para">Sütunların Anlamları:</div>
+<div class="variablelist"><dl><dt><span class="term"><i>remote</i></span></dt><dd class="varlist"><div class="para">
+Uzak  NTP Sunucunun ismi. <tt>-n</tt> seçeneğini kullanırsanız sunucunun konak-ismi yerine IP adresini göreceksiniz.
+ </div></dd><dt><span class="term"><i>refid</i></span></dt><dd class="varlist"><div class="para">
+Her sunucunun kendi zamanını nereden aldığını gösterir. Bu konak-ismi veya Küresel Konumlama Sistemi kaynağı .GPS. benzeri birşey olabilir.
+  </div></dd><dt><span class="term"><i>st</i></span></dt><dd class="varlist"><div class="para">
+<i>Katman</i> uzak sunucunun önceliğini gösteren 1'den 16'ya kadar bir rakamdır.
+1 en kesin, 16 'sunucu ulaşılamaz' anlamındadır. Sizin katmanınız kesin uzak sunucunuzun bir fazlası olmalıdır. Asla katman 1 sunuculara bağlanmayın, katman 2'leri kullanın! Katman 2 sunucuların amacımıza uygun olmasının yanında, bu tutum Katman 1 sunucular üzerindeki trafiği düşürdüğü için de
+iyidir.
+  </div></dd><dt><span class="term"><i>poll</i></span></dt><dd class="varlist"><div class="para">
+Zaman istekleri arasındaki oylama zamanı (saniyelerle).  Değer, izin verilen en az ve en çok oylama değerleri aralığındadır. İlk olarak değer eşzamanlamanın daha hızlı olmasını sağlamak için küçüktür. Saatler eşzamanlı olduktan sonra oylama değeri ağ trafiğini ve zaman sunucudaki yükü azaltmak için artar.
+  </div></dd><dt><span class="term"><i>reach</i></span></dt><dd class="varlist"><div class="para">
+Bu, 8 bit bir dizinin sekizlik gösterimidir. Bu sayı yerel makinanın sunucuya son 8 denemesini gösterir. Uzak sunucu erişildiyse bit 1 olur.
+  </div></dd><dt><span class="term"><i>delay</i></span></dt><dd class="varlist"><div class="para">
+"saat kaç" isteğine cevap verilmesi için gereken zaman miktarıdır (saniyeler).
+  </div></dd><dt><span class="term"><i>offset</i></span></dt><dd class="varlist"><div class="para">
+En önemli değer. Yerel ve uzak sunucu arasındaki zaman farkı. Eşzamanlama durumunda bu fark azalır ve bu da makinanın zamanının daha doğru olduğu anlamına gelir.
+  </div></dd><dt><span class="term"><i>jitter</i></span></dt><dd class="varlist"><div class="para">
+Dağılım -veya salınım da denir- birçok ardışık istek/cevap çiftleri farkının sapmasının istatistiksel bir ölçüsüdür. Küçük dağılım değerleri büyük dağılım değerlerine tercih edilir. Küçük dağılım değerleri daha doğru bir eşzamanlama yapılmasına izin verir.
+  </div></dd></dl></div>
+  <div class="para">Konak-isminden önceki işaretleri anlamları:</div>
+<div class="variablelist"><dl><dt><span class="term"><i>-</i></span></dt><dd class="varlist"><div class="para">
+Yerel NTP servisinin bu sunucuyla pek uyuşmadığını gösterir.
+  </div></dd><dt><span class="term"><i>+</i></span></dt><dd class="varlist"><div class="para">
+Yerel NTP servisinin bu sunucuyla uyuştuğunu gösterir.
+  </div></dd><dt><span class="term"><i>x</i></span></dt><dd class="varlist"><div class="para">
+Kötü bir konağa işaret eder.
+  </div></dd><dt><span class="term"><i>*</i></span></dt><dd class="varlist"><div class="para">
+Geçerli gözdeyi gösterir.
+  </div></dd></dl></div></dd></dl> <div class="head3"><a name="time-precision-howto-ntp.boot" id="time-precision-howto-ntp.boot"></a>NTP'nin Açılışta Otomatik Çalışması için Yapılandırılması</div><dl><dd><div class="para">
+Her zaman, bilgisayar yeniden başlatıldığında bile çalışan bir NTP kullanmak isteyebilirsiniz. Her makinada şunu yapın:
+</div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash# </tt><b><tt>chkconfig --level 2345 ntpd on</tt></b>
+</pre></div></div>
+<div class="para">
+Bu otomatik başlatmayı sağlar.
+</div><div class="para">
+Eğer makinanınız uzun süre (aylar, yıllar) yeniden başlatılmadan çalışıyorsa, doğru olmayan donanım saati ve sistem saati (artık oldukça doğru) arasında büyük tutarsızlıklar göreceksiniz. Modern Linux dağıtımları sistemin her kapanışında sistem saatini donanım saatine <a class="link" href="../howto/time-precision-howto-set.html#time-precision-howto-set.hwclock" title="Donanım Saatinin Ayarlanması"><b><tt>setclock</tt></b> komutuna benzer bir mekanizmayla</a> kopyalar. Bu yolla bir sonraki İşletim Sistemi açılışında neredeyse kapattığınız zamanki kadar doğru bir zaman elde edersiniz.
+</div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/time-precision-howto-set.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/time-precision-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/time-precision-howto-ntp.chrony.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Linux Makinanız için Doğru Ayarlar </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> chrony  programıyla Kesin Zaman</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

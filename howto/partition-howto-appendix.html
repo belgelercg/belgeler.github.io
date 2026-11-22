@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:16+03:00" /><title>Son Söz</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/partition-howto.html" title="Linux Disk Bölümleme NASIL" /><link rel="previous" href="../howto/partition-howto-setting_up_swap.html" title="Takas Alanını Ayarlamak" /><link rel="next" href="../howto/partition-rescue.html" title="Disk Bölümü Kurtarmak NASIL" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Son Söz</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/partition-howto-setting_up_swap.html">Önceki</a> </td><th width="60%" align="center">Linux Disk Bölümleme NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/partition-rescue.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="partition-howto-appendix" id="partition-howto-appendix"></a>Son Söz</div><dl><dd> <div class="head3"><a name="partition-howto-formating" id="partition-howto-formating"></a>Disk Bölümlerinin Biçimlendirilmesi</div><dl><dd><div class="para">
+Komut satırında disk bölümlerim üzerindeki dosya sistemlerini oluşturmaya başlıyorum.
+<a href="../howto/partition-howto-fdisk.html#partition-howto-mixed" class="xref" title="Birincil ve mantıksal disk bölümleri karışık">Birincil ve mantıksal disk bölümleri karışık</a> örneğini takiben:
+  </div>
+<div class="para"><div align="right"><pre class="programlisting"># <b><tt>mke2fs /dev/sda1</tt></b>
+</pre></div></div>
+  <div class="para">
+Bunu /dev/sda4 (ek disk bölümü) dışındakilerin hepsi için yapmalıyım.
+  </div><div class="para">
+Linux ext2 dışındaki dosya sistemlerini de destekler. <tt>/usr/src/linux/include/linux/fs.h</tt> dosyasının içeriğine bakarak çekirdeğinizin hangi dosya sistemi türlerini desteklediğini öğrenebilirsiniz.
+    </div><div class="para">
+Yaygın dosya sistemleri <tt>/sbin</tt> içerisindeki <tt>mk</tt> ile başlayan <b><tt>mkfs.msdos</tt></b> ve <b><tt>mke2fs</tt></b> gibi programlarla yapılabilir.
+</div></dd></dl> <div class="head3"><a name="partition-howto-swap" id="partition-howto-swap"></a>Takas Alanınının Etkinleştirilmesi</div><dl><dd><div class="para">
+
+Bir takas alanını yapılandırmak için:
+    </div>
+<div class="para"><div align="right"><pre class="programlisting"># <b><tt>mkswap -f /dev/hda5</tt></b>
+</pre></div></div>
+    <div class="para">
+Takas alanını etkinleştirmek için:
+    </div>
+<div class="para"><div align="right"><pre class="programlisting"># <b><tt>swapon  /dev/hda5</tt></b>
+</pre></div></div>
+    <div class="para">
+Normalde, takas alanı önyükleme sırasında ilklendirme betikleri tarafından etkinleştirilir.
+    </div></dd></dl> <div class="head3"><a name="partition-howto-mounting" id="partition-howto-mounting"></a>Disk Bölümlerinin Bağlanması</div><dl><dd><div class="para">
+
+Disk bölümlerini bağlamak onları linux dosya sistemi ile ilişkilendirmek demektir. Bir linux disk bölümünü bağlamak için:
+    </div>
+<div class="para"><div align="right"><pre class="programlisting"># <b><tt>mount -t ext2 /dev/sda1 /opt</tt></b>
+</pre></div></div>
+    <div class="variablelist"><dl><dt><span class="term"><tt>-t ext2</tt></span></dt><dd class="varlist"><div class="para">
+Dosya sistemi türü. Kullanmak isteyebileceğiniz diğer dosya sistemi türleri:
+    </div><ul type="disc" class="itemizedlist"><li>ext3 (ext2 tabalı günlüklemeli (journaling) dosya sistemi)</li><li>msdos (DOS)</li><li>hfs (mac)</li><li>iso9660 (CDROM)</li><li>nfs (ağ dosya sistemi)</li></ul>
+    </dd><dt><span class="term"><tt>/dev/sda1</tt></span></dt><dd class="varlist"><div class="para">
+Aygıt adı. Kullanmak isteyebiledeğiniz diğer aygıt dosyası adları:
+    </div><ul type="disc" class="itemizedlist"><li><tt>/dev/hdb2</tt> (ikinci IDE sürücüsündeki ikinci disk bölümü)</li><li><tt>/dev/fd0</tt>  (floppy disk A)</li><li><tt>/dev/cdrom</tt>  (CDROM)</li></ul>
+    </dd><dt><span class="term"><tt>/opt</tt></span></dt><dd class="varlist"><div class="para">
+Bağlama noktası. Burası <b><tt>ls /opt</tt></b> yazdığınız zaman "görmek" istediğiniz yerdir, böylece <tt>/dev/sda1</tt> içerisinde ne varmış diye görebilirsiniz. Eğer <tt>/opt</tt> altında halihazırda dizinler ve/veya dosyalar varsa bağlama işleminden sonra bunlar görünmez olacaklardır.
+    </div></dd></dl></div></dd></dl> <div class="head3"><a name="partition-howto-fragmentation" id="partition-howto-fragmentation"></a>Saçılım ve Dosya sistemleri hakkında bazı gerçekler</div><dl><dd><div class="para">
+Disk alanı işletim sistemi tarafından bloklar ve blok kayıtları olarak yönetilir. ext2'de, bloklar ve blok kayıtları aynı büyüklükte olmalıdır, böylece açıklamamızı bloklarla sınırlandırabiliriz.
+    </div><div class="para">
+Dosyalar herhangi bir büyüklükte olabilir. Blok sınırlarıyla sonlanmazlar. Dolayısiyle her bir dosya için bloğun bir kısmı boşa harcanır. Dosya boylarının rasgele olduğunu varsayarsak, her bir dosya için diskinizde yaklaşık yarım blok boşa harcanmaktadır. Tanenbaum "İşletim Sistemleri" ("Operating Systems") isimli kitabında buna "dahili saçılım" ("internal fragmentation") demektedir.
+    </div><div class="para">
+Kaç dosyanız olduğunu dosya düğümü (inode) sayısına bakarak tahmin edebilirsiniz. Benim diskimde
+    </div>
+<div class="para"><div align="right"><pre class="programlisting"># <b><tt>df -i</tt></b>
+Dosyasistemi      Dosyaindeksi Dolu    Boş    Kull% Bağlanılan yer
+/dev/hda3              64256   12234   52022    19%  /
+/dev/hda5              96000   43058   52942    45%  /var
+</pre></div></div>
+    <div class="para">
+<tt>/</tt> üzerinde yaklaşık 12000, <tt>/var</tt> üzerinde ise yaklaşık 44000 dosya var. 1 kB'lık blok büyüklüğü için, yaklaşık  6+22 = 28 MB'lık disk alanı dosyaların blok sonlarındaki kısımlarında kaybedilir. 4 KB'lık blok büyüklüğü seçmiş olsaydım, bu büyüklüğün 4 katı kadarını kaybetmiş olacaktım.
+    </div><div class="para">
+Veri aktarımı tek ve kesintisiz bir veri tomarında daha hızlı gerçekleşir. Bu da, dosyalar büyüdükçe ext2'nin ardışık 8 blokluk birimler tahsis etmesinin sebebidir. Dosya kapatıldığında ayrıldığı halde kullanılmayan bloklar serbest bırakılır ve böylece boşa alan harcanmaz.
+    </div><div class="para">
+Dosyaların ardışık olmayan bloklardan oluşması performans açısından kötüdür, çünkü genelde dosyalara erişimde sıralı erişimle kullanılır. Bu durum da işletim sisteminin diske erişimini bölmeye zorlamakta ve de disk kafalarını hareketine sebep olmaktadır. Buna da harici saçılım ("external fragmentation") veya basitçe saçılım ("fragmentation") denir ki MS-DOS dosya yapılarındaki temel sorundur. MS-DOS'un kullandığı berbat önbelleğin birleşimi ile dosya saçılmalarının etkileri dikkat çekici boyutlardadır. DOS kullanıcıları disklerini birleştirmeyi bir kaç haftada bir yaptıkları mutad işler arasına almışlardır hatta bazıları disk birleştirmeyle ilgili törensel fikirler geliştirmiştir.
+    </div><div class="para">
+Bu alışkanlıklarının hiç birisinin Linux ve ext2 üzerinde işi yoktur. Linux dosya yapısı normal kullanımda ve azından %5'lik bir disk alanının boş olması durumunda hiçbir koşulda disk birleştirmeye gerek duymaz. ext2'de disk birleştirmek için defrag isimli bir araç vardır, fakat kullanıcılar dikkatsiz kullanımı konusunda uyarılmaktadır. Böylesi bir işlem sırasındaki güç kesintisi sisteminizi çökertebilir. Verilerinizi yedeklemeniz gerekeceğinden, kopyasından yazmak iş görecektir.
+    </div><div class="para">
+MS-DOS dosya yapısı aynı zamanda dahili saçılımdan dolayı büyük miktarda alan kaybetmesiyle bilinir. 256 MB'dan büyük disk kısımları için, DOS blok boyutu kullanılamayacak kadar büyür (Bu durum belli ölçülerde FAT32 için de geçerlidir). Ext2, 0.5 TB (terabayt, 1 TB = 1024 GB'tır) ve üstü büyüklükler dışında, sizi büyük dosya yapıları için büyük bloklar seçmeye zorlamaz. Bu durumlarda küçük blok büyüklükleri verimsiz hale gelmektedir. Dolayısiyle, DOS'takinin aksine büyük diskleri blok büyüklüğünü küçük tutmak için bir kaç bölüme ayırmanın gereği yoktur.
+    </div><div class="para">
+Eğer pek çok küçük dosyanız varsa 1 kB'lık blok büyüklükleri kullanın. Büyük disk bölümleri için 4 kB yeterlidir.
+    </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/partition-howto-setting_up_swap.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/partition-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/partition-rescue.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Takas Alanını Ayarlamak </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Disk Bölümü Kurtarmak NASIL</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

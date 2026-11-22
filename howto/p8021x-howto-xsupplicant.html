@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:21+03:00" /><title>İstemci: Xsupplicant'ın Kurulması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/p8021x-howto.html" title="802.1X Port Tabanlı Kimlik Kanıtlama NASIL" /><link rel="previous" href="../howto/p8021x-howto-FreeRADIUS.html" title="Kimlik Kanıtlama Sunucusu: FreeRADIUS'un Kurulması" /><link rel="next" href="../howto/p8021x-howto-authenticator.html" title="Kimlik Kanıtlayıcı: Kimlik Kanıtlayıcının Kurulması (Erişim Noktası)" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">İstemci: Xsupplicant'ın Kurulması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/p8021x-howto-FreeRADIUS.html">Önceki</a> </td><th width="60%" align="center">802.1X Port Tabanlı Kimlik Kanıtlama NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/p8021x-howto-authenticator.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="p8021x-howto-xsupplicant" id="p8021x-howto-xsupplicant"></a>İstemci: Xsupplicant'ın Kurulması</div><dl><dd><div class="para">
+İstemci kimlik kanıtlamasına gereksinim duyan genellikle bir dizüstü bilgisayar veya diğer  başka bir (telsiz) aygıttır. Xsupplicant IEEE 802.1X-2001 standartının "İstemci" parçası olduğunu bildirir.
+ </div> <div class="head3"><a name="p8021x-howto-instxsup" id="p8021x-howto-instxsup"></a>Xsupplicant'ın Kurulumu</div><dl><dd><div class="procedure"><div class="formaltitle"><b>Yönerge 3.3. Kurulum</b></div><ol type="1"><li><div class="para">
+En güncel kaynağı <a class="ulink" href="http://www.open1x.org/" target="_top">http://www.open1x.org/</a> adresinden indirin.
+   </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>cd usr/local/src</tt></b>
+<tt># </tt><b><tt>wget http://belnet.dl.sourceforge.net/sourceforge/open1x/xsupplicant-</tt></b>
+<b><tt>1.0.tar.gz</tt></b>
+<tt># </tt><b><tt>tar zxfv xsupplicant-1.0.tar.gz</tt></b>
+<tt># </tt><b><tt>cd xsupplicant</tt></b>
+</pre></div></div>
+    </li><li><div class="para">
+Paketi yapılandırın, derleyin ve kurun:
+   </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>./configure</tt></b>
+<tt># </tt><b><tt>make</tt></b>
+<tt># </tt><b><tt>make install</tt></b>
+</pre></div></div>
+    </li><li><div class="para">
+Eğer yapılandırma  dosyası <tt>etc</tt> dizininin altına kurulmamışsa kendiniz yapın:
+   </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>mkdir -p /usr/local/etc/1x</tt></b>
+<tt># </tt><b><tt>cp etc/tls-example.conf /usr/local/etc/1x</tt></b>
+</pre></div></div>
+    </li></ol></div><div class="para">
+Eğer kurulum başarısız olursa kaynağa dahil edilmiş olan <tt>README</tt> ve <tt>INSTALL</tt> dosyalarını okuyun. Ayrıca, <a class="ulink" href="http://sourceforge.net/docman/display_doc.php?docid=23371&amp;group_id=60236" target="_top">Resmi Belgelendirme</a>'yi de okuyabilirsiniz.
+  </div></dd></dl> <div class="head3"><a name="p8021x-howto-confxsup" id="p8021x-howto-confxsup"></a>Xsupplicant'ın Yapılandırılması</div><dl><dd><div class="procedure"><div class="formaltitle"><b>Yönerge 3.4. Yapılandırma</b></div><ol type="1"><li><div class="para">
+İstemci root sertifikasına erişebilmelidir.
+   </div><div class="para">
+Eğer İstemci Kimlik Kanıtlama Sunucusundan (çift yönlü) doğrulamaya ihtiyaç duyuyorsa, İstemci sertifikalarına da erişebilmelidir.
+   </div><div class="para">
+Bir sertifika dizini oluşturun ve sertifikaları onun içine taşıyın:
+   </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>mkdir -p /usr/local/etc/1x/certs</tt></b>
+<tt># </tt><b><tt>cp root.pem /usr/local/etc/1x/certs/</tt></b>
+<tt># </tt><i>(seçimlik istemci sertifikalarını aynı dizine kopyalayın)</i>
+</pre></div></div>
+   </li><li><div class="para">
+Yapılandırma dosyasını açın ve düzenleyin:
+   </div>
+<div class="para"><div align="right"><pre class="programlisting">
+# startup_command: Xsupplicant ilk başlatılırken çalıştırılacak komut.
+# Bu komut, kartın ağ ile kusursuz ilişkilendirilmesi için yapılandırılması
+# gibi şeyleri yapabilir.
+startup_command = &lt;BEGIN_COMMAND&gt;/usr/local/etc/1x/startup.sh&lt;END_COMMAND&gt;
+</pre></div></div>
+   <div class="para">
+<tt>startup.sh</tt> çabucak oluşturulacak.
+   </div></li><li><div class="para">
+İstemcinin kimlik doğrulaması olunca, bir DHCP isteği iletecektir veya elle bir IP adresi atayacaktır. Burada, İstemci kendi IP adresini <tt>startup2.sh</tt> dosyasında elle ayarlıyor:
+   </div>
+<div class="para"><div align="right"><pre class="programlisting">
+# first_auth_command: Xsupplicant telsiz bir ağa kimlik doğrulaması
+#   yapacağı zaman çalıştırılacak ilk komut. Bu genellikle
+#   bir DHCP istemci sürecini başlatmak için kullanılır.
+#first_auth_command = &lt;BEGIN_COMMAND&gt;dhclient %i&lt;END_COMMAND&gt;
+first_auth_command=&lt;BEGIN_COMMAND&gt;/usr/local/etc/1x/startup2.sh&lt;END_COMMAND&gt;
+</pre></div></div>
+   </li><li><div class="para">
+<tt>-i</tt> sadece hata ayıklama amacıyla (geliştiricilere göre bu seçenek çıkarılabilir) kullanılabileceği için, <tt>allow_interfaces</tt> ayarlanmalı:
+   </div>
+<div class="para"><div align="right"><pre class="programlisting">
+allow_interfaces = eth0
+deny_interfaces = eth1
+</pre></div></div>
+   </li><li><div class="para">
+Sonra, NETWORK SECTION'ın altında, PEAP'i yapılandıracağız:
+   </div>
+<div class="para"><div align="right"><pre class="programlisting">
+# PEAP'i kullanıyor olacağız
+allow_types = eap_peap
+
+# İlk aşamada (şifrelenmemiş aşama) kullanıcı adını
+# öğrenmek için kulak misafiri olmak isteyenleri istemiyoruz,
+# bu nedenle 'identity hiding' kullanılır
+# (sahte bir kullanıcı adı kullanılır).
+identity = &lt;BEGIN_ID&gt;anonymous&lt;END_ID&gt;
+
+eap-peap {
+  # tls'de olduğu gibi ya bir root sertifikası ya da
+  # root sertifikalarırı içeren bir dizin tanımlayın.
+  root_cert = /usr/local/etc/1x/certs/root.pem
+  #root_dir = /path/to/root/certificate/dir
+  #crl_dir = /path/to/dir/with/crl
+  chunk_size = 1398
+  random_file = /dev/urandom
+  #cncheck = myradius.radius.com   # Sunucu sertifikasının CN alanında
+                                   # bu değere sahip olduğundan emin olun.
+  #cnexact = yes                   # Tam bir eşleşme olmalı mı?
+  session_resume = yes
+
+  # Şu an 'all' sadece mschapv2.
+  # Eğer hiç allow_types tanımlanmamışsa 'all' öntanımlıdır.
+  #allow_types = all # burada all = MSCHAPv2, MD5, OTP, GTC, SIM
+  allow_types = eap_mschapv2
+
+  # Şimdi, PEAP'te bu yöntemlerden her hangi birini uygulayabilirsiniz:
+  eap-mschapv2 {
+    username = &lt;BEGIN_UNAME&gt;testuser&lt;END_UNAME&gt;
+    password = &lt;BEGIN_PASS&gt;Secret149&lt;END_PASS&gt;
+  }
+}
+</pre></div></div>
+   </li><li><div class="para">
+İstemci ilk olarak erişim noktası ile ilişkilendirilmeli. <tt>startup.sh</tt> betiği o işi yapar. O aynı zamanda Xsupplicant'ın çalıştırdığı ilk komuttur.
+   </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+<b><tt>iwconfig</tt></b>'e verdiğimiz sahte anahtara dikkat edin (<i>enc 000000000</i>)! Bu anahtar sürücüye şifreli kipte çalışmasını söyler. Anahtar, başarılı kimlik kanıtlamanın ardından başkasıyla değiştirilir. Eğer şifreleme AP'de (deneme amacıyla) kapalıysa bu <tt>enc off</tt>'a ayarlanabilir.
+   </div></td></tr></table></div><div class="para">
+<tt>startup.sh</tt> ve <tt>startup2.sh</tt>, her ikisi de <tt>/usr/local/etc/1x/</tt> altında olmalı.
+   </div>
+<div class="para"><div align="right"><pre class="programlisting">
+#!/bin/bash
+echo "$0: işlem başlatılıyor"
+# Arayüzü devredışı bırakın (eğer çalışıyor ise)
+/sbin/ifconfig eth0 down
+# Rotaların boşaltıldığından emin olmak için
+sleep 1
+# Arayüzü sahte bir anahtarla yapılandırın
+/sbin/iwconfig eth0 mode managed essid testnet enc 000000000
+# Arayüzü başlatın ve çoğa gönderim paketlerini dinlediğinden emin olun
+/sbin/ifconfig eth0 allmulti up
+echo "$0: işlem tamam"
+</pre></div></div>
+   </li><li><div class="para">
+Sonraki dosya IP adresini statik olarak ayarlamak için kullanılır. Eğer bir DHCP sunucusu varsa (birçok erişim noktasında genellikle vardır), bu dosya olmayabilir.
+   </div>
+<div class="para"><div align="right"><pre class="programlisting">
+#!/bin/bash
+echo "$0: işlem başlatılıyor"
+# IP adresinin atanması
+/sbin/ifconfig eth0 192.168.1.5 netmask 255.255.255.0
+echo "$0: işlem tamam"
+</pre></div></div>
+   </li></ol></div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/p8021x-howto-FreeRADIUS.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/p8021x-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/p8021x-howto-authenticator.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Kimlik Kanıtlama Sunucusu: FreeRADIUS'un Kurulması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Kimlik Kanıtlayıcı: Kimlik Kanıtlayıcının Kurulması (Erişim Noktası)</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

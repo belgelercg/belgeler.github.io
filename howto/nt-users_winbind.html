@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:50+03:00" /><title>Linux Makinasında Windows Kullanıcılarını Görmek - Winbind</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/nt-users.html" title="Linux üzerinde Windows NT kullanıcıları" /><link rel="previous" href="../howto/nt-users_linux-nt.html" title="Linux Makinasını Windows NT Ağına Tanıtmak" /><link rel="next" href="../howto/nt-users_ldap.html" title="Birden Fazla Linux Makinasında Winbind Çalıştırmak -- Arada LDAP" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Linux Makinasında Windows Kullanıcılarını Görmek - Winbind</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/nt-users_linux-nt.html">Önceki</a> </td><th width="60%" align="center">Linux üzerinde Windows NT kullanıcıları</th><td width="20%" align="right"> <a accesskey="n" href="../howto/nt-users_ldap.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="nt-users_winbind" id="nt-users_winbind"></a>Linux Makinasında Windows Kullanıcılarını Görmek - Winbind</div><dl><dd> <div class="head3"><a name="id1" id="id1"></a>Winbind'ın Getirdikleri</div><dl><dd><div class="para">
+Orjinal belge: <a class="ulink" href="http://us1.samba.org/samba/docs/man/winbind.html#id2955823" target="_top">http://us1.samba.org/samba/docs/man/winbind.html#id2955823</a>
+  </div><div class="para">
+Winbind, UNIX ve Windows NT hesap yönetimini, bir UNIX makinasının tam anlamıyla bir NT alanına üye olmasını sağlayarak birleştirir. Bu gerçekleştirildikten sonra UNIX makinası, NT kullanıcılarını ve gruplarını sanki UNIX "yerel" kullanıcı ve gruplarıymış gibi görecek ve NT alanını tıpkı tamamen UNIX olan ortamlarda NIS'in kullanıldığı gibi kullanmaya imkan verecektir.
+  </div><div class="para">
+Sonuç olarak, UNIX makinasında herhangi bir yazılım bir kullanıcı veya grup adı hakkında işletim sisteminden bilgi istediği zaman, bu istem, ilgili alanın NT Alan Sunucusu'na sorularak çözümlenir. Winbind işletim sistemine alt seviyede (C kitaplığındaki NSS isim çözümleme modülleri vasıtası ile) bütünleşik olduğundan dolayı, NT Alan Sunucusu'na yapılan bu yönlendirme tamamen şeffaftır.
+  </div><div class="para">
+UNIX makinasındaki kullanıcılar bu şekilde NT kullanıcı ve grup isimlerini tıpkı "yerel" UNIX isimlerini kullandıkları gibi kullanabilirler. Dosyaların NT alan kullanıcılarına ait olması için <b><tt>chown</tt></b> komutunu kullanabilir, hatta NT kullanıcı adlarını kullanarak bir UNIX makinasına giriş yapabilirler.
+  </div><div class="para">
+Winbind'ın kullanıldığına dair tek işaret, kullanıcı ve grup isimlerinin <tt>DOMAIN\kullanıcı</tt> ve <tt>DOMAIN\grup</tt> şeklinde olmasıdır.
+  </div><div class="para">
+Ek olarak, Winbind, Pluggable Authentication Modules (PAM) sistemine bağlanan bir yetkinleştirme mekanizması sağlar. Bu yol ile UNIX sistemleri, PAM kullanan bütün uygulamaların kullanıcı yetkinleştirmesinde NT alan bilgilerini kullanabilirler. Bu mekanizma, sistemler arası parolaların eşzamanlı tutulması sorununu çözer, çünkü bütün parolalar tek bir yerde tutulur (Alan Sunucusu'nda).
+  </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a><tt>nsswitch.conf</tt> Ayarları</div><dl><dd><div class="para">
+İlgili orjinal belge: <a class="ulink" href="http://us1.samba.org/samba/docs/man/winbind.html#id2956484" target="_top">http://us1.samba.org/samba/docs/man/winbind.html#id2956484</a><br />(Bu bölümdeki bilgiler bu belgenin bir çevirisi değildir.)
+  </div><div class="para">
+<tt>root</tt> kullanıcı olarak <tt>/etc/nsswitch.conf</tt> dosyanızı düzenleyerek kullanıcı ve grup girdilerinin <b><tt>winbindd</tt></b> sunucusundan alınmasını sağlamanız gerekli. Bu düzenleme sonrası <tt>/etc/nsswitch.conf</tt> dosyanız aşağıdaki gibi olacaktır:
+  </div><div class="para"><div align="right"><pre class="screen">
+passwd: files winbind
+shadow: files
+group: files winbind
+</pre></div></div><div class="para">
+<b><tt>winbindd</tt></b> sunucusu tarafından gereken kitaplıklar sisteminiz yeniden başlatıldığı zaman özdevinimli olarak <b><tt>ldconfig</tt></b> önbelleğine alınacaktır, fakat elle bu işlemi yapmanız daha hızlı olacaktır (üstelik de sistemi yeniden başlatmanıza gerek kalmaz.)
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt>root# </tt><b><tt>/sbin/ldconfig -v | grep winbind</tt></b>
+</pre></div></div><div class="para">
+Bu komut, <b><tt>libnss_winbind</tt></b> kitaplığı hakkında size bilgi verir.
+  </div></dd></dl> <div class="head3"><a name="id3" id="id3"></a><tt>smb.conf</tt> Ayarları</div><dl><dd><div class="para">
+<tt>smb.conf</tt> dosyanızın <b><tt>[global]</tt></b> bölümüne <b><tt>winbind</tt></b> ile ilgili aşağıdaki parametreleri girin:
+  </div><div class="para"><div align="right"><pre class="screen">
+[global]
+<i># alan adı ve kullanıcı kimliği arasında kullanılan ayraç</i>
+winbind separator = +
+<i># 10000 ile 20000 arasındaki uid no'larını alan kullanıcıları için ayırın</i>
+idmap uid = 10000-20000
+<i># 10000 ile 20000 arasındaki gid no'larını alan grupları için ayırın</i>
+idmap gid = 10000-20000
+<i># winbind kullanıcı ve gruplarının listelenmesine izin verin</i>
+winbind enum users = yes
+winbind enum groups = yes
+<i># eğer winbind kullanıcıları Linux makinasında kabuk girişine izinli olacaklar ise</i>
+<i># (telnet yapabilmek gibi) onların ev dizinleri ve kabuk bilgileri</i>
+template homedir = /home/winnt/%D/%U
+template shell = /bin/bash
+</pre></div></div></dd></dl> <div class="head3"><a name="id4" id="id4"></a>Winbind Sunucusunun Başlatılması</div><dl><dd>
+<div class="para"><div align="right"><pre class="screen"><tt>root# </tt><b><tt>/etc/rc.d/init.d/winbind start</tt></b></pre></div></div>
+  </dd></dl> <div class="head3"><a name="id5" id="id5"></a>Sınama</div><dl><dd><div class="para">
+Bu komut, mevcut NT alanınızdaki kullanıcıları listelemelidir:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt>root# </tt><b><tt>wbinfo -u</tt></b>
+</pre></div></div><div class="para">
+Bu komut, mevcut NT alanınızdaki grupları listelemelidir:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt>root# </tt><b><tt>wbinfo -g</tt></b>
+</pre></div></div><div class="para">
+Bu komut, hem UNIX'de yerel olarak tanımlı kullanıcıları, hem de NT alanından gelen kullanıcıların tamamını bir arada verir. Çıktı, <tt>passwd</tt> dosyasının görüntüsünebenzer:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt>root# </tt><b><tt>getent passwd</tt></b>
+<tt>root# </tt><b><tt>getent group</tt></b>
+</pre></div></div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/nt-users_linux-nt.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/nt-users.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/nt-users_ldap.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Linux Makinasını Windows NT Ağına Tanıtmak </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Birden Fazla Linux Makinasında Winbind Çalıştırmak -- Arada LDAP</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

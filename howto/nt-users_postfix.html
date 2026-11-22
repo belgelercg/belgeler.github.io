@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:50+03:00" /><title>Posta Sunucusunu Bu Düzenekle Bütünleştirmek</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/nt-users.html" title="Linux üzerinde Windows NT kullanıcıları" /><link rel="previous" href="../howto/nt-users_ldap.html" title="Birden Fazla Linux Makinasında Winbind Çalıştırmak -- Arada LDAP" /><link rel="next" href="../howto/linux_windows_printing.html" title="Debian ve Windows Paylaşımlı Yazdırma Nasıl" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Posta Sunucusunu Bu Düzenekle Bütünleştirmek</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/nt-users_ldap.html">Önceki</a> </td><th width="60%" align="center">Linux üzerinde Windows NT kullanıcıları</th><td width="20%" align="right"> <a accesskey="n" href="../howto/linux_windows_printing.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="nt-users_postfix" id="nt-users_postfix"></a>Posta Sunucusunu Bu Düzenekle Bütünleştirmek</div><dl><dd><div class="para">
+Şimdiye kadar doğrudan bir faydasını görmediğimiz bir sürü işlem yaptık. Şimdi ise sıra kurmuş olduğumuz altyapının meyvelerini toplamaya geldi.
+  </div><div class="para">SMTP Sunucusu olarak Postfix kullanıyoruz.
+  </div> <div class="head3"><a name="id1" id="id1"></a>NT Kullanıcılarını Yerel Kullanıcı Olarak Kabul Etme</div><dl><dd><div class="para">
+Postfix kullanıcısı ön tanımlı olarak yerel kullanıcıları kabul eder. Bu ayar, <tt>main.cf</tt> içerisinde <b><tt>local_recipient_maps</tt></b> parametresi ile yapılır. Bu parametre, öntanımlı değer olarak bütün yerel kullanıcıları ve Postfix'in <tt>alias</tt> tablolarını kabul eder.
+  </div><div class="para">
+Dolayısıyla NT kullanıcılarınızı Postfix'in yerel kullanıcı olarak kabul etmesi için gereken herşeyi zaten yapmış bulunuyoruz. Ek bir şey yapmanıza gerek yok. Bir sorun çıkarsa, <b><tt>local_recipient_maps</tt></b> parametresinin değerini öntanımlı değerinde bırakıp bırakmamış olduğunuzu kontrol edin.
+  </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>SMTP-AUTH için NT Kullanıcıları</div><dl><dd><div class="para">
+Faydalı bir kaynak: <a class="ulink" href="http://postfix.state-of-mind.de/patrick.koetter/smtpauth/" target="_top">http://postfix.state-of-mind.de/patrick.koetter/smtpauth/</a><br />
+Önce <b><tt>cyrus-sasl</tt></b> paketini kurun. Bunun içinde gelen <b><tt>saslauthd</tt></b> sunucusunu, <tt>-a pam</tt> seçeneği ile çalıştırın. Ondan sonra <tt>/etc/pam.d/smtp</tt> dosyasını düzenleyin:
+  </div><div class="para"><div align="right"><pre class="screen">
+auth sufficient /lib/security/pam_winbind.so
+account sufficient /lib/security/pam_permit.so
+password sufficient /lib/security/pam_smbpass.so
+</pre></div></div><div class="para">
+<tt>/etc/postfix/master.cf</tt> içine:
+  </div><div class="para"><div align="right"><pre class="screen">
+smtpd_sasl_auth_enable = yes
+smtpd_sasl_security_options = noanonymous
+</pre></div></div><div class="para">
+Bu tanımlarla, Windows kullanıcı adı ve parolası kullanarak SMTP-AUTH sınamalarını gerçekleştirebilirsiniz.
+  </div><div class="para">
+IMAP/POP Sunucusu olarak kullandığımız <b><tt>cyrus</tt></b> için de pek fazla bir şey yapmamız gerekli değil. <tt>/etc/imapd.conf</tt>içerisine:
+  </div><div class="para"><div align="right"><pre class="screen">
+sasl_pwcheck_method: saslauthd
+sasl_mech_list: PLAIN LOGIN
+</pre></div></div><div class="para">
+yazarak kimlik sınamasını <b><tt>saslauthd</tt></b> ile yapmasını sağlıyoruz. Bunu, Postfix için daha önce kurmuştuk ve PAM kullanmaya ayarlamıştık (<tt>-a pam</tt> seçeneği). <tt>/etc/pam.d/imap</tt> dosyası ile IMAP kontrollerinde ne yapması gerektiğini belirtelim:
+  </div><div class="para"><div align="right"><pre class="screen">
+auth        sufficient    /lib/security/pam_winbind.so
+account sufficient /lib/security/pam_permit.so
+password sufficient /lib/security/pam_smbpass.so
+</pre></div></div><div class="para">
+Bu ayarlarla çalıştırdığımız Cyrus sunucusu, bir kullanıcının var olup olmadığı ve şifresinin kontrolü için NT kullanıcılarına erişecek. Fakat bir tek sorun kaldı, o da kullanıcı posta kutusunun oluşturulması. Onu da özdevinimli duruma getirelim. <tt>/etc/imapd.conf</tt> dosyası içerisine:
+  </div><div class="para"><div align="right"><pre class="screen">
+# Cyrus, eğer:# 1. Kullanıcı kontrolü başarılı ise
+# 2. Aşağıdaki kota ayarı var ve sıfır değil ise
+# 3. Kullanıcıya ait bir posta kutusu yok ise,
+# Kullanıcı için özdevinimli olarak ilk girişte posta kutusu oluşturuyor.
+
+# Özdevinimli oluşturulan posta kutularına kota koymuyoruz.
+# Kota koymak isterseniz pozitif kota değerini belirtin.
+<b><tt>autocreatequota: -1</tt></b>
+
+# Şöyle bir senaryo düşünün. Kullanıcı henüz sisteme giriş yapmadı,
+# dolayısıyla posta kutusu yok. Fakat kendisine bir posta gönderiliyor.
+# Bunu kabul edebilmek için, henüz bir posta kutusu olmaksızın kendisine
+# posta gönderilen biri için de posta kutusunun oluşmasını sağlayalım:
+<b><tt>createonpost: yes</tt></b>
+
+# Bu özdevinimli oluşturulan posta kutularında bazı dizinler de
+# özdevinimli oluşsun:
+<b><tt>autocreateinboxfolders: Sent | Drafts | Templates | Trash</tt></b>
+<b><tt>autosubscribeinboxfolders: Sent | Drafts | Templates | Trash</tt></b>
+</pre></div></div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/nt-users_ldap.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/nt-users.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/linux_windows_printing.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Birden Fazla Linux Makinasında Winbind Çalıştırmak -- Arada LDAP </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Debian ve Windows Paylaşımlı Yazdırma Nasıl</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

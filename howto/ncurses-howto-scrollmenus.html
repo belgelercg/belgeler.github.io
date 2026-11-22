@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:09+03:00" /><title>Kaydırılabilen Menüler</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/ncurses-howto-menus.html" title="Menü Kütüphanesi" /><link rel="previous" href="../howto/ncurses-howto-menuwindows.html" title=" Menü Pencereleri" /><link rel="next" href="../howto/ncurses-howto-multicolumn.html" title="Çok Sütunlu Menüler" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Kaydırılabilen Menüler</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/ncurses-howto-menuwindows.html">Önceki</a> </td><th width="60%" align="center">Menü Kütüphanesi</th><td width="20%" align="right"> <a accesskey="n" href="../howto/ncurses-howto-multicolumn.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="ncurses-howto-scrollmenus" id="ncurses-howto-scrollmenus"></a>Kaydırılabilen Menüler</div><dl><dd><div class="para">
+Eğer pencere için oluşan alt pencere tüm öğeler için yeterince büyük değilse o zaman menü kaydırılabilir olur. O anki listedeki son öğede olduğunuzda eğer <tt>REQ_DOWN_ITEM</tt> isteğini gönderirseniz <tt>REQ_SCR_DLINE</tt>'e çevrilir ve menü bir adım aşağı kayar. El ile de <tt>REQ_SCR_</tt> isteklerini kaydırma işlemi için verebilirsiniz. Nasıl yapılabileceğine bakalım:
+</div><dl class="example"><dt class="example"><a class="example" name="idxmp94" id="idxmp94"></a><b>Örnek 12.20. Kaydırılabilir Menü örneği</b></dt><dd class="example">
+<div class="para"><div align="right"><pre class="programlisting">
+#include &lt;curses.h&gt;
+#include &lt;menu.h&gt;
+
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
+#define CTRLD   4
+
+char *choices[] = {
+  "Choice 1",
+  "Choice 2",
+  "Choice 3",
+  "Choice 4",
+  "Choice 5",
+  "Choice 6",
+  "Choice 7",
+  "Choice 8",
+  "Choice 9",
+  "Choice 10",
+  "Exit",
+  (char *)NULL,
+};
+void print_in_middle(WINDOW *win, int starty, int startx, int width,
+     char *string, chtype color);
+
+int main()
+{ ITEM **my_items;
+  int c;
+  MENU *my_menu;
+  WINDOW *my_menu_win;
+  int n_choices, i;
+
+  /* Curses kipini ilklendir */
+  initscr();
+  start_color();
+  cbreak();
+  noecho();
+  keypad(stdscr, TRUE);
+  init_pair(1, COLOR_RED, COLOR_BLACK);
+  init_pair(2, COLOR_CYAN, COLOR_BLACK);
+
+  /* Öğeleri oluştur */
+  n_choices = ARRAY_SIZE(choices);
+  my_items = (ITEM **)calloc(n_choices, sizeof(ITEM *));
+  for(i = 0; i &lt; n_choices; ++i)
+    my_items[i] = new_item(choices[i], choices[i]);
+
+  /* Menüyü oluştur */
+  my_menu = new_menu((ITEM **)my_items);
+
+  /* Menü ile ilişiklendirilecek pencereyi oluştur */
+  my_menu_win = newwin(10, 40, 4, 4);
+  keypad(my_menu_win, TRUE);
+
+  /* Ana ve alt pencereyi ayarla*/
+  set_menu_win(my_menu, my_menu_win);
+  set_menu_sub(my_menu, derwin(my_menu_win, 6, 38, 3, 1));
+  set_menu_format(my_menu, 5, 1);
+
+  /* Menü göstericisini" * " olarak ayarla*/
+  set_menu_mark(my_menu, " * ");
+
+  /* Ana pencere etrafında bir çerçeve çiz ve başlığı yaz */
+  box(my_menu_win, 0, 0);
+  print_in_middle(my_menu_win, 1, 0, 40, "My Menu", COLOR_PAIR(1));
+  mvwaddch(my_menu_win, 2, 0, ACS_LTEE);
+  mvwhline(my_menu_win, 2, 1, ACS_HLINE, 38);
+  mvwaddch(my_menu_win, 2, 39, ACS_RTEE);
+
+  /* Menüyü ekrana yaz */
+  post_menu(my_menu);
+  wrefresh(my_menu_win);
+
+  attron(COLOR_PAIR(2));
+  mvprintw(LINES - 2, 0,
+    "Sayfayı aşağı yukarı kaydırmak için PageUp ve PageDown kullanın.");
+  mvprintw(LINES - 1, 0,
+    "Hareket etmek için Ok tuşları kullanın (Çıkmak için F1)");
+  attroff(COLOR_PAIR(2));
+  refresh();
+
+  while((c = wgetch(my_menu_win)) != KEY_F(1))
+  { switch(c)
+    { case KEY_DOWN:
+        menu_driver(my_menu, REQ_DOWN_ITEM);
+        break;
+      case KEY_UP:
+        menu_driver(my_menu, REQ_UP_ITEM);
+        break;
+      case KEY_NPAGE:
+        menu_driver(my_menu, REQ_SCR_DPAGE);
+        break;
+      case KEY_PPAGE:
+        menu_driver(my_menu, REQ_SCR_UPAGE);
+        break;
+    }
+    wrefresh(my_menu_win);
+  }
+
+  /* Menüyü ekrandan sil ve ayrılan bellek alanını geri ver */
+  unpost_menu(my_menu);
+  free_menu(my_menu);
+  for(i = 0; i &lt; n_choices; ++i)
+    free_item(my_items[i]);
+  endwin();
+}
+
+void print_in_middle(WINDOW *win, int starty, int startx, int width,
+     char *string, chtype color)
+{ int length, x, y;
+  float temp;
+
+  if(win == NULL)
+    win = stdscr;
+  getyx(win, y, x);
+  if(startx != 0)
+    x = startx;
+  if(starty != 0)
+    y = starty;
+  if(width == 0)
+    width = 80;
+
+  length = strlen(string);
+  temp = (width - length)/ 2;
+  x = startx + (int)temp;
+  wattron(win, color);
+  mvwprintw(win, y, x, "%s", string);
+  wattroff(win, color);
+  refresh();
+}
+</pre></div></div></dd></dl><div class="para">
+Bu program kendisini açıklar niteliktedir. Bu örnekte seçenek sayısı, alt menümüzün 6 tane gösterebilme kapasitesi olan öğe sayısından 10'a çıkarılmıştır. Bu mesaj menü sistemine açık bir şekilde <tt>set_menu_format()</tt> ile haber verilmelidir. Burada, tek bir sayfa için gösterilmesini istediğimiz satır ve sütun sayısını belirttik. Satır değişkenlerinde, eğer alt menü yüksekliğinden küçükse, herhangi bir sayıdaki öğeyi gösterilmesi için tanımlayabiliriz. Eğer kullanıcı tarafından basılan tuş PAGE UP veya  PAGE DOWN ise, <tt>menu_driver()</tt> tarafından verilen isteklerden dolayı (<tt>REQ_SCR_DPAGE</tt> ve <tt>REQ_SCR_UPAGE</tt>) menü bir sayfa kayar.
+</div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/ncurses-howto-menuwindows.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/ncurses-howto-menus.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/ncurses-howto-multicolumn.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top"> Menü Pencereleri </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Çok Sütunlu Menüler</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

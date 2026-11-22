@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:32+03:00" /><title>acl_data</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/spam-filtering-exim-final.html" title="Tamamlanmış ACL'ler" /><link rel="previous" href="../howto/spam-filtering-acl_rcpt_to_final.html" title="acl_rcpt_to" /><link rel="next" href="../howto/spam-filtering-glossary.html" title="Terimler Sözlüğü" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">acl_data</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/spam-filtering-acl_rcpt_to_final.html">Önceki</a> </td><th width="60%" align="center">Tamamlanmış ACL'ler</th><td width="20%" align="right"> <a accesskey="n" href="../howto/spam-filtering-glossary.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="spam-filtering-acl_data_final" id="spam-filtering-acl_data_final"></a><tt>acl_data</tt></div><dl><dd>
+<div class="para"><div align="right"><pre class="screen">
+# Bu erişim denetim listesi gelen bir SMTP aktarımında ileti verisi
+# tamamen alındıktan sonra kullanılır. Bu sınamalar alıcı adresi
+# kabul ya da red edilinceye kadar sırayla yapılır.
+
+acl_data:
+  # Bazı başlık satırlarını günlüğe kaydedelim.
+  warn
+    logwrite    = Subject: $h_Subject:
+
+
+  # İleti kendi konaklarımızdan alınmış ve Message-ID başlığını
+  # içermiyorsa, onu biz ekleyeceğiz.
+  warn
+    condition   = ${if !def:h_Message-ID: {1}}
+    hosts       = +relay_from_hosts
+    message     = Message-ID: &lt;E$message_id@$primary_hostname&gt;
+
+
+  # Posta yerel SMTP üzerinden alınmışsa (yani, TCP/IP bağlantısı
+  # ile gelmiyorsa), kabul ediyoruz. Bunu boş bir konak alanını
+  # sınayarak yapacağız. Ayrıca, postalarını rölelediğimiz
+  # konaklardan gelen postaları da kabul edeceğiz.
+  #
+  accept
+    hosts       = : +relay_from_hosts
+
+  # İleti, kimlik kanıtlaması yapılan bir bağlantı üzerinden
+  # geliyorsa kabul ediyoruz.
+  #
+  accept
+    authenticated = *
+
+
+  # Eğer $acl_m0'da kayıtlı bir sebep varsa, göndericiyi 20 saniye
+  # beklettikten sonra reddediyoruz.
+  #
+  deny
+    message     = $acl_m0
+    log_message = $acl_m1
+    condition   = ${if and {{def:acl_m0}{def:acl_m1}} {true}{false}}
+    delay       = 20s
+
+
+  # İleti uzunluğu sınırlamasını devreye sokalım.
+  #
+  deny
+    message     = Message size $message_size is larger than limit of \
+                  MESSAGE_SIZE_LIMIT
+    condition   = ${if &gt;{$message_size}{MESSAGE_SIZE_LIMIT}{yes}{no}}
+
+
+  # Başlıktaki adreslerin sözdizimi hatalıysa reddediyoruz.
+  #
+  deny
+    message     = Your message does not conform to RFC2822 standard
+    log_message = message header fail syntax check
+    !verify     = header_syntax
+
+
+  # Message-ID:, Date: veya Subject: başlıklarından biri olmayan bir
+  # ileti dışardan gelmişse reddetmek için aşağıdaki satırları devreye alın.
+  #
+  # Bazı özelleştirilmiş posta aktarımcılarının, örneğin posta listesi
+  # sunucularının boş gönderici adresi ile gönderdikleri postalara
+  # kendiliklerinden bir Message-ID üretmedikleri bilinmektedir;
+  # böyle durumlar için boş bir gönderici adresin varlığına da bakacağız.
+  #
+  #deny
+  #  message     = Your message does not conform to RFC2822 standard
+  #  log_message = missing header lines
+  #  !hosts      = +relay_from_hosts
+  #  !senders    = : postmaster@*
+  #  condition   = ${if !eq {$acl_m0}{accept}{true}}
+  #  condition   = ${if or {{!def:h_Message-ID:}\
+  #                         {!def:h_Date:}\
+  #                         {!def:h_Subject:}} {true}{false}}
+
+
+  # "Sender:", "Reply-To:" veya "From:" satırlarından en azından birindeki
+  # gönderici adres doğrulanabilir değilse, bir uyarı veriyoruz.
+  #
+  warn
+    message     = X-Sender-Verify-Failed: No valid sender in message header
+    log_message = No valid sender in message header
+    !verify     = header_sender
+
+
+
+  # --------------------------------------------------------------------
+  # Burada, zarf gönderici adresi olmayan iletilere grilisteleme
+  # uygulayacağız. Bunları RCPT TO:'dan sonra grilistelemeye konu
+  # etmeyeceğiz, çünkü gönderici varlık doğrulamaları yaparken
+  # karşı konaklarla olumsuz etkileşime girilebilir.
+  #
+  # Bu deyimi devreye almadan önce "greylistd" kurmuş olmalısınız.
+  # Bkz:  http://packages.debian.org/unstable/main/greylistd
+  #
+  #defer
+  #  message     = $sender_host_address is not yet authorized to send \
+  #                delivery status reports to &lt;$recipients&gt;. \
+  #                Please try later.
+  #  log_message = greylisted.
+  #  senders     = : postmaster@*
+  #  condition   = ${if !eq {$acl_m0}{accept}{true}}
+  #  set acl_m9  = $sender_host_address $recipients
+  #  set acl_m9  = ${readsocket{/var/run/greylistd/socket}{$acl_m9}{5s}{}{}}
+  #  condition   = ${if eq {$acl_m9}{grey}{true}{false}}
+  #  delay       = 20s
+  # --------------------------------------------------------------------
+
+
+
+  # --- EXISCAN yapılandırmasının BAŞLANGICI ---
+
+  # Birtakım MIME hataları olan iletileri reddedeceğiz.
+  #
+  deny
+    message     = Serious MIME defect detected ($demime_reason)
+    demime      = *
+    condition   = ${if &gt;{$demime_errorlevel}{2}{1}{0}}
+
+
+  # MIME taşıyıcıyı aç ve kurtlar tarafından kullanılan dosya uzantıları
+  # varsa reddet. Bu çağrılar tekrar demime uygulayacaktır, ama sonuçlar
+  # arabellekli olarak dönecektir. Uzantı listesinin eksik olabileceğini
+  # unutmayın.
+  #
+  deny
+    message     = We do not accept ".$found_extension" attachments here.
+    demime      = bat:btm:cmd:com:cpl:dll:exe:lnk:msi:pif:prf:reg:scr:vbs:url
+
+
+  # İletinin boyutu MESSAGE_SIZE_SPAM_MAX'dan büyükse spam veya virüs
+  # taraması yapmaksızın kabul ediyoruz.
+  accept
+    condition   = ${if &gt;{$message_size}{MESSAGE_SIZE_SPAM_MAX} {true}}
+    logwrite    = :main: Not classified \
+                  (message size larger than MESSAGE_SIZE_SPAM_MAX)
+
+
+  # --------------------------------------------------------------------
+  # Antivirüs taraması
+  # Ana bölümde bir 'av_scanner' tanımı yapmış olmanız gerekir.
+  #
+  #deny
+  #  message  = This message contains a virus ($malware_name)
+  #  demime   = *
+  #  malware_name  = */defer_ok
+  # --------------------------------------------------------------------
+
+
+
+  # $spam_score ve $spam_report'a veri sağlamak için SpamAssassin'i
+  # çağıracağız. Tasnife bağlı olarak, $acl_m9 "ham" veya "spam"
+  # değerini alacak.
+  #
+  # İleti spam olarak tasnif edilmişse ve evvelce $acl_m0'ı iletiyi ne
+  # olursa olsun kabul edeceğimizi belirtecek şekilde ayarlamamışsak,
+  # iletiyi reddetmiş gibi yapacağız.
+  #
+  warn
+    set acl_m9  = ham
+    # ------------------------------------------------------------------
+    # SpamAssassin için kullanıcı bazında ayarların kullanımını mümkün
+    # kılmak için aşağıdaki satırı devreye alıp "spam = mail" satırını
+    # iptal ediniz.
+    # Alıcı adresinin kullanıcı adını SpamAssassin'e aktaralım.
+    # Bunun için adresin '=' veya '@' karakterinden önceki kısmını
+    # küçük harfe dönüştüreceğiz. Evvelce bir defadaki alıcı sayısını
+    # önceden bir ile sınırladığımızdan çok sayıda alıcı olmayacak.
+    #
+    # spam        = ${lc:${extract{1}{=@}{$recipients}{$value}{mail}}}
+    # ------------------------------------------------------------------
+    spam        = mail
+    set acl_m9  = spam
+    condition   = ${if !eq {$acl_m0}{accept}{true}}
+    control     = fakereject
+    logwrite    = :reject: Rejected spam (score $spam_score): $spam_report
+
+
+
+  # İletinin başlığına bir X-Spam-Status: satırı ekleyelim.
+  #
+  warn
+    message     = X-Spam-Status: \
+                  ${if eq {$acl_m9}{spam}{Yes}{No}} (score $spam_score)\
+                  ${if def:spam_report {: $spam_report}}
+    logwrite    = :main: Classified as $acl_m9 (score $spam_score)
+
+
+  # --- EXISCAN yapılandırmasının SONU ---
+
+
+  # İletiyi kabul ediyoruz.
+  #
+  accept
+</pre></div></div>
+      </dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/spam-filtering-acl_rcpt_to_final.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/spam-filtering-exim-final.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/spam-filtering-glossary.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">acl_rcpt_to </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Terimler Sözlüğü</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

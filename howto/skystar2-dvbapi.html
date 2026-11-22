@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:17+03:00" /><title>DVB Arayüzünün Kurulumu</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/skystar2.html" title="Linux Uydu Yayınları NASIL" /><link rel="previous" href="../howto/skystar2-kernel.html" title="Çekirdeğin Yapılandırılması" /><link rel="next" href="../howto/skystar2-izleme.html" title="Yayınların Seyredilmesi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">DVB Arayüzünün Kurulumu</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/skystar2-kernel.html">Önceki</a> </td><th width="60%" align="center">Linux Uydu Yayınları NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/skystar2-izleme.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="skystar2-dvbapi" id="skystar2-dvbapi"></a>DVB Arayüzünün Kurulumu</div><dl><dd><div class="para">
+<a class="ulink" href="http://linuxtv.org/downloads/" target="_top">http://linuxtv.org/downloads/</a> adresinden indireceğiniz
+<tt>linuxtv-dvb-apps-1.1.0.tar.bz2</tt> ya da daha yeni sürümü neyse açın:
+  </div>
+<div class="para"><div align="right"><pre class="screen">$ <b><tt>make</tt></b>
+# <b><tt>make install</tt></b>
+</pre></div></div>
+  <div class="para">ile derleyip kurun.</div><div class="para">
+Bu DVB uygulamaları son derece basit <b><tt>szap, scan</tt></b> gibi komut satırından çalışan uygulamalardan oluşur. Herşey yolunda gitti ise artık donanımınızı sınayabilirsiniz. Öncelikle ayarları yapılmış çanağınıza göre (Türksat, Hotbird, v.s.) bir kanal listesi oluşturmak gerekiyor.
+  </div><div class="para">
+<tt>linuxtv-dvb-apps</tt> ile gelen <b><tt>scan</tt></b> komutu bu işi yapmaya yarıyor. Ancak bu uygulama uyduda kapsamlı bir kanal taraması yapamıyor. Ayarlı olduğu uyduda bir transponder'a bağlanıp, o frekansta yayın yapan kanalların listesini
+dökmeye yarıyor. <tt>linuxtv-dvb-apps-1.1.0/util/scan/dvb-s</tt> dizininde
+bir takım uydular ve transponder frekansları mevcut.
+  </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Türksat İzleyicileri için</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+<tt>linuxtv-dvb-apps-1.1.0/util/scan/dvb-s</tt> dizindeki <tt>Turksat-42.0E</tt> dosyasındaki bilgiler güncel değil, o yüzden Türksat'a
+dönük çanaklar için
+  </div>
+<div class="para"><div align="right"><pre class="screen">$ <b><tt>scan Turksat-42.0E</tt></b></pre></div></div>
+  <div class="para">
+yazdığınızda "<i>ERROR: initial tuning failed</i>" hatasi ile
+karşılaşabilirsiniz. Türksat A.Ş.'nin yayınladığı son Eurasiasat Promosyon frekasi (EAS PROMO) 11734 MHz, Polarizasyon: Yatay (Horizontal), Sembol oranı(Symbol Rate): 3291 Ksymb, FEC:3/4 (kaynak: <a class="ulink" href="http://www.uydutvhaber.net/" target="_top">http://www.uydutvhaber.net/</a>) Bu yüzden <tt>Turksat-42.0E</tt> dosyası yerine:
+  </div>
+<div class="para"><div align="right"><pre class="screen">$ <b><tt>cat &gt; yeni_turksat</tt></b>
+# Turksat 42.0E
+# freq pol sr fec
+S 11734000 H 3291000 3/4
+</pre></div></div>
+  <div class="para">şeklinde yeni bir dosya hasırlayıp, sonra da:</div>
+<div class="para"><div align="right"><pre class="screen">$ <b><tt>scan yeni_turksat &gt; /var/video/turksat</tt></b></pre></div></div>
+  <div class="para">
+komutu ile çalıştırınız. Bu arada birden fazla çanak anten DiSEqC switch ile bağlı ise <tt>-s N</tt> ile switch pozisyonunu <tt>-l</tt> seçeneği ile de
+çanağınızdaki LNB türünü belirtmeniz gerekebilir. Daha fazla bilgi için lütfen <b><tt>scan --help</tt></b> komutunu kullanın. İlk seferinde çalışmasa bile
+birkaç denemede doğru ayarları bulabilirsiniz.</div></td></tr></table></div>
+   <div class="head3"><a name="id1" id="id1"></a>Kanalların Ayarlanması</div><dl><dd><div class="para">
+Artık kanal listesini de aldıktan sonra, <b><tt>szap</tt></b> komutu ile istediğiniz
+kanala kilitlenip yayını almak kalıyor.
+  </div>
+<div class="para"><div align="right"><pre class="screen">$ <b><tt>szap -c /var/video/turksat -r -i</tt></b></pre></div></div>
+  <div class="para">
+komutu ile DVB arayüzünün etkileşimli konsol uygulamasını çalıştırın.
+  </div><div class="para">
+<tt>/var/video/turksat</tt> dosyasının ilk sütunundaki kanal isimlerinden birini
+yazın:
+  </div>
+<div class="para"><div align="right"><pre class="screen">&gt;&gt;&gt; <b><tt>TRT1</tt></b>
+zapping to 91 'trt1':
+sat 0, frequency = 11096 MHz V, symbolrate 27500000, vpid = 0x0200, apid
+= 0x0201
+using '/dev/dvb/adapter0/frontend0' and '/dev/dvb/adapter0/demux0'
+status 03 | signal 8929 | snr 4eea | ber 0000fff0 | unc 00000000 |
+status 1f | signal ab93 | snr b763 | ber 00000ba4 | unc 00000000 | FE_HAS_LOCK
+
+&gt;&gt;&gt;
+</pre></div></div>
+  <div class="para">
+Burada son satırdaki <tt>FE_HAS_LOCK</tt> ifadesi kanala bağlanıldığını gösteriyor.
+  </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/skystar2-kernel.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/skystar2.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/skystar2-izleme.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Çekirdeğin Yapılandırılması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Yayınların Seyredilmesi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

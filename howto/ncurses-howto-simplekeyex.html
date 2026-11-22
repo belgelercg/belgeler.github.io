@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:07+03:00" /><title>Basit bir tuş kullanım örneği </title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/ncurses-howto-keys.html" title="Klavye ile etkileşim" /><link rel="previous" href="../howto/ncurses-howto-keysbasics.html" title="Temel bilgiler" /><link rel="next" href="../howto/ncurses-howto-mouse.html" title="Fare ile Etkileşim" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Basit bir tuş kullanım örneği </th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/ncurses-howto-keysbasics.html">Önceki</a> </td><th width="60%" align="center">Klavye ile etkileşim</th><td width="20%" align="right"> <a accesskey="n" href="../howto/ncurses-howto-mouse.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="ncurses-howto-simplekeyex" id="ncurses-howto-simplekeyex"></a>Basit bir tuş kullanım örneği </div><dl><dd><dl class="example"><dt class="example"><a class="example" name="idxmp84" id="idxmp84"></a><b>Örnek 12.10. Basit bir tuş kullanım örneği</b></dt><dd class="example">
+<div class="para"><div align="right"><pre class="programlisting">
+#include &lt;stdio.h&gt;
+#include &lt;ncurses.h&gt;
+
+#define WIDTH 30
+#define HEIGHT 10
+
+int startx = 0;
+int starty = 0;
+
+char *choices[] = {
+  "Choice 1",
+  "Choice 2",
+  "Choice 3",
+  "Choice 4",
+  "Exit",
+};
+int n_choices = sizeof(choices) / sizeof(char *);
+void print_menu(WINDOW *menu_win, int highlight);
+
+int main()
+{ WINDOW *menu_win;
+  int highlight = 1;
+  int choice = 0;
+  int c;
+
+  initscr();
+  clear();
+  noecho();
+  cbreak();       /* Satır ön belleği etkisiz. Herşeyi bana gönder */
+  startx = (80 - WIDTH) / 2;
+  starty = (24 - HEIGHT) / 2;
+
+  menu_win = newwin(HEIGHT, WIDTH, starty, startx);
+  keypad(menu_win, TRUE);
+  mvprintw(0, 0, "Yukarı ve asagı için ok tuslarını kullanın, "
+          "Seçmek için enterı kullanın");
+  refresh();
+  print_menu(menu_win, highlight);
+  while(1)
+  { c = wgetch(menu_win);
+    switch(c)
+    { case KEY_UP:
+        if(highlight == 1)
+          highlight = n_choices;
+        else
+          --highlight;
+        break;
+      case KEY_DOWN:
+        if(highlight == n_choices)
+          highlight = 1;
+        else
+          ++highlight;
+        break;
+      case 10:
+        choice = highlight;
+        break;
+      default:
+        mvprintw(24, 0,
+          "Basılan karakter = %3d Muhtemelen şu şekilde de yazılabilir '%c'",
+          c, c);
+        refresh();
+        break;
+    }
+    print_menu(menu_win, highlight);
+    if(choice != 0) /* Sonsuz döngüden çıkmak için kullanıcı bir seçim yapar */
+      break;
+  }
+  mvprintw(23, 0, "%d'yi %s ile seçtiniz\n",
+           choice, choices[choice - 1]);
+  clrtoeol();
+  refresh();
+  endwin();
+  return 0;
+}
+
+
+void print_menu(WINDOW *menu_win, int highlight)
+{
+  int x, y, i;
+
+  x = 2;
+  y = 2;
+  box(menu_win, 0, 0);
+  for(i = 0; i &lt; n_choices; ++i)
+  { if(highlight == i + 1) /* O an seçileni parlaklaştır */
+    { wattron(menu_win, A_REVERSE);
+      mvwprintw(menu_win, y, x, "%s", choices[i]);
+      wattroff(menu_win, A_REVERSE);
+    }
+    else
+      mvwprintw(menu_win, y, x, "%s", choices[i]);
+    ++y;
+  }
+  wrefresh(menu_win);
+}
+</pre></div></div></dd></dl></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/ncurses-howto-keysbasics.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/ncurses-howto-keys.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/ncurses-howto-mouse.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Temel bilgiler </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Fare ile Etkileşim</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

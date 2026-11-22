@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:26+03:00" /><title>Debian için</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/php-java_php-derleme.html" title="PHP Paketinin Yapılandırılması" /><link rel="previous" href="../howto/php-java_java-derleme-fc3.html" title="Fedora Core 3 için" /><link rel="next" href="../howto/php-java_php-deneme.html" title="Java Destekli PHP Kurulumunun Sınanması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Debian için</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/php-java_java-derleme-fc3.html">Önceki</a> </td><th width="60%" align="center">PHP Paketinin Yapılandırılması</th><td width="20%" align="right"> <a accesskey="n" href="../howto/php-java_php-deneme.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="php-java_java-derleme-debian" id="php-java_java-derleme-debian"></a>Debian için</div><dl><dd><div class="para">
+PHP4'ü yeniden paketlemeden önce sistemimizi buna hazır hale getirmemiz tabii en önemlisi PHP4 kaynak paketlerini indirmemiz gerekiyor. Bu aşamada yine debian paket yönetim sistemi bizi bu işten basitçe kurtarıyor.
+  </div>
+<div class="para"><div align="right"><pre class="screen">$ <b><tt>cd /usr/local/src</tt></b>
+$ <b><tt>apt-get build-dep php4</tt></b>
+$ <b><tt>apt-get source php4</tt></b>
+</pre></div></div>
+  <div class="para">
+<tt>/usr/local/src</tt> dizininde artık şu dosyalar (da) var: <tt>php4-4.3.10</tt>, <tt>php4_4.3.10-9.diff.gz</tt>, <tt>php4_4.3.10-9.dsc</tt> ve <tt>php4_4.3.10.orig.tar.gz</tt>.
+  </div><div class="para">
+<tt>php4-4.3.10</tt> dizini altındaki debian dizininde sırasıyla şu değişiklikleri yapıyoruz.
+  </div><div class="para">
+<b><tt>Dosya: </tt></b><tt>/usr/local/src/php4-4.3.10/debian/control</tt><br />Dosyanın en sonuna şu satırları ekleyin:
+  </div>
+<div class="para"><div align="right"><pre class="screen">Package: php4-java
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${apache2:Depends},
+php4-common (=${Source-Version})
+Description: Java(TM) 2 Runtime Environment,
+ Standard Edition Java Module for php4
+    This package provides a module for Java(TM) 2 Runtime Environment
+    support for php4 scripts.
+.
+    PHP4 is an HTML-embedded scripting language. Much of its syntax is
+    borrowed from C, Java and Perl with a couple of unique PHP-specific
+    features thrown in. The goal of the language is to allow web developers
+    to write dynamically generated pages quickly.
+.
+Homepage: http://www.php.net/
+</pre></div></div>
+  <div class="para">
+<b><tt>Dosya: </tt></b><tt>/usr/local/src/php4-4.3.10/debian/rules</tt><br /> Dosyanın içinde <tt>COMMON_CONFIG=</tt> ile başlayan bölüme işaretli satırı ekleyin. <tt>--with</tt> ile baslayan satırlardan herhangi birisinin altına ekleyebilirsiniz.
+  </div>
+<div class="para"><div align="right"><pre class="screen">...
+ --with-zip=/usr \
+ --with-java=/usr/lib/j2sdk1.4-sun \
+ --enable-dbx \
+</pre></div></div>
+  <div class="para">
+<b><tt>Dosya: </tt></b><tt>/usr/local/src/php4-4.3.10/debian/modules</tt><br /> Dosyanın en sonuna;
+  </div>
+<div class="para"><div align="right"><pre class="screen">...
+xslt XSLT
+sybase Sybase sybase_ct
+java JAVA
+</pre></div></div>
+   <div class="head4"><a name="id12" id="id12"></a>Paketlerin Oluşturulması</div><dl><dd><div class="para">
+Yeni deb paketimizi aşağıdaki komutla oluşturalım. (Ve hata olmaması için dua edelim.) Komutu çalıştırdığınızda "permission denied" hatası alırsanız geçici olarak <tt>/usr/local/src dizinini</tt> <tt><b><tt>chown -R </tt></b><i>kullanıcı_adınız </i>/usr/local/src</tt> ile giriş yapmış olduğunuz kullanıcıya verin. Daha sonra tekrar root kullanıcısına verirsiniz. Derleme işlemi bir süre daha devam edecektir.
+  </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para"><tt>-us -uc</tt> seçenekleri oluşturulan paketleri şifreleyip imzalamanızı engeller.
+  </div></td></tr></table></div>
+<div class="para"><div align="right"><pre class="screen">$ <b><tt>dpkg-buildpackage -us -uc -rfakeroot</tt></b></pre></div></div>
+  <div class="para">
+Derleme işlemi tamamlandığında, <tt>/usr/local/src</tt> dizinine çıkın. root olarak veya root haklarınızı kullanarak (sudo) tüm php4 paketlerinizi yükleyin. <b><tt>Unutmayın: </tt></b>Bundan sonra tüm php paketleriniz için Debian ağacını değil kendi paketlerinizi kullanmalısınız. Özellikle de kendi <tt>php4-<i>sürüm</i>.deb</tt> paketi ve ek modül paketlerini kurmanız gerekecek. Bir kere bu işlemi becerdikten sonra güvenlik ve ek modül gereksinimlerinizde, PHP sürümünü yükseltmek için yine Debian ağacından kaynak paketi indirip sadece yukarıda özelleştirmiş olduğumuz <tt>rules, control</tt> ve <tt>modules</tt> dosyalarını ilgili dizine atıp derleyerek paketlerinizi yeniden oluşturmalısınız.
+  </div><div class="para">
+<b><tt>Hata var ise: </tt></b> RedHat ve benzeri RPM tabanlı dağıtımlarda çoğunlukla hatanın temel sebebi geliştirme paketlerinin eksik yüklenmiş olmasıdır. Halbuki Debian sistemde yukarıda çalıştırdığımız komut (<b><tt>apt-get build-dep php4</tt></b>) eksik paket kalmasını engeller.
+  </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/important.png" /></td><th class="admon"><a name="php-java_php-derleme-dikkat" id="php-java_php-derleme-dikkat"></a>Önemli</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Bir önemli hata sebebi ise, Java kurulumunda <b><tt>ld</tt></b> ile alakalı olarak bazı kütüphanelerin bulunamaması olabilmektedir. Özellikle tavsiyem her Java kurulumundan sonra Java kurulum dizinine geçilerek <b><tt>ldd</tt></b> ile aşağıdaki dosyaların kontrol edilmesidir. Örneğin, <b><tt>ldd libjava.so, ldd libverify.so, ldd libzip.so</tt></b> komutları nedense sürekli hata verir. Bu komutların çıktıları aşağıdaki gibi temiz olmalı ve hiç "Not Found" hatası alınmamalıdır. Aşağıda hatalı ve düzgün iki örnek verilmiştir. İlk örnekten de anlaşılacağı gibi ben her ihtimale karşın önceden <b><tt>libjava.so, libjvm.so, libverify.so</tt></b> dosyalarını <tt>/lib</tt> dizinine kopyalamıştım. Sembolik bağ da oluşturabilirsiniz. Ancak en önemlisi <tt>ld.so.conf</tt> dosyasının yukarıda anlatıldığı şekilde düzenlenmesi ve <b><tt>ldconfig</tt></b> komutunun çalıştırılmasıdır.
+  </div><div class="para">Başarılı örnek:</div>
+<div class="para"><div align="right"><pre class="screen">
+pokemon:/usr/lib/j2sdk1.4-sun/jre/lib/i386# <b><tt>ldd libjava.so</tt></b>
+libjvm.so =&gt; /lib/libjvm.so (0x4002b000)
+libverify.so =&gt; /lib/libverify.so (0x40455000)
+libnsl.so.1 =&gt; /lib/tls/libnsl.so.1 (0x40467000)
+libdl.so.2 =&gt; /lib/tls/libdl.so.2 (0x4047b000)
+libc.so.6 =&gt; /lib/tls/libc.so.6 (0x4047e000
+libpthread.so.0 =&gt; /lib/tls/libpthread.so.0 (0x405d4000)
+/lib/ld-linux.so.2 =&gt; /lib/ld-linux.so.2 (0x80000000)
+</pre></div></div>
+  <div class="para">Başarısız örnek:</div>
+<div class="para"><div align="right"><pre class="screen">
+pokemon:/usr/lib/j2sdk1.4-sun/jre/lib/i386# <b><tt>ldd libjava.so</tt></b>
+libjvm.so =&gt; /lib/libjvm.so (0x4002b000)
+<b><tt>libverify.so =&gt; not found</tt></b>
+libnsl.so.1 =&gt; /lib/tls/libnsl.so.1 (0x40455000)
+libdl.so.2 =&gt; /lib/tls/libdl.so.2 (0x40469000)
+libc.so.6 =&gt; /lib/tls/libc.so.6 (0x4046c000)
+libm.so.6 =&gt; /lib/tls/libm.so.6 (0x405a0000)
+libpthread.so.0 =&gt; /lib/tls/libpthread.so.0 (0x405c2000)
+/lib/ld-linux.so.2 =&gt; /lib/ld-linux.so.2 (0x80000000)
+</pre></div></div></td></tr></table></div>
+  <div class="para">
+Başarılı bir derleme aşağıdaki gibi sonlanır ve <tt>/usr/local/src</tt> dizini altında bir sürü <tt>php-XXX.deb</tt> paketi oluşur.
+  </div>
+<div class="para"><div align="right"><pre class="screen">dh_lin
+dh_compress -Xphp.ini
+dh_fixperms
+dh_installdeb
+dh_gencontrol
+dh_md5sums
+dh_builddeb
+dpkg-deb: building package `php4' in `../php4_4.3.10-9_all.deb'.
+dpkg-deb: building package `php4-pear' in `../php4-pear_4.3.10-9_all.deb'.
+dpkg-genchanges
+dpkg-genchanges: not including original source code in upload
+dpkg-buildpackage: binary and diff upload (original source NOT included)
+</pre></div></div>
+  <div class="para">
+Bende aşağıdaki paketler oluşturulmuş durumda:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+pokemon:/usr/local/src# <b><tt>ls -1</tt></b>
+caudium-php4_4.3.10-9_i386.deb
+libapache2-mod-php4_4.3.10-9_i386.deb
+libapache-mod-php4_4.3.10-9_i386.deb
+php4-4.3.10
+php4_4.3.10-9_all.deb
+php4_4.3.10-9.diff.gz
+php4_4.3.10-9.dsc
+php4_4.3.10-9_i386.changes
+php4_4.3.10.orig.tar.gz
+php4-cgi_4.3.10-9_i386.deb
+php4-cli_4.3.10-9_i386.deb
+php4-common_4.3.10-9_i386.deb
+php4-curl_4.3.10-9_i386.deb
+php4-dev_4.3.10-9_i386.deb
+php4-domxml_4.3.10-9_i386.deb
+php4-gd_4.3.10-9_i386.debian
+php4-imap_4.3.10-9_i386.deb
+php4-java_4.3.10-9_i386.deb
+php4-ldap_4.3.10-9_i386.deb
+php4-mcal_4.3.10-9_i386.deb
+php4-mhash_4.3.10-9_i386.deb
+php4-mysql_4.3.10-9_i386.deb
+php4-odbc_4.3.10-9_i386.deb
+php4-pear_4.3.10-9_all.deb
+php4-recode_4.3.10-9_i386.deb
+php4-snmp_4.3.10-9_i386.deb
+php4-sybase_4.3.10-9_i386.deb
+php4-xslt_4.3.10-9_i386.deb
+</pre></div></div>
+ </dd></dl> <div class="head4"><a name="id22" id="id22"></a>Paketlerin Yüklenmesi</div><dl><dd>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>dpkg -i php4_4.3.10.deb php4-imap_4.3.10.deb php4-java_4.3.10.deb</tt></b></pre></div></div>
+  <div class="para">
+PHP'nin Java'yı görmesi için bazı işlemler yapıyoruz. <tt>/usr/lib/php4/20020429-zts/</tt> dizini altında <tt>java.so</tt> dosyası ile beraber ihtiyaç duyduğumuz için yüklediğimiz php modüllerine ait modül (<tt>*.so</tt>) dosyalarının olduğundan emin olalım. Ayrıca <tt>php_java.jar</tt> dosyasını da bu dizine kopyalamalıyız.
+  </div>
+<div class="para"><div align="right"><pre class="screen">cp /usr/local/src/php4-4.3.10/ext/java/php_java.jar /usr/lib/php4/20020429-zts</pre></div></div>
+  <div class="para">
+<tt>php.ini</tt> dosyasında gerekli değişiklikleri yapalım. Ben sistemlerimde daha gelişmiş olan Apache2 kullandığım için <tt>/etc/php4/apache2/php.ini</tt> dosyasında değişiklik yapıyorum. Siz kendi apache sürümünüzü uygun <tt>php.ini</tt> dosyasını kullanın. Dosyadaki <b><tt>[Java]</tt></b> bölümünde aşağıdaki değişiklikleri yapın:
+  </div>
+<div class="para"><div align="right"><pre class="screen">[Java]
+java.class.path = /usr/lib/php4/20020429-zts/php_java.ja
+java.home = /usr/lib/j2sdk1.4-sun/jre
+java.library = /usr/lib/j2sdk1.4-sun/jre/lib/i386/libjava.so
+java.library.path = /usr/lib/php4/20020429-zts
+</pre></div></div>
+  <div class="para">
+Apache2 yeniden başlatıldığında değişiklikler devreye girecektir. <tt>/var/www/info.php</tt> adlı bir dosya oluşturup içine aşağıdaki kodu yazıp <tt>http://localhost/info.php</tt> adresine bakarsanız, sayfanın altlarında <b><tt>Java</tt></b> bölümünü göreceksiniz. Bitti mi? Az kaldı...
+  </div>
+<div class="para"><div align="right"><pre class="screen">&lt;?php phpinfo(); ?&gt;</pre></div></div>
+  
+<div style="padding-bottom:12px;"><h2 style="text-align: center">java</h2>
+  <div style="overflow: auto;"><table border="1" cellpadding="3" style="border-collapse:collapse"><tbody><tr class="h"><th bgcolor="#8B89D6" align="center" rowspan="1" colspan="1">Directive</th><th bgcolor="#8B89D6" align="center" rowspan="1" colspan="1">Local Value</th><th bgcolor="#8B89D6" align="center" rowspan="1" colspan="1">Master Value</th></tr><tr><td class="e" bgcolor="#C0C0FF" rowspan="1" colspan="1">java.class.path</td><td bgcolor="#DEDEDE" rowspan="1" colspan="1">/usr/lib/php4/20020429-zts/php_java.jar</td><td bgcolor="#DEDEDE" rowspan="1" colspan="1">/usr/lib/php4/20020429-zts/php_java.jar</td></tr><tr><td class="e" bgcolor="#C0C0FF" rowspan="1" colspan="1">java.home</td><td bgcolor="#DEDEDE" rowspan="1" colspan="1">/usr/lib/j2sdk1.4-sun/jre</td><td bgcolor="#DEDEDE" rowspan="1" colspan="1">/usr/lib/j2sdk1.4-sun/jre</td></tr><tr><td class="e" bgcolor="#C0C0FF" rowspan="1" colspan="1">java.library</td><td bgcolor="#DEDEDE" rowspan="1" colspan="1">/usr/lib/j2sdk1.4-sun/jre/lib/i386/libjava.so</td><td bgcolor="#DEDEDE" rowspan="1" colspan="1">/usr/lib/j2sdk1.4-sun/jre/lib/i386/libjava.so</td></tr><tr><td class="e" bgcolor="#C0C0FF" rowspan="1" colspan="1">java.library.path</td><td bgcolor="#DEDEDE" rowspan="1" colspan="1">/usr/lib/php4/20020429-zts</td><td bgcolor="#DEDEDE" rowspan="1" colspan="1">/usr/lib/php4/20020429-zts</td></tr></tbody></table></div></div>
+</dd></dl></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/php-java_java-derleme-fc3.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/php-java_php-derleme.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/php-java_php-deneme.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Fedora Core 3 için </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Java Destekli PHP Kurulumunun Sınanması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:33+03:00" /><title>Yapılandırma</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/postfix-kurulum.html" title="Postfix Kurulumu" /><link rel="previous" href="../howto/postfix-kurulum-bu.html" title="Kurulum" /><link rel="next" href="../howto/postfix-kurulum-son.html" title="Sonsöz" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Yapılandırma</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/postfix-kurulum-bu.html">Önceki</a> </td><th width="60%" align="center">Postfix Kurulumu</th><td width="20%" align="right"> <a accesskey="n" href="../howto/postfix-kurulum-son.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="postfix-kurulum-ayar" id="postfix-kurulum-ayar"></a>Yapılandırma</div><dl><dd> <div class="head3"><a name="id1" id="id1"></a><tt>postfix</tt> Yapılandırması</div><dl><dd><div class="para"></div><div class="para">
+Artık <b><tt>postfix</tt></b>'imiz çalışabilir durumda. Sıra yapılandırmaya geldi. <b><tt>postfix</tt></b>'in yapılandırma dosyaları bir değişiklik yapmadıysanız <tt>/etc/postfix</tt> dizini altında bulunuyor. <tt>/etc/postfix/main.cf</tt> dosyası bizim oyuncağımız olacak. Bu dosyayı açıp içindeki değerlerlerle oynayabilirsiniz ya da sunucunun çalışması için gerekli olan aşağıdaki satırları <tt>/etc/postfix/main.cf</tt> dosyasının sonuna ekleyebilirsiniz. Ben öyle yapıyorum, en azından ne değişiklik yapmışım ekranda görüyorum.
+  </div><div class="para">
+<b><tt>/etc/postfix/main.cf</tt></b> dosyası:
+  </div>
+<div class="para"><div align="right"><pre class="screen">mydomain = genco.gen.tc
+myhostname = smtp.genco.gen.tc
+mynetworks = 144.122.211.1/32, 127.0.0.0/8
+virtual_alias_maps = hash:/etc/postfix/virtual-users
+virtual_alias_domains = /etc/postfix/local-domains
+smtpd_sasl_local_domain =
+smtpd_sasl_auth_enable = yes
+smtpd_sasl_security_options = noanonymous
+broken_sasl_auth_clients = yes
+smtpd_recipient_restrictions = permit_sasl_authenticated, \
+  permit_mynetworks,check_relay_domains
+inet_interfaces = all
+alias_maps = hash:/etc/aliases
+smtpd_banner = smtp.genco.gen.tc ESMTP
+smtpd_helo_required = yes
+disable_vrfy_command = yes
+mime_header_checks = regexp:/etc/postfix/mime_header_checks.regexp
+header_checks = regexp:/etc/postfix/header_checks
+</pre></div></div>
+  <div class="para">
+Şimdi bu yukarıdaki değişkenler ne, onları açıklayalım:
+  </div><div class="variablelist"><dl><dt><span class="term">mydomain</span></dt><dd class="varlist"><div class="para">
+Makinanızın asıl alan adı olarak kabul ettiğimiz alan adını buraya yazıyoruz.
+  </div></dd><dt><span class="term">myhostname</span></dt><dd class="varlist"><div class="para">
+SMTP sunucumuzun tam adı. Daha önce söylediğim gibi ters çözünürlük kaydındaki adı olmasına özen gösterin.
+  </div></dd><dt><span class="term">mynetworks</span></dt><dd class="varlist"><div class="para">
+<b><tt>postfix</tt></b>'imizin relay'e izin verdiği IP blokları.
+  </div></dd><dt><span class="term">virtual_alias_maps</span></dt><dd class="varlist"><div class="para">
+E-posta adresleriyle kullanıcı eşleşmelerinin yapılacağı dosyanın ismi.
+  </div></dd><dt><span class="term">virtual_alias_domains</span></dt><dd class="varlist"><div class="para">
+Hangi alan adları için ileti kabul etmek istiyorsanız bu dosyanın içine yazın.
+  </div></dd><dt><span class="term">inet_interfaces</span></dt><dd class="varlist"><div class="para">
+SMTP sunucunun hangi arayüzleri dinleyeceğini belirtir.
+  </div></dd><dt><span class="term">alias_maps</span></dt><dd class="varlist"><div class="para">
+Takma adlarımızın bulunduğu dosyamızın ismi.
+  </div></dd><dt><span class="term">smtpd_banner</span></dt><dd class="varlist"><div class="para">
+SMTP sunucunuza bağlanıldığında sunucunuzun vereceği selam <tt>:)</tt>
+  </div></dd><dt><span class="term">smtpd_helo_required</span></dt><dd class="varlist"><div class="para">
+SMTP protokolü sununucuya bağlantı yapmak isteyen istemcilerin kendilerini tanıtmalarını ister (RFC 282). Bu bir zorunluluk değildir ama istenir. Olmazsa da olur. Bazı spam yazılımları <tt>helo</tt> aşamasına uymadıkları için bunu etkinleştirmek iyi olacaktır.
+  </div></dd><dt><span class="term">disable_vrfy_command</span></dt><dd class="varlist"><div class="para">
+<b><tt>postfix</tt></b>, <tt>vrfy</tt> komutu isteklerine cevap verir <tt>:(</tt>. Bu değişken bunu kapatmamızı sağlıyor.
+  </div></dd><dt><span class="term">mime_header_checks</span></dt><dd class="varlist"><div class="para">
+Bu değişkenin belirttiği dosyadaki değerlere göre bazı kısıtlamalar getirebiliyoruz. Örneğin bazı dosya uzantılarını kısıtlamak istiyorsunuz, bu dosya içine aşağıdaki örnekte belirtilenleri yazmanız yeterli oluyor.
+  </div></dd><dt><span class="term">header_checks</span></dt><dd class="varlist"><div class="para">
+İleti başlık bilgilerine göre (örn, konu, kimden, kime satırlarına göre) kısıtlama yapabiliyorsunuz.
+  </div></dd></dl></div><div class="para">
+Şimdi; yukarıdaki değişkenlerden <b><tt>mime_header_checks</tt></b> ve <b><tt>header_checks</tt></b> iki dosya adı belirtiyor. Bu dosyaların yapıları nasıl olmalı?
+  </div><dl class="example"><dt class="example"><a class="example" name="idxmp36" id="idxmp36"></a><b>Örnek 8.2. <tt>/etc/postfix/mime_header_checks.regexp</tt> dosyası</b></dt><dd class="example"><div class="para"><div align="right"><pre class="screen">
+/filename=\"?(.*)\.(bat|chm|cmd|com|do|hta|jse|rm|scr|pif|vbe|vbs|vxd|xl)\"?$/
+   REJECT For security reasons we reject attachments of this type / Guvenlik ¬
+    sebebiyle bu turdeki ek dosyalar sunucumuz tarafindan kabul edilmemektedir
+
+/^\s*Content-(Disposition|Type).*name\s*=\s*"?(.+\.(lnk|asd|hlp|ocx|¬
+reg|bat|c[ho]m|cmd|dll|vxd|pif|scr|hta|jse?|sh[mbs]|vb[esx]|ws[fh]|¬
+wav|mov|wmf|xl))"?\s*$/
+   REJECT Attachment type not allowed. File "$2" has the unacceptable ¬
+   extension "$3" / "$2" dosyasi istenmeyen "$3" uzantisini icermektedir
+</pre></div></div><div class="para">
+Yukarıdaki kural neticesinde sisteminize gelen ve uzantıları <tt>bat, chm, cmd, com, do, hta, jse, rm, scr, pif, vbe, vbs, vxd, xl</tt> olan ek dosyalar içeren iletiler "REJECT" ifadesinden sonraki cümleyle reddedilecektir.
+  </div></dd></dl><div class="para">
+Diğer dosyamızda ise ileti başlık bilgilerine göre kısıtlama yapıyoruz.
+  </div><dl class="example"><dt class="example"><a class="example" name="idxmp37" id="idxmp37"></a><b>Örnek 8.3. <tt>/etc/postfix/header_checks</tt> dosyası</b></dt><dd class="example"><div class="para"><div align="right"><pre class="screen">
+/^Subject:.Re:.Approved/           DISCARD Likely SOBIG.F Virus
+/^Subject:.Re:.Details/            DISCARD Likely SOBIG.F Virus
+/^Subject:.Re:.Re:.My.details/     DISCARD Likely SOBIG.F Virus
+/^Subject:.Re:.My.details/         DISCARD Likely SOBIG.F Virus
+/^Subject:.Re:.Thank.you!/         DISCARD Likely SOBIG.F Virus
+/^Subject:.Re:.That.movie/         DISCARD Likely SOBIG.F Virus
+/^Subject:.Re:.Wicked.screensaver/ DISCARD Likely SOBIG.F Virus
+/^Subject:.Re:.Your.application/   DISCARD Likely SOBIG.F Virus
+/^Subject:.Thank.you!/             DISCARD Likely SOBIG.F Virus
+/^Subject:.Your.details/           DISCARD Likely SOBIG.F Virus
+
+/^Subject:.*read it immediately/ REJECT We dont accept virus your subject is ¬
+  treated as a worm
+/^Subject:.*fake/ REJECT We dont accept virus your subject is treated as a worm
+/^Subject:.*stolen/ REJECT We dont accept virus your subject is treated as a worm
+/^Subject:.*something for you/ REJECT We dont accept virus your subject is ¬
+  treated as a worm
+/^Subject:.*WINING NOTIFICATION/ REJECT We dont accept virus your subject is ¬
+  treated as a worm
+</pre></div></div><div class="para">
+Yukarıdaki dosyanın ne anlattığı açıktır umarım. Bu konularla gelen e-postalar belirtilen ifadelerle reddedilir.
+  </div></dd></dl> <div class="head4"><a name="id11" id="id11"></a>Bazı Kullanışlı Komutlar</div><dl><dd><div class="para"></div><div class="para">
+Postfix'ile kullanacağımız bir takım komutlarda mevcut. Birkaç komut aşağıda belirtilmiştir.
+  </div><dl><dt><span class="glossterm"><b><tt>postfix reload</tt></b></span></dt><dd class="halfpara"><div class="para">
+Sunucu yapılandırma dosyasında bir değişiklik yapıldığında değişiklikleri uygular.
+  </div></dd><dt><span class="glossterm"><b><tt>postalias /etc/aliases</tt></b></span></dt><dd class="halfpara"><div class="para">
+Yeni bir takma ad (alias) eklediğimizde geçerli olması için çalıştırmamız gerekir.   </div></dd><dt><span class="glossterm"><b><tt>postmap /etc/postfix/virtual-users</tt></b></span></dt><dd class="halfpara"><div class="para">
+<tt>virtual_alias_maps</tt> ile belirtilen dosyaya yeni bir e-posta adresi eklediğimizde çalıştırmamız gerekir.
+  </div></dd><dt><span class="glossterm"><b><tt>postqueue -p</tt></b></span></dt><dd class="halfpara"><div class="para">
+Sendmail'deki gibi kuyruktaki iletileri görmek isterseniz.
+  </div></dd><dt><span class="glossterm"><b><tt>postsuper</tt></b></span></dt><dd class="halfpara"><div class="para">
+Kuyruktaki iletiler ile ilgili işlem yapabilmek için (bir takım parametreler girmeniz gerek).
+  </div></dd></dl></dd></dl></dd></dl> <div class="head3"><a name="id2" id="id2"></a><tt>saslauth</tt> Yapılandırması</div><dl><dd><div class="para"></div><div class="para">
+Aşağıdaki satırları <tt>/etc/rc.d/saslauthd</tt> dosyası içine yazıp,
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+#!/bin/sh -e
+
+NAME=saslauthd
+DAEMON="/usr/local/sbin/${NAME}"
+DESC="SASL Authentication Daemon"
+DEFAULTS=/etc/default/saslauthd
+
+test -f "${DAEMON}" || exit 0
+
+# Varsayilan degerler dosyasi; betigi yapilandirmak icin
+# bu dosyayla  oynayabilirsiniz.
+if [ -e "${DEFAULTS}" ]; then
+    . "${DEFAULTS}"
+fi
+
+# Postfix baslamiyorsa , cik
+if [ "${START}" != "yes" ]; then
+    exit 0
+fi
+
+# Tanimli bir mekanizma yoksa
+if [ "x${MECHANISMS}" = "x" ]; then
+   echo "${DEFAULTS} degerlerini mekanizmalarla birlikte yapilandirmalisiniz. "
+   exit 0
+fi
+
+for i in ${MECHANISMS}; do
+    PARAMS="${PARAMS} -a ${i}"
+done
+
+case "${1}" in
+  start)
+        echo -n "Starting ${DESC}: "
+        ln -fs /var/spool/postfix/var/run/${NAME} /var/run/${NAME}
+        ${DAEMON} ${PARAMS}
+        echo "${NAME}."
+        ;;
+  stop)
+        echo -n "Stopping ${DESC}: "
+        PROCS=`ps aux | grep -iw '/usr/sbin/saslauthd' \
+        | grep -v 'grep' |awk '{print $2}' | tr '\n' ' '`
+        if [ "x${PROCS}" != "x" ]; then
+          kill -15 ${PROCS} &amp;&gt; /dev/null
+        fi
+        echo "${NAME}."
+        ;;
+  restart|force-reload)
+        $0 stop
+        sleep 1
+        $0 start
+        echo "${NAME}."
+        ;;
+  *)
+        echo "Usage: /etc/init.d/${NAME} {start|stop|restart|force-reload}" &gt;&amp;2
+        exit 1
+        ;;
+esac
+
+exit 0
+</pre></div></div><div class="para">755 izinlerini verin:</div>
+<div class="para"><div align="right"><pre class="screen">chmod 755 /etc/rc.d/saslauthd
+rm -rf /var/run/saslauthd
+mkdir /var/run/saslauthd
+</pre></div></div>
+  <div class="para">
+<tt>/etc/default/saslauthd</tt> dosyasına şu satırları yazalım.
+  </div>
+<div class="para"><div align="right"><pre class="screen"><b><tt>START=yes</tt></b>
+#Bu MECHANISMS seçeneği kimlik doğrulama yöntemini belirtiyor.
+#PAM desteği için pam yazabilirsiniz.Pam olmadan yapmak için shadow
+#yazmanız gerekli.(ahh.. ah.. slackware de PAM yok)
+<b><tt>MECHANISMS=shadow</tt></b>
+</pre></div></div>
+  <div class="para">
+Şimdi bütün işlerimizin bitmiş olması gerek.Tek yapmadığımız sunucu betiklerini açılışa koymamak. Açılışta başlaması için dağıtımınıza göre
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>/etc/rc.d/saslauthd start</tt></b>
+<tt># </tt><b><tt>/etc/rc.d/postfix start</tt></b>
+</pre></div></div>
+  <div class="para">
+komutlarını açılışta işletmeniz gerekli.
+  </div><div class="para">
+Sisteminizde <tt>AUTH</tt> desteği olup olmadığını öğrenmek için sunucunun 25. portuna <b><tt>telnet</tt></b> çekelim. <b><tt>ehlo genco.gen.tc</tt></b> yazdığımızda aşağıdaki şekilde bir çıktı veriyorsa işimiz tamamdır.
+  </div>
+<div class="para"><div align="right"><pre class="screen"><tt>bash-2.05b# </tt><b><tt>telnet smtp.genco.gen.tc 25</tt></b>
+Trying 144.122.211.1...
+Connected to smtp.genco.gen.tc.
+Escape character is '^]'.
+220 smtp.genco.gen.tc ESMTP
+<b><tt>ehlo genco.gen.tc</tt></b>
+
+250-smtp.genco.gen.tc
+250-PIPELINING
+250-SIZE 10000000
+250-ETRN
+250-AUTH LOGIN PLAIN
+250-AUTH=LOGIN PLAIN
+250 8BITMIME
+</pre></div></div><div class="para">
+İşimiz bitti.Esenlikler dilerim.
+  </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/postfix-kurulum-bu.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/postfix-kurulum.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/postfix-kurulum-son.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Kurulum </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Sonsöz</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

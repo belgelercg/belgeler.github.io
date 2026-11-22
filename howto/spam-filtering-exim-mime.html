@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:31+03:00" /><title>MIME ve Dosya türü Sınamalarının Eklenmesi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/spam-filtering-exim.html" title="A. Exim Gerçeklenimi" /><link rel="previous" href="../howto/spam-filtering-exim-spf-query-perl.html" title="Mail::SPF::Query üzerinden SPF sınamaları" /><link rel="next" href="../howto/spam-filtering-exim-av.html" title="AntiVirüs Yazılımlarının Eklenmesi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">MIME ve Dosya türü Sınamalarının Eklenmesi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/spam-filtering-exim-spf-query-perl.html">Önceki</a> </td><th width="60%" align="center">A. Exim Gerçeklenimi</th><td width="20%" align="right"> <a accesskey="n" href="../howto/spam-filtering-exim-av.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="spam-filtering-exim-mime" id="spam-filtering-exim-mime"></a>MIME ve Dosya türü Sınamalarının Eklenmesi</div><dl><dd><div class="para">
+Bu sınamalar Tom Kistner'in <tt>Exiscan-ACL</tt> yamasındaki özelliklere bağımlıdır - ayrıntılar için <a href="../howto/spam-filtering-exim-prereq.html" class="xref" title="Öngereksinimler">Öngereksinimler</a> bölümüne bakınız.
+    </div><div class="para">
+Exiscan-ACL yaması MIME kodlamasının ve dosya ismi soneklerinin (Windows'çası uzantılarının) sınamalarını içerir. Bu sınamalar tek başlarına çoğu Windows virüsünü engelleyecektir - ama bunlar <tt>.ZIP</tt> arşivleri olarak geliyorsa ya da ileti içeriği zarar verici Outlook/MSIE HTML kodları içeriyorsa bunları engelleyemez - bkz. <a href="../howto/spam-filtering-datachecks.html#spam-filtering-virusscanners" class="xref" title="Virüs Tarayıcıları">Virüs Tarayıcıları</a>.
+    </div><div class="para">
+Bu sınamalar <a href="../howto/spam-filtering-acl_data_1.html" class="xref" title="acl_data">acl_data</a> içindeki sonuncu <tt>accept</tt> deyiminin öncesine yerleştirilmelidir:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+  # Birtakım MIME hataları olan iletileri reddedeceğiz.
+  #
+  deny
+    message     = Serious MIME defect detected ($demime_reason)
+    demime      = *
+    condition   = ${if &gt;{$demime_errorlevel}{2}{1}{0}}
+
+
+  # MIME taşıyıcıyı aç ve kurtlar tarafından kullanılan dosya uzantıları
+  # varsa reddet. Bu çağrılar tekrar demime uygulayacaktır, ama sonuçlar
+  # arabellekli olarak dönecektir.
+  # Uzantı listesinin eksik olabileceğini unutmayın.
+  #
+  deny
+    message     = We do not accept ".$found_extension" attachments here.
+    demime      = bat:btm:cmd:com:cpl:dll:exe:lnk:msi:pif:prf:reg:scr:vbs:url
+</pre></div></div>
+    <div class="para">
+Yukarıdaki örnekte, <tt>demime</tt> koşulunun iki defa çağrıldığına dikkat edin. Bununla birlikte, sonuçlar arabelleğe alındığından ileti aslında iki defa baştan değerlendirilmeyecektir.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/spam-filtering-exim-spf-query-perl.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/spam-filtering-exim.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/spam-filtering-exim-av.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Mail::SPF::Query üzerinden SPF sınamaları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> AntiVirüs Yazılımlarının Eklenmesi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

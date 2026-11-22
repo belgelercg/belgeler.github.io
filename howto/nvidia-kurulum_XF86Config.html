@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:55+03:00" /><title>Örnek bir XF86Config-4 dosyası</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/nvidia-kurulum.html" title="NVIDIA 1.0-4191 Kurulumu" /><link rel="previous" href="../howto/nvidia-kurulum_deneyin.html" title="Ayar sonrası kontrol" /><link rel="next" href="../howto/nvidia-kurulum_startx.html" title="startx" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Örnek bir XF86Config-4 dosyası</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/nvidia-kurulum_deneyin.html">Önceki</a> </td><th width="60%" align="center">NVIDIA 1.0-4191 Kurulumu</th><td width="20%" align="right"> <a accesskey="n" href="../howto/nvidia-kurulum_startx.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="nvidia-kurulum_XF86Config" id="nvidia-kurulum_XF86Config"></a>Örnek bir XF86Config-4 dosyası</div><dl><dd><div class="para">Aşağıda benim kullandığım bir ayar dosyası bulunmaktadır. Bir
+    fikir vermesi açısından örnek bir dosya olarak gözden geçirebilirsiniz</div><div class="para"><div align="right"><pre class="screen">
+Section "ServerLayout"
+  Identifier     "Anaconda Configured"
+  Screen      0  "Screen0" 0 0
+  InputDevice    "Mouse0" "CorePointer"
+  InputDevice    "Mouse1" "SendCoreEvents"
+  InputDevice    "Keyboard0" "CoreKeyboard"
+EndSection
+
+Section "Files"
+  RgbPath      "/usr/X11R6/lib/X11/rgb"
+  FontPath     "unix/:7100"
+EndSection
+
+Section "Module"
+  #Bu satırı iptal ediyoruz
+  # Load "GLcore"
+
+  Load  "dbe"
+  Load  "extmod"
+  Load  "fbdevhw"
+
+  #Bu satırı iptal ediyyorruz.
+  #Load  "dri"
+
+  #Bu satırı sonradan ekliyoruz.
+  Load  "glx"
+
+  Load  "record"
+
+  # xfs çalışıyorsa bunlara gerek yok. Açık kalmasındada sakınca yok.
+  #Load  "freetype"
+  #Load  "type1"
+EndSection
+
+Section "InputDevice"
+  Identifier  "Keyboard0"
+  Driver      "keyboard"
+  Option            "XkbRules" "xfree86"
+  Option            "XkbModel" "pc102"
+  Option            "XkbLayout" "tr"
+EndSection
+
+Section "InputDevice"
+  Identifier  "Mouse0"
+  Driver      "mouse"
+  Option            "Protocol" "PS/2"
+  Option            "Device" "/dev/psaux"
+  Option            "ZAxisMapping" "4 5"
+  Option            "Emulate3Buttons" "yes"
+EndSection
+
+Section "InputDevice"
+  Identifier  "Mouse1"
+  Driver      "mouse"
+  Option            "Device" "/dev/input/mice"
+  Option            "Protocol" "IMPS/2"
+  Option            "Emulate3Buttons" "no"
+  Option            "ZAxisMapping" "4 5"
+EndSection
+
+Section "Monitor"
+  Identifier   "Monitor0"
+  VendorName   "Monitor Vendor"
+  ModelName    "Monitor Model"
+  HorizSync    31.5 - 48.5
+  VertRefresh  50 - 70
+  Option            "dpms"
+EndSection
+
+Section "Device"
+  # no known options
+  Identifier  "NVIDIA GeForce 4 (generic)"
+
+  #Bu satır daha önceden Driver  "vesa" şeklindeydi
+  # bu satırı aşağıdaki gibi degiştirdik
+  Driver      "nvidia"
+
+  VendorName  "NVIDIA GeForce 4 (generic)"
+  BoardName   "NVIDIA GeForce 4 (generic)"
+
+  #Kartın RAM kapasitesi. İsteğe bağlı olarak eklennebilir.
+  VideoRam    32768
+
+  #Başlangıçdaki NVIDIA logosununu iptal eder
+  #Herşey tamamlandığında satırın başından # işaretini kaldırabilirsiniz.
+  # Option          "NoLogo" "true"
+
+  #Otomatik AGP destegi
+  Option            "NvAGP" "3"
+EndSection
+
+Section "Screen"
+  Identifier "Screen0"
+  Device     "NVIDIA GeForce 4 (generic)"
+  Monitor    "Monitor0"
+  DefaultDepth     16
+  SubSection "Display"
+    Depth     16
+    Modes    "1024x768" "800x600" "640x480"
+  EndSubSection
+EndSection
+
+#Bu satırrlar iptal edildi.
+#Section "DRI"
+#     Mode 0666
+#EndSection
+</pre></div></div><div class="para">Sizin ayar dosyanızıda yukarıdakini örnek alarak
+    düzenleyebilirsiniz.</div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/nvidia-kurulum_deneyin.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/nvidia-kurulum.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/nvidia-kurulum_startx.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Ayar sonrası kontrol </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> startx</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:30+03:00" /><title>Seçimlik Gecikmeler</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/spam-filtering-exim-smtpdelays.html" title="SMTP aktarım gecikmelerinin eklenmesi" /><link rel="previous" href="../howto/spam-filtering-exim-smtpdelays-simple.html" title="Basit yöntem" /><link rel="next" href="../howto/spam-filtering-exim-greylisting.html" title="Grilisteleme Desteğinin Eklenmesi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Seçimlik Gecikmeler</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/spam-filtering-exim-smtpdelays-simple.html">Önceki</a> </td><th width="60%" align="center">SMTP aktarım gecikmelerinin eklenmesi</th><td width="20%" align="right"> <a accesskey="n" href="../howto/spam-filtering-exim-greylisting.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="spam-filtering-exim-smtpdelays-selective" id="spam-filtering-exim-smtpdelays-selective"></a>Seçimlik Gecikmeler</div><dl><dd><div class="para">
+Benim gibi, SMTP aktarım gecikmelerine konu edeceğiniz konaklar için biraz daha seçici davranmak isteyebilirsiniz. Örneğin, bu belgede daha önce açıklandığı gibi, DNS karalistelerinde bulunma durumunda ya da kesin bir redde konu olmayan ama doğrulama da yapılamayan selamlaşmalar sonucunda bu gecikmeleri uygulamaya karar verebilirsiniz.
+      </div><div class="para">
+Seçimlik gecikmelerin uygulayabilmek için <a href="../howto/spam-filtering-acl_rcpt_to_1.html" class="xref" title="acl_rcpt_to">acl_rcpt_to</a> ACL'sindeki bazı sınamaları diğer ACL'lere taşımak gerekir. Böylelikle, sorunların işaretlerini gördüğümüz anda gecikmeleri uygulayabilir ve kalleş yazılımların eşzamanlama hataları verme ve başka sorunlarla karşılaşma talihsizliğini arttırmış oluruz.
+      </div><div class="para">
+Özellikle yapacaklarımız:
+      </div>
+      <ul type="disc" class="itemizedlist"><li><div class="para">
+DNS sınamalarını <a href="../howto/spam-filtering-acl_connect_final.html" class="xref" title="acl_connect">acl_connect</a> ACL'sine taşıyacağız.
+        </div></li><li><div class="para">
+Selamlaşma sınamalarını <a href="../howto/spam-filtering-acl_helo_final.html" class="xref" title="acl_helo">acl_helo</a> ACL'sine taşıyacağız. Bir istisna: Bu noktada henüz selamlaşmanın olmayışını sınayamayız, çünkü bu ACL bir EHLO veya HELO komutunun varlığı halinde devreye girer. Bu sınamayı <a href="../howto/spam-filtering-acl_mail_from_final.html" class="xref" title="acl_mail_from">acl_mail_from</a> ACL'sinde yapacağız.
+        </div></li><li><div class="para">
+Gönderici adresi sınamalarını <a href="../howto/spam-filtering-acl_mail_from_final.html" class="xref" title="acl_mail_from">acl_mail_from</a> ACL'sine taşıyacağız.
+        </div></li></ul>
+      <div class="para">
+Bununla birlikte, evvelce açıkladığımız sebeplerle, asıl reddi <b><tt>RCPT TO:</tt></b> komutunu alana dek yapmayacağız. Bunu gerçekleştirmek için önceki ACL'lerdeki <tt>deny</tt> deyimlerini <tt>warn</tt> deyimlerine dönüştüreceğiz ve <b><tt>RCPT TO:</tt></b> komutunu alana kadar hata iletilerini ve uyarıları saklamak için Exim'in genel amaçlı ACL değişkenlerini kullanacağız. Şöyle ki:
+      </div>
+      <ul type="disc" class="itemizedlist"><li><div class="para">
+Teslimatı reddetmeye karar verirsek, gönderilecek <b><tt>550</tt></b> yanıtlarında kullanmak üzere hata iletisini saklamak için <tt>$acl_c0</tt> veya <tt>$acl_m0</tt> değişkenini kullanacağız:
+          </div>
+          <ul type="circle" class="itemizedlist"><li><div class="para">
+Eğer gerekli koşullar bir posta teslimatından önce sağlanmışsa (örn, <a href="../howto/spam-filtering-acl_connect_final.html" class="xref" title="acl_connect">acl_connect</a> veya <a href="../howto/spam-filtering-acl_helo_final.html" class="xref" title="acl_helo">acl_helo</a> ACL'sinde), bağlantı boyunca değer saklayabilen <tt>$acl_c0</tt> değişkenini kullanacağız.
+            </div></li><li><div class="para">
+Posta aktarımı başladıktan sonra (örn. <b><tt>MAIL FROM:</tt></b> komutundan sonra), <tt>$acl_c0</tt> içeriğini iletilere özel değişken olan <tt>$acl_m0</tt>'a kopyalayacağız ve bu noktadan sonra bu değişkeni kullanacağız. Böylece, bu ileti ile belirlenmiş bir durum, aynı bağlantıdan alınan daha sonraki iletilerden etkilenmemiş olacak.
+            </div></li></ul>
+          <div class="para">
+Ayrıca, benzer şekilde, <i>günlükleme iletilerini</i> <tt>$acl_c1</tt> veya <tt>$acl_m1</tt> değişkeninde saklayacağız.
+        </div></li><li><div class="para">
+Eğer, kesin reddine karar verilecek yeterli koşulların sağlanmadığı bir durumla karşılaşırsak, <tt>$acl_c1</tt> veya <tt>$acl_m1</tt> değişkeninde sadece bir uyarı iletisi saklayacağız. Posta aktarımı başladığında (örn, <a href="../howto/spam-filtering-acl_mail_from_final.html" class="xref" title="acl_mail_from">acl_mail_from</a> ACL'sinde), bu değişkenin içeriğini ileti başlığına da ekleyeceğiz.
+        </div></li><li><div class="para">
+Daha sonraki sınamaların (SpamAssassin taraması gibi) sonuçlarına bakmaksızın bir iletiyi <i>kabul etmeye</i> karar verirsek, durum belirtecini <tt>$acl_c0</tt> veya <tt>$acl_m0</tt> değişkeninde saklayacak ama <tt>$acl_c1</tt> ve <tt>$acl_m1</tt> değişkenlerini boş bırakacağız.
+        </div></li><li><div class="para">
+Her ACL'nin başlangıcında ve <a href="../howto/spam-filtering-acl_mail_from_final.html" class="xref" title="acl_mail_from">acl_mail_from</a> ACL'sinde, o anki zaman damgasını <tt>$acl_m2</tt> değişkenine atayacağız. ACL'nin sonunda ise, <tt>$acl_c1</tt> veya <tt>$acl_m1</tt> değişkeninin varlığına bakıp zaman damgasındaki değerden başlayarak 20 saniyelik gecikmeyi dolduracak şekilde SMTP aktarım gecikmesini uygulayacağız.
+        </div></li></ul>
+      <div class="para">
+Kullandığımız değişkenleri bir tablo halinde özetlersek:
+      </div>
+      <div class="table"><div class="formaltitle"><b><a name="spam-filtering-aclvarusage" id="spam-filtering-aclvarusage"></a>Tablo 6.3. ACL bağlantı/ileti değişkenlerinin kullanımı</b></div><table cellpadding="3" cellspacing="0" summary="ACL bağlantı/ileti değişkenlerinin kullanımı" border="1"><colgroup><col /><col /><col /></colgroup><thead><tr><th align="left">Değişkenler:</th><th align="left"><tt>$acl_[cm]0</tt> boş</th><th align="left"><tt>$acl_[cm]0</tt> dolu</th></tr></thead><tbody><tr><td align="left"><tt>$acl_[cm]1</tt> boş</td><td align="left">(Henüz bir karar yok)</td><td align="left">Postayı kabul ediyoruz</td></tr><tr><td align="left"><tt>$acl_[cm]1</tt> dolu</td><td align="left">Başlığa bir uyarı ekliyoruz</td><td align="left">Postayı reddediyoruz</td></tr></tbody></table></div>
+      <div class="para">
+Bu yaklaşıma bir örnek olarak, selamlaşma ile ilgili iki sınama yapacağız; birinde karşı taraf kendini IP adresi ile tanıtırsa postayı reddedeceğiz, diğerinde ise doğrulanabilir olmayan bir isim belirtirse bir uyarıyı kayda alacağız. Önceden, bu iki sınamayı <a href="../howto/spam-filtering-acl_rcpt_to_1.html" class="xref" title="acl_rcpt_to">acl_rcpt_to</a> ACL'sinde yapmıştık, şimdi <a href="../howto/spam-filtering-acl_helo_final.html" class="xref" title="acl_helo">acl_helo</a> ACL'sine alacağız.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+acl_helo:
+  # Gecikme uygularken başlangıç olarak kullanmak üzere o anki zaman
+  # bilgisini kaydediyoruz.
+  warn
+    set acl_m2  = $tod_epoch
+
+  # Posta yerel SMTP üzerinden alınmışsa (yani, TCP/IP bağlantısı
+  # ile gelmiyorsa), kabul ediyoruz. Bunu boş bir konak alanını
+  # sınayarak yapacağız. Ayrıca, postalarını rölelediğimiz
+  # konaklardan gelen postaları da kabul edeceğiz.
+  #
+  accept
+    hosts       = : +relay_from_hosts
+
+  # Karşı taraf selamlaşmayı IP adresi ile yaparsa, $acl_c0'a red
+  # iletisini, $acl_c1'e ise günlük iletisini kaydedeceğiz. Bunları
+  # daha sonra "deny" deyiminde kullanacağız. Bu değişkenlerin varlığı
+  # göndericinin oyalanacağını belirtecek.
+  #
+  warn
+    condition   = ${if isip {$sender_helo_name}{true}{false}}
+    set acl_c0  = Message was delivered by ratware
+    set acl_c1  = remote host used IP address in HELO/EHLO greeting
+
+  # Selamlaşmada doğrulaması başarısız olursa, acl_c1'e bir uyarı iletisi
+  # kaydedeceğiz. Bu iletiyi daha sonra ileti başlığına ekleyeceğiz.
+  # Bu değişkenin varlığı göndericinin oyalanacağını belirtecek.
+  #
+  warn
+    condition   = ${if !def:acl_c1 {true}{false}}
+    !verify     = helo
+    set acl_c1  = X-HELO-Warning: Remote host $sender_host_address \
+                  ${if def:sender_host_name {($sender_host_name) }}\
+                  incorrectly presented itself as $sender_helo_name
+    log_message = remote host presented unverifiable HELO/EHLO greeting.
+
+  #
+  # ... bu örnek için diğer sınamaları atlıyoruz ...
+  #
+
+  # Bağlantıyı kabul ediyoruz ama $acl_c1'de bir ileti varsa, göndericiyi
+  # 20 saniye oyalıyoruz.
+  accept
+    set acl_m2  = ${if def:acl_c1 {${eval:20 + $acl_m2 - $tod_epoch}}{0}}
+    delay       = ${if &gt;{$acl_m2}{0}{$acl_m2}{0}}s
+
+</pre></div></div>
+      <div class="para">
+Sonra, <a href="../howto/spam-filtering-acl_mail_from_final.html" class="xref" title="acl_mail_from">acl_mail_from</a> ACL'sinde iletileri <tt>$acl_c{0,1}</tt>'den <tt>$acl_m{0,1}</tt> değişkenlerine aktaracağız. Ayrıca, <tt>$acl_c1</tt> içeriğini ileti başlığına ekleyeceğiz.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+acl_mail_from:
+  # Gecikme uygularken başlangıç olarak kullanmak üzere o anki zaman
+  # bilgisini kaydediyoruz.
+  warn
+    set acl_m2  = $tod_epoch
+
+  # Posta yerel SMTP üzerinden alınmışsa (yani, TCP/IP bağlantısı
+  # ile gelmiyorsa), kabul ediyoruz. Bunu boş bir konak alanını
+  # sınayarak yapacağız. Ayrıca, postalarını rölelediğimiz
+  # konaklardan gelen postaları da kabul edeceğiz.
+  #
+  accept
+    hosts     = : +relay_from_hosts
+
+  # $acl_c0 ve $acl_c1 değişkenleri bu SMTP aktarımı sırasında yapılmaya
+  # çalışılacak her teslimat için kullanılacak red ve/veya uyarı iletilerini
+  # içeriyor olacak (böyle bir durum varsa). Bu değişkenlerin içeriklerini
+  # $acl_m{0,1} iletiye özel değişkenlere aktaracağız ve $acl_m1'deki uyarıyı
+  # ileti başlığına ekleyeceğiz. (Bir red durumunda, $acl_m1 artık bir günlük
+  # kaydı içeriyor olacak, ama iletiyi bununla değil başlığındaki kayıtla
+  # reddedeceğiz.)
+  #
+  warn
+    set acl_m0  = $acl_c0
+    set acl_m1  = $acl_c1
+    message     = $acl_c1
+
+
+  #
+  # ... bu örnek için diğer sınamaları atlıyoruz ...
+  #
+
+  # Bağlantıyı kabul ediyoruz ama $acl_c1'de bir ileti varsa, göndericiyi
+  # 20 saniye oyalıyoruz.
+  accept
+    set acl_m2  = ${if def:acl_c1 {${eval:20 + $acl_m2 - $tod_epoch}}{0}}
+    delay       = ${if &gt;{$acl_m2}{0}{$acl_m2}{0}}s
+
+</pre></div></div>
+      <div class="para">
+Kalan değişiklikler için <a href="../howto/spam-filtering-exim-final.html" class="xref" title="Tamamlanmış ACL'ler">Tamamlanmış ACL'ler</a> bölümüne bakınız.
+      </div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/spam-filtering-exim-smtpdelays-simple.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/spam-filtering-exim-smtpdelays.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/spam-filtering-exim-greylisting.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Basit yöntem </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Grilisteleme Desteğinin Eklenmesi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

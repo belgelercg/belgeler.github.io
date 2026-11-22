@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:16+03:00" /><title>Mustek-600CP Yapılandırması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/tarayici-nasil.html" title="Bir Mustek Tarayıcısının Sisteme Tanıtılması" /><link rel="previous" href="../howto/tarayici-nasil_giris.html" title="Giriş" /><link rel="next" href="../howto/tarayici-nasil_mustek-1200up.html" title="Mustek-1200UB Yapılandırması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Mustek-600CP Yapılandırması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/tarayici-nasil_giris.html">Önceki</a> </td><th width="60%" align="center">Bir Mustek Tarayıcısının Sisteme Tanıtılması</th><td width="20%" align="right"> <a accesskey="n" href="../howto/tarayici-nasil_mustek-1200up.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="tarayici-nasil_kurulum" id="tarayici-nasil_kurulum"></a>Mustek-600CP Yapılandırması</div><dl><dd><div class="para">
+<a class="ulink" href="ftp://ftp.mostang.com/pub/sane/" target="_top">ftp://ftp.mostang.com/pub/sane/</a>
+adresinden <tt>sane-backends-1.0.8</tt> ve
+<tt>sane-frontends-1.0.8</tt> paketlerini, mustek paralel
+port tarayıcı sürücüsünü
+<a class="ulink" href="http://www.penguin-breeder.org/sane/mustek_pp-11.alpha.tar.gz" target="_top">http://www.penguin-breeder.org/sane/mustek_pp-11.alpha.tar.gz</a>
+adresinden <tt>/usr/src</tt> dizinine indirin.
+    </div><div class="para">
+Sistemimizde kurulu bulunan <tt>sane</tt> paketlerini
+kaldırıyoruz. Root kullanıcısı olarak
+    </div><div class="para"><div align="right"><pre class="screen"># rpm -e sane-backends sane-frontends</pre></div></div><div class="para">
+komutunu veriyoruz. <tt>/usr/src</tt> dizinine geçiyoruz.
+    </div><div class="para"><div align="right"><pre class="screen"># cd /usr/src</pre></div></div><div class="para">sane-backends-1.0.8 paketini</div><div class="para"><div align="right"><pre class="screen"># tar xzfv sane-backends-1.0.8.tar.gz</pre></div></div><div class="para">
+komutunu vererek <tt>/usr/src/sane-backends-1.0.8</tt> dizinine, <tt>sane-frontends-1.0.8</tt> paketini
+    </div><div class="para"><div align="right"><pre class="screen">tar xzfv sane-backends-1.0.8.tar.gz</pre></div></div><div class="para">
+komutunu vererek <tt>/usr/src/sane-frontends-1.0.8</tt>  dizinine açıyoruz. <tt>mustek_pp-11.alpha.tar.gz</tt> paketinin içeriğini <tt>/usr/src/sane-backends-1.0.8</tt> dizini içine kopyalayıp orada açıyoruz:
+    </div><div class="para"><div align="right"><pre class="screen">
+# cp mustek_pp-11.alpha.tar.gz  /usr/src/sane-backends-1.0.8
+# cd /sane-backends-1.0.8
+# tar xzfv mustek_pp-11.alpha.tar.gz
+</pre></div></div><div class="para">
+      ve paketin içeriğini yapılandırmaya başlıyoruz.
+    </div><div class="para"><div align="right"><pre class="screen"># cd backend</pre></div></div><div class="para">
+Bu dizinde bulunan  <tt>dll.conf</tt> dosyasındaki
+<tt>mustek_pp</tt> satırının başında bulunan <tt>#</tt>
+işaretini kaldırıyoruz.
+    </div><div class="para">
+Aynı dizinde bulunan <tt>mustek_pp.conf</tt> dosyasındaki
+<tt>scanner Mustek-600CP 0x378 cis600</tt> satırının
+başında bulunan <tt>#</tt> işaretini kaldırıyoruz.
+(Benim tarayıcım <tt>scanmagic 600 cp</tt> olduğu için
+böyle yaptım.) <tt>0x378</tt> adresi <tt>lp1</tt>'e
+karşılık gelmektedir, eğer tarayıcınız <tt>lp2</tt>'de
+bağlı ise bunu <tt>0x278</tt>, <tt>lp0</tt>'da
+bağlı ise <tt>0x3bc</tt> olarak değiştirin.
+    </div><div class="para">
+Burada başka bir işlem yapmadığımız için öntanımlı ayarlar geçerli
+olacaktır.
+    </div><div class="para">
+Daha sonra <tt>/usr/src/sane-backends-1.0.8</tt> dizinine
+geçerek
+    </div><div class="para"><div align="right"><pre class="screen">
+# ./configure
+# make
+# make install
+</pre></div></div><div class="para">
+komutlarını çalıştırın. Hemen <tt>/usr/src/sane-frontends-1.0.8</tt>
+dizinine geçip
+    </div><div class="para"><div align="right"><pre class="screen">
+# ./configure
+# make
+# make install
+</pre></div></div><div class="para">
+komutlarını çalıştırın. Böylece derleme ve kurulum işlemlerini
+bittirmiş olduk. Şimdi
+    </div><div class="para"><div align="right"><pre class="screen"># scanimage -L</pre></div></div><div class="para">komutunu verin.</div><div class="para"><div align="right"><pre class="screen">
+device `mustek_pp:Mustek-600CP' is a Mustek 600CP flatbed scanner
+</pre></div></div><div class="para">
+diye bir çıktı aldıysanız <tt>xscanimage</tt> komutunu yada
+sisteminizde <tt>xsane</tt> kuruluysa <tt>xsane</tt>
+komutunu vererek taramaya başlayabilirsiniz.
+      </div><div class="para">
+Tarayıcılarla ilgili yapılandırma dosyalarını <tt>/etc/sane.d</tt>
+ya da <tt>/usr/local/etc/sane.d</tt> dizininde bulabilirsiniz.
+      </div>
+<div class="para"><div align="right"><pre class="screen">man sane</pre></div></div>
+      <div class="para">
+komutu ile ayrıntılı bilgi alabilirsiniz.
+      </div> <div class="head3"><a name="id1" id="id1"></a>Dikkat edilmesi gereken hususlar</div><dl><dd><div class="para">
+Normalde yapılandırma dosyaları <tt>etc/sane.d</tt> dizininde
+oluyor, <tt>sane</tt>'yi yukarıda anlatıldığı şekilde kurarsanız
+<tt>usr/local/etc/sane.d</tt> dizinine kopyalanıyor. Buradaki
+<tt>sane-backends</tt> paketi aygıtların sürücü ve yapılandırma
+dosyalarını, <tt>sane-frontends</tt> paketi ise tarayıcıyı kullanmak
+için gerekli programları içeriyor.
+      </div><div class="para">
+<tt>xsane</tt> ile çalışmak istiyorsanız onu da kaldırıp kaynak
+kodundan derlemeniz gerekiyor.
+      </div><div class="para">
+Bu yöntem Gelecek 1.1, Slackware 8.1 ve Debian 3.0 da başarı ile
+uygulanmıştır.
+      </div><div class="para">
+<tt>sane-backends-1.0.10</tt>  sürümünden itibaren
+<tt>mustek_pp-11.alpha.tar.gz</tt>  sürücü dosyasını pakete
+eklemeniz gerekmiyor, çünkü <tt>sane</tt> bunu yapmış durumda
+yani  <tt>Mustek-600CP</tt>, <tt>Mustek-1200CP</tt>
+ve <tt>Mustek-1200CP+</tt>  sürücüleri paketin içinde geliyor.
+Yapmanız gereken sadece <tt>dll.conf</tt> dosyasındaki
+<tt>mustek_pp.conf</tt> satırı önündeki <tt>#</tt>
+işaretini ve  <tt>mustek_pp.conf</tt> dosyasındaki
+tarayıcınıza ait satırın önündeki <tt>#</tt> işaretini kaldırmak.
+      </div><div class="para">
+Mustek ScanExpress 6000 P, Mustek ScanExpress 600 SEP, Mustek ScanMagic
+4800 P, Mustek 600 III EP Plus, Gallery 4800, Viviscan Compact II ve
+Medion MD9848 model tarayıcısı olanlar daha düşük <tt>sane-backends</tt>
+sürümünü kullanmak ve <tt>dll.conf</tt> ile
+<tt>mustek_pp.conf</tt> dosyalarında gereken değişiklikleri
+yapmak zorundalar.
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Diğer marka ve model tarayıcıları nasıl kullanabilirim?</div><dl><dd><div class="para">
+Tarayıcınız <tt>sane</tt> tarafından koşulsuz destekleniyorsa
+yapmanız gereken sadece <tt>sane-backends</tt> ve
+<tt>sane-frontends</tt> paketlerini sisteminize kurmaktan
+ibaret. Paketler kuruluysa <tt>xscanimage</tt> programı ile
+tarama yapabilirsiniz.
+      </div><div class="para">
+<a class="ulink" href="http://www.mostang.com/sane/" target="_top">http://www.mostang.com/sane/</a> adresinden desteklenen
+aygıtların listesine ulaşabilirsiniz.
+      </div><div class="para">
+Koşullu desteklenen ya da henüz desteklenmeyen bir tarayıcıya sahipseniz,
+tarayıcınıza ait sürücüleri temin ettiğiniz taktirde yukarıda anlatılan
+yöntemle tarayıcınızı sisteminize tanıtabilirsiniz.
+      </div><div class="para">Allah kolaylık versin.</div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/tarayici-nasil_giris.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/tarayici-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/tarayici-nasil_mustek-1200up.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Giriş </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Mustek-1200UB Yapılandırması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

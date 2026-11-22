@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:50+03:00" /><title>GDM yapılandırması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/windows-ve-linux_sunucu.html" title="Sunucu Makinaya Linux kurulması" /><link rel="previous" href="../howto/windows-ve-linux_xfs.html" title="XFS yapılandırması" /><link rel="next" href="../howto/windows-ve-linux__terminal.html" title="X Terminal Sisteminin Yapılması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">GDM yapılandırması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/windows-ve-linux_xfs.html">Önceki</a> </td><th width="60%" align="center">Sunucu Makinaya Linux kurulması</th><td width="20%" align="right"> <a accesskey="n" href="../howto/windows-ve-linux__terminal.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="windows-ve-linux_gdm" id="windows-ve-linux_gdm"></a>GDM yapılandırması</div><dl><dd><div class="para">
+GDM, X terminallerin sunucuya bağlanabilmesi için onlarda başlatılmış X oturumlarından gelecek istekleri dinler, bu isteklere GDM oturum açma ekranını gönderir ve kullanıcı girişi bekler. Verilen kullanıcı ismi ve parolası, üzerinde çalıştığı Linux sisteminde tanımlı kullanıcılardan biri ise üzerinde çalıştığı makinanın hemen tüm kaynaklarını oturum açmak isteyen kullanıcıya sunar. Bizim yapılandırmamızda ise kullanıcı 10 saniye içinde bir isim ve parola girmezse öntanımlı kullanıcı ismiyle sunucuya bağlanabiliyor. Ayrıca GDM, sadece terminalleri yönetiyor. Sunucu makina üzerinde bir X oturumu açılmak istenirse normal bir X oturumu olarak çalıştırılabilir.
+       </div><div class="para">
+<b><tt>gdm</tt></b> yapılandırması <tt>/etc/X11/gdm/gdm.conf</tt> dosyasında yapılıyor. Masaüstünde çalışan görsel bir GDM yapılandırma uygulaması olmasına rağmen biz onu kullanmayacağız. Çünkü bu yapılandırmayı yapabilmek için yeterli değil. <tt>/etc/X11/gdm/gdm.conf</tt> dosyasının içeriğini aşağıdaki örneğe göre düzenleyin:
+       </div>
+<div class="para"><div align="right"><pre class="screen">[daemon]
+# X terminallerinden bir kullanıcı 10 saniye içinde bir kullanıcı ismi ve
+# parolası girmezse "talebe" kullanıcısı ile oturum açılacak.
+# Bunu aşağıdaki seçeneklerle sağlıyoruz. "talebe" için makinada bir
+# parolasız bir hesap tanımlanmış olmalı.
+TimedLoginEnable=true
+TimedLogin=talebe
+TimedLoginDelay=10
+
+# X terminallerinin bağlanması için kullanıcıya gösterilen oturum
+# açma ekranını çalıştıran komut. Ağ yükü ağır gelirse daha basit
+# görünümdeki gdmlogin ile değiştirebilirsiniz.
+#RemoteGreeter=/usr/bin/gdmlogin
+RemoteGreeter=/usr/bin/gdmgreeter
+
+# gdm'nin sistem üzerinde çeşitli amaçlar için kullandığı kullanıcı ve
+# grup ismi. Bunlara dokunmuyoruz.
+User=gdm
+Group=gdm
+
+# gdm'nin günlük kayıtlarını tuttuğu dizin ve süreç kimliğini sakladığı dosya.
+# Dokunmuyoruz, bilgi için kalsın.
+LogDir=/var/log/gdm
+PidFile=/var/run/gdm.pid
+
+# X terminallerine oturum açmadan önce açarken ve açtıktan sonra
+# yapılan eylemlerle ilgi yapılandırma. Dokunmuyoruz.
+PostLoginScriptDir=/etc/X11/gdm/PostLogin/
+PreSessionScriptDir=/etc/X11/gdm/PreSession/
+PostSessionScriptDir=/etc/X11/gdm/PostSession/
+DisplayInitDir=/etc/X11/gdm/Init
+
+# X çökerse çalıştırılacak betik. Dokunmuyoruz.
+XKeepsCrashing=/etc/X11/gdm/XKeepsCrashing
+
+# Kimlik denetimi ile ilgili kayıtların tutulacağı dizin. Dokunmuyoruz.
+ServAuthDir=/var/gdm
+
+# Hangi masaüstünün çalıştırılacağının saptandığı betik.
+BaseXsession=/etc/X11/gdm/Xsession
+
+# Kullanıcı yetkilendirmesi ile ilgili X dosyaları için.
+# Kullanıcının ev dizini yazılabilir değilse bu dizin kullanılacak.
+UserAuthFBDir=/tmp
+UserAuthFile=.Xauthority
+
+# X sunucusu
+StandardXServer=/usr/X11R6/bin/X
+
+# X nest komutu
+Xnest=/usr/X11R6/bin/Xnest -audit 0 -name Xnest
+
+# Sistemde 6 tane kullanılabilir metin konsolu var (tty1-6).
+# 7. konsolu bu makina üzerinde çalıştırılacak X oturumuna ayırıyoruz.
+# Dolayısıyla bir terminalin alabileceği ilk konsol 8. olacak.
+# /etc/securetty dosyanızdaki tty'ler tüm X terminallerinize yetmiyorsa
+# sayısını arttırın.
+FirstVT=8
+VTAllocation=true
+
+
+[security]
+# X terminallerinden root kullanıcısının oturum açmasına izin vermiyoruz.
+AllowRemoteRoot=false
+
+# Terminallerden 10 saniye içinde giriş yapılmazsa oturumun "talebe"
+# kullanıcısı ile açılmasına izin veren seçenek.
+AllowRemoteAutoLogin=true
+
+# yazma yetkisi: 0 kullanıcı, 1 grup, 2 herkes
+# Bu yapılandırmada hiçbir önemi yok. Dokunmuyoruz.
+RelaxPermissions=0
+
+# gdm'nin terminallerden gelen istekleri dinlememesini sağlayan seçenek.
+# Bu yapılandırma dinlemesini gerektiriyor.
+DisallowTCP=false
+
+
+[xdmcp]
+# Standart xdmcp portu olan 177/udp portunun dinlenmesini sağlar.
+Enable=true
+
+
+[gui]
+# Burada değiştireceğimiz bir şey yok.
+
+
+[greeter]
+# Oturum açma ekranı ile ilgil görsel ayarlar.
+
+# Paneldeki saatin 24 saatlik olmasını isteriz.
+Use24Clock=true
+
+# Oturum açma ekranında kullanılan tema ve temaların bulunduğu yer.
+#GraphicalTheme=circles
+GraphicalThemeDir=/usr/share/gdm/themes/
+
+
+[chooser]
+# chooser, ağdaki diğer X terminal sunucularını listesini gösterir.
+# Oturumun seçilen sunucuda açılmasını sağlar.
+# Bu seçenekler çok sayıda X terminal sunucusu çalıştıracaksanız anlamlı.
+
+#DefaultHostImg=/usr/share/pixmaps/nohost.png
+# Directory with host images, they are named by the hosts: host or host.png
+HostImageDir=/usr/share/hosts/
+# Time we scan for hosts (well only the time we tell the user we are
+# scanning actually, we continue to listen even after this has
+# expired)
+#ScanTime=4
+# A comma separated lists of hosts to automatically add (if they answer to
+# a query of course).  You can use this to reach hosts that broadcast cannot
+# reach.
+Hosts=
+# Broadcast a query to get all hosts on the current network that answer
+Broadcast=true
+# Set it to true if you want to send a multicast query to hosts.
+Multicast=false
+# It is an IPv6 multicast address.It is hardcoded here and will be replaced when
+# officially registered xdmcp multicast address of TBD will be available
+#Multicast_Addr=ff02::1
+# Allow adding random hosts to the list by typing in their names
+#AllowAdd=true
+
+[debug]
+# Hata ayıklama iletilerini isterseniz true yapın.
+Enable=false
+
+[servers]
+# gdm'nin bu makina üzerindeki X oturumunu da yönetmesini istiyorsanız
+# bu satırlardan ilkini etkinleştirin. İkisini de etkinleştirebilirsiniz.
+#0=Standard
+#1=Standard
+
+[server-Standard]
+# servers bölümündeki ayarlara bağlı olarak buradaki seçenekler
+# anlam kazanır.
+name=Standard server
+command=/usr/X11R6/bin/X -audit 0
+flexible=true
+
+[server-Terminal]
+# Bu X terminal sunucusu.
+name=Terminal server
+command=/usr/X11R6/bin/X -audit 0 -terminate
+# Make this not appear in the flexible servers (we need extra params
+# anyway, and terminate would be bad for xdmcp choosing).  You can
+# make a terminal server flexible, but not with an indirect query.
+# If you need flexible indirect query server, then you must get rid
+# of the -terminate and the only way to kill the flexible server will
+# then be by Ctrl-Alt-Backspace
+flexible=false
+# Not local, we do not handle the logins for this X server
+handled=false
+
+[server-Chooser]
+# Diğer sunucuları seçmeyi sağlayan ekran.
+name=Chooser server
+command=/usr/X11R6/bin/X -audit 0
+</pre></div></div>
+       <div class="para">
+Yapılandırma dosyasında bir öntanımlı kullanıcı belirtmiştik. Şimdi o kullanıcı için sistemde bir hesap açalım. Bu kullanıcının parolası olmayacak:
+       </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>/usr/sbin/useradd -g users talebe</tt></b>
+# <b><tt>passwd -l talebe</tt></b>
+</pre></div></div>
+       <div class="para">
+Bu komutlarla sisteme talebe kullanıcısını tanımlamış olduk. Artık dosya sisteminde bir <tt>/home/talebe</tt> dizini var. X terminallerinden bir kullanıcı ismi belirtmeden oturum açan bütün kullanıcılar bu dizini ev dizini olarak ortak kullanacaklar. Bu hoş bir durum değil, kullanıcılara istedikleri takdirde bir kullanıcı ismi vermeniz daha iyi olur. Diğer yandan sahipsiz kalmış kullanıcı isimlerine ait ev dizinlerinin varolacak olması da sizin açınızdan hoş olmayabilir. Karar sizin. Her iki durum da bu yapılandırma ile mümkün.
+       </div><div class="para">
+<tt>/home/talebe</tt> dizininde <tt>.dmrc</tt> adıyla bir dosya açın ve içine aşağıdakileri yazın:
+       </div>
+<div class="para"><div align="right"><pre class="screen">[Desktop]
+Session=kde
+Language=tr_TR.UTF-8
+</pre></div></div>
+       <div class="para">
+Bu dosyayı oturum açarken <b><tt>gdm</tt></b> okuyacak ve oturumu türkçe olarak <tt>Session</tt> satırında belirtilen masaüstü yöneticisi ile açacak.
+       </div><div class="para">
+Şimdi sıra <tt>/etc/inittab</tt> dosyasında. Bu makina üzerinde X oturumunu hiç başlatmaz, siz konsolda kalabilirsiniz ve isterseniz <b><tt>startx</tt></b> komutu ile bir X oturumu açabilirsiniz. Bir sunucu için en elverişli yöntem budur. <tt>inittab</tt> dosyasını buna göre yapılandırıyoruz ve sadece <tt>initdefault</tt> satırını 3. çalışma seviyesine ayarlıyoruz. Zaten böyleyse dokunmayın:
+       </div>
+<div class="para"><div align="right"><pre class="screen">id:3:initdefault:</pre></div></div>
+       <div class="para">
+<b><tt>gdm</tt></b> bu makinada artalanda bir sunucu olarak çalışacağından sistem açılışında çalışmasını sağlamamız lazım. Bunun için <tt>/etc/rc.d/rc.local</tt> dosyasının sonuna:
+       </div>
+<div class="para"><div align="right"><pre class="screen">/usr/bin/gdm</pre></div></div>
+       <div class="para">
+satırını ekliyoruz.
+      </div><div class="para">
+Sistemi yeniden başlattığınızda X sunucusu ağdan gelecek istekleri  bekliyor olacak. <b><tt>nmap</tt></b> ile bakarsanız aşağıdakine benzer bir çıktı alacaksınız:
+    </div>
+<div class="para"><div align="right"><pre class="screen"><tt># </tt><b><tt>nmap -sTU 127.0.0.1</tt></b>
+
+Starting nmap V. 3.00 ( www.insecure.org/nmap/ )
+Interesting ports on localhost (127.0.0.1):
+(The 3044 ports scanned but not shown below are in state: closed)
+Port       State       Service
+22/tcp     open        ssh
+67/udp     open        dhcpserver
+137/udp    open        netbios-ns
+138/udp    open        netbios-dgm
+139/tcp    open        netbios-ssn
+177/udp    open        xdmcp
+445/tcp    open        microsoft-ds
+514/tcp    open        shell
+901/tcp    open        samba-swat
+6000/tcp   open        X11
+7100/tcp   open        font-service
+
+Nmap run completed -- 1 IP address (1 host up) scanned in 9 seconds
+</pre></div></div>
+    
+<div class="para"><pre class="literallayout">22/tcp     open        ssh</pre></div> satırı sizde olmayabilir. Ama olacak. Yeri geldiğinde ondan bahsedeceğim.
+    </dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/windows-ve-linux_xfs.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/windows-ve-linux_sunucu.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/windows-ve-linux__terminal.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">XFS yapılandırması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> X Terminal Sisteminin Yapılması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

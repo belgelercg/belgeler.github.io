@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:32+03:00" /><title>acl_connect</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/spam-filtering-exim-final.html" title="Tamamlanmış ACL'ler" /><link rel="previous" href="../howto/spam-filtering-exim-final.html" title="Tamamlanmış ACL'ler" /><link rel="next" href="../howto/spam-filtering-acl_helo_final.html" title="acl_helo" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">acl_connect</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/spam-filtering-exim-final.html">Önceki</a> </td><th width="60%" align="center">Tamamlanmış ACL'ler</th><td width="20%" align="right"> <a accesskey="n" href="../howto/spam-filtering-acl_helo_final.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="spam-filtering-acl_connect_final" id="spam-filtering-acl_connect_final"></a><tt>acl_connect</tt></div><dl><dd>
+<div class="para"><div align="right"><pre class="screen">
+# Bu erişim denetim listesi gelen bağlantının başlangıcında
+# kullanılır. Bu sınamalar bağlantı kabul ya da red edilinceye
+# kadar sırayla yapılır.
+
+acl_connect:
+  # Gecikme uygularken başlangıç olarak kullanmak üzere o anki zaman
+  # bilgisini kaydediyoruz.
+  warn
+    set acl_m2  = $tod_epoch
+
+
+  # Posta yerel SMTP üzerinden alınmışsa (yani, TCP/IP bağlantısı
+  # ile gelmiyorsa), kabul ediyoruz. Bunu boş bir konak alanını
+  # sınayarak yapacağız. Ayrıca, postalarını rölelediğimiz
+  # konaklardan ve yerel arabirimlerden gelen postaları da kabul edeceğiz.
+  accept
+    hosts       = : +relay_from_hosts
+
+
+  # Eğer bağlanan konak DNS karalistelerinde kayıtlıysa, $acl_c1'e
+  # bir uyarı iletisi kaydedeceğiz. Bu iletiyi daha sonra posta
+  # başlığına ekleyeceğiz. Varlığı bize geciktirme uygulayacağımızı
+  # belirtecek.
+  #
+
+  warn
+    !hosts      = ${if exists {/etc/mail/whitelist-hosts} \
+                              {/etc/mail/whitelist-hosts}}
+    dnslists    = list.dsbl.org : \
+                  dnsbl.sorbs.net : \
+                  dnsbl.njabl.org : \
+                  bl.spamcop.net : \
+                  dsn.rfc-ignorant.org : \
+                  sbl-xbl.spamhaus.org : \
+                  l1.spews.dnsbl.sorbs.net
+    set acl_c1  = X-DNSbl-Warning: \
+                  $sender_host_address is listed in $dnslist_domain\
+                  ${if def:dnslist_text { ($dnslist_text)}}
+
+
+  # Benzer şekilde, gönderici konağın DNS sorgusu başarısız olursa
+  # (örn, rDNS kaydı yoksa veya belirtilen isim bağlantı kudulan IP
+  # ile eşleşmiyorsa), $acl_c1'e bir uyarı iletisi kaydedeceğiz. Bu
+  # iletiyi daha sonra posta başlığına ekleyeceğiz.
+  warn
+    condition   = ${if !def:acl_c1 {true}{false}}
+    !verify     = reverse_host_lookup
+    set acl_m9  = Reverse DNS lookup failed for host $sender_host_address
+    set acl_c1  = X-DNS-Warning: $acl_m9
+
+
+  # Bağlantıyı kabul ediyoruz, fakat $acl_c1'de evvelce kaydedilmiş bir
+  # ileti varsa, göndericiyi 20 saniye dolana kadar bekletiyoruz.
+  accept
+    set acl_m2  = ${if def:acl_c1 {${eval:20 + $acl_m2 - $tod_epoch}}{0}}
+    delay       = ${if &gt;{$acl_m2}{0}{$acl_m2}{0}}s
+</pre></div></div>
+      </dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/spam-filtering-exim-final.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/spam-filtering-exim-final.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/spam-filtering-acl_helo_final.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Tamamlanmış ACL'ler </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> acl_helo</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

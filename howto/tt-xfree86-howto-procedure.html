@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:56+03:00" /><title>Yöntem</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/tt-xfree86-howto.html" title="TrueType Fontların XFree86 4.x ile Kullanımı mini-NASIL" /><link rel="previous" href="../howto/tt-xfree86-howto-intro.html" title="Giriş" /><link rel="next" href="../howto/quake-howto.html" title="Linux Quake Nasıl" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Yöntem</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/tt-xfree86-howto-intro.html">Önceki</a> </td><th width="60%" align="center">TrueType Fontların XFree86 4.x ile Kullanımı mini-NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/quake-howto.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="tt-xfree86-howto-procedure" id="tt-xfree86-howto-procedure"></a>Yöntem</div><dl><dd><div class="para">
+Son güncellememden bu yana pek çok şey değişti ama izlenecek yöntem X.org için bile hala aynı. Gerektiği yerde dosya isimlerini değiştirmeniz yeterli olacaktır.
+  </div><div class="para">
+TrueType font kümesini (indirebileceğiniz bir çok adresten birinden) edinip root haklarıyla aşağıdaki komutları çalıştırın:
+  </div><div class="para"><div align="right"><pre class="screen">
+mkdir /usr/X11R6/lib/X11/fonts/Truetype
+cp /home/joeuser/<i>indirme-dizini</i>/*.ttf /usr/X11R6/lib/X11/fonts/Truetype
+cd /usr/X11R6/lib/X11/fonts/Truetype
+ttmkfdir &gt; fonts.scale
+mkfontdir
+</pre></div></div><div class="para">
+Disk bölümlerinizin birinde çalışan bir Windows varsa fontları doğrudan oradan kullanmak zorundasınız. Fontları Linux bölümünüze kopyalamanız *yasadışı*dır. İlk olarak Windows bölümünüzü çalışan bir Linux'a nasıl tanıtılacağını öğrenin (dağıtımların çoğu bunu kurulum sırasında öntanımlı olarak yapar) ardından aşağıdakileri root haklarıyla gerçekleştirin:
+  </div><div class="para"><div align="right"><pre class="screen">
+cd /etc/X11
+<i>sevdiğiniz-bir-metin-düzenleyici</i> XF86Config     <a name="tt-xfree86-howto-procedure.co1" id="tt-xfree86-howto-procedure.co1"></a><b style="background: transparent url(&quot;../images/xsl/callouts/1.png&quot;) no-repeat left 40%;">  </b>
+<a name="tt-xfree86-howto-procedure.co2" id="tt-xfree86-howto-procedure.co2"></a><b style="background: transparent url(&quot;../images/xsl/callouts/2.png&quot;) no-repeat left 40%;">  </b>
+cd /<i>windows-bölümünüz</i>/windows/fonts
+ttmkfdir &gt; fonts.scale
+mkfontdir
+</pre></div></div><div class="calloutlist"><table border="0" summary="Dikkat edilecek hususlar" cellspacing="0" cellpadding="3" width="100%"><tr><td width="15" valign="top" align="left" class="coimage"><a href="#tt-xfree86-howto-procedure.co1"><img src="../images/xsl/callouts/1.png" alt="1" border="0" /></a> </td><td valign="top" align="left"><div class="para">
+  Bazı dağıtımlarda bu dosyanın adının sonuna bir rakam eklenir (örneğin <tt>XF86Config.4</tt>). X11R6 tarafından kullanılan dosyanın hangisi olduğunu bulmalısınız. Bunun için <b><tt>cat /var/log/XFree* | grep "Using config file:"</tt></b> komutunu çalıştırıp karşılık gelen dosyayı düzenleyebilirsiniz.
+</div></td></tr><tr><td width="15" valign="top" align="left" class="coimage"><a href="#tt-xfree86-howto-procedure.co2"><img src="../images/xsl/callouts/2.png" alt="2" border="0" /></a> </td><td valign="top" align="left"><div class="para">
+Kullandığınız kelime istemcide <tt>Files</tt> bölümünü bulup <tt>FontPath</tt> ile başlayan satırları bulun ve bu listenin sonuna <tt>FontPath "/</tt><i><tt>windows-bölümünüz</tt></i><tt>/windows/fonts/"</tt> satırını ekleyin (<i><tt>windows-bölümünüz</tt></i> yerine windows bölümünüzün bağlama noktasını yazmalısınız).
+</div></td></tr></table></div><div class="para">
+Bunlar Windows bölümünüzdeki bütün fontlarınızın X'de düzgün çalışmasını sağlayacaktır.
+  </div><div class="para">
+Bütün TrueType fontlarınız da düzgün çalışıyor olmalıdır. Eğer font eklemek isterseniz [<tt>*.ttf</tt> dosyalarını] adı geçen dizine kopyalayın ve anlatılanları tekrar edin.
+  </div><div class="para">
+Netscape bu fontlar ile problemler çıkaracaktır, Fontlar penceresinden "Ölçeklendirmeye İzin Ver" seçeneğini etkin yapın. Sadece 0 ile 12 arasındaki büyüklükteki fontları gösterebilmektedir. Mozilla ya da Opera'nın böyle sorunları yoktur.
+  </div><div class="para">
+<b><tt>mkfontdir</tt></b> betiği XFree 4.x ile birlikte dağıtılmaktadır.
+  </div><div class="para">
+Eğer sisteminizde <b><tt>ttmkfdir</tt></b> bulunmuyorsa <a class="ulink" href="http://www.joerg-pommnitz.de/TrueType/ttmkfdir.tar.gz" target="_top">buradan</a> indirebilirsiniz.
+  </div><div class="para">
+XFree86'nın son sürümünü (güncel 4.4.0) <a class="ulink" href="http://www.xfree86.org" target="_top">http://www.xfree86.org</a> adresinden edinebilirsiniz.
+  </div><div class="para">
+X.org'un son sürümünü ise <a class="ulink" href="http://freedesktop.org/XOrg" target="_top">http://freedesktop.org/XOrg</a> adresinden edinebilirsiniz.
+  </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/tt-xfree86-howto-intro.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/tt-xfree86-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/quake-howto.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Giriş </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Linux Quake Nasıl</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

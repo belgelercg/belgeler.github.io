@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:17+03:00" /><title>Mustek-1200UB Yapılandırması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/tarayici-nasil.html" title="Bir Mustek Tarayıcısının Sisteme Tanıtılması" /><link rel="previous" href="../howto/tarayici-nasil_kurulum.html" title="Mustek-600CP Yapılandırması" /><link rel="next" href="../howto/usb-adsl.html" title="USB ADSL Modem Kurulumu" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Mustek-1200UB Yapılandırması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/tarayici-nasil_kurulum.html">Önceki</a> </td><th width="60%" align="center">Bir Mustek Tarayıcısının Sisteme Tanıtılması</th><td width="20%" align="right"> <a accesskey="n" href="../howto/usb-adsl.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="tarayici-nasil_mustek-1200up" id="tarayici-nasil_mustek-1200up"></a>Mustek-1200UB Yapılandırması</div><dl><dd><div class="para"></div> <div class="head3"><a name="id1" id="id1"></a>Gerekli olanlar</div><dl><dd><div class="para">
+Esasında gerekli olan fazla bir paket yok. Bunlar genelde bütün
+linux sürümleri ile birlikte geliyor. Bendeki sistemde kurulu olan 3
+adet paket var. Bunlar:
+</div><div class="para"><div align="right"><pre class="screen">
+$ rpm -qa|grep sane
+
+xsane-0.84-2
+sane-frontends-1.0.7-2
+sane-backends-1.0.7-6
+</pre></div></div><div class="para">
+Bu paketler genelde bütün linux sürümlerinde öntanımlı olarak kurulu
+olabilir. Yoksa CD'nizden bulup kurun. Bunun haricinde gerekli olan
+paket:</div><div class="para"><div align="right"><pre class="screen">
+$ rpm -qa|grep usbview
+
+usbview-1.0-5
+</pre></div></div><div class="para">
+Bu paket de öntanımlı olarak kurulu olması lazım. Herhangi bir
+sebebden dolayı kurulu değilse CD'nizden bulup kurun.</div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Tarayıcı önbilgilerinin tespiti</div><dl><dd><div class="para">
+Linux'a USB tarayıcımızı tanıtmadan önce bazı bilgileri tespit
+etmeniz gerekli. (Burada USB Tarayıcıyı açık şekilde başlattığımı
+hatırlatayım). Tespit için root olarak <tt>usbview</tt> komutunu
+veriyoruz ve açılan pencereyi kontrol ediyoruz. Benimki şöyle:
+      </div><span class="inlinemediaobject"><img src="images/scanners/usbview1.png" class="imagedata" align="middle" alt="" /></span><div class="para">
+Resimdenden anlaşılacağı gibi <tt>usbscanner</tt> olarak
+kendini orda gösterdi. Daha sonra buraya tıkladığımda bana USB-Tarayıcım
+hakkında ayrıntılı bilgileri veriyor:
+      </div><span class="inlinemediaobject"><img src="images/scanners/usbview3.png" class="imagedata" align="middle" alt="" /></span><div class="para">
+Bu menüde bana lazım olan 2 tane önemli bilgi var.Bunlar
+<tt>VendorID</tt> ve <tt>ProductID</tt>. Bu menüye
+göre benim bilgilerim şöyle:
+      </div><div class="para"><div align="right"><pre class="screen">
+VendorID  = 055f
+ProductID = 0006
+</pre></div></div><div class="para">
+Bu bilgilerin onaltılık tabanda ile verildiğini unutmayın. Bu yüzden
+bu rakamların önünde <tt>0x</tt> olması gerekli. Yani gerçek
+ID'ler şunlar:
+      </div><div class="para"><div align="right"><pre class="screen">
+VendorID  = 0x055f
+ProductID = 0x0006
+</pre></div></div><div class="para">
+Şimdi bu elde ettiğimiz bilgileri bir kenera not alıyoruz. Çünkü
+modüllerı yüklerken lazım olacak.
+      </div></dd></dl> <div class="head3"><a name="id3" id="id3"></a>Modüllerin yüklenmesi</div><dl><dd><div class="para">
+Şimdi deneme amaçlı olarak modüllerimizi yükleyelim (işlemi root
+olarak yapıyoruz ve bu bilgiler geçici bilgilerdir).
+      </div><div class="para">Yapmamız gereken;</div><div class="para"><div align="right"><pre class="screen">modprobe scanner vendor=xxxx product=xxxx</pre></div></div><div class="para">
+şeklinde modulumuzu yüklemek. Bir önceki adımda
+elde ettiğimiz bilgiler ışığında aşağıdaki komutu veriyoruz:
+      </div><div class="para"><div align="right"><pre class="screen"># modprobe scanner vendor=0x055f product=0x0006</pre></div></div><div class="para">
+Herhangi bir hata mesajı felan olmadan modüllerim yüklendi.
+      </div></dd></dl> <div class="head3"><a name="id4" id="id4"></a>Modül yükleme sonrası ilk sınama</div><dl><dd><div class="para">
+Modüllerim yükledikten sonra acaba doğru yoldamıyım diye istersem
+kontrol edebilirim. Bunun içn yapmam gereken;
+      </div><div class="para"><div align="right"><pre class="screen">cat /proc/bus/usb/drivers</pre></div></div><div class="para">komutunu vermek ve çıkan sonucları incelemek.</div><div class="para"><div align="right"><pre class="screen">
+# cat /proc/bus/usb/usb/drivers
+
+       usbdevfs
+       hub
+       hid
+       48- 63: usbscanner
+</pre></div></div><div class="para">
+<tt>48- 63: usbscanner</tt> satırını gördükten sonra
+korkmama gerek yok. Demekki doğru yoldayım.
+      </div></dd></dl> <div class="head3"><a name="id5" id="id5"></a>SANE ayarlarının yapılması</div><dl><dd><div class="para">
+      Yukardaki işlemleri hatasızca takip edebildiyseniz, artık bundan
+      sonra sadece SANE'ye durumu izah edip, <i>bak SANE kardeş, benim bir
+      tarayıcım var... Adresi felan bu... Bunu iyice tanı</i> demekten
+      başka birşey  yapmayacağız.
+      </div><div class="para">
+      Bunun için SANE dizinine gidiyoruz. (hala root kullanıcısıyız)
+      </div><div class="para"><div align="right"><pre class="screen"># cd /etc/sane.d</pre></div></div><div class="para">
+      Bu dizin altında bütün tarayıcıların ayar dosyaları var (SuSE-7.1
+      kullanıyorum). Bize uygun olan SANE ayar dosyasına bakıyoruz:
+      </div><div class="para"><div align="right"><pre class="screen">
+#  ls -a
+
+.               canon.conf     hp.conf          net.conf      snapscan.conf
+..              coolscan.conf  m3096g.conf      pie.conf      sp15c.conf
+abaton.conf     dc210.conf     microtek2.conf   plustek.conf  st400.conf
+agfafocus.conf  dc240.conf     microtek.conf    qcam.conf     tamarack.conf
+apple.conf      dc25.conf      mustek.conf      ricoh.conf    umax1220u.conf
+artec.conf      dll.conf       mustek_pp.conf   s9036.conf    umax.conf
+avision.conf    dmc.conf       mustek_usb.conf  saned.conf    umax_pp.conf
+bh.conf         epson.conf     nec.conf         sharp.conf    v4l.conf
+</pre></div></div><div class="para">
+Bu dosyalarından sanırım bize en uygunu
+<tt>mustek_usb.conf</tt> (dikkat öteki yani
+<tt>mustek_pp.conf</tt> olan paralel port için, önceki bölümde
+Mustek-600CP yapılandırmasında o kullanılmıştı).
+    </div><div class="para">
+Şimdi bu dosyayı herhangi bir metin düzenleyici ile açıyoruz ve gözden
+geçiriyoruz:
+    </div><div class="para"><div align="right"><pre class="screen">
+# mustek_usb.conf: Configuration file for Mustek USB scanner
+# Read man sane-mustek_usb for documentation
+
+# If USB errors occur, using this option may help
+#option max_block_size 1024
+
+# Autodetect 1200 UB and Trust Compact Scan USB 19200
+usb 0x055f 0x0006
+
+# Autodetect 1200 USB (not supported)
+# usb 0x055f 0x0003
+
+# Autodetect 1200 CU
+usb 0x055f 0x0001
+
+# Autodetect 1200 CU Plus
+usb 0x055f 0x0008
+
+# Autodetect 600 CU
+usb 0x055f 0x0002
+
+# Autodetect 600 USB (not supported)
+usb 0x055f 0x0873
+
+# If autodetection doesn't work uncomment or add your device file and one
+# suitable option (1200ub is also for Trust Compact Scan USB 19200).
+
+#/dev/usb/scanner0
+#option 1200ub
+#option 1200cu
+#option 1200cu_plus
+#option 600cu
+
+#/dev/usbscanner0
+#option 1200ub
+#option 1200cu
+#option 1200cu_plus
+#option 600cu
+</pre></div></div><div class="para">
+Şimdi tekrar bir hatırlatma amacı ile elimizdeki verileri kontrol
+edelim:
+    </div><ol class="orderedlist" start="ignore" type="1"><li><div class="listitem"><div class="para">
+<tt>ProductID</tt> ve <tt>VendorID</tt>
+numaralarınız kaçtı?
+    </div><div class="para">
+<tt>VendorID = 0x055f ProductID = 0x0006</tt>
+    </div></div></li><li><div class="listitem"><div class="para">
+Kullanılan aygıt dosyası ne?
+</div><div class="para">
+<tt>/dev/usbscanner</tt>
+</div><div class="para">
+(not: bu dosya bazı linux sürümlerinde değişik dizin altında
+olabilir, eğer <tt>/dev</tt> dizini altında arama
+yaptırırsanız muhakkak bulursunuz nerde olduğunu.)
+</div></div></li><li><div class="listitem"><div class="para">
+Peki seçenek olarak ne kullanacağız?
+</div><div class="para">
+Tabiki bize en uygun olanını. Yani <tt>option 1200ub</tt>
+</div></div></li></ol><div class="para">
+Bu tespit ettiğimiz bilgiler ışığında
+<tt>mustek_usb.conf</tt> dosyamızı
+aynen şu şekilde olduğu gibi kısaltabilir veya gereksiz satırları
+silebilir, # işareti ile yorum satırı haline sokabiliriz. benim
+<tt>mustek_usb.conf</tt> dosyamın kısaltılmış hali ile şöyle:
+</div><div class="para"><div align="right"><pre class="screen">
+usb 0x055f 0x0006
+/dev/usbscanner
+option 1200ub
+</pre></div></div><div class="para">
+Daha sonra ilk defa taryıcımızın çalışıp çalışmadığını sınayabiliriz.
+Bunun için çok basit bir komut verebiliriz:
+    </div><div class="para"><div align="right"><pre class="screen">
+scanimage   mustek_usb:/dev/usbscanner   --format  tiff  &gt; test.tiff
+</pre></div></div><div class="para">
+Bu komut bize tarayıcımızda bulunan resmin, tiff resim dosyası
+biçemine göre taranmasını (tahminen 300dpi felan) sağlayacaktır. Tabi
+sadece tiff biçemi değil. JPG olarak da verebilirsiniz..Biraz deneyin ve man
+sayfalarını okuyun değişik biçemler gözünüze çarpacaktır.
+    </div></dd></dl> <div class="head3"><a name="id6" id="id6"></a>Ayarların otomatikleştirilmesi</div><dl><dd><div class="para">
+Yukarıdaki ayarlar başta da dediğim gibi, kalıcı ayarlar değildir.
+Yani sadece bir oturum için, sorun olmadan çalışırsınız. Her defasında
+aynı işlemleri uygulamak sanırım hiç hoş olmasa gerek. Bunun için
+<tt>modules.conf</tt> dosyasına ekleyeceğimiz bazı satırlar
+işimize yarayacaktır.
+Yukardak bilgiler ışığında, <tt>ProductID</tt> ve
+<tt>VendorID</tt> değerlerini <tt>/etc/modules.conf</tt>
+dosyasına ekliyoruz:
+    </div><div class="para"><div align="right"><pre class="screen">
+options   scanner   vendor=0x055f
+options   scanner   product=0x0006
+</pre></div></div><div class="para">
+Bundan sonra sadece
+    </div><div class="para"><div align="right"><pre class="screen">modprobe   scanner</pre></div></div><div class="para">
+komutunu verdiğimizde, bütün seçenekler etkin olacaktır. Artık
+rahatlıkla tarayıcımız sorun çıkartmadan çalışacaktır.
+    </div><div class="para">
+Eğer her defasında <tt>moprobe scanner</tt> komutunu
+vermek zor geliyorsa, SuSE için <tt>boot.local</tt>
+RedHat için <tt>rc.local</tt> dosyasının en son satırına
+eklediğimizde, her açılışta otomatikman modülünüz yüklenecektir.
+    </div></dd></dl> <div class="head3"><a name="id7" id="id7"></a>XSANE ile masaüstüne simge yerleştirmek</div><dl><dd><div class="para">
+Elbetteki birçok kullanıcı için SANE yerine XSANE ile çalışmak daha
+pratik gelecektir. Ancak yukardaki ayarların SANE ile yapılması bana göre
+sanırım en basit yöntem idi.
+    </div><div class="para">
+XSANE ile tarayıcınızı masaüstüne simge olarak koymak isterseniz
+aşağıdaki işlemleri yapabilirsiniz:
+    </div><div class="para">
+İlk önce <tt>/etc/usbmgr/usbmgr.conf</tt> dosyasını
+herhangi bir metin düzenleyici ile açın. 1200UB Mustek için olan satırı
+bulun. Yoksa aşağıdaki gibi ilave edin:
+    </div><div class="para"><div align="right"><pre class="screen">
+# 1200UB [Mustek]
+vendor 0x055f product 0x0006 module scanner
+</pre></div></div><div class="para">
+Yani görüntüsü şöyle:
+    </div><span class="inlinemediaobject"><img src="images/scanners/usbmgr.png" class="imagedata" align="middle" alt="" /></span><div class="para">
+Bir dahaki X oturumu açılışında tarayıcımız otomatikman
+yüklenecektir.
+    </div><div class="para">
+Şimdi <tt>Xsane</tt> için masaüstünde bir simge yaratalım.
+Bunun için masaüstünde boş bir alana fare ile sağ tıklıyoruz ve
+<tt>Yeni Yarat =&gt; Uygulamaya Bağlantı</tt> seçeneğini
+seçip, <tt>Çalıştır</tt> yazan yere
+<tt>xsane mustek_usb:/dev/usbscanner</tt> satırını ekliyoruz.
+    </div><span class="inlinemediaobject"><img src="images/scanners/desktop.png" class="imagedata" align="middle" alt="" /></span><div class="para">
+Hepsi bu kadar. Sonra bir tıklama ile tarayıcımız Xsane ile hizmet
+vermeye başlayacaktır.
+    </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/tarayici-nasil_kurulum.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/tarayici-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/usb-adsl.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Mustek-600CP Yapılandırması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> USB ADSL Modem Kurulumu</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

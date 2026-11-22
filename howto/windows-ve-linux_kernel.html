@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:50+03:00" /><title>Çekirdeğin derlenmesi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/windows-ve-linux__terminal.html" title="X Terminal Sisteminin Yapılması" /><link rel="previous" href="../howto/windows-ve-linux__initrd.html" title="initrd.img Dosyasının Oluşturulması" /><link rel="next" href="../howto/windows-ve-linux_temel-sistem.html" title="Tek Başına (basit) Linux" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Çekirdeğin derlenmesi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/windows-ve-linux__initrd.html">Önceki</a> </td><th width="60%" align="center">X Terminal Sisteminin Yapılması</th><td width="20%" align="right"> <a accesskey="n" href="../howto/windows-ve-linux_temel-sistem.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="windows-ve-linux_kernel" id="windows-ve-linux_kernel"></a>Çekirdeğin derlenmesi</div><dl><dd><div class="para">
+Bu belgenin yazıldığı tarihte güncel çekirdek sürümleri 2.6.x idi. Ancak 2.6 çekirdekleri derlemek için sistemin bu çekirdeğe uygun olması gerekir. Benim elimdeki sistem buna uygun olmadığından ben 2.4 çekirdeklerle çalışmak zorundaydım. Yapacağımız iş için çekirdeğin 2.4 ya da 2.6 olmasının bir önemi yok. Ben zaten kullanmakta olduğum 2.4.22 çekirdeğinin kaynak kodunu kullandım.
+Siz de kurduğunuz sistemde bulunan çekirdeğin sürümü 2.4 serisinde ise onun kaynak kodunu kullanabilirsiniz. 2.6 çekirdeklerin derlenmesi biraz farklı sanırım (Hiç 2.6 çekirdek derlemedim). Yalnız çekirdeği derledikten sonra onu sisteme kuracağımızdan ismini değiştireceğiz. 2.4.22-x yapacağız ki, sistemde kurulu çekirdekle karıştırmayalım.
+   </div><div class="para">
+Çekirdeğin kaynak kodunun yeri dağıtımdan dağıtıma değişmez, yeri <tt>/usr/src/linux</tt> dizinidir. <tt>/usr/src/linux</tt> genelde kullanılan çekirdeğin kaynak kodunun bulunduğu dizini işaret eden bir sembolik bağ olarak düzenlenir. Bizim çalışacağımız dizin <tt>/usr/src/linux-2.4.22</tt> dizini olacak.
+    </div><div class="para">
+X terminalleri için kullanacağımız çekirdek kaynak kodunun sisteminizin çekirdek kaynak kodundan farklı bir yerde durması daha iyidir. <tt>linux-2.4.22-x</tt> diye bir dizin açıp <tt>linux-2.4.22</tt> dizininin içeriğini bu dizine kopyalayın. Daha önce bir çekirdek derlemişseniz yeni açtığınız dizine geçip <b><tt>make mrproper</tt></b> komutunu verin. Bu komut çekirdek kaynak kodunu sıfırlar. Yani onu hiç derleme yapılmamış duruma getirir. Kaynak kodunu derlememişseniz bu işlemi yapmanıza gerek yoktur. Ancak, birşeyler yanlış gider ve derleme işlemini yinelemek isterseniz derlemeye başlamadan önce vereceğiniz ilk komut bu olmalı.
+    </div><div class="para">
+Eğer <tt>/usr/src</tt> altında bir linux dizini yoksa ve siz de X terminalleri için 2.4.22 çekirdeğini kullanmak isterseniz, bu çekirdeğin kaynak paketini <a class="ulink" href="ftp://ftp.kernel.org/pub/linux/kernel/v2.4/linux-2.4.22.tar.bz2" target="_top">ftp://ftp.kernel.org/pub/linux/kernel/v2.4/linux-2.4.22.tar.bz2</a> adresinden <tt>/usr/src</tt> dizinine indirin ve aşağıdaki komutlarla paketi açın:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>bunzip2 linux-2.4.22.tar.bz2</tt></b>
+# <b><tt>tar xfv linux-2.4.22.tar</tt></b>
+</pre></div></div>
+    <div class="para">
+Bu iki komut kaynak paketini <tt>linux-2.4.22</tt> dizini altında açacaktır. Dizine geçin ve Makefile dosyasını düzenlemek üzere açıp 4. satırı
+    </div>
+<div class="para"><div align="right"><pre class="screen">EXTRAVERSION = -x</pre></div></div>
+    <div class="para">
+yapın. Bu derlenmiş çekirdeğin ismini <tt>vmlinuz-2.4.22-x</tt> yapacak. Böylece bu çekirdeğin X terminalleri için derlediğimiz çekirdek olduğunu hatırlayacağız. Hatırlamamız lazım da, çünkü bu çekirdekle üzerinde çalıştığınız Linux sistemini açamayacaksınız. Bu çekirdek sadece X terminallerini çalıştırabilecek kadar yeteneğe sahip olacak. Örneğin ağ kartı, fare, ekran kartı ve makinanın belleği gibi temel donanım bilgilerinden başka donanım bilgisi içermeyecek. Sabit diskleri, disket sürücülerini, CDROM'ları ses kartlarını v.s. tanımayacak. Bir terminale bunlar gerekmez.
+    </div><div class="para">
+Linux çekirdeğini derlemek için iyi derecede İng. bilmek daha da ötesi iyi derecede sistem bilgisi gerekir. Bu derece ayrıntı bu küçük belgenin sınırlarını aşar. Bu bilgi ayrı bir kitap olur.
+    </div><div class="para">
+Ben sadece çekirdek yapılandırmasının sonucu olan <tt>.config</tt> dosyasının içeriğini vereceğim. Bunun yanında da neyi niçin yaptığım hakkında kısa bir bilgi vereceğim. <a class="link" href="../howto/windows-ve-linux_app1.html" title="A. Çekirdek Yapılandırma Dosyası (.config)">Yapılandırma dosyasını</a> eklerde bulabilirsiniz. Onu ayrı bir pencerede açıp burada yapacağım açıklamaları oradan izleyebilirsiniz.
+    </div><ul type="disc" class="itemizedlist"><li>
+14. satırda başlayan bölümde çekirdeğe yüklenebilir modül desteği veriyoruz.
+    </li><li>
+21. satırda başlayan bölümde çekirdeğin 386 ve sonraki işlemciler için geçerli olmasını sağlıyoruz. Böylece 386, 486, 586 ve 686 işlemcileri ve bunlarla uyumlu (AMD gibi) çekirdeklerle çekirdeğimiz çalışabilecek. Alt satırlarda bir 386 çekirdeğin desteklemediği hiçbir özelliği çekirdeğe vermiyoruz. 386SX'lerde bu çekirdek çalışmaz. En az 386DX gerekir. Bunların ne olduğunu bilmiyoranız, boşverin. Karşılaşmamışsınız demektir (antika).
+    </li><li>
+67. satırda başlayan genel ayarlar bölümünde çekirdeğe, 69. satırda ağ desteği, 70'de PCI desteği ve devamında sistemin genelini etkileyen bazı özel durumlara ilişki destekleri veriyoruz.
+    </li><li>
+112. satırda başlayan blok aygıtları bölümünde sadece ramdisk ve initrd ile ilgili destekleri veriyoruz.
+    </li><li>
+142. satırda başlayan ağ seçenekleri bölümünde bir linux ağı için gerekli ne varsa bunların desteğini veriyoruz.
+    </li><li>
+242. satırda başlayan bölümde ağ aygıtları ile ilgili desteği açıyoruz ve 257. satırda başlayan 10/100 Mbitlik ethernet kartlarının tamamının modül olarak derlenmesini istiyoruz. Piyasadaki en ucuz, en kullanışlı ve en çok kullanılan ağ kartları bunlar. Sizinki bunlardan biri değilse biraz paraya kıyıp bunlardan temin edin ve ağınızı bunlara göre oluşturun. 100MBitlik bir ağın tadına doyum olmaz.
+    </li><li>
+404. satırda başlayan bölümde klavye ve fare için donanımsal destek, 415. satırda başlayan bölümde seri portlarla ve konsol ile ilgili  destek, 449. satırda başlayan bölümde ise fare türleri ile ilgili destek var.
+    </li><li>
+496. satırda başlayan bölümde sadece donanım saati desteğini veriyoruz.
+    </li><li>
+534. satırda başlayan bölümde ramdisk için gereken dosya sistemi ile ilgili destekleri veriyoruz.
+    </li></ul><div class="para">
+Bu dosyayı <tt>/usr/src/linux-2.4.22</tt> dizini altına <tt>.config</tt> ismiyle kaydedin (başında . olacak).
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>make menuconfig</tt></b></pre></div></div>
+    <div class="para">
+Komutunu verin. Bir takım işlemlerden sonra bir pencere açılacak. Hiç orada dolaşmayın. <tt>ESC ESC</tt> ile çıkın ve ardından sırasıyla şu komutları verin:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>make dep</tt></b>
+# <b><tt>make bzImage</tt></b>
+# <b><tt>make modules</tt></b>
+# <b><tt>make install</tt></b>
+# <b><tt>make modules_install</tt></b>
+</pre></div></div>
+    <div class="para">
+Bu komutların herbiri biraz vakit alır, bu işlemler sürerken makinada oyun filan oynayabilirsiniz <tt>:-)</tt> Merak etmeyin işlemi öyle aman aman yavaşlatmaz.
+    </div><div class="para">
+Bu işlemler sonucunda <tt>/boot</tt> dizininde isminde <tt>2.4.22-x</tt> bulunan bazı dosyalar oluşacak. Bunlardan <tt>vmlinuz-2.4.22-x</tt> isimli dosya çekirdeğimizdir. Onu <tt>/export/netlogon/autoboot</tt> dizinine <tt>vmlinuz</tt> ismiyle kopyalayın. <tt>vmlinuz-2.4.22-x</tt> çekirdeğinin sistemin kendi çekirdeğine göre ne kadar küçük olduğuna dikkat edin (yarısı kadar).
+    </div><div class="para">
+Ayrıca derlenen modüller de <tt>/lib/modules/2.4.22-x</tt> dizini altındaki dizinlere konulmuş olacak. Bize <tt>/lib/modules/2.4.22-x/kernel/drivers/net</tt> dizini altındaki modüllerden biri gerekecek. Hangisi olacağını nasıl tespit edeceğiz? derseniz ona da sıra gelecek.
+    </div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/windows-ve-linux__initrd.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/windows-ve-linux__terminal.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/windows-ve-linux_temel-sistem.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">initrd.img Dosyasının Oluşturulması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Tek Başına (basit) Linux</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

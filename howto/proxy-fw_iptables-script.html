@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2006-10-18T18:18:41+03:00" /><title>E. iptables betiği</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/proxy-fw.html" title="Internet'e Bağlanırken Gerekenler: Firewall ve Proxy" /><link rel="previous" href="../howto/proxy-fw_perde-xml.html" title="D. perde.xml dosyası" /><link rel="next" href="../howto/karaliste-nasil.html" title="IP Karalistesi NASIL" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">E. iptables betiği</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/proxy-fw_perde-xml.html">Önceki</a> </td><th width="60%" align="center">Internet'e Bağlanırken Gerekenler: Firewall ve Proxy</th><td width="20%" align="right"> <a accesskey="n" href="../howto/karaliste-nasil.html">Sonraki</a></td></tr></table></td></tr></table><div class="appendix"> <div class="titlepage"><div><div class="head2"><a name="proxy-fw_iptables-script" id="proxy-fw_iptables-script"></a>E. <tt>iptables</tt> betiği</div></div></div><dl><dd>
+<div class="para" align="right"><pre class="screen">
+<b><tt>#!/bin/sh</tt></b>
+#
+# Startup script to implement /etc/sysconfig/iptables pre-defined rules.
+#
+# chkconfig: 2345 08 92
+#
+# description: Automates a packet filtering firewall with iptables.
+#
+# by bero@redhat.com, based on the ipchains script:
+# Script Author:        Joshua Jensen &lt;joshua@redhat.com&gt;
+#   -- hacked up by gafton with help from notting
+# modified by Anton Altaparmakov &lt;aia21@cam.ac.uk&gt;:
+# modified by Nils Philippsen &lt;nils@redhat.de&gt;
+#
+# config: /etc/sysconfig/iptables
+
+# Source 'em up
+<b><tt>. /etc/init.d/functions
+
+FIREWALL=/usr/local/firewall/Perde.fw
+
+if [ ! -x /sbin/iptables ]; then
+        exit 0
+fi
+
+KERNELMAJ=`uname -r | sed                   -e 's,\..*,,'`
+KERNELMIN=`uname -r | sed -e 's,[^\.]*\.,,' -e 's,\..*,,'`
+
+if [ "$KERNELMAJ" -lt 2 ] ; then
+        exit 0
+fi
+if [ "$KERNELMAJ" -eq 2 -a "$KERNELMIN" -lt 3 ] ; then
+        exit 0
+fi
+
+
+
+if  /sbin/lsmod 2&gt;/dev/null |grep -q ipchains ; then
+        # Don't do both
+        exit 0
+fi
+
+iftable() {
+        if fgrep -qsx $1 /proc/net/ip_tables_names; then
+                iptables -t "$@"
+        fi
+}
+
+start() {</tt></b>
+        # don't do squat if we don't have the config file
+<b><tt>     if [ -f $FIREWALL ]; then</tt></b>
+            # If we don't clear these first, we might be adding to
+            #  pre-existing rules.
+<b><tt>         action $"Flushing all current rules and user defined chains:" iptables -F
+            action $"Clearing all current rules and user defined chains:" iptables -X
+            chains=`cat /proc/net/ip_tables_names 2&gt;/dev/null`
+            for i in $chains; do iptables -t $i -F; done &amp;&amp; \
+              success $"Flushing all current rules and user defined chains:" || \
+              failure $"Flushing all current rules and user defined chains:"
+            for i in $chains; do iptables -t $i -X; done &amp;&amp; \
+              success $"Clearing all current rules and user defined chains:" || \
+              failure $"Clearing all current rules and user defined chains:"
+
+            for i in $chains; do iptables -t $i -Z; done
+
+            echo $"Applying iptables firewall rules: "
+                $FIREWALL \
+                    success $"Applying iptables firewall rules" || \
+                    failure $"Applying iptables firewall rules"
+            echo
+            touch /var/lock/subsys/iptables
+        else
+        echo "No firewall"
+        fi
+}
+
+stop() {
+        chains=`cat /proc/net/ip_tables_names 2&gt;/dev/null`
+        for i in $chains; do iptables -t $i -F; done &amp;&amp; \
+                success $"Flushing all chains:" || \
+                failure $"Flushing all chains:"
+        for i in $chains; do iptables -t $i -X; done &amp;&amp; \
+                success $"Removing user defined chains:" || \
+                failure $"Removing user defined chains:"
+        echo -n $"Resetting built-in chains to the default ACCEPT policy:"
+        iftable filter -P INPUT ACCEPT &amp;&amp; \
+           iftable filter -P OUTPUT ACCEPT &amp;&amp; \
+           iftable filter -P FORWARD ACCEPT &amp;&amp; \
+           iftable nat -P PREROUTING ACCEPT &amp;&amp; \
+           iftable nat -P POSTROUTING ACCEPT &amp;&amp; \
+           iftable nat -P OUTPUT ACCEPT &amp;&amp; \
+           iftable mangle -P PREROUTING ACCEPT &amp;&amp; \
+           iftable mangle -P OUTPUT ACCEPT &amp;&amp; \
+           success $"Resetting built-in chains to the default ACCEPT policy" || \
+           failure $"Resetting built-in chains to the default ACCEPT policy"
+        echo
+        rm -f /var/lock/subsys/iptables
+}
+
+case "$1" in
+  start)
+        start
+        ;;
+
+  stop)
+        stop
+        ;;
+
+  restart)</tt></b>
+        # "restart" is really just "start" as this isn't a daemon,
+        #  and "start" clears any pre-defined rules anyway.
+        #  This is really only here to make those who expect it happy
+<b><tt>     start
+        ;;
+
+  condrestart)
+        [ -e /var/lock/subsys/iptables ] &amp;&amp; start
+        ;;
+
+  status)
+        tables=`cat /proc/net/ip_tables_names 2&gt;/dev/null`
+        for table in $tables; do
+                echo $"Table: $table"
+                iptables -t $table --list
+        done
+        ;;
+
+  panic)
+        echo -n $"Changing target policies to DROP: "
+        iftable filter -P INPUT DROP &amp;&amp; \
+            iftable filter -P FORWARD DROP &amp;&amp; \
+            iftable filter -P OUTPUT DROP &amp;&amp; \
+            iftable nat -P PREROUTING DROP &amp;&amp; \
+            iftable nat -P POSTROUTING DROP &amp;&amp; \
+            iftable nat -P OUTPUT DROP &amp;&amp; \
+            iftable mangle -P PREROUTING DROP &amp;&amp; \
+            iftable mangle -P OUTPUT DROP &amp;&amp; \
+            success $"Changing target policies to DROP" || \
+            failure $"Changing target policies to DROP"
+        echo
+        iftable filter -F INPUT &amp;&amp; \
+                iftable filter -F FORWARD &amp;&amp; \
+                iftable filter -F OUTPUT &amp;&amp; \
+                iftable nat -F PREROUTING &amp;&amp; \
+                iftable nat -F POSTROUTING &amp;&amp; \
+                iftable nat -F OUTPUT &amp;&amp; \
+                iftable mangle -F PREROUTING &amp;&amp; \
+                iftable mangle -F OUTPUT &amp;&amp; \
+                success $"Flushing all chains:" || \
+                failure $"Flushing all chains:"
+        iftable filter -X INPUT &amp;&amp; \
+                iftable filter -X FORWARD &amp;&amp; \
+                iftable filter -X OUTPUT &amp;&amp; \
+                iftable nat -X PREROUTING &amp;&amp; \
+                iftable nat -X POSTROUTING &amp;&amp; \
+                iftable nat -X OUTPUT &amp;&amp; \
+                iftable mangle -X PREROUTING &amp;&amp; \
+                iftable mangle -X OUTPUT &amp;&amp; \
+                success $"Removing user defined chains:" || \
+                failure $"Removing user defined chains:"
+        ;;
+
+  save)
+    echo "Fwbuilder to modify ipchains rules"
+        ;;
+
+  *)
+        echo $"Usage: $0 {start|stop|restart|condrestart|status|panic|save}"
+        exit 1
+esac
+
+exit 0</tt></b>
+</pre></div>
+    </dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/proxy-fw_perde-xml.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/proxy-fw.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/karaliste-nasil.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">D. perde.xml dosyası </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> IP Karalistesi NASIL</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:08+03:00" /><title>Olayları yakalamak</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/ncurses-howto-mouse.html" title="Fare ile Etkileşim" /><link rel="previous" href="../howto/ncurses-howto-mousebasics.html" title="Temel bilgiler " /><link rel="next" href="../howto/ncurses-howto-mousetogether.html" title="Hepsini Bir Araya Getirelim" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Olayları yakalamak</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/ncurses-howto-mousebasics.html">Önceki</a> </td><th width="60%" align="center">Fare ile Etkileşim</th><td width="20%" align="right"> <a accesskey="n" href="../howto/ncurses-howto-mousetogether.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="ncurses-howto-gettingevents" id="ncurses-howto-gettingevents"></a>Olayları yakalamak</div><dl><dd><div class="para">
+Bir kere bir fare sınıfı olayları etkin hale getirildi mi, <tt>getch()</tt> türü işlevler her fare olayı olduğunda <tt>KEY_MOUSE</tt> döndürürler. Daha sonra da fare olayı <b><tt>getmouse()</tt></b> ile alınabilir.
+</div><div class="para">
+Kod yaklaşık olarak şuna benzer:
+</div>
+<div class="para"><div align="right"><pre class="programlisting">
+  MEVENT event;
+
+  ch = getch();
+  if(ch == KEY_MOUSE)
+    if(getmouse(&amp;event) == OK)
+      /* Olay ile ilgili bir şeyler yap */
+      .
+      .
+</pre></div></div>
+<div class="para">
+<tt>getmouse()</tt> olayı kendisine verilen göstericide döndürür. Göstericinin gösterdiği değer aşağıdakileri içeren bir yapıdır:
+</div>
+<div class="para"><div align="right"><pre class="programlisting">
+typedef struct
+{
+  short id;         /* Pekçok aygıtı tanımlamak için ID */
+  int x, y, z;      /* olay koordinatları */
+  mmask_t bstate;   /* tuş durumu bitleri */
+}
+</pre></div></div>
+<div class="para">
+<tt>bstate</tt> ilgilendiğimiz temel değişkendir. Farenin tuş durumu bilgisini verir.
+</div><div class="para">
+Aşağıdakine benzer bir kodla ne olduğunu bulabiliriz.
+</div>
+<div class="para"><div align="right"><pre class="programlisting">
+  if(event.bstate &amp; BUTTON1_PRESSED)
+    printw("Sol Tuş Basıldı");
+</pre></div></div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/ncurses-howto-mousebasics.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/ncurses-howto-mouse.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/ncurses-howto-mousetogether.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Temel bilgiler  </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Hepsini Bir Araya Getirelim</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2019-10-17T22:36:15+03:00" /><title>Qmail Kurulumu</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/qmail-kurulumu-nasil.html" title="QMAIL Kurulumu NASIL" /><link rel="previous" href="../howto/qmail-kurulumu-nasil_genel.html" title="Genel Bilgiler" /><link rel="next" href="../howto/qmail-kurulumu-nasil_ekkur.html" title="Gerekli Paketlerin Kurulumu" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Qmail Kurulumu</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/qmail-kurulumu-nasil_genel.html">Önceki</a> </td><th width="60%" align="center">QMAIL Kurulumu NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/qmail-kurulumu-nasil_ekkur.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="qmail-kurulumu-nasil_qmailkur" id="qmail-kurulumu-nasil_qmailkur"></a>Qmail Kurulumu</div><dl><dd><div class="para">
+Qmail'in <a class="ulink" href="http://cr.yp.to/software/qmail-1.03.tar.gz" target="_top">kendi 
+sitesinden</a> en son qmail sürümünü indirin (Şu anki sürümü: 1.03)
+     </div><div class="para">
+Qmail kurulumuna başlamadan önce qmail için gerekli sistem kullanıcılarını
+ekleyelim.
+       </div><ol class="orderedlist" start="ignore" type="1"><li><div class="listitem"><div class="para">
+<a class="ulink" href="http://www.freebsd.org/" target="_top">FreeBSD</a> kullanıyorsanız:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# pw groupadd nofiles
+
+# pw useradd qmaild -g nofiles -d /var/qmail -s /nonexistent
+# pw useradd qmaill -g nofiles -d /var/qmail -s /nonexistent
+# pw useradd qmailp -g nofiles -d /var/qmail -s /nonexistent
+# pw useradd alias -g nofiles -d /var/qmail/alias -s /nonexistent
+
+# pw groupadd qmail
+# pw useradd qmailq -g qmail -d /var/qmail -s /nonexistent
+# pw useradd qmailr -g qmail -d /var/qmail -s /nonexistent
+# pw useradd qmails -g qmail -d /var/qmail -s /nonexistent
+</pre></div></div></div></li><li><div class="listitem"><div class="para">
+Linux kullanıyorsanız:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# groupadd nofiles
+
+# useradd -g nofiles -d /var/qmail qmaild
+# useradd -g nofiles -d /var/qmail/alias alias
+# useradd -g nofiles -d /var/qmail qmaill
+# useradd -g nofiles -d /var/qmail qmailp
+# groupadd qmail
+# useradd -g qmail -d /var/qmail qmailq
+# useradd -g qmail -d /var/qmail qmailr
+# useradd -g qmail -d /var/qmail qmails
+</pre></div></div></div></li><li><div class="listitem"><div class="para">
+Solaris kullanıyorsanız:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# groupadd nofiles
+
+# useradd -g nofiles -m -d /var/qmail -s /bin/false qmaild
+# useradd -g nofiles -m -d /var/qmail/alias -s /bin/false alias
+# useradd -g nofiles -m -d /var/qmail -s /bin/false qmaill
+# useradd -g nofiles -m -d /var/qmail -s /bin/false qmailp
+# groupadd qmail
+# useradd -g qmail -m -d /var/qmail -s /bin/false qmailq
+# useradd -g qmail -m -d /var/qmail -s /bin/false qmailr
+# useradd -g qmail -m -d /var/qmail -s /bin/false qmails
+</pre></div></div></div></li></ol><div class="para">
+Şimdi qmail'i kurmaya başlayabiliriz. Unutmayın, yukarıdaki kullanıcıları
+açmazsanız qmail kurulmayacaktır.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# mkdir /var/qmail
+# tar -zxvf qmail-1.03.tar.gz
+# cd qmail-1.03
+# make setup check
+</pre></div></div>
+    <div class="para">
+daha sonra <tt>/var/qmail/control</tt> dizini altında gerekli
+qmail yapılandırma dosyalarını oluşturmak için
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# ./config
+</pre></div></div>
+<div class="para">
+komutunu verin, qmail kurduğunuz sunucunun doğru bir DNS kaydı olması
+lazımdır.
+     </div><div class="para">
+DNS hakkında bilginiz yoksa DNS ile ilgili <a class="ulink" href="bind-ile-dns-howto.html" target="_top">BIND 8 ile DNS NASIL</a> veya <a class="ulink" href="djbdns-kurulumu-nasil.html" target="_top">djbDNS Kurulumu NASIL</a> belgelerini
+okuyabilirsiniz. DNS sunucu olarak djbDNS kullanmanızı tavsiye ederim.
+     </div><div class="para">
+Eposta sunucunun IP'sinin ters (reverse) DNS kaydı olmazsa qmail çalışmaz.
+Herhangi bir sorundan dolayı qmail, DNS bilgilerinize geçici olarak
+erişemezse aşağıdaki komutu verin.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+#./config-fast mail.example.com
+</pre></div></div>
+     <div class="para">
+<tt>mail.example.com</tt> yerine sizin eposta sunucunuzun adını
+yazınız.
+     </div><div class="para">
+Kurulumun tamamlanması için bazı takma isimlerin (alias) oluşturulması lazım.
+     </div><ul type="disc" class="itemizedlist"><li><b>postmaster</b>: eposta yoneticisi,
+         </li><li><b>mailer-daemon</b>: bazı geri dönen postaların alıcısı,
+         </li><li><b>root</b>: sistemdeki root kullanıcısı.
+         </li></ul><div class="para">
+<tt>root</tt>'a, <tt>mailer-daemon</tt>'a ve
+<tt>postmaster</tt>'a gelen postaları
+<tt>ismail@enderunix.org</tt>'a yönlendirmek için aşağıdaki
+komutları vereceğiz. (<tt>ismail@enderunix.org</tt> yerine siz
+kendi eposta adresinizi kullanınız, bu belgeyi okuyanlardan bazıları
+kendi eposta sunucularındaki bu takma isimlere benim eposta adresimi
+yazmışlar <tt>!:)</tt>)
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# cd ~alias
+# echo  ismail@enderunix.org&gt; .qmail-root
+# echo ismail@enderunix.org &gt; .qmail-postmaster
+# echo ismail@enderunix.org &gt; .qmail-mailer-daemon
+
+# chmod 2755 ~alias
+# chmod 644 ~alias/.qmail*
+</pre></div></div>
+    </dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/qmail-kurulumu-nasil_genel.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/qmail-kurulumu-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/qmail-kurulumu-nasil_ekkur.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Genel Bilgiler </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Gerekli Paketlerin Kurulumu</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

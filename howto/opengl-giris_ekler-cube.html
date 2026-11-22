@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:11+03:00" /><title>cube.c</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/opengl-giris_ekler.html" title="A. Örnek Programlar" /><link rel="previous" href="../howto/opengl-giris_ekler.html" title="A. Örnek Programlar" /><link rel="next" href="../howto/opengl-giris_ekler-glorgMolehill.html" title="glorgMolehill.c" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">cube.c</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/opengl-giris_ekler.html">Önceki</a> </td><th width="60%" align="center">A. Örnek Programlar</th><td width="20%" align="right"> <a accesskey="n" href="../howto/opengl-giris_ekler-glorgMolehill.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="opengl-giris_ekler-cube" id="opengl-giris_ekler-cube"></a>cube.c</div><dl><dd>
+<div class="para"><div align="right"><pre class="screen">
+/* Kullanımı: YUKARI ve AŞAĞI OK tuşları ve X, Y, Z tuşları */
+
+#include &lt;GL/gl.h&gt;
+#include &lt;GL/glu.h&gt;
+#include &lt;GL/glut.h&gt;
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;math.h&gt;
+
+#define WIDTH  480
+#define HEIGHT 480
+
+#define RED   0
+#define GREEN 0
+#define BLUE  0
+#define ALPHA 1
+
+#define KEY_ESC 27
+#define KEY_UP 101
+#define KEY_DOWN 103
+#define KEY_X 120
+#define KEY_Y 121
+#define KEY_Z 122
+
+GLuint face;
+GLuint cube;
+
+#define DELTA 5
+int x = 0;
+int rotateX = 0;
+int y = 0;
+int rotateY = 0;
+int z = 0;
+int rotateZ = 0;
+int speed = 0;
+
+void init_scene();
+void render_scene();
+GLvoid initGL();
+GLvoid window_display();
+GLvoid window_reshape(GLsizei width, GLsizei height);
+GLvoid window_idle();
+GLvoid window_key(unsigned char key, int x, int y);
+GLvoid window_special_key(int key, int x, int y);
+
+int main(int argc, char **argv)
+{
+  glutInit(&amp;argc, argv);
+  glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
+
+  glutInitWindowSize(WIDTH, HEIGHT);
+  glutInitWindowPosition(0, 0);
+  glutCreateWindow("Rotating Cube");
+
+  initGL();
+  init_scene();
+
+  glutDisplayFunc(&amp;window_display);
+  glutReshapeFunc(&amp;window_reshape);
+  glutIdleFunc(&amp;window_idle);
+  glutKeyboardFunc(&amp;window_key);
+  glutSpecialFunc(&amp;window_special_key);
+
+  glutMainLoop();
+
+  return 1;
+}
+
+GLvoid initGL()
+{
+  glClearColor(RED, GREEN, BLUE, ALPHA);
+  glClearDepth(1.0);
+  glDepthFunc(GL_LESS);
+  glEnable(GL_DEPTH_TEST);
+}
+
+void init_scene()
+{
+  face = glGenLists(2);
+  cube = face + 1;
+
+  glNewList(face, GL_COMPILE);
+    glBegin(GL_POLYGON);
+      glVertex3f(0, 0, 0);
+      glVertex3f(1, 0, 0);
+      glVertex3f(1, 1, 0);
+      glVertex3f(0, 1, 0);
+    glEnd();
+  glEndList();
+
+  glNewList(cube, GL_COMPILE);
+    glTranslatef(-0.5, -0.5, 0.5);
+
+    glColor3f(1, 0, 0);
+    glCallList(face);
+
+    glColor3f(1, 1, 0);
+    glPushMatrix();
+    glTranslatef(0, 0, -1);
+    glCallList(face);
+    glPopMatrix();
+
+    glColor3f(0, 1, 0);
+    glPushMatrix();
+    glRotatef(90, 0, 1, 0);
+    glCallList(face);
+    glPopMatrix();
+
+    glColor3f(0, 1, 1);
+    glPushMatrix();
+    glTranslatef(1, 0, 0);
+    glRotatef(90, 0, 1, 0);
+    glCallList(face);
+    glPopMatrix();
+
+    glColor3f(0, 0, 1);
+    glPushMatrix();
+    glRotatef(-90, 1, 0, 0);
+    glCallList(face);
+    glPopMatrix();
+
+    glColor3f(1, 0, 1);
+    glPushMatrix();
+    glTranslatef(0, 1, 0);
+    glRotatef(-90, 1, 0, 0);
+    glCallList(face);
+    glPopMatrix();
+
+  glEndList();
+}
+
+GLvoid window_display()
+{
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glLoadIdentity();
+  gluLookAt(0, 0, 5, 0, 0, 0, 0, 1, 0);
+  render_scene();
+  glutSwapBuffers();
+}
+
+GLvoid window_reshape(GLsizei width, GLsizei height)
+{
+  if (height == 0)
+    height = 1;
+
+  glViewport(0, 0, width, height);
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  gluPerspective(45, (GLdouble)width/(GLdouble)height, 1, 10);
+  glMatrixMode(GL_MODELVIEW);
+}
+
+GLvoid window_key(unsigned char key, int x, int y)
+{
+  switch (key) {
+  case KEY_ESC:
+    exit(1);
+    break;
+  case KEY_X:
+    rotateX = !rotateX;
+    glutPostRedisplay();
+    break;
+  case KEY_Y:
+    rotateY = !rotateY;
+    glutPostRedisplay();
+    break;
+  case KEY_Z:
+    rotateZ = !rotateZ;
+    glutPostRedisplay();
+    break;
+  default:
+    printf ("Pressing %d doesn't do anything.\n", key);
+    break;
+  }
+}
+
+GLvoid window_special_key(int key, int x, int y)
+{
+  switch (key) {
+  case KEY_UP:
+    speed = (speed + DELTA + 360) % 360;
+    glutPostRedisplay();
+    break;
+
+  case KEY_DOWN:
+    speed = (speed - DELTA + 360) % 360;
+    glutPostRedisplay();
+    break;
+
+  default:
+    printf ("Pressing %d doesn't do anything.\n", key);
+    break;
+  }
+}
+
+GLvoid window_idle()
+{
+  if (rotateX) x = (x + speed + 360) % 360;
+  if (rotateY) y = (y + speed + 360) % 360;
+  if (rotateZ) z = (z + speed + 360) % 360;
+  if (speed &gt; 0 &amp;&amp; (rotateX || rotateY || rotateZ))
+    glutPostRedisplay();
+}
+
+void render_scene()
+{
+  glRotatef(x, 1, 0, 0);
+  glRotatef(y, 0, 1, 0);
+  glRotatef(z, 0, 0, 1);
+  glCallList(cube);
+}
+</pre></div></div>
+      </dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/opengl-giris_ekler.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/opengl-giris_ekler.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/opengl-giris_ekler-glorgMolehill.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">A. Örnek Programlar </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> glorgMolehill.c</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

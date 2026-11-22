@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:16+03:00" /><title>Bir ext2/3 disk bölümünü biçimlendirmek</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/partition-howto.html" title="Linux Disk Bölümleme NASIL" /><link rel="previous" href="../howto/partition-howto-labels.html" title="Etiketler" /><link rel="next" href="../howto/partition-howto-recovering.html" title="Silinmiş bir Disk Bölümünü Kurtarmak" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Bir ext2/3 disk bölümünü biçimlendirmek</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/partition-howto-labels.html">Önceki</a> </td><th width="60%" align="center">Linux Disk Bölümleme NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/partition-howto-recovering.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="partition-howto-formatting" id="partition-howto-formatting"></a>Bir ext2/3 disk bölümünü biçimlendirmek</div><dl><dd><div class="para">
+Bir sabit disk bölümlendirildiğinde, birtakım alanlara haritası çıkarılır ve bu alanların içeriği boştur. Tıpkı rafları yeni oluşturulmuş bir kütüphaneye benzer. Tek ihtiyacı olan kitap kataloğunun ve işaretlerin oluşturulmasıdır.
+        </div><div class="para">
+Disk bölümü içerisideki organize bilgisine dosya sistemi denir. Linux iler standart dosya sistemi ext2 ve ext3'tür ext3 dosya sistemi ext2 özelliklerine ilave olarak günlük olarak isimlendirilebilen disk kayıtlarını da içermektedir. Bu günlük ani güç kesilmelerinde ve başka durumlarda diskin kurtarılmasını sağlar.
+        </div><div class="para">
+ext2/3 dosya sistemi oluşturmak için kullanılan temel araç <b><tt>mke2fs</tt></b>'tir. Genelde <tt>/sbin</tt> altında bulunur. <b><tt>mkfs.ext2</tt></b> ve <b><tt>mkfs.ext3</tt></b> <b><tt>mke2fs</tt></b> üzerinde çalışan ve ona çeşitli seçenekler gönderen komutlardır.
+        </div> <div class="head3"><a name="formatting-invocation" id="formatting-invocation"></a>Basit Çalıştırma</div><dl><dd>
+<div class="para"><pre class="literallayout">
+<b><tt>mke2fs</tt></b> /dev/hdb1
+
+<b><tt>mkfs.ext2</tt></b> /dev/hdb1
+</pre></div>
+        <div class="para">
+her ikisi de ikinci sürücünün ilk disk bölümünde ext2 dosya sistemi oluşturur. Ve,
+        </div>
+<div class="para"><pre class="literallayout">
+<b><tt>mke2fs</tt></b> -j /dev/hdb1
+
+<b><tt>mkfs.ext3</tt></b> /dev/hdb1
+</pre></div>
+        <div class="para">
+bir ext3 dosya sistemi oluşturur.
+        </div></dd></dl> <div class="head3"><a name="reservedblocks" id="reservedblocks"></a>Atanmış bloklar</div><dl><dd><div class="para">
+<tt>-m seçeneği</tt> uzman olmayanların muhtemelen sıklıkla kullandığı bir özelliktir. Eğer dosya sistemi doldurulmuş ve yazılacak alan kalmadıysa temel olarak işletim sistemin sürekli yazmaya çalışmasından kullanım dışıdır. Varsayılan olarak disk bölümün yüzde beşi root kullanıcısının kullanımına ayrılır. Bu da root kullanıcısının disy üzerinde yönetimsel işlemler yapmasını veya gerekliyse bri takım verileri kaldırmasını sağlar. Yine de, bu durum disk bölümünün / veya home dizinlerini içermesi durumunda en kritik halini alır. Saf veri disk bölümleri için bu durum bir alan israfıdır. 250GB lık alanın yüzde beşi 12.5 GB'tır. Büyük disk bölümlerinin olması durumunda ayrılan alanı en az tutmak gerekir, ki bu da yüzde birdir.
+        </div>
+<div class="para"><pre class="literallayout">
+<b><tt>mkfs.ext3</tt></b> -m 1 /dev/hdb1
+</pre></div>
+        <div class="para">
+root kullanıcısının kullanımına %1'lik bir ayrılmış alan oluşturarak dosya sistemini oluşturur. <b><tt>tune2fs -m</tt></b>, ayrılan blokların, diske verilerin yüklenmesinden sonra, ayarlanmasını sağlar.
+        </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/partition-howto-labels.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/partition-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/partition-howto-recovering.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Etiketler </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Silinmiş bir Disk Bölümünü Kurtarmak</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

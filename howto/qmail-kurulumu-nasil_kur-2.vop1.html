@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2019-10-17T22:36:15+03:00" /><title>Vpopmail Kurulumu</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/qmail-kurulumu-nasil_kur-2.html" title="B. İkinci Tür Kurulum" /><link rel="previous" href="../howto/qmail-kurulumu-nasil_kur-2.html" title="B. İkinci Tür Kurulum" /><link rel="next" href="../howto/qmail-kurulumu-nasil_kur-2.vpop2.html" title="Vpopmail'in Özelleştirlmesi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Vpopmail Kurulumu</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/qmail-kurulumu-nasil_kur-2.html">Önceki</a> </td><th width="60%" align="center">B. İkinci Tür Kurulum</th><td width="20%" align="right"> <a accesskey="n" href="../howto/qmail-kurulumu-nasil_kur-2.vpop2.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="qmail-kurulumu-nasil_kur-2.vop1" id="qmail-kurulumu-nasil_kur-2.vop1"></a>Vpopmail Kurulumu</div><dl><dd><div class="para">
+        Bu kurulumlarda sanal kullanıcılar olacağı için sanal makina ve kullanıcı
+işlerini çok kolaylaştıran <tt>vpopmail</tt> programını kuracağız.
+      </div><div class="para">
+        Vpopmail otomatik olarak kullanıcı ve alanadı (domain) ekler ve qmail'deki
+        gerekli değişiklikleri otomatik olarak yapar. Biz burada "vpopmail mysql
+        desteği" vererek kullanıcı adı, parolası, kullanıcının adı soyadı, vb.
+        bilgileri  mysql tablolarında tutacağız.
+      </div><div class="para">
+        <a class="ulink" href="https://www.inter7.com/vpopmail-virtualized-email/" target="_top">https://www.inter7.com</a>
+        adresinden en son kararlı vpopmail sürümünü indiririn. MySQL'in kurulu
+        olduğunu kabul ediyoruz.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# tar -zxf vpopmail-5.2.1.tar.gz
+# cd vpopmail-5.2.1
+</pre></div></div>
+<div class="para">
+ile paketi açtıktan sonra vpopmail'in cdb veya Mysql destekli kurulumunu
+        anlatacağım. Kullanıcı bilgilerinin nerede saklanacağına karar vermeniz
+        gerekir. Açıkçası bu noktada size tam olarak cdb veya MySQL'i seçin demek
+        istemiyorum. ama 1000-2000 gibi kullanıcınız varsa ve MySQL kurmak
+        istemiyorsanız cdb'yi tavsiye ederim.
+      </div><div class="para">
+cdb yine qmail'in yazarı tarafından yazılmış, çok hızlı, güvenli, performanslı
+        bir dosya tabanlı veritabanıdır. cdb destekli vpopmail'de bilgiler
+        <tt>vpasswd.cdb</tt> adlı hash yapılmış bir dosyada saklanır.
+        Daha fazla bilgi için <a class="ulink" href="http://cr.yp.to/cdb.html" target="_top">http://cr.yp.to/cdb.html</a> adresine bakınız.
+      </div><div class="para">
+        vpopmail için <tt>vchkpw</tt> grubu ve vpopmail kullanıcısının
+        oluşturulması gerekir. Kullandığınız sisteme göre,
+      </div><div class="variablelist"><dl><dt><span class="term">FreeBSD için:</span></dt><dd class="varlist">
+<div class="para"><div align="right"><pre class="screen">
+# pw groupadd vchkpw
+# pw useradd vpopmail -g vchkpw -d /home/vpopmail -m -s /sbin/nologin
+</pre></div></div></dd>
+            <dt><span class="term">Linux ve Solaris için:</span></dt><dd class="varlist">
+<div class="para"><div align="right"><pre class="screen">
+# groupadd vchkpw
+# useradd  -g vchkpw  -m -d /home/vpopmail vpopmail   -s /bin/false
+</pre></div></div></dd></dl></div><div class="para">
+vpopmail isimli kullanıcı için ev dizini <tt>/home/vpopmail</tt>'dir.
+        Mümkün olduğu kadar bu dizini değiştirmemeye bakın.
+      </div><div class="para">
+        Bazı vpopmail parametrelerin ne manaya geldiğini açıklayalım:
+      </div><div class="variablelist"><dl><dt><span class="term">--enable-mysql=y</span></dt><dd class="varlist"><div class="para">
+              MySQL desteği vermek için. cdb kullanacaksanız bu parametreyi
+              vermeyin.</div></dd>
+            <dt><span class="term">--enable-sqlincdir=/usr/local/include/mysql</span></dt><dd class="varlist"><div class="para">
+              MySQL başlık dosyalarının bulunduğu dizin.</div></dd>
+            <dt><span class="term">--enable-sqllibdir=/usr/local/lib/mysql</span></dt><dd class="varlist"><div class="para">
+              MySQL kitaplıklarının bulunduğu dizin.</div></dd>
+            <dt><span class="term">--enable-roaming-users=y</span></dt><dd class="varlist"><div class="para">
+              Kullanıcı pop ile bağlandığı zaman otomatik olarak istediği IP'den
+              eposta gönderme özelliğine sahip oluyor (Belli bir süre  için).
+              Bu değişken özellikle web sitesi evsahipliği yapan firmalar için
+              çok idealdir. Bu sayede kullanıcılara dinamik olarak relay izni
+              verilebildiği için kullanıcı istediği yerden bağlanarak posta
+              gönderebilir.</div></dd>
+            <dt><span class="term">--enable-logging=y</span></dt><dd class="varlist"><div class="para">
+              Günlük kayıtlarının tutulmasını sağlar.</div></dd>
+            <dt><span class="term">--enable-defaultquota=10485760</span></dt><dd class="varlist"><div class="para">
+Otomatik olarak açılan tüm kullanıcılara byte olarak kota koymayı saglar.
+(Öntanımlı olarak 50MB'tır. 10485760=10MB). Önceki vpopmail
+sürümlerinde bu ifade <tt>--enable-hardquota</tt> idi.</div></dd>
+            <dt><span class="term">--enable-default-domain=example.com</span></dt><dd class="varlist"><div class="para">
+              vpopmail'de pop3 kullanıcılarının epostalarını okuyabilmeleri için
+              netscape, pine veya outlook'ta kullanıcı adını,
+              <tt>kullanıcı_adı%alan.adı</tt> şeklinde tanımlamaları
+              gerekmektedir.
+              </div><div class="para">
+                Ama tek bir alanadı için  bunu yapılandırma parametresinde vererek
+belirttiğiniz alanın kullanıcılarının <tt>kullanıcı_adı%alan.adı</tt>
+                yerine sadece <tt>kullanıcı_adı</tt>  şeklinde kullanıcı
+                adı yazmalarını sağlayabilirsiniz.
+              </div><div class="para">
+Diğer alanadı kullanıcıları yine yukarıdaki gibi <tt>kullanıcı_adı%diğer.alan.adı</tt>
+                şeklinde kullanıcı adı tanımlaması yapmalıdır.
+              </div></dd>
+            <dt><span class="term">--enable-clear-passwd=y|n</span></dt><dd class="varlist"><div class="para">
+              (Öntanımlı: "yes"). Bu parametre ile parolalar hem salt metin halinde
+hem de şifrelenmiş olarak saklanır. Parola doğrulaması için şifrelenmiş
+              parola kullanılır. Parolalarını unutan kullanıcılar için parola
+              değiştirmeye gerek kalmıyor :)</div></dd>
+            <dt><span class="term">--enable-many-domains=y|n</span></dt><dd class="varlist"><div class="para">
+(Öntanımlı: "yes"). 10'dan fazla alanadınız olacaksa bu parametreyi "y" olarak
+seçin. Eğer 10'dan az alanadınız olacaksa ve 10,000'den fazla kullanıcı
+             olacaksa bu özelliği "n" olarak seçin.</div></dd></dl></div><div class="para">
+        <tt>--enable-clear-passwd=y</tt> desteği verilince
+        <tt>vuserinfo</tt> komutu ile kullanıcı bilgisine baktığımızda,
+        aşağıda gördüğünüz gibi kullanıcının hem şifrelenmiş hem de salt metin
+        olarak parolasını görebilirsiniz. Bu özelliğin olmasını istemiyorsaniz
+        parametreyi "n" olarak seçiniz. Eğer bu desteği seçtiyseniz ve vpopmail
+        kurulumu değil de güncellemesi yapacaksanız <tt>vpopmail-5.2.1</tt>
+        dizindeki <tt>UPDATE</tt> dosyasını okuyunuz.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+#vuserinfo cayci@simitci.com
+name: cayci nuri
+passwd: $1IzoeelSC87c
+clear passwd: rize
+uid: 0
+gid: 0
+all services available
+dir: /hme/vpopmail/domains/simitci.com/cayci
+quota: 1048760
+usage: 0%
+account created: Fri Apr 19 17:08:04 2002
+last auth: Never logged in
+</pre></div></div>
+      <div class="para">
+        vpopmail'i önce cdb desteği ile kuralım:
+</div><div class="para"><div align="right"><pre class="screen">
+# ./configure \
+--enable-roaming-users=y \
+--enable-logging=y \
+--enable-defaultquota=10485760 \
+--enable-default-domain=mydomain.org \
+--enable-clear-passwd=y
+#make
+#make install-strip     <a name="qmail-kurulumu-nasil-co1" id="qmail-kurulumu-nasil-co1"></a><b style="background: transparent url(&quot;../images/xsl/callouts/1.png&quot;) no-repeat left 40%;">  </b>
+</pre></div></div><div class="calloutlist"><table border="0" summary="Dikkat edilecek hususlar" cellspacing="0" cellpadding="3" width="100%"><tr><td width="15" valign="top" align="left" class="coimage"><a href="#qmail-kurulumu-nasil-co1"><img src="../images/xsl/callouts/1.png" alt="1" border="0" /></a> </td><td valign="top" align="left"><div class="para">
+Hata verirse <b><tt>make install</tt></b> komutunu kullanınız.
+ </div></td></tr></table></div><div class="para">
+        cdb desteği ile vpopmail kurulumu bitti. Şimdi MySQL desteği ile kuralım.
+      </div><div class="para">
+        vpopmail'i MySQL ile yapılandırmak için <tt>vpopmail-5.2.1</tt>
+        dizinindeki <tt>vmysql.h</tt> dosyasında aşağıdaki gibi ifadeler
+        vardır.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+#define MYSQL_UPDATE_SERVER "localhost"
+#define MYSQL_UPDATE_USER "root"
+#define MYSQL_UPDATE_PASSWD "secret"
+
+#define MYSQL_READ_SERVER "localhost"
+#define MYSQL_READ_USER "root"
+#define MYSQL_READ_PASSWD "secret"
+</pre></div></div>
+      <ul type="disc" class="itemizedlist"><li>MYSQL_UPDATE_SERVER "MySQL sunucu adı",</li><li>MYSQL_UPDATE_USER "MySQL'e erişim kullanıcısı",</li><li>MYSQL_UPDATE_PASSWD "MySQL'e erişim kullanıcısının parolası",</li></ul><div class="para">
+        ile MYSQL_READ_SERVER, MYSQL_READ_USER, MYSQL_READ_PASSWD değişkenlerinin
+        değerini sizin MySQL değişkenlerine göre değiştirin.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# ./configure  \
+--enable-mysql=y \
+--enable-sqllibdir=/usr/local/lib/mysql/ \
+--enable-sqlincdir=/usr/local/include/mysql/  \
+--enable-roaming-users=y \
+--enable-logging=y \
+--enable-defaultquota=10485760 \
+--enable-default-domain=mydomain.org \
+--enable-clear-passwd=y
+#make
+#make install-strip
+</pre></div></div>
+(<i>hata verirse</i>
+<div class="para"><div align="right"><pre class="screen">
+# make install
+</pre></div></div>
+<div class="para"><i>komutunu kullanınız</i>.)
+      </div><div class="para">
+Eğer <tt>--enable-roaming-users=y</tt> seçtiyseniz, POP3 ile login
+        olan kullanıcının bir saat boyunca posta göndermediği durumda vpopmail'in
+        bu kullanıcıya relay iznini kapatması için crontab'ı düzenleyelim.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# crontab -e
+40 * * * * /home/vpopmail/bin/clearopensmtp 2&gt;&amp;1 &gt; /dev/null
+</pre></div></div>
+<div class="para">
+ifadesini ekleyin. (vpopmail'in ev dizini <tt>/home/vpopmail</tt>
+        değilse siz kendi vpopmail ev dizini ile değiştirin).
+      </div><div class="para">
+Burada vpopmail kullanımı ile alakalı bir kaç komutun kulanımını gösterelim.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+#export PATH=$PATH:/home/vpopmail/bin
+#vadddomain enderunix.org
+</pre></div></div>
+<div class="para">
+komutu ile <tt>enderunix.org</tt> için sanal alan oluşturalım.
+        <tt>/home/vpopmain/domains/enderunix.org</tt> dizini oluşacaktır.
+        Ve <tt>enderunix.org</tt>'a ait tüm kullanıcıların ev dizinleri
+        bu dizin altında olacaktır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# vadduser yenigul@enderunix.org
+</pre></div></div>
+<div class="para">veya</div>
+<div class="para"><div align="right"><pre class="screen">
+# vadduser yenigul@enderunix.org parola
+# vadduser -c "Murat Balaban" balaban@enderunix.org  balaban_parolası
+</pre></div></div>
+      
+<div class="para"><div align="right"><pre class="screen">
+# vdeluser yenigul@enderunix.org
+</pre></div></div>
+<div class="para">kullanıcıyı siler.</div>
+<div class="para"><div align="right"><pre class="screen">
+# vdeldomain enderunix.org
+</pre></div></div>
+<div class="para">alanadını siler.</div>
+<div class="para"><div align="right"><pre class="screen">
+# vsetquota balaban@enderunix.org KotaBoyutu[Byte]
+</pre></div></div>
+<div class="para">
+kullanıcıya kota vermek için,
+</div>
+<div class="para"><div align="right"><pre class="screen">
+vpasswd yenigul@enderunix.org
+</pre></div></div>
+<div class="para">kullanıcı parolasını değiştirmek için.
+      </div><div class="para">
+        vpopmail'de takma ad (alias) tanımlaması ise şu şekilde yapılır:
+      </div><div class="para">
+        <tt>~vpopmai/domains/yenigul.net</tt> dizini altında
+        <tt>.qmail-ulgen</tt> diye bir dosya oluştursak ve bu dosyaya
+        <tt>ulgen@enderunix.org</tt> yazarsak,
+        <tt>ulgen@yenigul.net</tt> adresine gelen epostalar
+        <tt>ulgen@enderunix.org</tt> adresine yönlendirilecektir.
+      </div><div class="para">
+<tt>Vpopmail</tt> kurulumu tamamlanmıştır. Son olarak vpopmail'de
+POP3 ayarları için <a href="../howto/qmail-kurulumu-nasil_kur-2.pop3.html" class="xref" title="POP3 Sunucu Kurulumu">POP3 Sunucu Kurulumu</a> kısmına
+bakınız.
+      </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/qmail-kurulumu-nasil_kur-2.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/qmail-kurulumu-nasil_kur-2.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/qmail-kurulumu-nasil_kur-2.vpop2.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">B. İkinci Tür Kurulum </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Vpopmail'in Özelleştirlmesi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

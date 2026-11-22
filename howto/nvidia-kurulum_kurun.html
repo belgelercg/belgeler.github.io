@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:55+03:00" /><title>Paketlerin Kurulumu ve Ayarlar</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/nvidia-kurulum.html" title="NVIDIA 1.0-4191 Kurulumu" /><link rel="previous" href="../howto/nvidia-kurulum_indirin.html" title="Önhazırlık ve Paketlerin İndirilmesi" /><link rel="next" href="../howto/nvidia-kurulum_deneyin.html" title="Ayar sonrası kontrol" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Paketlerin Kurulumu ve Ayarlar</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/nvidia-kurulum_indirin.html">Önceki</a> </td><th width="60%" align="center">NVIDIA 1.0-4191 Kurulumu</th><td width="20%" align="right"> <a accesskey="n" href="../howto/nvidia-kurulum_deneyin.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="nvidia-kurulum_kurun" id="nvidia-kurulum_kurun"></a>Paketlerin Kurulumu ve Ayarlar</div><dl><dd> <div class="head3"><a name="id1" id="id1"></a>Paketlerin kurulması</div><dl><dd><div class="para">Hazırladığımız RPM paketlerini şimdi root olarak kurmak için
+      aşağıdaki komutları veriyoruz:</div><div class="para"><div align="right"><pre class="screen">
+#rpm -Uhv   /usr/src/redhat/RPMS/i386/NVIDIA_kernel-1.0-4191.i586.rpm \
+/usr/src/redhat/RPMS/i386/NVIDIA_GLX-1.0-4191.i586.rpm
+</pre></div></div><div class="para">Not: Komutların uygulanması esnasında herhangi bir UYARI veya
+      buna benzer bir mesaj gelebilir. HATA olmadığı sürece bu uyarıları
+      önemsemeyin.</div><div class="para">Daha sonra <tt>nvidia.o</tt> modülünün yüklenip
+      yüklenmediği her ihtimale karşı kontrol ediyoruz.</div><div class="para"><div align="right"><pre class="screen">
+# lsmod | grep nvidia
+nvidia               1593920  10  (unused)
+</pre></div></div><div class="para">Tamam..demekki yüklenmiş...</div><div class="para">Not: Bundan önceki NVIDIA modülü <tt>NVdriver</tt>
+      olarak kullanılıyordu. Bu sürümünde bu modülün ismi <tt>nvidia</tt>
+      olarak değişmiştir.</div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Aygıt dosyalarının kontrolü</div><dl><dd><div class="para">README dosyasında modül paketlerinin hemen yüklenmesinin
+      ardından uygulanan <tt>ldconfig</tt> komutunun bazen yanlış
+      ilintileme ile sembolik bağlama yapabileceğinden bahsetmekte. Bu yüzden
+      aşağıdaki komut ve komut çıktılarının karşılaştırılmasında yarar
+      olacaktır:</div><div class="para"><div align="right"><pre class="screen">
+# ls -l /dev/nvidia*
+
+crw-rw-rw-    1 root     root     195,   0 Ara 13 18:45 /dev/nvidia0
+crw-rw-rw-    1 root     root     195,   1 Ara 13 18:45 /dev/nvidia1
+crw-rw-rw-    1 root     root     195,   2 Ara 13 18:45 /dev/nvidia2
+crw-rw-rw-    1 root     root     195,   3 Ara 13 18:45 /dev/nvidia3
+crw-rw-rw-    1 root     root     195, 255 Ara 13 18:45 /dev/nvidiactl
+</pre></div></div></dd></dl> <div class="head3"><a name="id3" id="id3"></a>modules.conf dosyasının ayarlanması</div><dl><dd><div class="para"><tt>nvidia.o</tt> modülünün geçiçi olarak yüklendiğini
+      <tt>lsmod</tt> komutu ile tespit ettik. Ancak bu geçiçi.
+      Bunun kalıcı olması için mesela <tt>/etc/modules.conf</tt>
+      dosyasının içine aşağıdaki gibi satırları ekleyebiliriz.</div><div class="para"><div align="right"><pre class="screen">alias char-major-195 nvidia</pre></div></div><div class="para">NOT: Eski NVIDIA sürümlerinde bu satır <tt>NVdriver</tt>
+      olarak tanımlanıyordu. Ancak yeni NVDIA sürücülerinde bu modulun ismi
+      <tt>nvidia</tt> olarak değişmiştir.</div><div class="para">LAPTOP / LCD veya daha özel monitor kullanıyorsanız, bu dosyanın
+      içine extra başka seçenekler eklemeniz gerekebilir. Mesela benim
+      kullandığım Laptop(Toshiba) ayarları çok değişik:</div><div class="para"><div align="right"><pre class="screen">
+alias char-major-195 nvidia
+options nvidia NVreg_SoftEDIDs=0 NVreg_Mobile=4
+</pre></div></div><div class="para">Eğer sizde de böyle özel bir durum mevcut ise lütfen ilk önce
+      README dosyasına gözatmayı unutmayın. README dosyasında gerekli olan
+      açıklamalar ve kullanılabilecek seçenekler ayrıntılarıyla anlatılmakta.</div></dd></dl> <div class="head3"><a name="id4" id="id4"></a><tt>XF86Config-4</tt> dosyasının ayarlanması</div><dl><dd><div class="para"><tt>/etc/X11/XF86Config-4</tt> dosyasının herhangi bir
+      metin düzenleyici ile root olarak açın ve sırası ile şunlara dikkat edin:</div><div class="procedure"><div class="formaltitle"><b>Yönerge 7.1. </b></div><ol type="1"><li><div class="para">Dosya içinde aşağıdaki gibi bir satırlar varsa bu satırları silin.</div><div class="para"><div align="right"><pre class="screen">
+Load "dri"
+Load "GLcore"
+</pre></div></div></li><li><div class="para"> veya</div><div class="para"><div align="right"><pre class="screen">
+# Load "dri"
+# Load "GLcore"
+</pre></div></div><div class="para">olarak değiştirin. </div></li><li><div class="para">Daha sonra bu satırların hemen altına</div><div class="para"><div align="right"><pre class="screen">Load "glx"</pre></div></div><div class="para">satırını ekleyin...</div></li></ol></div><div class="procedure"><div class="formaltitle"><b>Yönerge 7.2. </b></div><ol type="1"><li><div class="para">Dosya içinde aşağıdaki gibi bir satırlar varsa bu satırları silin.</div><div class="para"><div align="right"><pre class="screen">
+Driver "nv"
+Drive "vesa"
+</pre></div></div></li><li><div class="para">veya</div><div class="para"><div align="right"><pre class="screen">
+# Driver "nv"
+# Driver "vesa"
+</pre></div></div><div class="para">olarak değiştirin.</div></li><li><div class="para"> Daha sonra bu satırın hemen altına</div><div class="para"><div align="right"><pre class="screen">Driver "nvidia"</pre></div></div><div class="para">satırını ekleyin...</div></li></ol></div><div class="procedure"><div class="formaltitle"><b>Yönerge 7.3. </b></div><ol type="1"><li><div class="para"><tt>XF86Config-4</tt> dosyasının en son satırlarında
+          aşağıdaki gibi satırlar olabilir:</div><div class="para"><div align="right"><pre class="screen">
+Section "DRI"
+Mode "0666"
+EndSection
+</pre></div></div><div class="para">Bu satırları ya silin</div></li><li><div class="para">ya da en güzeli</div><div class="para"><div align="right"><pre class="screen">
+# Section "DRI"
+# Mode "0666"
+# EndSection
+</pre></div></div><div class="para">şeklinde değiştirin. Çünkü artık DRI modüllerine ihtiyacınız
+          yok.</div></li></ol></div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">Bu ayarları değiştirdikten sonra sakın bir daha
+      <tt>Xconfigurator</tt> komutunu kullanarak grafik kartınızı
+      ayarlamayın. Çünkü <tt>Xconfigurator</tt> kendi kafasına
+      göre yeniden ayarlama yapacaktır (<tt>nv.o</tt> modülüne göre)</div></td></tr></table></div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/nvidia-kurulum_indirin.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/nvidia-kurulum.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/nvidia-kurulum_deneyin.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Önhazırlık ve Paketlerin İndirilmesi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Ayar sonrası kontrol</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

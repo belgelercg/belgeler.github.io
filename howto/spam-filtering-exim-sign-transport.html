@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:31+03:00" /><title>Gönderici adresini imlemek için bir Transport oluşturmak</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/spam-filtering-exim-sign.html" title="Zarf Gönderici İmlerinin Eklenmesi" /><link rel="previous" href="../howto/spam-filtering-exim-sign.html" title="Zarf Gönderici İmlerinin Eklenmesi" /><link rel="next" href="../howto/spam-filtering-exim-sign-router-remote.html" title="Giden teslimatlar için yeni bir yönlendirici oluşturmak" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Gönderici adresini imlemek için bir Transport oluşturmak</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/spam-filtering-exim-sign.html">Önceki</a> </td><th width="60%" align="center">Zarf Gönderici İmlerinin Eklenmesi</th><td width="20%" align="right"> <a accesskey="n" href="../howto/spam-filtering-exim-sign-router-remote.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="spam-filtering-exim-sign-transport" id="spam-filtering-exim-sign-transport"></a>Gönderici adresini imlemek için bir Transport oluşturmak</div><dl><dd><div class="para">
+Önce giden postalarda kullanmak üzere gönderici adresini imleyen bir Exim <i>transport</i>' u oluşturacağız.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+remote_smtp_signed:
+  debug_print    = "T: remote_smtp_signed for $local_part@$domain"
+  driver         = smtp
+  max_rcpt       = 1
+  return_path    = $sender_address_local_part=$local_part=$domain=\
+                   ${hash_8:${hmac{md5}{SECRET}{${lc:\
+                     $sender_address_local_part=$local_part=$domain}}}}\
+                   @$sender_address_domain
+</pre></div></div>
+      <div class="para">
+Bu deyime göre, gönderici adresinin “yerel kısmı” birbirlerinden eşit işaretleri ile ayrılmış şu parçalardan oluşacak:
+      </div>
+      <ul type="disc" class="itemizedlist"><li>
+Göndericinin kullanıcı ismi, yani adresin yerel kısmı,
+        </li><li>
+alıcı adresinin yerel kısmı,
+        </li><li>
+alıcı adresinin alanadı kısmı,
+        </li><li><div class="para">
+Gönderici/alıcı/sunucu üçlüsüne özel bir dizge. Şöyle üretilir:
+          </div>
+          <ul type="circle" class="itemizedlist"><li><div class="para">
+Gönderici adresinin yeniden yazilan ilk üç elemanı ile yapılandırma dosyasının <a class="link" href="../howto/spam-filtering-exim-options.html" title="Seçenekler ve Ayarlar">ana bölümünde tanımladığımız <tt>SECRET</tt> dizgesi</a> Exim'in <tt>${hmac{md5}...}</tt> işlevi ile şifrelenir<sup>[<a name="id46" href="#ftn.id46" id="id46">46</a>]</sup>.
+            </div></li><li><div class="para">
+Sonuç, 8 küçük harf üretecek şekilde Exim'in <tt>${hash...}</tt> işlevi ile çırpılanır.
+            </div></li></ul>
+        </li></ul>
+      <div class="para">
+Eğer sunucunuz, başka bir göstermelik konağın kimlik kanıtlamalı olarak postalarını gönderiyorsa, uygun bir <tt>hosts_try_auth</tt> satırını da buraya ekleyin. (Onu mevcut “smarthost transport”'undan alabilirsiniz.)
+      </div><div class="footnotes"><br /><hr width="100" align="left" /><div class="footnote"><div class="para"><sup>[<a name="ftn.id46" href="#id46" id="ftn.id46">46</a>] </sup>
+Eğer bu işlemin bu derece karmaşık olması gerekmediğini düşünüyorsanız, çok yüzeysel bakıyorsunuz demektir. Bu belgenin eski sürümlerinde imin son elemanını üretmek için basitçe <tt>${hash_8:SECRET=....}</tt> kullanmıştım. Ancak, Exim'in <tt>${hash...}</tt> işlevini biraz kavrayınca ve farklı alıcılara gönderilen örnekleri biraz inceleyince, teknik olarak imlemenin taklit edilmesinin mümkün olacağını görürsünüz. Matthew Byng-Maddic <span class="email">&lt;mbm (at) colondot.net&gt;</span> bu konuda şöyle diyor:
+  </div><div class="blockquote"><div class="para">
+Normal şartlar altında ürettiğiniz belgeyi çok sayıda insan kullansın diye hazırlarsınız. Ama aynı zamanda Kirşof kanunu da işlemeye başlar, tüm gizliliği sağlayan şey kullandığınız anahtardır. Spam göndericileri için bir kaç tane geri dönüş yolunu kullanarak bu anahtarı geri kazanmak imkansız değildir ve bir kez bunu yaptıklarında aynı alan adından tekrar geçerli geri dönüş yolu içeren spam iletilerini yaymaya başlarlar, siz de başladığınız yere geri dönmüş olursunuz. [...] Bana göre daha iyisi, işi baştan sıkı tutmaktır.
+  </div></div></div></div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/spam-filtering-exim-sign.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/spam-filtering-exim-sign.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/spam-filtering-exim-sign-router-remote.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Zarf Gönderici İmlerinin Eklenmesi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Giden teslimatlar için yeni bir yönlendirici oluşturmak</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

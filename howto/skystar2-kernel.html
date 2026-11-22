@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:17+03:00" /><title>Çekirdeğin Yapılandırılması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/skystar2.html" title="Linux Uydu Yayınları NASIL" /><link rel="previous" href="../howto/skystar2.html" title="Linux Uydu Yayınları NASIL" /><link rel="next" href="../howto/skystar2-dvbapi.html" title="DVB Arayüzünün Kurulumu" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Çekirdeğin Yapılandırılması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/skystar2.html">Önceki</a> </td><th width="60%" align="center">Linux Uydu Yayınları NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/skystar2-dvbapi.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="skystar2-kernel" id="skystar2-kernel"></a>Çekirdeğin Yapılandırılması</div><dl><dd><div class="para">
+Öncelikle ihtiyaç duyacağınız Linux DVB sürücülerinin son sürümlerini <a class="ulink" href="http://linuxtv.org/downloads/" target="_top">http://linuxtv.org/downloads/</a> adresinden indirin.
+  </div><div class="para">
+Çekirdek modülleri ve aygıt dosyaları için,
+  </div><ul type="disc" class="itemizedlist"><li>
+2.4 çekirdeklerden birini kullanıyorsanız: <tt>linuxtv-dvb-1.0.1.tar.bz2</tt></li><li>
+2.6.10 öncesi çekirdeklerden birini kullanıyorsanız: <tt>linuxtv-dvb-1.1.1.tar.bz2</tt></li></ul><div class="para">
+Temel DVB yardımcı programları için: <tt>linuxtv-dvb-apps-1.1.0.tar.bz2</tt>
+  </div><div class="para">
+Linux çekirdeğinin 2.6.10 ve ileriki sürümlerde sürücünün bu son hali çekirdek ile birlikte geliyor. O yüzden bu son sürümlerde çekirdeğe linuxtv-dvb-1.1.1 yaması yapmaya ihtiyacınız yok. Daha eski çekirdeklerde ise README-2.6 dosyasında anlatıldığı gibi DVB desteğini güncelleyebilirsiniz.  Bir de önemli bir not, Linux DVB sürücülerinin son surumleri (&gt; 1.1.0) 2.6.x çekirdek için derlenmeye uygun. Eger 2.4 çekirdeği kullanıyorsanız 1.0.1 sürümlü yamayı kullanmanız gerekiyor.
+  </div><div class="para">
+Çekirdeğin kaynak kodlarına yamayı yaptıysanız veya 2.6.10 sürümünden büyük çekirdeğe sahipseniz gerekli modülleri aşağıdaki gibi derlemeniz gerekmektedir:
+  </div>
+<div class="para"><div align="right"><pre class="screen">Prompt: B2C2/Technisat Air/Sky/CableStar 2 PCI
+     Defined at drivers/media/dvb/b2c2/Kconfig:1
+     Depends on: DVB_CORE &amp;&amp; PCI
+     Location:
+       -&gt; Device Drivers
+         -&gt; Multimedia devices
+           -&gt; Digital Video Broadcasting Devices
+             -&gt; DVB For Linux (DVB [=y])
+               -&gt; DVB Core Support (DVB_CORE [=m])
+     Selects: DVB_STV0299 &amp;&amp; DVB_MT352 &amp;&amp; DVB_MT312 &amp;&amp; DVB_NXT2002
+
+     &lt;M&gt;     B2C2/Technisat Air/Sky/CableStar 2 PCI
+
+     [ CONFIG_DVB_B2C2_SKYSTAR=m]
+</pre></div></div>
+  <div class="para">
+Bu arada Fedora Core 3 kullanıcıları, B2C2 çipsetli skystar2 desteği olan en son çekirdeğe basitçe
+  </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>yum update kernel</tt></b></pre></div></div>
+  <div class="para">
+deyip kavuşabilir. <tt>;)</tt>
+  </div><div class="para">
+Çekirdek sürücüleri modül olarak derlenip kurulduktan sonra, <tt>/dev</tt> dizini altında gerekli aygıt düğümlerini oluşturmamız gerekiyor. <b><tt>devfs</tt></b> kullanıyorsanız burayı atlayabilirsiniz.  Eğer sisteminizde <b><tt>udev</tt></b> desteği varsa, bunun yerine çekirdeğin kaynak kodlarında bulunan <tt>Documentation/dvb/udev.txt</tt> belgesindeki adımları uygulayınız.
+  </div> <div class="head3"><a name="id1" id="id1"></a>Aygıt Düğümlerinin Oluşturulması</div><dl><dd><div class="para">
+<tt>linuxtv-dvb-1.1.1/MAKEDEV-DVB.sh</tt> dosyasını çalıştırın. Aşağıdaki gibi gerekli düğümlerin tanımları yapılacaktır.
+  </div>
+<div class="para"><div align="right"><pre class="screen">rm -rf /dev/ost
+rm -rf /dev/ost
+rm -rf /dev/dvb
+rm -rf /dev/dvb
+
+mkdir /dev/dvb
+chmod 755 /dev/dvb
+
+for i in `seq 0 3`; do
+  echo "Creating DVB devices in /dev/dvb/adapter$i"
+  mkdir /dev/dvb/adapter$i
+  chmod 755 /dev/dvb/adapter$i
+  mknod -m 0660 /dev/dvb/adapter$i/video0    c 250   `expr 64 \* $i + 0`
+  mknod -m 0660 /dev/dvb/adapter$i/audio0    c 250   `expr 64 \* $i + 1`
+  mknod -m 0660 /dev/dvb/adapter$i/frontend0 c 250   `expr 64 \* $i + 3`
+  mknod -m 0660 /dev/dvb/adapter$i/demux0    c 250   `expr 64 \* $i + 4`
+  mknod -m 0660 /dev/dvb/adapter$i/dvr0      c 250   `expr 64 \* $i + 5`
+  mknod -m 0660 /dev/dvb/adapter$i/ca0       c 250   `expr 64 \* $i + 6`
+  mknod -m 0660 /dev/dvb/adapter$i/net0      c 250   `expr 64 \* $i + 7`
+  mknod -m 0660 /dev/dvb/adapter$i/osd0      c 250   `expr 64 \* $i + 8`
+  chown root.video /dev/dvb/adapter$i/*
+done
+</pre></div></div>
+  </dd></dl> <div class="head3"><a name="id2" id="id2"></a>Modüllern Yüklenmesi</div><dl><dd><div class="para">
+Son olarak <tt>/etc/modprobe.conf</tt>'a aşağıdaki satırları ekleyin.
+  </div>
+<div class="para"><div align="right"><pre class="screen">alias skystar skystar2
+alias frontend stv0299
+#alias frontend mt312
+</pre></div></div>
+  <div class="para">
+Bu arada skystar2'nin piyasada 2 değişik sürümü mevcut; komut satırına,
+  </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>modprobe skystar</tt></b>
+# <b><tt>modprobe frontend</tt></b>
+</pre></div></div>
+  <div class="para">
+yazdığınızda hata alırsaniz <tt>/etc/modprobe.conf</tt>'da <tt>frontend</tt> olarak <tt>stv0299</tt> değil <tt>mt312</tt>'yi seçin.
+  </div><div class="para">
+<b><tt>dmesg</tt></b> ile baktığınızda:
+  </div>
+<div class="para"><div align="right"><pre class="screen">drivers/media/dvb/b2c2/skystar2.c: FlexCopIIB(rev.195) chip found
+drivers/media/dvb/b2c2/skystar2.c: the chip has 38 hardware filters
+DVB: registering new adapter (SkyStar2).
+DVB: registering frontend 0 (ST STV0299 DVB-S)...
+</pre></div></div>
+  <div class="para">
+Düzgün olarak yüklendiğini görebilirsiniz.
+  </div><div class="para">
+Bu arada, Fedora Core 3'ün <b><tt>kudzu</tt></b>'su skystar2 kartını <tt>eth1, eth2</tt> filan diye tanıyor. Eğer <tt>modprobe.conf</tt> içinde <tt>alias eth1 skystar2</tt> diye bir satır varsa kaldırın.
+  </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/skystar2.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/skystar2.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/skystar2-dvbapi.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Linux Uydu Yayınları NASIL </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> DVB Arayüzünün Kurulumu</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

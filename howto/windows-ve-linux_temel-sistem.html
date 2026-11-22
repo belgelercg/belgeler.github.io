@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:51+03:00" /><title>Tek Başına (basit) Linux</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/windows-ve-linux__terminal.html" title="X Terminal Sisteminin Yapılması" /><link rel="previous" href="../howto/windows-ve-linux_kernel.html" title="Çekirdeğin derlenmesi" /><link rel="next" href="../howto/windows-ve-linux_baglan.html" title="Ağa Bağlanan Linux Terminali" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Tek Başına (basit) Linux</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/windows-ve-linux_kernel.html">Önceki</a> </td><th width="60%" align="center">X Terminal Sisteminin Yapılması</th><td width="20%" align="right"> <a accesskey="n" href="../howto/windows-ve-linux_baglan.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="windows-ve-linux_temel-sistem" id="windows-ve-linux_temel-sistem"></a>Tek Başına (basit) Linux</div><dl><dd><div class="para">
+Kullanacağımız çekirdek hazır. Artık ramdiskimizin içini doldurmaya başlayabiliriz. Önce bu bölümde en temel ve en basit bir konsol oturumu oluşturacağız. Bu sistem henüz sunucu makinaya bağlanabilen bir yapı içermeyecek, her türlü donanımla çalışabilen temel yapıyı oluşturup deneyeceğiz. Sonraki bölümde bunu çalıştıracağımız makinanın donanımına göre özelleştireceğiz ve sunucuya bağlanabilir hale getireceğiz ve tekrar deneyeceğiz. Son olarak da üzerine X ile ilgili dosyaları yerleştirip X terminalimizi oluşturacağız.
+    </div><div class="para">
+Sistemimiz bir pakete çok bağımlı, bu paket <b><tt>busybox</tt></b> kabuğunu içeriyor. <b><tt>busybox</tt></b>, <b><tt>bash</tt></b> gibi salt bir kabuk değil, içinde bize lazım olan hemen her sistem komutu var. Bu tür sistemler için özel olarak hazırlanmış bir paket. Önce onu indirip derleyeceğiz.
+    </div><div class="para">
+<a class="ulink" href="http://www.busybox.net/downloads" target="_top">http://www.busybox.net/downloads</a> adresinden <b><tt>busybox</tt></b>'ın son sürümünü indirin ve <tt>/usr/src</tt> dizinine taşıyın. Ben <tt>busybox-1.00-pre7</tt> sürümü ile çalıştım. Bu belgeyi hazırlarken indirdiğim <tt>busybox-1.00-pre10</tt> sürümünü derleyemedim. Komut geçmişi desteğini kaldırınca derleniyordu. Komut geçmişi olmadan da konsolda çalışmak işkence oluyor. Onun için size de <tt>busybox-1.00-pre7</tt> sürümünü öneririm.
+    </div><div class="para">
+<tt>busybox-1.00-pre7</tt> paketini önce açın; çekirdek için yaptığımız gibi. <tt>busybox-1.00-pre7</tt> dizinine eklerde verdiğim <a class="link" href="../howto/windows-ve-linux_app2.html" title="B. Busybox Yapılandırma Dosyası (.config)">yapılandırma dosyasını</a> <tt>.config</tt> ismiyle kopyalayın.
+<b><tt>busybox</tt></b>'da tıpkı çekirdek gibi bir yapılandırma arayüzüne sahip. <b><tt>make menuconfig</tt></b> komutundan sonra <b><tt>make</tt></b> sonra da <b><tt>make install</tt></b> komutlarını verdiğinizde derlenmiş <b><tt>busybox</tt></b>'ı <tt>/usr/src/busybox-1.00-pre7/_install</tt> dizinin altındaki dizinlerde bulacaksınız.
+    </div><div class="para">
+Bütün araçları tamamladığımıza göre <tt>/a3/ramdisk/initrd</tt> dizininin içini oluşturmaya başlayabiliriz. <tt>/a3/ramdisk/initrd</tt> dizine geçeceğiz ve dizinin içinde bazı alt dizinler oluşturacağız. Bu dizin ağacı ramdisk içindeki kök dizinimizin ağacı olacağından, bir kök dizin için gereken bütün dizinleri değil, sadece bize gerekli olan dizinleri oluşturacağız. Çünkü bizim yerimiz az ve kıymetli. Aşağıdaki satırları <tt>/a3/ramdisk</tt> dizinine <tt>kokyap</tt> ismiyle kaydedin:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+ilk=`pwd`
+cd initrd
+kok=`pwd`
+mkdir bin dev etc lib loopfs proc sysroot tmp usr var
+ln -s bin sbin
+mkdir etc/X11 etc/init.d etc/X11/xserver
+mkdir lib/X11 lib/modules
+cd lib/modules
+mkdir 2.4.22-x drivers extensions fonts input linux
+mkdir 2.4.22-x/kernel 2.4.22-x/kernel/drivers 2.4.22-x/kernel/drivers/net
+cd $kok
+cd lib/X11
+mkdir app-defaults locale xkb
+ln -s ../../etc/X11/xserver xserver
+cd $kok
+cd etc/X11
+ln -s ../../lib/X11/xkb xkb
+cd $kok
+cd usr
+ln -s .. X11R6
+ln -s ../bin bin
+ln -s ../bin sbin
+ln -s ../lib lib
+cd $kok
+cd var
+mkdir lib lock log run lib/dhcp lib/xkb lock/subsys
+cd ../dev
+ln -s /proc/self/fd fd
+ln -s fd/0 stdin
+ln -s fd/1 stdout
+ln -s fd/2 stderr
+mkfifo -m 600 initctl
+mknod -m 666 tty c 5 0
+mknod -m 600 console c 5 1
+mknod -m 660 initrd b 1 250
+mknod -m 640 ram0 b 1 0
+mknod -m 640 ram1 b 1 1
+mknod -m 640 mem c 1 1
+mknod -m 640 kmem c 1 2
+mknod -m 666 null c 1 3
+mknod -m 644 random c 1 8
+mknod -m 640 apm_bios c 10 134
+mknod -m 640 rtc c 10 135
+mknod -m 600 tty1 c 4 1
+mknod -m 600 tty2 c 4 2
+mknod -m 600 tty3 c 4 3
+mknod -m 600 tty4 c 4 4
+mknod -m 600 tty5 c 4 5
+mknod -m 600 ttyS0 c 4 64
+mknod -m 600 ttyS1 c 4 65
+mknod -m 640 psaux c 10 1
+mknod -m 644 urandom c 1 9
+mknod -m 444 zero c 1 5
+ln -s ttyS0 mouse
+ln -s ram1 ram
+ln -s ram0 ramdisk
+ln -s console tty0
+cd $ilk
+</pre></div></div>
+    <div class="para">
+<b><tt>kokyap</tt></b> betiğini,
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>. ./kokyap</tt></b></pre></div></div>
+    <div class="para">
+komutunu vererek çalıştırın. Betiğin yaptığı işlemleri <tt>initrd</tt> dizinine geçip görebilirsiniz. Betik tarafından oluşturulan dizinlerin hepsini biz kullanmayacağız, bazı dizinleri çalıştırdığımız uygulamalar kullanacak. Yani bazı dizinleri boş bırakacağız. <b><tt>kokyap</tt></b> betiğinin içindeki komutları komut satırından tek tek vererek de aynı işlemi kendiniz yapabilirsiniz. Betikte kullanılan komutların pek çoğunun bir türkçe kılavuz sayfası var: <a href="../man/man1/man1-ln.html" class="xref" title="ln">ln(1)</a>, <a href="../man/man1/man1-mkdir.html" class="xref" title="mkdir">mkdir(1)</a>, <a class="link" href="../man/man1/man1-mkfifo.html" title="mkfifo">mkfifo</a>, <a class="link" href="../man/man1/man1-mknod.html" title="mknod">mknod</a>. <a class="link" href="../bashref/bashref_bourne.shell.builtins-cd.html" title="cd Yerleşiği">cd</a> komutu ise, kabuğun <a class="link" href="../bashref/bashref_commands.index.html" title="Kabuk Yerleşik Komutları Dizini">yerleşik komutlarından</a> biridir.
+    </div><div class="para">
+Şimdi sistem açılışı için gerekli dosyaları yerleştireceğiz. Bir Linux sisteminin açılışında ne gibi işlemler yürütüldüğünü <a href="../man/man4/man4-initrd.html" class="xref" title="initrd">initrd(4)</a> kılavuz sayfasında açıklanmıştır. Ayrıca, <a href="../man/man8/man8-init.html" class="xref" title="init">init(8)</a>, <a href="../man/man5/man5-inittab.html" class="xref" title="inittab">inittab(5)</a> kılavuz sayfalarını da okursanız yapacağımız işlemleri niçin yaptığımızı, neden bazı şeyleri orada yazılanlardan biraz farklı yaptığımızı daha kolay anlayabilirsiniz.
+    </div><div class="para">
+<a href="../man/man4/man4-initrd.html" class="xref" title="initrd">initrd(4)</a> kılavuz sayfasında yazdığı gibi önce <tt>/linuxrc</tt> betiğini yazacağız. Aşağıdaki betiği <tt>/a3/ramdisk/initrd</tt> dizinine <tt>linuxrc</tt> ismiyle kaydedin:
+    </div>
+<div class="para"><div align="right"><pre class="screen">#!/bin/nash
+
+echo /proc dosya sistemi baglaniyor
+mount -t proc /proc /proc
+echo Blok aygitlari olusturuluyor
+mkdevices /dev
+echo Kok aygiti olusturuluyor
+mkrootdev /dev/root
+echo 0x0100 &gt; /proc/sys/kernel/real-root-dev
+echo "Init sureci basliyor"
+rm -f /linuxrc
+</pre></div></div>
+    <div class="para">
+Bu dosyayı oluşturduktan sonra,
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>chmod +x linuxrc</tt></b></pre></div></div>
+    <div class="para">
+komutuyla betiğe çalıştırılabilirlik özelliği verin.
+    </div><div class="para">
+Bu betiği biraz inceleyelim. İlk satır, betiğin <tt>/bin</tt> dizininde bulunan <b><tt>nash</tt></b> isimli bir betik yorumlayıcısı tarafından yorumlanacağını söylüyor. Yani bu betik içinde yazılan komutları bu uygulama çalıştıracak. <b><tt>nash</tt></b>, sadece linuxrc betiklerini çalıştırmak için tasarlanmış, küçük bir betik yorumlayıcıdır. Bir kabuk değildir. Sisteminizde <b><tt>nash</tt></b> vardır. Komut satırına <b><tt>whereis nash</tt></b> yazarsanız, <b><tt>nash</tt></b>'ın sisteminizde nerede durduğunu öğrenebilirsiniz. Ben bu komutu verdiğimde:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>whereis nash</tt></b>
+nash: /sbin/nash /usr/share/man/man8/nash.8 /usr/share/man/man8/nash.8.gz
+</pre></div></div>
+    <div class="para">
+şeklinde bir çıktı alıyorum. O halde yapacağımız işlem basit bir kopyalama işlemi:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cp /sbin/nash /a3/ramdisk/initrd/bin/</tt></b>
+</pre></div></div>
+    <div class="para">
+İşimiz <b><tt>nash</tt></b>'ı kopyalamakla bitmiyor. <b><tt>nash</tt></b>'ın içerdiği yerleşik komutlar için <b><tt>nash</tt></b>'a birer sembolik bağ yerleştireceğiz:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cd bin</tt></b>
+# <b><tt>ln -s losetup nash</tt></b>
+# <b><tt>ln -s mkdevices nash</tt></b>
+# <b><tt>ln -s makerootdev nash </tt></b>
+# <b><tt>ln -s pivot_root nash</tt></b>
+# <b><tt>ln -s showlabels nash</tt></b>
+</pre></div></div>
+    <div class="para">
+Böylece <tt>linuxrc</tt> betiğinin çalışması için gerek ve yeter şart sağlanmış oldu. Betik <b><tt>echo 0x0100 &gt; /proc/sys/kernel/real-root-dev</tt></b> satırıyla çekirdeğe kök dosya sistemimizin ramdisk olduğunu söylüyor. Init süreci başladığında çekirdeğin kök dosya sistemi olarak nereyi kullanacağını belirtmiş olduk. <tt>linuxrc</tt> betiğinin tekrar tekrar çalıştırılmasını önlemek için son satırda betiği siliyoruz ve <tt>linuxrc</tt> betiğinin işi bitiyor, görevi <b><tt>init</tt></b> süreci devralıyor.
+    </div><div class="para">
+<b><tt>init</tt></b> bir uygulama ismi. Ama bizim sistemimizde henüz yok. Şimdi onu ve bir sistemde kullanılan bir çok komutu içeren <b><tt>busybox</tt></b>'ı sistemimize yerleştireceğiz. Busybox'ı bu bölümün başlangıcında indirmiş ve derlemiştik. <tt>/usr/src/busybox-1.00-pre7/_install/bin</tt> dizinindeki herşeyi <tt>/a3/ramdisk/initrd/bin</tt> dizinine kopyalayın. <tt>/usr/src/busybox-1.00-pre7/_install/</tt> atındaki diğer dizinlerin içeriğini de <tt>/a3/ramdisk/initrd/bin</tt> dizinine kopyalayın. (Kopyalama için <b><tt>mc</tt></b>'den yararlanmıyorsanız, sembolik bağları kopyalarken <b><tt>cp</tt></b> komutunu <tt>-d</tt> seçeneği ile kullanmalısınız.) <tt>/usr/src/busybox-1.00-pre7/_install/</tt> dizini altındaki <tt>linuxrc</tt>'yi biz kullanmayacağız. Biz onu zaten yazmıştık. <tt>/a3/ramdisk/initrd/bin</tt> dizinine girdiğinizde <b><tt>mc</tt></b> kullanıyorsanız, bazı sembolik bağ dosyalarının hedeflerini bulamadıklarını göreceksiniz. Onların hedeflerini bulmalarını sağlamalısınız. İmleci onlardan birinin üzerine getirip CTRL tuşu basılıyken X ve S tuşladığınızda açılan pencereye <tt>busybox</tt> yazmanız yeterlidir. Hepsi için bu işlemi yapın.
+    </div><div class="para">
+<tt>bin</tt> dizinindeki sembolik bağlar arasında <b><tt>init</tt></b>'in de bulunduğunu göreceksiniz. Ama sistemin açılması için <b><tt>init</tt></b>'in varlığı yeterli değil. <b><tt>init</tt></b> çalıştığında önce <tt>/etc/inittab</tt> dosyasına bakacak ve oradaki satırları yorumlarak sistemi kullanıcı ile etkileşimli çalışacak duruma getirecek. O halde,  <tt>etc/inittab</tt> dosyasını hazırlamamız lazım. <b><tt>busybox</tt></b> ile gelen <b><tt>init</tt></b>'in çalışacağı <tt>inittab</tt> dosyasının içeriği, <a href="../man/man5/man5-inittab.html" class="xref" title="inittab">inittab(5)</a> kılavuz sayfasında anlatılan içerikten farklı. Bu konuda daha ayrıntılı bilgiyi <a class="ulink" href="file:/usr/src/busybox-1.00-pre7/docs/BusyBox.html#item_init" target="_top">file:/usr/src/busybox-1.00-pre7/docs/BusyBox.html#item_init</a> adresinde bulabilirsiniz. Kullanacağımız <tt>inittab</tt> dosyası:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+::sysinit:/etc/init.d/baslat
+
+tty1::askfirst:/bin/busybox sh
+tty2::askfirst:/bin/busybox sh
+
+::ctrlaltdel:/bin/reboot -d 0
+::restart:/sbin/init
+</pre></div></div>
+    <div class="para">
+Burada ilk satırda, sistemi ilklendirecek betiğin yerini belirttim. <b><tt>init</tt></b> bu satırı ve orada belirtilen betiği icra ettikten sonra diğer satırlara geçecek.
+Sonraki iki satırda iki konsolumuz (<tt>tty1</tt> ve <tt>tty2</tt>) olacağını belirtim. Bu konsolları etkinleştirmeden önce onay almasını istedim. Son iki satırda ise <tt>CTRL-ALT-DEL</tt> tuşlandığında ne işlem yapacağını ve yeniden başlatma durumunda ne yapacağını belirttim. Sistemi kapatmak için birşey belirtmek gerekmiyor. Konsolda komut olarak <b><tt>poweroff</tt></b> verildiğinde <b><tt>busybox</tt></b> sistemi sonlandırıyor. Normalde sistemi kapatması lazım ama bunun için ek modüller gerekiyor. Bu lükse ihtiyacınız varsa siz eklersiniz.
+    </div><div class="para">
+İki konsol belirttim. İlk konsolda açılış iletilerine bakmak ve bir takım komutlar orada çalıştırılabilsin istedim. İkinci konsolu daha sonra <b><tt>X</tt></b>'i çalıştırmak için kullanacağız. Şimdilik o da ilk konsol gibi bir konsol.
+    </div><div class="para">
+Şimdi <tt>inittab</tt>'ın ilk satırında belirtiğimiz betiği hazırlamalıyız. Betik:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+#!/bin/sh
+# Bu betik sistemi ilklendirir
+
+PATH="/bin"
+
+umask 022
+
+# Biraz yer acalim
+rmdir /lost+found
+
+# Saatimiz dogru kalsin
+hwclock -s
+
+echo "lo arayuzu etkinlestiriliyor"
+ip link set lo up
+ip addr add 127.0.0.1 dev lo
+ip route add 127.0.0.0/8 dev lo
+
+exit 0
+</pre></div></div>
+    <div class="para">
+Çok basit bir betik. <b><tt>rmdir /lost+found</tt></b> satırında, ramdisk üzerinde dosya sistemini oluşturulurken <tt>/lost+found</tt> isminde bir dizin oluşur. Bu dizin bize lazım olmadığından yerimizi işgal etmesin diye siliyoruz. <b><tt>hwclock -s</tt></b> satırıyla çekirdeğin, sistem saatini donanım saatiyle eşzamanlamasını söylüyoruz. Böylece <b><tt>date</tt></b> komutu bize doğru zamanı gösterecek. Son olarak da sistemin yerel IP adresi ile ilgili yapılandırmayı gerçekleştiriyoruz.
+    </div><div class="para">
+Yalnız <b><tt>busybox</tt></b>'ın çalışması için bazı kütüphane dosyalarına ihtiyacı var. Bunların neler olduğunu öğrenmek için <b><tt>ldd</tt></b> komutunu kullanacağız:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>ldd /a3/ramdisk/initrd/bin/busybox</tt></b>
+        libc.so.6 =&gt; /lib/i686/libc.so.6 (0x40030000)
+        /lib/ld-linux.so.2 =&gt; /lib/ld-linux.so.2 (0x40000000)
+</pre></div></div>
+    <div class="para">
+Bu çıktıya göre <tt>libc.so.6</tt> ve <tt>ld-linux.so.2</tt> dosyalarını <tt>lib</tt> dizinimize yerleştirmemiz gerekli. Sistemin <tt>/lib</tt> dizine baktığımızda bu dosyaların sırasıyla <tt>libc-2.3.2.so</tt> ve <tt>ld-2.3.2.so</tt> dosyalarına sembolik bağ olduklarını görüyoruz. Yani 4 dosyayı da bizim <tt>lib</tt> dizinimize kopyalamamız lazım:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cp -d /lib/libc.so.6 /a3/ramdisk/initrd/lib/</tt></b>
+# <b><tt>cp /lib/libc-2.3.2.so /a3/ramdisk/initrd/lib/</tt></b>
+# <b><tt>cp -d /lib/ld-linux.so.2 /a3/ramdisk/initrd/lib/</tt></b>
+# <b><tt>cp /lib/ld-2.3.2.so /a3/ramdisk/initrd/lib/</tt></b>
+</pre></div></div>
+    <div class="para">
+Birinci ve üçüncü satırdaki <tt>-d</tt> seçeneğine dikkat edin. Dosya sistemimiz artık hazır, deneyebiliriz. <tt>/a3/ramdisk/initrdyap</tt> betiğini çalıştırıp <tt>/export/netlogon/autoboot/initrd.img</tt> dosyasını oluşturalım:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>/a3/ramdisk/initrdyap</tt></b></pre></div></div>
+    <div class="para">
+<tt>/export/netlogon/autoboot</tt> dizininde bir önceki bölümde derlediğimiz çekirdeği yerleştirmiştik. Bu dizine Linux'u kurduğunuz CD'lerin ilkinde bulunan <tt>loadlin.exe</tt> dosyasını da kopyalayın. CD'yi CDROM sürücünüze yerleştirin ve <b><tt>mount /mnt/cdrom</tt></b> komutunu verin. CD'nin içeriğini <tt>/mnt/cdrom</tt> dizini altında bulacaksınız. <tt>mc</tt> ile CD'nin dizinlerinde <tt>loadlin.exe</tt> dosyasını bulun ve <tt>F5</tt> ile <tt>/export/netlogon/autoboot</tt> dizine kopyalayın.
+<tt>/mnt/cdrom</tt> dizininde çıkın ve <b><tt>umount /mnt/cdrom</tt></b> komutunu verdikten sonra CD'yi yuvasından çıkarın.
+    </div><div class="para">
+Şimdi bu 3 dosyadan yemek yapacağız. <tt>/export/netlogon/autoboot</tt> dizininde <tt>linux.bat</tt> ismiyle bir dosya açın (<b><tt>touch linuxbat</tt></b>) ve içine aşağıdaki satırı yazın:
+    </div>
+<div class="para"><div align="right"><pre class="screen">loadlin autoboot\vmlinuz initrd=autoboot\initrd.img ramdisk_size=12000</pre></div></div>
+    <div class="para">
+Bir üst dizine geçin ve <tt>linuxyukle.bat</tt> isminde bir dosya açın ve içine aşağıdakileri yazın.
+    </div>
+<div class="para"><div align="right"><pre class="screen">net use z: \\NILGUN\netlogon /y
+copy z:\autoboot\vmlinuz c:\autoboot
+copy z:\autoboot\initrd.img c:\autoboot
+copy z:\autoboot\loadlin.exe c:\
+copy z:\autoboot\linux.bat c:\
+</pre></div></div>
+    <div class="para">
+İlk satırdaki <tt>\\NILGUN\</tt> yerine makinanıza verdiğini ismi yazmalısınız. Benim için bu isim <tt>nilgun.buguner.home</tt> olduğundan <tt>NILGUN</tt> yazdım. Ayrıca, bu dosyayı windows altında çalıştıracağımız için dosyayı DOS dosya biçimine dönüştürmemiz ve dosyanın çalıştırılabilir bir dosya olmasını sağlamamız lazım. Bunun için aşağıdaki komutları çalıştırın:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>unix2dos linuxyukle.bat</tt></b>
+# <b><tt>chmod +x linuxyukle.bat</tt></b>
+</pre></div></div>
+    <div class="para">
+Linux'da her satır LF (10 numaralı karakter)ile biterken, DOS'da CRLF (13 ve 10 numaralı karakterler) ile biter. Bu komut satır sonlarındaki LF'leri CRLF ile değiştirir.
+    </div><div class="para">
+Sunucu makina üzerindeki işimiz bitti. İstemci makinaya geçin ve Ağ Komşularında <tt>netlogon</tt> dizinine girin ve <tt>linuxyukle.bat</tt> dosyasını çalıştırın. Bu betiği çalıştırdığınızda <tt>\\NILGUN\netlogon</tt>'un karşılığı olarak <tt>Z:</tt> diski oluşacak ve <tt>Z:</tt> diskindeki dosyalar <tt>C:</tt> diskine kopyalanacak.
+    </div><div class="para">
+Şimdi windows masaüstünde bir kısayol oluşturacağız. <tt>C:\linux.bat</tt> dosyasının üzerindeyken farenin sağtuşu ile açılan menüden kısayol oluştur'u seçin ve oluşan kısayolu masaüstüne taşıyıp ismini <tt>LINUX OL</tt> olarak değiştirin. Simgenin üzerine sağ tıklayıp <tt>Özellikler</tt>'e girin. Program sekmesinde <tt>Gelişmiş</tt> düğmesine tıklayın. 2. ve 3. seçenekleri seçili hale getirin. <tt>MS-DOS kipi</tt> başlıklı bölümde, <tt>Mevcut MD-DOS ayarlarını kullan</tt> seçeneğini seçil duruma, <tt>MS-DOS kipine girerken uyar</tt> seçeneğini ise seçilmemiş durma getirin ve Tamam'a tıklayıp çıkın.
+Şimdi sıra <tt>config.sys</tt> dosyasında, <tt>C:\config.sys</tt> dosyasında aşağıdakilerin bulunmasını sağlayın (bu dosyalar sizin sisteminizde farklı yerdeyse ona göre düzeltin):
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+DEVICE=C:\WINDOWS\HIMEM.SYS
+DEVICE=C:\WINDOWS\EMM386.EXE
+DOS=HIGH,UMB
+</pre></div></div>
+    <div class="para">
+Bundan sonra windows'u yeniden başlatın ve windows açılınca <tt>LINUX OL</tt> simgesine tıklayıp Linux sistemini başlatın. Ekran kararacak, önce çekirdek, ardından <tt>initrd.img</tt> yüklenecek. Çekirdek çalışacak, <b><tt>init</tt></b>'i başlatacak ve en son Enter'a basıp konsola düşeceksiniz. <b><tt>ifconfig</tt></b>, <b><tt>ls</tt></b>, <b><tt>date</tt></b>, <b><tt>df</tt></b> gibi bazı komutları deneyin.
+Bu konsolda yapabileceklerimiz bu gibi komut satırından bir takım komutlar girmekle sınırlı. Sistemi kapatmak için <b><tt>halt</tt></b> veya <b><tt>poweroff</tt></b> komutlarını girebileceğiniz gibi, makinayı doğrudan da kapatabilirsiniz. Çünkü sistemin çalışması için herhangi bir sabit diski bağlamadık. Kaybedilecek ya da bozulacak bir bilgi yok.
+    </div><div class="para">
+Bundan sonraki adım, iki makinayı birbirine bağlamak.
+    </div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/windows-ve-linux_kernel.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/windows-ve-linux__terminal.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/windows-ve-linux_baglan.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Çekirdeğin derlenmesi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Ağa Bağlanan Linux Terminali</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

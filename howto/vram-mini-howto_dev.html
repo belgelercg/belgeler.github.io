@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:17+03:00" /><title>MTD Aygıtının Oluşumu</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/vram-howto.html" title="VRAM Depo Aygıtı NASIL" /><link rel="previous" href="../howto/vram-mini-howto_xf86config.html" title="XF86Config Dosyasında Yapılacaklar" /><link rel="next" href="../howto/vram-mini-howto_what.html" title="Peki Bununla Ne Yapabilirim?" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">MTD Aygıtının Oluşumu</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/vram-mini-howto_xf86config.html">Önceki</a> </td><th width="60%" align="center">VRAM Depo Aygıtı NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/vram-mini-howto_what.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="vram-mini-howto_dev" id="vram-mini-howto_dev"></a>MTD Aygıtının Oluşumu</div><dl><dd><div class="para">
+      Herşey hazırlandı. Artık başlayabiliriz: (root olarak)
+</div><div class="para"><div align="right"><pre class="screen">
+# modprobe slram map=VRAM,0xd4400000,+0x00c00000
+</pre></div></div><div class="para">
+      <b>Komut Açıklaması:</b> Burada VRAM aygıtını
+      oluşturmak için yeni bir modül yüklüyoruz. <tt>0xd4400000</tt>
+      belleğin fiziksel başlangıç adresi, <tt>+0x00c00000</tt> ise
+      bellek miktarıdır.
+    </div><div class="para">
+      Benim grafik kartım 16Mb belleğe sahip. X11 için 4Mb ayırdım.
+      Gerisi ( 12MB = 0x00c00000 ) ise MTD aygıtı için. Bakalım neler yapmışız:
+</div><div class="para"><div align="right"><pre class="screen">
+# cat /proc/mtd
+dev:  size  erasesize name
+mtd0: 00b00000 00010000 "VRAM"
+</pre></div></div>
+      Hurraa..:-)) <tt>mtd0</tt> aygıtımız yüklendi ve kullanıma hazır.
+      Peki bunu nasıl kullanacağız? Çok kolay.<br />
+      Öncelikle <tt>/dev/mtd0</tt> ve <tt>/dev/mtdblock0</tt>
+      aygıtlarının sistemde bulunup bulunmadığını kontrol edelim (devfs'li
+      sistemlerde konum farklı olabilir).  Eğer yoklarsa oluşturulmaları gerekir.
+      Eğer karakter aygıtı lazım ise yapmanız gereken:
+<div class="para"><div align="right"><pre class="screen">
+# mknod /dev/mtd0 c 90 0
+</pre></div></div>
+    <div class="para">
+      Ve <tt>mtdchar</tt> modülünün yüklenmiş olduğundan emin olun
+      (veya çekirdeğin gerektiği zamanda yükleyeceğinden).
+    </div><div class="para">
+      Blok aygıtı için yapmanız gereken:
+</div><div class="para"><div align="right"><pre class="screen">
+# mknod /dev/mtdblock0 b 31 0
+</pre></div></div><div class="para">
+      Ve erişim için <tt>mtdlock</tt> modülüne ihtiyaç vardır.
+    </div><div class="para">
+      Aygıt hazırlandı. Bu kadar. Hala sağ kalan var mı :) O zaman devam...
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/vram-mini-howto_xf86config.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/vram-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/vram-mini-howto_what.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">XF86Config Dosyasında Yapılacaklar </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Peki Bununla Ne Yapabilirim?</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

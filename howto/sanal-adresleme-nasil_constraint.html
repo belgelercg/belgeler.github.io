@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:25+03:00" /><title>Dizin Erişimini Kısıtlama</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/sanal-adresleme-nasil.html" title="Apache Web Sunucusunda Sanal Adresleme ve Dizin Erişiminin Kısıtlanması NASIL" /><link rel="previous" href="../howto/sanal-adresleme-nasil_vh.html" title="Sanal Adresleme (Virtual Hosting)" /><link rel="next" href="../howto/sanal-adresleme-nasil_copyright.html" title="A. Telif Hakkı ve Lisans" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Dizin Erişimini Kısıtlama</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/sanal-adresleme-nasil_vh.html">Önceki</a> </td><th width="60%" align="center">Apache Web Sunucusunda Sanal Adresleme ve Dizin Erişiminin Kısıtlanması NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/sanal-adresleme-nasil_copyright.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="sanal-adresleme-nasil_constraint" id="sanal-adresleme-nasil_constraint"></a>Dizin Erişimini Kısıtlama</div><dl><dd> <div class="head3"><a name="id1" id="id1"></a>Htaccess ile Kullanıcılara Kısıtlama</div><dl><dd><div class="para">
+        Htaccess Apache Web sunucusu ile birlikte gelen ve Apache Web sunucu
+        üzerindeki belirli dizinlere erişim için kullanıcı adı ve parola sorgulaması
+        yapmaya yarayan bir  uygulamadır. Bu sayede özel dizinlere sadece sizin
+        belirlediğiniz kullanıcılar erişebilir.
+      </div><div class="para">
+        Bir Örnek verelim, <tt>http://www.rt.net.tr/cok_ozel</tt> adresine
+        htaccess uygulayalım.
+      </div><div class="para">
+        Bu dizin dosya sistemimizde <tt>/www/htdocs/cok_ozel</tt> olsun.
+        <tt>httpd.conf</tt> dosyasını bir metin düzenleyicide açalım ve
+        şu ifadeleri yazalım:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+&lt;Directory /www/htdocs/cok_ozel&gt;
+ AllowOverride AuthConfig
+&lt;/Directory&gt;
+</pre></div></div>
+<div class="para">
+<tt>AllowOverride AuthConfig</tt> ifadesi ile bu dizine erişim
+        için httaccess kullanılması gerektigini belirtiyoruz.
+      </div><div class="para">
+        htaccess nerede mi olacak? Tabiki <tt>/www/htdocs/cok_ozel</tt>
+        dizini altında! Evet <tt>/www/htdocs/cok_ozel/</tt> dizini
+        altında <tt>.htaccess</tt> dosyasını oluşturun (Evet Nokta var!
+        .htaccess) ve içine:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+AuthName "RT.NET Ozel Erisim Bolgesi !!!"
+AuthType Basic
+AuthUserFile /www/htdocs/cok_ozel/.htpasswd
+require valid-user
+</pre></div></div>yazınız...
+      <div class="para">Biraz Açıklayalım.</div><div class="para">
+        <tt>AuthName "RT.NET Ozel Erisim Bolgesi !!!"</tt> ifadesi ile
+        <tt>http://www.rt.net.tr/cok_ozel</tt> yazıldığında karşınıza
+        çıkan kullanıcı adı ve parola diyaloğundaki açıklayıcı bilgidir.  Buraya
+        istediğinizi yazabilirsiniz.
+      </div><div class="para">
+        <tt>AuthType Basic</tt> ifadesini değiştirmeyin. Burada
+        kimlik kanıtlama türü belirtiliyor.
+      </div><div class="para">
+        <tt>AuthUserFile /www/htdocs/cok_ozel/.htpasswd</tt>, yukarıdaki
+        ifade ile de kullanıcı adı ve parolaların saklandığı dosyanın TAM! yeri
+        belirtiliyor. Evet Tam olarak dosyanın yeri belirtilmelidir.
+      </div><div class="para">
+        <tt>require valid-user</tt>, bu en son ile bu dizine .htpasswd
+        dosyasındaki kullanıcıların erişebiliceği belirtiliyor.
+      </div><div class="para">
+        <tt>.htaccess</tt> dosyası tamam. Sıra <tt>.htpasswd</tt>
+        dosyasını  oluşturmaya geldi:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# /www/bin/htpasswd  -c  /www/htdocs/cok_ozel/.htpasswd yenigul
+</pre></div></div>
+      <div class="para">
+        Yukarıdaki komut ile  <tt>/www/htdocs/cok_ozel/</tt> dizini altında
+        <tt>.httpasswd</tt> oluşturulur ve <tt>yenigul</tt>
+        kullanıcısı eklenir.
+      </div><div class="para">
+        <tt>-c</tt> (creat) parametresi ile <tt>.htpasswd</tt>
+        dosyası hiç yoktan oluşturulur. İkinci bir kullanıcı eklemek için bu ifadeyi
+        kullanmayınız. İkinci kullanıcının eklenmesi,
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# /www/bin/htpasswd    /www/htdocs/cok_ozel/.htpasswd yakup
+</pre></div></div>
+<div class="para">
+        şeklinde olmalıdır.
+      </div><div class="para"><tt>.htaccess</tt>'i de bitirdik!</div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Dizinleri IP Adresine veya Alan Adına Göre Kısıtlama</div><dl><dd><div class="para">
+         Bu kısımda kısıtlama yapılacak adresimiz
+         <tt>http://www.rt.net.tr/intranet</tt> olsun ve dosyalar
+         <tt>/www/htdocs/intranet</tt> altında bulunsun.
+       </div><div class="para">
+         Sadece belirli IP'lere erişimi verip diğerlerine yasak koymak için, örneğin
+         <tt>212.65.128</tt> uzayındaki IP'lere erişim verelim:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+&lt;Directory  /www/htdocs/intranet&gt;
+  Order deny,allow
+  Allow from 212.65.128
+  Deny from All
+%lt;/Directory&gt;
+</pre></div></div>
+      <div class="para">
+        Sadece belirli alan isimlerine erişim verip diğerlerine yasak koymak için, örnegin
+        <tt>linux.org.tr</tt> alanına erişim verelim:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+&lt;Directory  /www/htdocs/intranet&gt;
+  Order deny,allow
+  Allow from linux.org.tr
+  Deny from All
+&lt;/Directory&gt;
+</pre></div></div>
+      <div class="para">
+        Sadece belirli IP'lere yasak koyup diğerlerine izin vermek için, örnegin
+        <tt>195.1.2</tt>  uzayındaki IP'lere yasak koyalım:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+&lt;Directory  /www/htdocs/intranet&gt;
+  Order allow,allow
+  Allow from All
+  Deny from  195.1.2
+&lt;/Directory&gt;
+</pre></div></div>
+      <div class="para">
+        Sadece belirli alan isimlerine yasak koyup diğerlerine izin vermek için,
+        örnegin <tt>lamer.com</tt> alanına yasak koyalım:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+&lt;Directory  /www/htdocs/intranet&gt;
+  Order allow,deny
+  Allow from All
+  Deny from lamer.com
+&lt;/Directory&gt;
+</pre></div></div>
+      
+        Yapılan değişikliklerin etkin olması için
+        <div class="para"><div align="right"><pre class="screen"># /www/bin/apachectl restart</pre></div></div> komutunu veriniz..
+      <div class="para">Belgemizin sonuna geldik.</div><div class="para">
+        Sorunlarınızı ve önerilerinizi yukarıda belirttiğim e-posta adresimden bana
+        ulaştırabilirsiniz.
+      </div><div class="para">Happy Linuxing<br />İSMAİL YENİGÜL</div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/sanal-adresleme-nasil_vh.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/sanal-adresleme-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/sanal-adresleme-nasil_copyright.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Sanal Adresleme (Virtual Hosting) </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> A. Telif Hakkı ve Lisans</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

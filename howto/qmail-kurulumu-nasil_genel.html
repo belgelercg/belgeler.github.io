@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2019-10-17T22:36:15+03:00" /><title>Genel Bilgiler</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/qmail-kurulumu-nasil.html" title="QMAIL Kurulumu NASIL" /><link rel="previous" href="../howto/qmail-kurulumu-nasil_qmail-nedir.html" title="Qmail Nedir?" /><link rel="next" href="../howto/qmail-kurulumu-nasil_qmailkur.html" title="Qmail Kurulumu" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Genel Bilgiler</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/qmail-kurulumu-nasil_qmail-nedir.html">Önceki</a> </td><th width="60%" align="center">QMAIL Kurulumu NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/qmail-kurulumu-nasil_qmailkur.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="qmail-kurulumu-nasil_genel" id="qmail-kurulumu-nasil_genel"></a>Genel Bilgiler</div><dl><dd><div class="para">Bu belgede:</div><ul type="disc" class="itemizedlist"><li>qmail + gerekli paketler</li><li>vpopmail</li><li>qmailadmin</li><li>Courier-IMAP  (qmail icin IMAP )</li><li>sqwebmail</li><li>ezmlm</li><li>autoresponder</li><li>rblsmtpd</li><li>Antivirus</li></ul><div class="para">
+kurulumu ile qmail'in özelleştirilmesini anlatacağım.
+    </div><div class="para">
+Kurulum planı şu şekildedir:
+    </div><div class="para">
+Önce normal bir şekilde qmail kurulacak, daha sonra 2 tür daha kurulum
+yapacağım.
+      </div><div class="variablelist"><dl><dt><span class="term">1. Tür Kurulum</span></dt><dd class="varlist"><div class="para">
+Hiç sanal alana (virtual domain) sahip olmadığımız kabul edilecek.
+Kullanıcıların sistem kullanıcısı olarak kalmasını istiyoruz.
+(<tt>/etc/passwd</tt> dosyasına kayıtlı kullanıcılar).
+Kullanıcıların sisteme erişip telnet, ftp, www gibi servisleri de
+kullanmasını da göze alarak kurulum anlatılacaktır. Eğer
+sunucuyu sadece eposta sunucu olarak kullanacaksanız kesinlikle
+2.tür kurulumu yapmanızı tavsiye ederim.
+            </div></dd><dt><span class="term">2. Tür Kurulum</span></dt><dd class="varlist"><div class="para">
+Tüm kullanıcılar sanal (virtual) olacaktır. Kullanıcıların sisteme hiç
+bir şekilde erişmesini istemiyoruz (ISS'ler için çok ideal) ve tüm
+bilgileri <tt>mysql</tt> veya <a class="ulink" href="http://cr.yp.to/cdb.html" target="_top">cdb</a>
+veritabanında  tutulacaktır (<tt>oracle</tt>, <tt>informix</tt>, vs. de kullanabilirsiniz).
+Bunun için <tt>mysql</tt> veya <tt>cdb</tt> kurulu olması lazım ve vpopmail kullanacağız.
+İstediğimiz kadar sanal alan oluşturabiliriz. Burada <tt>mysql</tt> mi yoksa
+<tt>cdb</tt> mi kullanacağınıza karar vermeniz lazım. Her ikisininde kendine göre
+getirileri ve götürüleri vardır.
+            </div><div class="variablelist"><dl><dt><span class="term">MySQL</span></dt><dd class="varlist">
+                  <div class="variablelist"><dl><dt><span class="term">Getirileri</span></dt><dd class="varlist"><div class="para">
+PHP veya Perl gibi programlar sayesinde web üzerinden
+çalışan çeşitli uygulamalar basitçe yazılabilir (hattaki
+kullanıcının kendi parolasını değiştirmesi gibi..).
+                        </div></dd><dt><span class="term">Götürüleri</span></dt><dd class="varlist"><div class="para">
+MySQL'in herhangi bir sebepden dolayı durması sonucu
+pop3'den parola doğrulaması yapılamama ve eposta
+sunucusunun geçici olarak posta alamaması durumları
+oluşabilir.</div></dd></dl></div></dd><dt><span class="term">cdb</span></dt><dd class="varlist">
+                  <div class="variablelist"><dl><dt><span class="term">Getirileri</span></dt><dd class="varlist"><div class="para">
+Çalışması için MySQL gibi bir port'a ihtiyacı yok. Çok
+hızlı ve performanslı.</div></dd><dt><span class="term">Götürüleri</span></dt><dd class="varlist"><div class="para">
+PHP veya Perl'de web tabanlı uygulama yazmak için dosyada
+düzenleme işlemleri ile uğraşmak gerekir.</div></dd></dl></div></dd></dl></div></dd></dl></div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/warning.png" /></td><th class="admon">Uyarı</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Bu belgeyi tamamiyle okumadan qmail'i kurmaya baslamayın. Çünkü ilerleyen
+bölümlerde istediğiniz bir şekilde sistem kurmak için qmail'in veya
+paketlerin kurulum yöntemini değiştirmeniz veya qmail'e yama yapmanız
+gerekebilir.
+      </div></td></tr></table></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/qmail-kurulumu-nasil_qmail-nedir.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/qmail-kurulumu-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/qmail-kurulumu-nasil_qmailkur.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Qmail Nedir? </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Qmail Kurulumu</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

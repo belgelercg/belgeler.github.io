@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:06+03:00" /><title>printw() sınıfı işlevler </title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/ncurses-howto-printw.html" title="Çıktı işlevleri" /><link rel="previous" href="../howto/ncurses-howto-addch.html" title="mvaddch(), waddch() ve mvwaddch()" /><link rel="next" href="../howto/ncurses-howto-addstrclass.html" title="addstr() sınıfı işlevler" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">printw() sınıfı işlevler </th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/ncurses-howto-addch.html">Önceki</a> </td><th width="60%" align="center">Çıktı işlevleri</th><td width="20%" align="right"> <a accesskey="n" href="../howto/ncurses-howto-addstrclass.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="ncurses-howto-printwclass" id="ncurses-howto-printwclass"></a><tt>printw()</tt> sınıfı işlevler </div><dl><dd><div class="para">
+Bu işlevler <b><tt>printf()</tt></b> işlevine benzemeleri yanında ekran üzerindeki herhangi bir konuma da yazabilmeyi de sağlamaktadırlar.
+</div> <div class="head4"><a name="ncurses-howto-printwmvprintw" id="ncurses-howto-printwmvprintw"></a><tt>printw()</tt> ve <tt>mvprintw()</tt></div><dl><dd><div class="para">
+Bu iki işlev <b><tt>printf()</tt></b>'e benzer çalışmaktadır. <b><tt>mvprintw()</tt></b> imleci belirtilen konuma hareket ettirir ve buraya yazar. Eğer önce imleci hareket ettirip daha sonra <b><tt>printw()</tt></b> kullanarak ekrana yazmak isterseniz önce <b><tt>move()</tt></b>'u daha sonra da <b><tt>printw()</tt></b>'yi kullanın. Hoş, birinin <b><tt>mvprintw()</tt></b> kullanımından kaçınmasında bir mantık göremesem de değiştirme esnekliğiniz bulunmaktadır.
+</div></dd></dl> <div class="head4"><a name="ncurses-howto-wprintwmvwprintw" id="ncurses-howto-wprintwmvwprintw"></a><tt>wprintw()</tt> ve <tt>mvwprintw()</tt></div><dl><dd><div class="para">
+Bu işlevler, parametre olarak verilen pencerelere yazmaları dışında yukarıdakilere benzemektedir.
+</div></dd></dl> <div class="head4"><a name="ncurses-howto-vwprintw" id="ncurses-howto-vwprintw"></a><tt>vwprintw()</tt></div><dl><dd><div class="para">
+Bu işlev <b><tt>vprintf()</tt></b>'e benzemektedir. Değişken sayıda argümanla kullanılabilir.
+</div></dd></dl> <div class="head4"><a name="ncurses-howto-simpleprintwex" id="ncurses-howto-simpleprintwex"></a>Basit bir <tt>printw</tt> örneği</div><dl><dd><dl class="example"><dt class="example"><a class="example" name="idxmp77" id="idxmp77"></a><b>Örnek 12.3. Basit bir <tt>printw</tt> örneği</b></dt><dd class="example">
+<div class="para"><div align="right"><pre class="programlisting">
+#include &lt;ncurses.h&gt;       /* stdio.h başlık dosyasını da ekler */
+#include &lt;string.h&gt;
+
+int main()
+{
+ char ileti[]="Sadece bir dizge"; /* ekranda görünecek ileti       */
+ int sat, sut;                    /* ekrandaki satır sayısını ve    *
+                                   * sütün sayısını tutmak için     */
+ initscr();                       /* curses kipine başlama          */
+ getmaxyx(stdscr, sat, sut);      /* satır ve sütun sayısını alma   */
+ mvprintw(sat/2, (sut-strlen(ileti))/2, "%s", ileti);
+                                  /* iletiyi ekranın ortasına yazdır */
+ mvprintw(sat-2, 0, "Bu ekranda %d satır ve %d sütun var\n", sat, sut);
+ printw("Ekran boyunu degistirerek (eger mümkünse)"
+        " programı yeniden çalıstırın");
+ refresh();
+ getch();
+ endwin();
+
+ return 0;
+}
+</pre></div></div></dd></dl><div class="para">
+Yukarıdaki program <b><tt>printw</tt></b> kullanımının ne kadar kolay olduğunu göstermektedir. Sadece koordinatları ve göstermek istediğiniz iletiyi belirtmektesiniz ve o da isteğinizi yerine getirmektedir.
+</div><div class="para">
+Yukarıdaki program bize <b><tt>getmaxyx()</tt></b> isimli <tt>ncurses.h</tt> içerisinde tanımlı yeni bir makroyu tanıtmaktadır. Verilen penceredeki satır ve sütün sayısını hesaplar. <b><tt>getmaxyx()</tt></b> bunu kendisine verilen değişkenleri güncelleyerek yapar.  <b><tt>getmaxyx()</tt></b> işlev olmadığından parametre olarak gösterici aktaramayız, sadece iki tamsayı değişken verebiliriz.
+</div></dd></dl></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/ncurses-howto-addch.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/ncurses-howto-printw.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/ncurses-howto-addstrclass.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">mvaddch(), waddch() ve mvwaddch() </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> addstr() sınıfı işlevler</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

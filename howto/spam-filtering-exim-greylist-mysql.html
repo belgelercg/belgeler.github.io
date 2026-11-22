@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:31+03:00" /><title>MySQL gerçeklenimi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/spam-filtering-exim-greylisting.html" title="Grilisteleme Desteğinin Eklenmesi" /><link rel="previous" href="../howto/spam-filtering-exim-greylistd.html" title="greylistd" /><link rel="next" href="../howto/spam-filtering-exim-spf.html" title="SPF Sınamalarının Eklenmesi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">MySQL gerçeklenimi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/spam-filtering-exim-greylistd.html">Önceki</a> </td><th width="60%" align="center">Grilisteleme Desteğinin Eklenmesi</th><td width="20%" align="right"> <a accesskey="n" href="../howto/spam-filtering-exim-spf.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="spam-filtering-exim-greylist-mysql" id="spam-filtering-exim-greylist-mysql"></a>MySQL gerçeklenimi</div><dl><dd><div class="para">
+Bu gerçeklenim, aşağıdaki gerçeklenimlerin üzerine inşa edilerek Johannes Berg <span class="email">&lt;johannes (at) sipsolutions.net&gt;</span> tarafından geliştirilmiştir:
+      </div>
+      <ul type="disc" class="itemizedlist"><li><div class="para">
+İlk olarak bir Postgres gerçeklenimi olarak Tollef Fog Heen <span class="email">&lt;tfheen (at) raw.no&gt;</span> tarafından oluşturuldu.<br /><a class="ulink" href="http://raw.no/personal/blog/tech/Debian/2004-03-14-15-55_greylisting" target="_top">http://raw.no/personal/blog/tech/Debian/2004-03-14-15-55_greylisting</a> adresinden edinilebilir.
+        </div></li><li><div class="para">
+Ardından, Rick Stewart <span class="email">&lt;rick.stewart (at) theinternetco.net&gt;</span> üzerinde çalıştı ve çalışmasını<br /><a class="ulink" href="http://theinternetco.net/projects/exim/greylist" target="_top">http://theinternetco.net/projects/exim/greylist</a> adresinde yayınladı.
+        </div></li></ul>
+      <div class="para">
+Başka bir pograma ihtiyaç duymaz - gerçeklenim tamamen MySQL veritabanında yapılandırılmıştır.
+      </div><div class="para">
+Yapılandırmanın gelişimini içeren bir arşiv ve bir <tt>README</tt> dosyası<br /><a class="ulink" href="http://johannes.sipsolutions.net/wiki/Projects/exim-greylist" target="_top">http://johannes.sipsolutions.net/wiki/Projects/exim-greylist</a> adresinde mevcuttur.
+      </div><div class="para">
+Sisteminizde MySQL kurulu olmalıdır. MySQL komut satırında <tt>exim_greylist</tt> ve <tt>exim_greylist_log</tt> isimli iki tablo ile <tt>exim4</tt> veritabanı oluşturulur:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+CREATE DATABASE exim4;
+use exim4;
+
+CREATE TABLE exim_greylist (
+   id bigint(20) NOT NULL auto_increment,
+   relay_ip varchar(80) default NULL,
+   sender varchar(255) default NULL,
+   recipient varchar(255) default NULL,
+   block_expires datetime NOT NULL default '0000-00-00 00:00:00',
+   record_expires datetime NOT NULL default '9999-12-31 23:59:59',
+   create_time datetime NOT NULL default '0000-00-00 00:00:00',
+   type enum('AUTO','MANUAL') NOT NULL default 'MANUAL',
+   passcount bigint(20) NOT NULL default '0',
+   blockcount bigint(20) NOT NULL default '0',
+   PRIMARY KEY  (id)
+);
+
+CREATE TABLE exim_greylist_log (
+   id bigint(20) NOT NULL auto_increment,
+   listid bigint(20) NOT NULL,
+   timestamp datetime NOT NULL default '0000-00-00 00:00:00',
+   kind enum('deferred', 'accepted') NOT NULL,
+   PRIMARY KEY (id)
+);
+</pre></div></div>
+      <div class="para">
+Exim yapılandırma dosyasının ana bölümüne bazı makrolar eklenir:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# Eğer başka veritabanları da kullanıyorsanız, bu veritabanına erişimi
+# mysql_servers = localhost/exim4/<i>kullanıcı</i>/<i>parola</i> şeklinde sağlayabilirsiniz.
+
+# seçenekler
+# bunlar, xxx olarak mysql'in DATE_ADD(..,INTERVAL xxx) deyiminde
+# geçerli olacak şekilde belirtilmelidir, örneğin çoğul olarak
+# "2 HOUR" yerine "2 HOURS" belirtilirse geçersiz olacaktır.
+GREYLIST_INITIAL_DELAY = 1 HOUR
+GREYLIST_INITIAL_LIFETIME = 4 HOUR
+GREYLIST_WHITE_LIFETIME = 36 DAY
+GREYLIST_BOUNCE_LIFETIME = 0 HOUR
+
+# tablo isimlerini değiştirebilirsiniz
+GREYLIST_TABLE=exim_greylist
+GREYLIST_LOG_TABLE=exim_greylist_log
+
+# grilistelemeyi (geçici olarak) iptal etmek için bu satırı açıklama
+# haline getirin
+GREYLIST_ENABLED=
+
+# günlük kayıtlarını etkinleştirmek için bu satırın başındaki # işaretini
+# kaldırın
+#GREYLIST_LOG_ENABLED=
+
+# bundan sonrasında normalde bir düzenleme yapılmamalıdır
+
+.ifdef GREYLIST_ENABLED
+# veritabanı makroları
+GREYLIST_TEST = SELECT CASE \
+   WHEN now() &gt; block_expires THEN "accepted" \
+   ELSE "deferred" \
+ END AS result, id \
+ FROM GREYLIST_TABLE \
+ WHERE (now() &lt; record_expires) \
+   AND (sender      = '${quote_mysql:$sender_address}' \
+     OR (type='MANUAL' \
+       AND (    sender IS NULL \
+         OR sender = '${quote_mysql:@$sender_address_domain}' \
+           ) \
+        ) \
+      ) \
+   AND (recipient   = '${quote_mysql:$local_part@$domain}' \
+     OR (type = 'MANUAL' \
+       AND (    recipient IS NULL \
+         OR recipient = '${quote_mysql:$local_part@}' \
+          OR recipient = '${quote_mysql:@$domain}' \
+            ) \
+         ) \
+       ) \
+   AND (relay_ip    = '${quote_mysql:$sender_host_address}' \
+     OR (type='MANUAL' \
+       AND (    relay_ip IS NULL \
+         OR relay_ip = \
+         substring('${quote_mysql:$sender_host_address}',1,length(relay_ip)) \
+           ) \
+         ) \
+      ) \
+ ORDER BY result DESC LIMIT 1
+
+GREYLIST_ADD = INSERT INTO GREYLIST_TABLE \
+  (relay_ip, sender, recipient, block_expires, \
+   record_expires, create_time, type) \
+ VALUES ( '${quote_mysql:$sender_host_address}', \
+  '${quote_mysql:$sender_address}', \
+  '${quote_mysql:$local_part@$domain}', \
+  DATE_ADD(now(), INTERVAL GREYLIST_INITIAL_DELAY), \
+  DATE_ADD(now(), INTERVAL GREYLIST_INITIAL_LIFETIME), \
+  now(), \
+  'AUTO' \
+)
+
+GREYLIST_DEFER_HIT = UPDATE GREYLIST_TABLE \
+                     SET blockcount=blockcount+1 \
+                     WHERE id = $acl_m9
+
+GREYLIST_OK_COUNT = UPDATE GREYLIST_TABLE \
+                    SET passcount=passcount+1 \
+                    WHERE id = $acl_m9
+
+GREYLIST_OK_NEWTIME = UPDATE GREYLIST_TABLE \
+                      SET record_expires = DATE_ADD(now(), \
+                      INTERVAL GREYLIST_WHITE_LIFETIME) \
+                      WHERE id = $acl_m9 AND type='AUTO'
+
+GREYLIST_OK_BOUNCE = UPDATE GREYLIST_TABLE \
+                     SET record_expires = DATE_ADD(now(), \
+                     INTERVAL GREYLIST_BOUNCE_LIFETIME) \
+                     WHERE id = $acl_m9 AND type='AUTO'
+
+GREYLIST_LOG = INSERT INTO GREYLIST_LOG_TABLE \
+               (listid, timestamp, kind) \
+               VALUES ($acl_m9, now(), '$acl_m8')
+.endif
+</pre></div></div>
+      <div class="para">
+Artık, ACL bölümünde (<tt>begin acl</tt> satırından sonra) “greylist_acl” ismiyle yeni bir ACL tanımlayabiliriz:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+.ifdef GREYLIST_ENABLED
+# Bu acl ya deny ya da accept döndürecek.
+# acl = greylist_acl'yi ber deger ile kullandığımızdan,
+# bir accept, kuralı DOĞRU yapacak, dolayısıyla bir erteleme olacak;
+# bir deny ise kuralı YANLIŞ yapacak, dolayısıyla erteleme olmayacak.
+greylist_acl:
+  # Normal teslimatlar için griliste sınanacak.
+
+  # Griliste sınanıp, acl_m8'e "accepted", "deferred" veya "unknown"
+  # ve acl_m9'a kayıt numarası döndürülecek.
+
+  warn set acl_m8 = ${lookup mysql{GREYLIST_TEST}{$value}{result=unknown}}
+       # Burada acl_m8 = "result=x id=y"
+
+       set acl_m9 = ${extract{id}{$acl_m8}{$value}{-1}}
+       # Artık acl_m9 kayıt numarasını (veya -1) içerecek.
+
+       set acl_m8 = ${extract{result}{$acl_m8}{$value}{unknown}}
+       # acl_m8 unknown/deferred/accepted içerecek.
+
+  # Bu üçlüyü bilmiyorsak, ileti ekleyeceğiz yoksa erteleyeceğiz
+  accept
+       # yukarıdaki sınama unknown (henüz kayıt yok) döndürmüşse
+       condition = ${if eq{$acl_m8}{unknown}{1}}
+       # ayrıca bir kayıt ekleyeceğiz
+       condition = ${lookup mysql{GREYLIST_ADD}{yes}{no}}
+
+  # Şimdi günlük kaydı yapacağız, sonucun önemi yok.
+  # Üçlüyü bilmiyorsak bir günlük girdisine gerek yok çünkü
+  # yukarıda oluşturma sırasında dolaylı olarak yapıldı.
+  #
+  .ifdef GREYLIST_LOG_ENABLED
+  warn condition = ${lookup mysql{GREYLIST_LOG}}
+  .endif
+
+  # Üçlü hala engelleniyor mu bakalım
+  accept
+       # Yukarıdaki sınama deferred döndünmüşse ertele
+       condition = ${if eq{$acl_m8}{deferred}{1}}
+       # ve kayda geçir
+       condition = ${lookup mysql{GREYLIST_DEFER_HIT}{yes}{yes}}
+
+  # Bakılan kayıtları saymak için bir warn deyimi kullanıyoruz.
+  warn condition = ${lookup mysql{GREYLIST_OK_COUNT}}
+
+  # Özdevinimli kayıtlarda zaman aşımını belirlemek için bir
+  # warn deyimi kullanıyoruz. Ancak, posta boş göndericili değilse
+  # zamanaşımı uygulanacak, aksi takdirde zamanaşımı uygulanmayacak.
+  #
+  warn !senders = : postmaster@*
+       condition = ${lookup mysql{GREYLIST_OK_NEWTIME}}
+  warn senders = : postmaster@*
+       condition = ${lookup mysql{GREYLIST_OK_BOUNCE}}
+
+  deny
+.endif
+</pre></div></div>
+      <div class="para">
+Gönderici adresi boş olmayan üçlüleri grilistelemek için bu ACL'yi <a href="../howto/spam-filtering-acl_rcpt_to_final.html" class="xref" title="acl_rcpt_to">acl_rcpt_to</a> ACL'nize yerleştirin. Böylece, gönderici varlık doğrulaması yapmanız mümkün olacak:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+.ifdef GREYLIST_ENABLED
+  defer !senders = : postmaster@*
+        acl      = greylist_acl
+        message  = greylisted - try again later
+.endif
+</pre></div></div>
+      <div class="para">
+Onu ayrıca <a href="../howto/spam-filtering-acl_data_1.html" class="xref" title="acl_data">acl_data</a>'e de yerleştirin, fakat sadece gönderici adresinin boş olduğunu tespit ettikten sonraya. Bu, spamcıların grilistelemeyi gönderici adresini boş bırakarak aşmaya çalışmalarını önlemek içindir.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+.ifdef GREYLIST_ENABLED
+  defer senders  = : postmaster@*
+        acl      = greylist_acl
+        message  = greylisted - try again later
+.endif
+</pre></div></div>
+      </dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/spam-filtering-exim-greylistd.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/spam-filtering-exim-greylisting.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/spam-filtering-exim-spf.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">greylistd </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> SPF Sınamalarının Eklenmesi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

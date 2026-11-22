@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:17+03:00" /><title>Veri dosyalarını kurtarmak</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/rescue-knoppix.html" title="Knoppix ile Sistem Kurtarma" /><link rel="previous" href="../howto/rescue-knoppix-harware.html" title="Donanım tespiti" /><link rel="next" href="../howto/rescue-knoppix-chroot.html" title="Sunucuda kök dosya sistemini değiştirmek" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Veri dosyalarını kurtarmak</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/rescue-knoppix-harware.html">Önceki</a> </td><th width="60%" align="center">Knoppix ile Sistem Kurtarma</th><td width="20%" align="right"> <a accesskey="n" href="../howto/rescue-knoppix-chroot.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="rescue-knoppix-files" id="rescue-knoppix-files"></a>Veri dosyalarını kurtarmak</div><dl><dd><div class="para">
+Genellikle ilk yapılacak şey, veri dosyalarını bozuk sürücünün dışına kopyalamaktır. Kopyalanacak pek çok dosya olduğu zamanlarda benim favori yöntemim şudur: ikinci bir sabit disk takın, sonra Knoppix ile sistemi açın, eski diskten yenisine dosyaları kopyalayın. Çıkarılabilir sürücü kutunuz veya değiştirilebilir sürücüleriniz olmasa bile, yeni bir tanesini almak bir kaç dakikalık bir iştir. Boş bir diskiniz mi var veya temizlenip yeniden biçimlenmesi gereken bir tane? Sorun değil, diskinizi Knoppix ile hazırlayabilirsiniz.
+  </div> <div class="head3"><a name="id1" id="id1"></a>Bölümleme ve biçimleme</div><dl><dd><div class="para">
+Önce ikinci diski takın. Knoppix ile sistemi başlatın ve <tt>root</tt> kabuğu<sup>[<a href="rescue-knoppix-noboot.html#ftn.id17">17</a>]</sup> açın. Şayet diskte hazır bölümler var ise, ihtiyacınıza göre yeniden biçimleyin. Unutmayın ki SCSI sürücüler <tt>sd</tt> ve IDE sürücüler <tt>hd</tt> ile gösterilir. Aşağıdaki komut, sistemde halihazırda bulunan disk bölümlerini gösterir. Sisteminiz için gerekli olan değerleri kullandığınızdan emin olun.
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>root@tty2[/]#</tt> <b><tt>fdisk -l /dev/hdb</tt></b>
+</pre></div></div>
+  <div class="para">
+(<tt>/dev/hdb</tt> ikinci sabit disk anlamındadır.) Bu disk üzerindeki bir disk bölümünü biçimlemek için:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>root@tty2[/]#</tt> <b><tt>mkfs.ext2 -c /dev/hdb1</tt></b>
+</pre></div></div>
+  <div class="para">
+(<tt>/dev/hdb1</tt> ikinci sabit diskin birinci bölümünü gösterir.)
+Bu komutla ext2 dosya sistemine sahip bir bölüm elde edersiniz. Tabii ki tercihinize ve zevkiniz göre ext3, ReiserFS veya ne istiyorsanız onu da yapabilirsiniz. Buradaki <tt>-c</tt> seçeneği bozuk blokların kontrol edilmesini sağlamak içindir.
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>root@tty2[/]#</tt> <b><tt>mke2fs -j -c /dev/hdb1</tt></b>
+<tt>root@tty2[/]#</tt> <b><tt>mkreiserfs /dev/hdb1</tt></b>
+</pre></div></div>
+  <div class="para">
+Ne bölüm yok mu? Öncelikle, burada komut satırından <b><tt>fdisk</tt></b> ile nasıl bölümleme yapılacağını gösterelim. Gerekli komutu vermediğiniz sürece <b><tt>fdisk</tt></b> ile yaptığınız değişiklikler diske yazılmaz /* güvenlik sebebi ile */. Bu sayede, değişiklikleri işlemeden önce bir öngörünüm alma şansına sahip olursunuz ve değişik yapılandırmalar deneyebilirsiniz. Aşağıdaki komut tüm diskte tek bir bölüm oluşturur:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>root@tty2[/]#</tt> <b><tt>fdisk /dev/hdb</tt></b>
+</pre></div></div>
+  <div class="para">
+<b><tt>fdisk</tt></b> komutlarının bir tablosunu görebilmek için, istediğiniz bir zamanda <b><tt>m</tt></b> harfine basın. Yeni bir bölüm için <b><tt>n</tt></b>. Birincil bölüm oluşturmak için <b><tt>p</tt></b>. Geçerli ayarlar için Enter tuşuna iki kere basın. Veya bütün diski kullanmak istemiyorsanız, geçerli başlangıç noktasını kabul etmek ve istediğiniz alanı seçmek için bir kere Enter'a basın.
+  </div>
+<div class="para"><div align="right"><pre class="screen">+1000M</pre></div></div>
+  <div class="para">
+yeni bölümleme tablosunun ön görünümü için <b><tt>p</tt></b>'ye basın. Herşey tam istediğiniz gibi olmuş ise, değişiklikleri kaydetmek için <b><tt>w</tt></b>. Öntanımlı olarak <b><tt>fdisk</tt></b> "type 83" bölümü yaratır (linux türü). Bölüm türlerinin listesi için <b><tt>l</tt></b>'ye basın. Bölüm türünü değiştirmek için <b><tt>t</tt></b>'ye, bir bölümü silmek için <b><tt>d</tt></b>'ye basın ve yönergeleri izleyin.
+  </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a><tt>QTParted</tt></div><dl><dd><div class="para">
+KDE'yi açıp QTParted kullanmak çok kolaydır (KDE menüsünde <b><tt>System &gt; QTParted</tt></b>). QTParted ile disk bölümü oluşturabilir, silebilir, yeniden boyutlandırabilir ve bölümün içindekilere zarar vermeden taşıyabilirsiniz. (hatta bunları NTFS için bile yapabilirsiniz). Bu sayede, veri kaybı olmadan, verilerinizi kopyalayabileceğiniz bir bölüm oluşturabilirsiniz.
+  </div></dd></dl> <div class="head3"><a name="id3" id="id3"></a>Grafik arayüz ile kopyalama</div><dl><dd><div class="para">
+Grafik dosya yöneticilerini severim. Uzun komut satırları yazmaktansa sürükle/bırak çok daha kolaydır. KDE masaüstünde sizin kaynak sürücünüzü işaret eden simgeye tıklayın ve kopyalamak istediğiniz yere çekin. Hızlı ve kolay bir sürükle/bırak için, her biri kendi dosya yöneticisi içinde açılır. Gidilecek olan sürücünün yazılabilir olduğundan emin olun.
+  </div></dd></dl> <div class="head3"><a name="id4" id="id4"></a>Dosyaları komut satırından kopyalama</div><dl><dd><div class="para">
+Dosyaları taşıyacağınız dizini oluşturmayı unutmayın:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>root@tty2[/]#</tt> <b><tt>mkdir /mnt/hdb1/home/carla/backup</tt></b>
+<tt>root@tty2[/]#</tt> <b><tt>cp -r /mnt/hda5/home/carla /mnt/hdb1/home/carla/backup</tt></b>
+</pre></div></div>
+  </dd></dl> <div class="head3"><a name="id5" id="id5"></a>Bütün bir sürücüyü yansılamak</div><dl><dd><div class="para">
+Aynı boyda iki diske ihtiyacınız var demektir. Hedef sürücünün boyutu daha büyük de olabilir. Herhangi bir diskte, herhangi bir bölümün bağlı olmadığından emin olun. Bu örnekte <tt>/dev/hda</tt> kaynak disk, <tt>/dev/hdb</tt> hedef disktir. <b><tt>dd</tt></b> komutu tam anlamı ile bire-bir bir kopyalama işlemi yapar. /* MBR dahil */
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>root@tty2[/]#</tt> <b><tt>dd if=/dev/hda of=/dev/hdb</tt></b>
+</pre></div></div>
+  </dd></dl> <div class="head3"><a name="id6" id="id6"></a>Bağlantı karmaşası</div><dl><dd><div class="para">
+Bağladığınız aygıtları, dizinleri ve bunların durumlarını mı karıştırıyorsunuz? Sorun değil, <tt>/proc</tt> size bu konuda yardımcı olabilir:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>root@tty2[/]#</tt> <b><tt>cat /proc/mounts</tt></b>
+</pre></div></div>
+  <div class="para">
+Bu komut bütün bağlı dosya sistemlerini, dosya sistemi türlerini, okuma/yazma durumlarını ve diğer özelliklerini görüntüler. Sisteminizde kaç tane sabit disk var? Aşağıdaki komutlardan birisi bunu sizin için öğrenebilir. (SCSI için <tt>sd</tt>, IDE'ler için <tt>hd</tt>)
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>root@tty2[/]#</tt> <b><tt>fdisk -l</tt></b>
+</pre></div></div>
+  <div class="para">veya</div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>root@tty2[/]#</tt> <b><tt>dmesg | grep hd</tt></b>
+</pre></div></div>
+  <div class="para">ya da</div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>root@tty2[/]#</tt> <b><tt>dmesg | grep sd</tt></b>
+</pre></div></div>
+  </dd></dl> <div class="head3"><a name="id7" id="id7"></a>CD'ye kopyalama</div><dl><dd><div class="para">
+KDE ve KNOPPIX bu işi oldukça kolaylaştırmışlardır. Sistemde bir CD-yakar olduğunu varsayarak; kopyalamak istediğiniz dosyalarınızı içeren bölümün masaüstü simgesine sağ tıklayın. Açılan menüde <tt>Create Data CD with K3b.</tt> satırını göreceksiniz. Menüden <b><tt>Dosya &gt; Yeni Proje</tt></b> seçin, kopyalamak istediğiniz dosyaları sürükleyip bırakın ve devam... K3b CD sürücüleri otomatik olarak tespit etme ve otomatik ayarlama konusunda oldukça başarılıdır, herşeyi sizin yerinize halledecektir. Şayet birşeyler ters giderse, lütfen Linux belgeleri arasındaki <a class="link" href="../howto/cd-yazimi.html" title="Linux'da CD Yazımı">Linux'da CD Yazımı</a> belgesine göz atın. Ayrıca bu kılavuz size komut satırından CD yakmayı da öğretecektir.
+  </div></dd></dl> <div class="head3"><a name="id8" id="id8"></a>Diğer aygıtlara kopyalama:</div><dl><dd><div class="para">
+Zip sürücüler, disket sürücüler ve USB depolama aygıtları Knoppix tarafından otomatik olarak tanınır ve masaüstüne simgeleri yerleştirilir. Gerisi oldukça basittir. Dosyaları kopyalamak istediğiniz aygıtın yazdırılabilir özelliğini aktifleştirin ve dosyaları sürükleyip bırakın. Hepsi bu kadar kolay işte.
+  </div></dd></dl> <div class="head3"><a name="id9" id="id9"></a>Ağ üzerinden kopyalama</div><dl><dd><div class="para">
+Knoppix'i, tıpkı diğer Linux sürümleri gibi, ağa bağlanmak üzere ayarlayabilirsiniz. Knoppix Ana Menüsünde bunun için kendi grafik ayar araçları vardır: <b><tt>Knoppix &gt; Network/Internet</tt></b>. İşte bu noktada Knoppix'in o muhteşem donanım tespit sistemi devreye girer ve kablosuz bir ethernet ile bile sistem çalışır. Birkaç basit sorunun cevabını verin ve ağdasınız.
+  </div><div class="para">
+Komut satırından da bunu yapmak oldukça kolaydır. <tt>root</tt> kullanıcısı olarak:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>root@tty2[/]#</tt> <b><tt>netcardconfig</tt></b>
+</pre></div></div>
+  <div class="para">
+Bir kez ağ ayarları yapıldıktan sonra, dosya aktarımı yapmanın çeşitli yolları vardır. <b><tt>cp</tt></b> yerel olarak bağlanmış dizinler ve dosya sistemleri için uygun bir çözümdür. Kopyalama işlemi güvenli olmayan bir ağ üzerinden <b><tt>scp</tt></b> (secure copy - güvenli kopyalama) ile yapılmalıdır, aslında Knoppix sizin başka bir şey kullanmanıza zaten izin vermeyecektir. <b><tt>scp</tt></b>, şifreli dosya aktarımı için <b><tt>ssh</tt></b> kullanır ve sizin NFS veya Samba ayarları ile uğraşmaksızın dosyaları taşımanızı sağlar. Dosyaları alabilmek için ağ üzerinde bir yerlerde <b><tt>ssh</tt></b> sunucunun çalışır olması gerekir. Aşağıdaki komut bütün bir dizini kopyalar:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>root@tty2[/]#</tt> <b><tt>scp -rp /mnt/hda5/home/carla 192.168.1.5:/home/carla/tmp</tt></b>
+</pre></div></div>
+  </dd></dl> <div class="head3"><a name="id10" id="id10"></a>SSH için çabuk başlangıç</div><dl><dd><div class="para">
+Ne? Bir <b><tt>ssh</tt></b> sunucunuz yok mu? Şayet yüklenmiş bir <b><tt>ssh</tt></b> sunucunuz yok ise, bu bölümde <b><tt>ssh</tt></b> çalıştırmanın hızlı bir tanımını bulabilirsiniz. Fakat <b><tt>ssh</tt></b>'ı sıradan uzaktan yönetim görevleri için kullanmadan önce, <b><tt>ssh</tt></b> konusunu derinlemesine çalışmalısınız. Ayrıca, yakın zamanda, önemli güvenlik yamalarının yayınlanmış olduğunu unutmayın.
+  </div><div class="para">
+<tt>OpenSSH</tt> paketi bütün büyük Linux dağıtımları içinde standart olarak gelir. Muhtemelen sizin dağıtımınızda da bir tane vardır. <b><tt>locate sshd</tt></b> komutu ile bunu öğrenebilirsiniz. Şayet sisteminizde <b><tt>ssh</tt></b> yok ise, yeni bir tanesini yükleyin. Çalıştırmak için özel bir makinaya ihtiyacımız yoktur; herhangi bir Linux yüklü PC, <b><tt>ssh</tt></b> çalıştırabilir. <b><tt>ssh</tt></b>'ı başlatmak için:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>root@tty2[/]#</tt> <b><tt>/etc/init.d/ssh start</tt></b>
+</pre></div></div>
+  <div class="para">
+Daha sonra tüm gereken; her iki makinada da hesabı olan bazı kullanıcılar oluşturmaktır. <tt>root</tt> olarak kullanmak en kolay ama aynı zamanda en güvensiz yoldur. Ve tabii ki, Knoppix üzerinde <b><tt>useradd</tt></b> ve <b><tt>passwd</tt></b> komutları ile kullanıcılar oluşturabilirsiniz. Ve daha sonra, yukarıdaki örnekte gösterildiği şekilde, <b><tt>scp</tt></b> komutunu çalıştırın ve devam edin.
+  </div><div class="para">
+İlk bağlantıda, <tt>The authenticity of host X can't be established... are you sure you want to continue connecting?</tt> şeklinde bir ileti alacaksınız. <tt>yes</tt> (evet) deyin; sizden <b><tt>ssh</tt></b> sunucunun <tt>root</tt> kullanıcı parolasını soracaktır. Artık evinizdesiniz. <tt>root</tt> harici bir kullanıcı ile dosyaları taşımak için:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>$</tt> <b><tt>scp -rp /mnt/hda5/home/carla carla@192.168.1.5:/home/carla/tmp</tt></b>
+</pre></div></div>
+  </dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/rescue-knoppix-harware.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/rescue-knoppix.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/rescue-knoppix-chroot.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Donanım tespiti </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Sunucuda kök dosya sistemini değiştirmek</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

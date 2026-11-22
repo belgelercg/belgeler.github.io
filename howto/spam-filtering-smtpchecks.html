@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:29+03:00" /><title>SMTP Sınamaları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/spam-filtering-techniques.html" title="Teknikler" /><link rel="previous" href="../howto/spam-filtering-dnschecks.html" title="DNS Sınamaları" /><link rel="next" href="../howto/spam-filtering-greylisting.html" title="Grilisteleme" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">SMTP Sınamaları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/spam-filtering-dnschecks.html">Önceki</a> </td><th width="60%" align="center">Teknikler</th><td width="20%" align="right"> <a accesskey="n" href="../howto/spam-filtering-greylisting.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="spam-filtering-smtpchecks" id="spam-filtering-smtpchecks"></a>SMTP Sınamaları</div><dl><dd><div class="para">
+SMTP diyaloğu başladıktan sonra, karşı taraftan gönderilen komutlar ve bunların parametreleri üzerinde çeşitli sınamalar yapabilirsiniz. Örneğin, selamlaşma sırasında karşı tarafın belirttiği ismin geçerli olup olmadığına bakabilirsiniz.
+    </div><div class="para">
+Bununla birlikte, teslimatı reddetmeye daha SMTP aktarımının başlarında karar verseniz bile bunu hemen yapmamak, bir <b><tt>RCPT TO:</tt></b> komutu gelene kadar SMTP aktarım gecikmesiyle göndericiyi bekletmek ve <b><tt>RCPT TO:</tt></b> komutunu aldıktan sonra reddetmek daha iyidir.
+    </div><div class="para">
+Bunun sebebi, bazı kalleş yazılımların SMTP aktarımının daha başlarında reddedildiklerini ama bekletilmeye çalışıldıklarını anlamamaları içindir. Ayrıca, bunların reddedilme sebebinin <b><tt>RCPT TO:</tt></b> başarısızlığından kaynaklandığını sanmaları da sağlanmış olur.
+    </div><div class="para">
+Bu, küçük de olsa bir katran çukuru yapmak için ayrıca hoş bir vesiledir.
+    </div> <div class="head4"><a name="spam-filtering-helocheck" id="spam-filtering-helocheck"></a>Selamlaşma (HELO/EHLO) Sınamaları</div><dl><dd><div class="para">
+<a class="link" href="../rfc/rfc2821.html" title="Basit Posta Aktarım Protokolü (SMTP)">RFC 2821</a>'e göre, istemci tarafından gönderilecek ilk SMTP komutu EHLO (ya da desteklenmiyorsa HELO) olmalı ve komuta parametre olarak kendi birincil <a href="../howto/spam-filtering-glossary.html#spam-filtering-fqdn" class="xref" title="Nitelikli Alan Adı">Nitelikli Alan Adı</a>nı vermelidir. Bu işleme Selamlaşma (Hello greeting) adı verilir. Eğer anlamlı bir nitelikli alan adı veremiyorsa, istemci köşeli ayraç içine alınmış IP adresini belirtebilir: "[1.2.3.4]". Bu biçime IPv4 adresinin "dizgesel" gösterimi denir.
+      </div><div class="para">
+Anlaşılacağı üzere, bir <a href="../howto/spam-filtering-glossary.html#spam-filtering-ratware" class="xref" title="Kalleş Yazılım">Kalleş Yazılım</a> da selamlaşma sırasında kendi nitelikli alan adını genelde sunar. Ama, kalleş yazılım amacına uygun olarak gönderici konağın kimliğini gizlemeye ve/veya karışıklık yaratmaya ve/veya ileti başlığında "Received:" gibi başlıklarla sunucuyu yanıltmaya çalışır. Bu tür selamlaşma örneklerinden bazıları:
+      </div>
+      <ul type="disc" class="itemizedlist"><li>
+Alıcı adresindeki kullanıcı ismi gibi niteliksiz isimler (noktasız isimler).
+        </li><li>
+Çıplak IP adresi (köşeli ayraç içine alınmamış olarak); genellikle sizinki, ama rasgele bir adres de olabilir.
+        </li><li>
+Sizin alan adınız ya da sunucunuzun nitelikli alan adı.
+        </li><li><tt>yahoo.com</tt>,  <tt>hotmail.com</tt> gibi çok bilinen alan adları.
+        </li><li>
+Mevcut olmayan alan adları veya isim sunucusu olmayan alanların adları.
+        </li><li>
+Hiç selamlaşmaz.
+        </li></ul>
+      <div> <div class="head5"><a name="spam-filtering-helosyntax" id="spam-filtering-helosyntax"></a>Basit HELO/EHLO sözdizimi sınamaları</div></div><div class="para">
+Bu <a class="link" href="../rfc/rfc2821.html" title="Basit Posta Aktarım Protokolü (SMTP)">RFC 2821</a> kurallarına uymayanlara karşı ve bazı <a href="../howto/spam-filtering-glossary.html#spam-filtering-ratware" class="xref" title="Kalleş Yazılım">Kalleş Yazılım</a> türlerininin bilinen belirtileri nedeniyle bu sınamalarını yapmak kolaydır. Böyle selamlaşmaları ya hemen ya da <b><tt>RCPT TO:</tt></b> komutundan sonra reddedebilirsiniz.
+        </div><div class="para">
+Öncelikle, selamlaşma sırasında çıplak IP adresi belirtenleri gönül rahatlığıyla reddedebilirsiniz. Eğer <a class="link" href="../rfc/rfc2821.html" title="Basit Posta Aktarım Protokolü (SMTP)">RFC 2821</a>'in zorunlu kıldığı, tavsiye ettiği ya da seçiminize bıraktığı herşeye genel anlamda izin vermekten yanaysanız, bir isim yerine belirtildiğinde IP adreslerinin köşeli ayraç içine alınması gerektiğini aklınızdan çıkarmayın<sup>[<a name="id34" href="#ftn.id34" id="id34">34</a>]</sup>
+        </div><div class="para">
+Özellikle, <i>sizin</i> IP adresinizi kullanarak selamlaşmaya girişen konakları sert bir dille yazılmış bir iletiyle reddedebilirsiniz. Bunlar açıkça yalancıdır. Hatta, böyle selamlaşmalara girişenleri uzunca süren (saatlerce) SMTP aktarım gecikmeleriyle kapıda bekletirseniz hiç fena olmaz.
+        </div><div class="para">
+Bu konuda benim kendi deneyimlerim, internette kendilerini dizgesel IP adresi belirterek ([x.y.z.w] gösterimiyle) başka sitelere tanıtan bir meşru site olmadığı gibi bunların internete posta gönderen bütün konakları kendilerinin geçerli <a href="../howto/spam-filtering-glossary.html#spam-filtering-fqdn" class="xref" title="Nitelikli Alan Adı">Nitelikli Alan Adı</a>ndan başka bir isim kullanmamaktadırlar. Dizgesel IP adresi kullanımını sadece yerel ağımdan, o da gönderici SMTP sunucusu olarak benim sunucumu kullanmak üzere yapılandırılmış Ximian Evolution gibi posta istemcilerinden gelirse kabul ediyorum. Yani, dizgesel IP adresi kullananları sadece yerel ağımdan geliyorlarsa kabul ediyorum.
+        </div><div class="para">
+Niteliksiz konak isimlerini (nokta içermeyen konak isimleri) reddedip etmemek size kalmış, Bunların yaygın olarak meşru kabul edildiklerini biliyorum (ama her zaman değil - çifte yanlış olumlama sebebi olabilirler).
+        </div><div class="para">
+Benzer şekilde, geçersiz karakter içeren konak isimlerini reddedebilirsiniz. İnternet alan adları için sadece harfler, rakamlar ve tire işareti geçerli karakterlerdir ve tire işaretine ilk karakter olarak izin verilmez. (Ayrıca, altçizgi karakterini de geçerli bir karakter olarak kabul edebilirsiniz, basitçe yanlış yapılandırmanın bir sonucudur ama Windows istemciler için bu bir yanlış değildir.)
+        </div><div class="para">
+Son olarak, sosyal kişilerin ilk yaptığı şeyi yapmayan yani selamlaşmadan bir <b><tt>MAIL FROM:</tt></b> komutu gönderen bir istemci ile karşı karşıyaysanız bu bağlantıyı da reddedebilirsiniz.
+        </div><div class="para">
+Kendi sunucularımda, bu sözdizimi sınamalarından geçemeyenleri reddediyorum. Yine de reddetme işlemini <b><tt>RCPT TO:</tt></b> komutunu alana kadar yapmıyorum. Böyle bir durumda, her SMTP komutuna (<b><tt>HELO/EHLO</tt></b>, <b><tt>MAIL FROM:</tt></b>, <b><tt>RCPT TO:</tt></b>) 20 saniyelik bir aktarım gecikmesi uyguluyorum.
+        </div><div> <div class="head5"><a name="spam-filtering-heloverify" id="spam-filtering-heloverify"></a>Selamlaşmanın DNS üzerinden doğrulanması</div></div><div class="para">
+Konaklar selamlaşmayı gayet yüzeysel bir manada yaparlar. Selamlaşma, bu sırada belirtilen ismi DNS üzerinden doğrulatmak için en doğru zamandır. Şunları yapabilirsiniz:
+        </div>
+        <ul type="disc" class="itemizedlist"><li>
+Belirtilen ismi DNS sunucusundan sorgulayıp bağlanan konağın IP adresi ile bu ismin eşleşip eşleşmediğine bakabilirsiniz.
+          </li><li>
+Bağlanan konağın IP adresine bir ters DNS sorgusu yapıp, gelen ismin selamlaşmada belirtilen isim ile eşleşip eşleşmediğine bakarsınız.
+          </li></ul>
+        <div class="para">
+Eğer bu iki sınama da başarılı olursa, isim doğrulanmış olur.
+        </div><div class="para">
+Posta aktarımcınız yerleşik bir seçenek olarak bu sınamayı yapabiliyor olabilir. Örneğin <a class="link" href="../howto/spam-filtering-exim.html" title="A. Exim Gerçeklenimi">Exim</a> için "helo_try_verify_hosts = *" atamasını yapıp, "verify = helo" koşuluna göre işlem yapan ACL'ler oluşturabilirsiniz.
+        </div><div class="para">
+Bu sınama, basit sözdizimsel sınamalardan biraz daha fazla ağ özkaynağı tüketir ve biraz daha fazla işlem süresi gerektirir. Bununla birlikte, sözdizimsel sınamaların aksine, bir eşleşmenin olmayışı bir kalleş yazılımın varlığını işaret etmeyebilir. hotmail.com, yahoo.com ve amazon.com gibi büyük internet sitelerinin selamlaşmaları doğrulanabilir türde değildir.
+        </div><div class="para">
+Eğer, sınama öncesi aktarım gecikmeleri ile göndericiyi zaten oyalamıyorsam, sunucularımda selamlaşma sırasında bir DNS doğrulaması yapıyorum. Bu sınama başarısız olduğu takdirde, her SMTP komutuna 20'şer saniyelik gecikmeler uyguluyorum. Ayrıca ileti başlığına bir “X-HELO-Warning:” ekliyorum ve bunu iletinin tamamı alındıktan sonra olası bir red için <a class="link" href="../howto/spam-filtering-datachecks.html#spam-filtering-spamassassin">SpamAssassin</a> puanını arttırmakta kullanıyorum.
+        </div></dd></dl> <div class="head4"><a name="spam-filtering-senderchecks" id="spam-filtering-senderchecks"></a>Gönderici adresi sınamaları</div><dl><dd><div class="para">
+Bağlanan konak <b><tt>MAIL FROM:</tt></b> &lt;<i><tt>adres</tt></i>&gt; komutunu gönderdikten sonra, bu komutla belirtilen <a href="../howto/spam-filtering-glossary.html#spam-filtering-envfrom" class="xref" title="Zarf Göndericisi">Zarf Göndericisi</a> adresini doğrulatmaya çalışabilirsiniz<sup>[<a name="id35" href="#ftn.id35" id="id35">35</a>]</sup>.
+      </div><div class="variablelist"><dl><dt><span class="term"><a name="spam-filtering-sendersyntax" id="spam-filtering-sendersyntax"></a>Gönderici adresinin sözdizimsel sınaması</span></dt><dd class="varlist"><div class="para">
+Belirtilen adres &lt;<i><tt>yerelkısım</tt></i>@<i><tt>alan</tt></i>&gt; biçimine uygun mu? <i><tt>alan</tt></i> parçası sözdizimsel olarak geçerli bir <a href="../howto/spam-filtering-glossary.html#spam-filtering-fqdn" class="xref" title="Nitelikli Alan Adı">Nitelikli Alan Adı</a> mı?
+        </div><div class="para">
+Çoğunlukla, posta aktarımcınız bu sınamaları zaten yapar.
+        </div></dd><dt><span class="term"><a name="spam-filtering-impostor" id="spam-filtering-impostor"></a>Sahtekarlık sınaması</span></dt><dd class="varlist"><div class="para">
+Siz ya da kullanıcılarınız, postalarını sadece belli başlı sunucular üzerinden gönderiyorsa, diğer konaklardan sizin alan adınızı taşıyan zarf göndericisi adresli olarak gelen iletileri reddedebilirsiniz.
+        </div><div class="para">
+Bu sınamayı da kapsayan daha geniş amaçlı bir sınama <a href="../howto/spam-filtering-senderauth.html#spam-filtering-spf" class="xref" title="Gönderici Yetkilendirme Dizgesi (SPF)">Gönderici Yetkilendirme Dizgesi (SPF)</a>dır.
+        </div></dd><dt><span class="term"><a name="spam-filtering-sendervalid" id="spam-filtering-sendervalid"></a>Basit gönderici adresi doğrulaması</span></dt><dd class="varlist"><div class="para">
+Adres yerelse, adresin yerel kısmı (@ işaretinden önceki isim) sisteminizdeki geçerli posta kutularından birinin ismi mi?
+        </div><div class="para">
+Adres uzaksa, adresin alanadı kısmı (@ işaretinden sonraki parça) mevcut mu?
+        </div></dd><dt><span class="term"><a name="spam-filtering-callback" id="spam-filtering-callback"></a>Gönderici Varlık Sınaması</span></dt><dd class="varlist"><div class="para">(Sender Callout Verification)</div><div class="para">
+Exim ve Postfix gibi bazı posta aktarımcıları tarafından uzak gönderici adresindeki “yerel kısmı” doğrulatmakta kullanılan bir mekanizmadır. Postfix terminolojisinde buna “Gönderici Adresinin Doğrulanması” (Sender Address Verification) adı verilir.
+        </div><div class="para">
+Sunucunuz gönderici adreste belirtilen <i><tt>alan adı</tt></i>'nın posta alıcısına bağlanır ve bu adrese posta teslim ediyormuş gibi ikincil bir SMTP aktarımı başlatır. Aslında herhangi bir posta göndermez; bir <b><tt>RCPT TO:</tt></b> komutunun uzak konak tarafından kabul edilip edilmeyeceğine baktıktan sonra bir <b><tt>QUIT</tt></b> komutu gönderir.
+        </div><div class="para">
+Exim böyle bir varlık sınamasında öntanımlı olarak boş zarf göndericisi adresi kullanır. Bunun amacı, göndericiye döndürülecek olası bir <a href="../howto/spam-filtering-glossary.html#spam-filtering-dsn" class="xref" title="Teslimat Durum Bildirimi">Teslimat Durum Bildirimi</a>nin kabul edilip edilmeyeceğini saptamaktır.
+        </div><div class="para">
+Postfix ise, adresi doğrulamak amacıyla öntanımlı kullanıcı adresi olarak &lt;<tt>postmaster@</tt><i><tt>alanadı</tt></i>&gt; adresini kullanır (<i><tt>alanadı</tt></i> parçası <tt>$myorigin</tt> değişkeninden alınır). Boş zarf göndericisi adresine yaptığınız gibi bu gönderici adresine aynı uygulamayı yapabilirsiniz (örneğin, <a href="../howto/spam-filtering-smtpdelays.html" class="xref" title="SMTP Aktarımının Geciktirilmesi">SMTP Aktarımının Geciktirilmesi</a> veya <a href="../howto/spam-filtering-greylisting.html" class="xref" title="Grilisteleme">Grilisteleme</a>'tan kaçınmak için, ama alıcı adreslerde <a href="../howto/spam-filtering-collateral.html#spam-filtering-signedsender" class="xref" title="Zarf Gönderici İmleri">Zarf Gönderici İmleri</a> gerekir). Daha fazlası için eklerdeki gerçeklenimlere bakınız.
+        </div><div class="para">
+Bu sınamanın tek başına gelen postayı reddetmek bakımından elverişli olmadığını görebilirsiniz. Ara sıra, örneğin, bankanızın yaptığınız bir ödemenin dekontunu göndermesi gibi durumlarda, meşru posta özdevinimli hale getirilmiş bir mekanizma tarafından geçersiz bir dönüş adresi ile gönderilir. Ayrıca, spamın talihsiz yan etkilerinden biri olarak bazı kullanıcılar, giden postalarına dönüş adresi olarak adreslerini biraz bozarak yazarlar (bu daha çok <a href="../howto/spam-filtering-glossary.html#spam-filtering-envfrom" class="xref" title="Zarf Göndericisi">Zarf Göndericisi</a>ni değil de, iletinin “From:” başlığını etkileyebilir).
+        </div><div class="para">
+Dolayısıyla, bu sınama sadece bir adresin geçersizliğini sınamaya yarar, iletinin gerçek göndericisini değil (bir de <a href="../howto/spam-filtering-collateral.html#spam-filtering-signedsender" class="xref" title="Zarf Gönderici İmleri">Zarf Gönderici İmleri</a> bölümüne bakınız).
+        </div><div class="para">
+Son olarak, “aol.com” gibi bazı sitelerin raporları vardır. Bunlar gönderici varlık sınaması yaptıklarını keşfettikleri her sistemi koşulsuz karalisteye alacaklarını belirtirler. Bu siteler belki de sıkça <a href="../howto/spam-filtering-glossary.html#spam-filtering-joejob" class="xref" title="Joe İşi">Joe İşi</a> spamın mağduru olmuşlar ve sonuç olarak, gönderici varlık sınaması fırtınalarına maruz kalmış olabilirler. Siz de bu dağıtık servis reddi (DDoS - Distributed Denial-of-Service) saldırılarının bir parçası haline gelerek kendinizi spamcıların elindeki bir piyona dönüşebilirsiniz.
+        </div></dd></dl></div></dd></dl> <div class="head4"><a name="spam-filtering-rcptchecks" id="spam-filtering-rcptchecks"></a>Alıcı adresinin sınanması</div><dl><dd><div class="para">
+Düşündüğünüz gibi bu basit olmalıdır. Bir alıcı adresi ya mevcuttur ya da değildir. Mevcutsa posta teslim alınır, yoksa posta aktarımcı tarafından öntanımlı olarak reddedilir.
+      </div><div class="para">
+Bir bakalım, öyle mi acaba?
+      </div><div class="variablelist"><dl><dt><span class="term"><a name="spam-filtering-relayprevent" id="spam-filtering-relayprevent"></a>Açık Röleye meydan vermemek</span></dt><dd class="varlist"><div class="para">
+<i>Postaları uzak konaklardan uzak adreslere röleleyemezsiniz!</i> (Gönderici kimliğini kanıtlamadıkça).
+        </div><div class="para">
+Bu çoğumuzun farkında olduğu ama belli ki yeterince önem verilmeyen bir konu. Ayrıca, eposta adresleri ve bunların teslim yolları ile ilgili çeşitli internet standartları ("ünlemli teslimat yolları", "yüzde işaretli alan adları" (<a class="ulink" href="http://www.livinginternet.com/e/ew_addr.htm" target="_top">bang paths, percent hack domains</a>) gibi)  herkesin elinin altında olmayabilir.
+        </div><div class="para">
+Posta aktarımcınızın bir <a href="../howto/spam-filtering-glossary.html#spam-filtering-openrelay" class="xref" title="Açık Röle">Açık Röle</a> gibi davranıp davranmadığını bilmiyorsanız, bunu  “relay-test.mail-abuse.org” üzerinden sınayabilirsiniz. Bunun için kabukta şu komutu vermeniz yeterli olacaktır:
+        </div>
+<div class="para"><div align="right"><pre class="screen">telnet relay-test.mail-abuse.org</pre></div></div>
+        <div class="para">
+Bu, SMTP sunucunuzun uzak posta adreslerine postayı röleleyip rölelemediğini ve/veya bazı adres türlerini kabul edip etmediğini çeşitli denemeler yaparak sınayan bir servistir.
+        </div><div class="para">
+Sunucularınızın birer açık röle gibi davranmasını önlemek fazlasıyla önemlidir. Eğer sunucunuz bir açık röle ise ve spamcılar sizi bulmuşsa, bellibaşlı DNS karalistelerine kalıcı olarak kaydedilirsiniz. Spamcılardan önce bazı DNS karalistelerince farkedilirseniz (rasgele ve/veya şikayet üzerine yoklanarak), uzunca bir süre kalmak üzere bu DNS karalistelerine kaydedilirsiniz.
+        </div></dd><dt><span class="term"><a name="spam-filtering-rcptvalid" id="spam-filtering-rcptvalid"></a>Alıcı adresine bakılması</span></dt><dd class="varlist"><div class="para">
+Bu da çoğumuza bayağı görünebilir. Ama öyle değil.
+        </div><div class="para">
+Eğer kullanıcılarınızın posta hesapları ve posta kutuları posta alıcınızın çalıştığı makinede saklanıyorsa, alıcı adresinin yerel kısmının bu posta kutularının isimlerinden biri ile aynı olup olmadığna bakmak kolay olur. Burada bir sorun çıkmaz.
+        </div><div class="para">
+Alıcı adresinin doğrulanmasını güçleştiren iki durum vardır:
+        </div>
+        <ul type="disc" class="itemizedlist"><li>
+Makineniz alıcı alan adı için yedek posta alıcısı olabilir.
+          </li><li>
+Makineniz aldığı postayı alanınınızdaki (muhtemelen dahili ağınızdaki) diğer makinelere dağıtıyordur.
+          </li></ul>
+        <div class="para">
+Bu durumlarda posta alıcısı konak, alıcı adresini doğrulamaksızın, alıcı adreslerin tümünü herbiri kendi alanları içinde kalmak üzere kabul edebilir. Hedef sunucu alıcı adresin geçersiz olması durumunda bir <a href="../howto/spam-filtering-glossary.html#spam-filtering-dsn" class="xref" title="Teslimat Durum Bildirimi">Teslimat Durum Bildirimi</a> üretir. Eninde sonunda, bu işlem dolaylı spam üretimine sebep olur.
+        </div><div class="para">
+Niyetimizi aklımızdan çıkarmadan, bu iki durumda alıcıyı nasıl doğrulayabileceğimize bakalım.
+        </div><div class="variablelist"><dl><dt><span class="term"><a name="spam-filtering-callforward" id="spam-filtering-callforward"></a>Alıcı Varlık Sınaması</span></dt><dd class="varlist"><div class="para">(Recipient Callout Verification)</div><div class="para">
+Bir uzak alıcı adresin yerel kısmını doğrulamak için kullanılan bu mekanizma Exim ve Postfix gibi bazı posta aktarımcılarında mevcuttur bunun nasıl çalıştığı <a href="../howto/spam-filtering-smtpchecks.html#spam-filtering-callback" class="xref" title="Gönderici Varlık Sınaması">Gönderici Varlık Sınaması</a> bölümünde açıklanmıştır. Postfix terminolojisinde bu mekanizmaya “Alıcı Adresi Doğrulaması” (Recipient Address Verification) adı verilir.
+          </div><div class="para">
+Bu durumda, sunucu karşı taraftan <b><tt>RCPT TO:</tt></b> komutuyla aldığı her alıcı adresini doğrulatmak için hedef sunucuya bağlanmaya çalışır.
+          </div><div class="para">
+Bu çözüm basit ve şıktır. Herhangi bir rehber hizmetine erişmeksizin hedef konakta çalışabilecek herhangi bir posta aktarımcısı ile bu gerçekleştirilebilir. Bununla birlikte, eğer bu posta aktarımcısı alıcı adreslerde bir bulanık eşleşme uyguluyorsa (Lotus Domino sunucuların yaptığı gibi), bu sınama alıcı adresin neticede kabul edilip edilmeyeceğini tam olarak yansıtır ama aşağıda açıklanan mekanizmalar açısından birşeyler yanlış gidebilir.
+          </div><div class="para">
+Özgün <a href="../howto/spam-filtering-glossary.html#spam-filtering-envfrom" class="xref" title="Zarf Göndericisi">Zarf Göndericisi</a>nin alıcı varlık sınamaları için değişmeden kalmasına, aksi takdirde, hedef sunucudan dönen yanıtın doğruyu yansıtmayabileceğine dikkat edin.  Örneğin, hedef sunucu <a href="../howto/spam-filtering-collateral.html#spam-filtering-dsnrealuser" class="xref" title="Göndericisi olmayan postaları sadece gerçek kullanıcılar için kabul edin">Göndericisi olmayan postaları sadece gerçek kullanıcılar için kabul edin</a> bölümünde açıklandığı gibi sistem kullanıcıları ve takma adları için gönderilen göndericisiz (örn, zarf göndericisi olmayan) postaları reddebilir.
+          </div><div class="para">
+Bellibaşlı posta aktarımcılarından Exim ve Postfix bu mekanizmayı destekler.
+          </div></dd><dt><span class="term"><a name="spam-filtering-ldap" id="spam-filtering-ldap"></a>Adres Rehberi Hizmetleri</span></dt><dd class="varlist"><div class="para">
+Posta aktarımcınızın sorgulayabileceği bir rehber hizmetinin olması (örn, bir veya daha fazla LDAP sunucusu) diğer bir iyi çözüm olurdu. Çoğu posta aktarımcısı kullanıcı hesap bilgilerini sağlayan LDAP, NIS gibi artalan uygulamalarını kullanabilmektedir.
+          </div><div class="para">
+Asıl can alıcı nokta, epostanın hedef konağının kullanıcı isimleri ile posta kutularını eşleştirmek için böyle bir rehber hizmetini kullanmaması halinde bazı karışıklıkların ortaya çıkabileceğidir (Hem posta alıcısı hem de hedef konak sınamayı aynı kaynaktan yapmalı).
+          </div></dd><dt><span class="term"><a name="spam-filtering-replicdir" id="spam-filtering-replicdir"></a>Posta Kutusu Listeleri</span></dt><dd class="varlist"><div class="para">
+Eğer yukarıdaki seçeneklerin hiçbiri uygulanabilir değilse, son çare olarak “yoksul işi bir rehber hizmeti” kullanabilirsiniz. Düzenli aralıklarla posta kutularının listesini, bulundukları makinelerden posta alıcısı makinelerinize kopyalayabilir ve bu listeyi <b><tt>RCPT TO:</tt></b> komutlarında belirtilen alıcıları doğrulamak için kullanabilirsiniz.
+          </div><div class="para">
+Eğer, posta kutularını içeren makinelerinizde bir UNIX veya Linux çalışıyorsa, böyle bir listeyi muhtemelen <a class="link" href="../man/man5/man5-passwd.html" title="passwd">/etc/passwd</a> dosyasından üretecek ve <a class="ulink" href="http://www.openssh.org/" target="_top">OpenSSH</a> paketindeki <a class="link" href="../man/man1/man1-scp.html" title="scp">scp</a> komutunu kullanarak bu listeyi posta alıcınızın bulunduğu makineye kopyalayacak bir betik yazabilirsiniz. Sonra da bir <a class="link" href="../man/man8/man8-cron.html" title="cron">cron</a> işi olarak bu betiğin belli aralıklarla çalıştırılmasını sağlayabilirsiniz.
+          </div></dd></dl></div>
+        </dd><dt><span class="term"><a name="spam-filtering-rcptmisses" id="spam-filtering-rcptmisses"></a>Sözlük Saldırılarının Önlenmesi</span></dt><dd class="varlist"><div class="para">
+<i>Sözlük Saldırısı</i> (Dictionary Attack), çok kullanılan isimleri bazan alfabetik, bazen ters alfabetik bazan da rasgele seçilmiş isimler şeklinde <b><tt>RCPT TO:</tt></b> komutlarıyla deneyerek alıcı adreslerinin saptanması şeklinde gelişen SMTP aktarımlarını açıklamakta kullanılan bir terimdir. Böyle bir adresin kabul edilmesi halinde, bu adres spamcının cephaneliğinde yerini alır.
+        </div><div class="para">
+Bazı siteler, özellikle büyük olanları sıklıkla böyle saldırıların hedefi haline gelirler. Spamcılar açısından, çok sayıda kullanıcısı olan sitelerde bir ismin bulunabilme şansı bir kaç kullanıcısı olanlardan daha yüksektir.
+        </div><div class="para">
+Sözlük saldırılarıyla mücadele etmenin tek etkin yolu, her başarısız adreste aktarım gecikmesini arttırmaktır. Örneğin, mevcut olmayan ilk alıcı adresi için bekleme süresi 20 saniye, ikincisinde 30 saniye, 3. için 40 saniye, ... gibi.
+        </div></dd><dt><span class="term"><a name="spam-filtering-dsnonercpt" id="spam-filtering-dsnonercpt"></a>Teslimat durum bildirimlerini tek alıcı için kabul edin</span></dt><dd class="varlist"><div class="para">
+Meşru <a href="../howto/spam-filtering-glossary.html#spam-filtering-dsn" class="xref" title="Teslimat Durum Bildirimi">Teslimat Durum Bildirimi</a> tek bir alıcı adrese - bildirimi tetikleyen özgün iletiyi yazana - gönderilmiş olmalıdır. <a href="../howto/spam-filtering-glossary.html#spam-filtering-envfrom" class="xref" title="Zarf Göndericisi">Zarf Göndericisi</a> adresi boş olan ve birden fazla alıcıya teslimat yapmaya çalışan bağlantıları kesebilirsiniz (drop).
+        </div></dd></dl></div></dd></dl><div class="footnotes"><br /><hr width="100" align="left" /><div class="footnote"><div class="para"><sup>[<a name="ftn.id34" href="#id34" id="ftn.id34">34</a>] </sup>
+Döküntü postayı normal postadan ayırmak açısından bu sınama normalde yeterliymiş gibi görünse de, <a class="ulink" href="http://www.lsoft.com/products/default.asp?item=listserv" target="_top">listserv</a> kurulumlarının liste sunucusunun çıplak IP adresiyle selamlaşmayı başlattığı şeklinde L-Soft'un hata raporları vardır.</div></div><div class="footnote"><div class="para"><sup>[<a name="ftn.id35" href="#id35" id="ftn.id35">35</a>] </sup>
+<a href="../howto/spam-filtering-glossary.html#spam-filtering-dsn" class="xref" title="Teslimat Durum Bildirimi">Teslimat Durum Bildirimi</a> ve özdevinimli üretilmiş diğer yanıtlarda kullanılan <b><tt>MAIL FROM:</tt></b> &lt;&gt; gibi boş zarf göndericili komutlar <i>özel</i> bir durumdur.</div></div></div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/spam-filtering-dnschecks.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/spam-filtering-techniques.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/spam-filtering-greylisting.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">DNS Sınamaları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Grilisteleme</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

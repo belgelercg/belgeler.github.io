@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:32+03:00" /><title>acl_helo</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/spam-filtering-exim-final.html" title="Tamamlanmış ACL'ler" /><link rel="previous" href="../howto/spam-filtering-acl_connect_final.html" title="acl_connect" /><link rel="next" href="../howto/spam-filtering-acl_mail_from_final.html" title="acl_mail_from" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">acl_helo</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/spam-filtering-acl_connect_final.html">Önceki</a> </td><th width="60%" align="center">Tamamlanmış ACL'ler</th><td width="20%" align="right"> <a accesskey="n" href="../howto/spam-filtering-acl_mail_from_final.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="spam-filtering-acl_helo_final" id="spam-filtering-acl_helo_final"></a><tt>acl_helo</tt></div><dl><dd>
+<div class="para"><div align="right"><pre class="screen">
+# Bu erişim denetim listesi gelen bir SMTP aktarımında HELO veya EHLO
+# komutları için kullanılır. Bu sınamalar selamlaşma kabul ya da
+# red edilinceye kadar sırayla yapılır.
+
+
+acl_helo:
+  # Gecikme uygularken başlangıç olarak kullanmak üzere o anki zaman
+  # bilgisini kaydediyoruz.
+  warn
+    set acl_m2  = $tod_epoch
+
+
+  # Posta yerel SMTP üzerinden alınmışsa (yani, TCP/IP bağlantısı
+  # ile gelmiyorsa), kabul ediyoruz. Bunu boş bir konak alanını
+  # sınayarak yapacağız. Ayrıca, postalarını rölelediğimiz
+  # konaklardan gelen postaları da kabul edeceğiz.
+  #
+  accept
+    hosts       = : +relay_from_hosts
+
+
+  # Bağlanan konak selamlaşma sırasında bir IP adresi belirtmişse, $acl_c0'a
+  # bir red iletisi ve $acl_c1'e bir günlük iletisi kaydedeceğiz. Bunları
+  # sonra bir "deny" deyiminde kullanacağız ve bu sırada göndericiyi 20 saniye
+  # bekleteceğiz.
+  #
+  warn
+    condition   = ${if isip {$sender_helo_name}{true}{false}}
+    set acl_c0  = Message was delivered by ratware
+    set acl_c1  = remote host used IP address in HELO/EHLO greeting
+
+
+  # Bağlanan konak selamlaşma sırasında bizim isimlerimizden birini
+  # belirtmişse aynı işleme tabi tutuyoruz.
+  #
+  warn
+    condition   = ${if match_domain{$sender_helo_name}\
+                   {$primary_hostname:+local_domains:+relay_to_domains}\
+                   {true}{false}}
+    set acl_c0  = Message was delivered by ratware
+    set acl_c1  = remote host used our name in HELO/EHLO greeting.
+
+
+  # HELO doğrulaması başarısız olmuşsa, acl_c1'e bir uyarı iletisi
+  # kaydediyoruz. Bu iletiyi daha sonra posta başlığına ekleyeceğiz.
+  # Varlığı bize geciktirme uygulayacağımızı belirtecek.
+  #
+  warn
+    condition   = ${if !def:acl_c1 {true}{false}}
+    !verify     = helo
+    set acl_c1  = X-HELO-Warning: Remote host $sender_host_address \
+                  ${if def:sender_host_name {($sender_host_name) }}\
+                  incorrectly presented itself as $sender_helo_name
+    log_message = remote host presented unverifiable HELO/EHLO greeting.
+
+
+  # Selamlaşmayı kabul ediyoruz, fakat $acl_c1'de evvelce kaydedilmiş
+  # bir ileti varsa, göndericiyi 20 saniye dolana kadar bekletiyoruz.
+  accept
+    set acl_m2  = ${if def:acl_c1 {${eval:20 + $acl_m2 - $tod_epoch}}{0}}
+    delay       = ${if &gt;{$acl_m2}{0}{$acl_m2}{0}}s
+
+</pre></div></div>
+      </dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/spam-filtering-acl_connect_final.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/spam-filtering-exim-final.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/spam-filtering-acl_mail_from_final.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">acl_connect </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> acl_mail_from</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

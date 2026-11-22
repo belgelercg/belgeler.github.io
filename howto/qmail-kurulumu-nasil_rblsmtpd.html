@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2019-10-17T22:36:15+03:00" /><title>RBLSMTPD Kurulumu</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/qmail-kurulumu-nasil.html" title="QMAIL Kurulumu NASIL" /><link rel="previous" href="../howto/qmail-kurulumu-nasil_test.html" title="Qmail'in Çalışmasının Test Edilmesi" /><link rel="next" href="../howto/qmail-kurulumu-nasil_antivirus.html" title="Antivirus Kurulumu" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">RBLSMTPD Kurulumu</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/qmail-kurulumu-nasil_test.html">Önceki</a> </td><th width="60%" align="center">QMAIL Kurulumu NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/qmail-kurulumu-nasil_antivirus.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="qmail-kurulumu-nasil_rblsmtpd" id="qmail-kurulumu-nasil_rblsmtpd"></a>RBLSMTPD Kurulumu</div><dl><dd><div class="para">
+RBL (Realtime Blocking List - Anında Engelleme Listesi)
+    </div><div class="para">
+<b>Open Relay</b>: Internet üzerinde bulunan eposta
+sunucunun sistem yöneticisi tarafından yanlış yapılandırılması sonucu, bu
+sunucu üzerinden herkesin herhangi bir kısıtlama olmaksızın, istediği yerden
+posta gönderebilmesi diye tanımlıyabiliriz.
+    </div><div class="para">
+rblsmtpd'nin yaptığı iş kısaca open relay eposta sunucularından gelen postaları
+almamaktır. Herkesin rblsmtpd'yi kullanmasını kesinlikle tavsiye ederim. Internet
+üzerinde bir sürü ücretli ya da ücretsiz olarak hizmet veren organizasyonlar vardır.
+Biz burada www.ordb.org'un RBL veritabanını kullanacağız. (Sene 2019: ordb.org 
+bu hizmeti durdurmuş. <a class="ulink" href="http://cr.yp.to/ucspi-tcp/rblsmtpd.html" target="_top">http://cr.yp.to/ucspi-tcp/rblsmtpd.html</a> adresinde diğer rbl
+sunucularının listesini görebilirsiniz.)
+    </div><div class="para">
+rblsmtpd <tt>ucspi-tcp</tt> paketi ile birlikte gelmektedir.
+rblsmtpd'yi kullanmak için <tt>qmail-smtpd</tt>'yi çalıştırdığımız
+<tt>/var/qmail/supervise/qmail-smtpd/run</tt> dosyasını biraz
+değiştirmemiz gerekir. rblsmtpd'yi kullanmadan önceki
+<tt>/var/qmail/supervise/qmail-smtpd/run</tt> dosyası
+</div>
+<div class="para"><div align="right"><pre class="screen">
+#!/bin/sh
+qmailDUID=`id -u qmaild`
+NOFILESGID=`id -g qmaild`
+
+exec /usr/local/bin/softlimit -m 4000000 \
+/usr/local/bin/tcpserver -v -p -H -R -l 0 -x /etc/tcp.smtp.cdb -c 256\
+-u "$qmailDUID" -g "$NOFILESGID" 0 smtp /var/qmail/bin/qmail-smtpd 2&gt;&amp;1
+</pre></div></div>
+<div class="para">
+rblsmtp'yi etkinleştirdikten sonraki
+<tt>/var/qmail/supervise/qmail-smtpd/run</tt> dosyası
+</div>
+<div class="para"><div align="right"><pre class="screen">
+#!/bin/sh
+qmailDUID=`id -u qmaild`
+NOFILESGID=`id -g qmaild`
+
+exec /usr/local/bin/softlimit -m 4000000 \
+/usr/local/bin/tcpserver -v -p -H -R -l 0 -x /etc/tcp.smtp.cdb -c 256\
+-u "$qmailDUID" -g "$NOFILESGID" 0 smtp /usr/local/bin/rblsmtpd \
+-r relays.ordb.org /var/qmail/bin/qmail-smtpd 2&gt;&amp;1
+</pre></div></div>
+    <div class="para">
+Artık sunucunuza gelen her bir eposta için rblsmtpd
+<tt>relays.ordb.org</tt>'a eposta gönderen kullanıcının IP'sini
+gönderecek, eğer kullanıcının IP'si <tt>ordb.org</tt>'un kara
+listesinde ise eposta sunucu bu sunucudan eposta almayacak ve eposta gönderene
+şöyle bir hata dönecektir:
+    </div><div class="para">
+<i>This mail was handled by an open relay - please visit
+&lt;http://ORDB.org/lookup/?host=193.140.253.19&gt;</i>
+    </div><div class="para">
+Ve <tt>/var/log/qmail/smtpd/current</tt> günlük kayıt dosyasına
+    </div><div class="para">
+<i>@400000003d76174d069ae90c rblsmtpd: 193.140.253.19 pid 20630: 451
+This mail was handled by an open relay - please visit
+&lt;http://ORDB.org/lookup/?host=193.140.253.19&gt;</i> şeklinde bir bilgi
+yazacaktır. Dediğim gibi herkesin kullanmasını şiddetle tavsiye ederim.
+    </div><div class="para">
+<a class="ulink" href="http://cr.yp.to/ucspi-tcp/rblsmtpd.html" target="_top">http://cr.yp.to/ucspi-tcp/rblsmtpd.html</a> adresinde diğer rbl
+sunucularının listesini görebilirsiniz.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/qmail-kurulumu-nasil_test.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/qmail-kurulumu-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/qmail-kurulumu-nasil_antivirus.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Qmail'in Çalışmasının Test Edilmesi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Antivirus Kurulumu</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

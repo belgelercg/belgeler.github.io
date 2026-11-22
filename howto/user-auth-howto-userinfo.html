@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:19+03:00" /><title>Sisteminizde Kullanıcı Bilgileri Nasıl Saklanır</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/user-auth-howto.html" title="Kullanıcı Kimlik Kanıtlama NASIL" /><link rel="previous" href="../howto/user-auth-howto-intro.html" title="Giriş" /><link rel="next" href="../howto/user-auth-howto-pam.html" title="PAM (Eklenebilir Kimlik Kanıtlama Modülleri)" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Sisteminizde Kullanıcı Bilgileri Nasıl Saklanır</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/user-auth-howto-intro.html">Önceki</a> </td><th width="60%" align="center">Kullanıcı Kimlik Kanıtlama NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/user-auth-howto-pam.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="user-auth-howto-userinfo" id="user-auth-howto-userinfo"></a>Sisteminizde Kullanıcı Bilgileri Nasıl Saklanır</div><dl><dd> <div class="head3"><a name="id1" id="id1"></a><tt>/etc/passwd</tt></div><dl><dd><div class="para">
+Neredeyse tüm Linux dağıtımlarında (ve ticari *nix'lerde) kullanıcı bilgisi <tt>/etc/passwd</tt> dosyasında saklanır. Bu metin dosyasında kullanıcının kullanıcı adı, şifrelenmiş parolası, benzersiz sayısal kullanıcı kimliği (uid), sayısal grup kimliği (gid), seçimlik yorum alanı (burada genellikle kullanıcının gerçek adı, telefon numarası gibi bilgiler bulunur), ev dizini ve tercih ettiği kabuk bilgileri bulunur. <tt>/etc/passwd</tt> dosyasındaki girdiler aşağıdaki gibidir:
+    </div>
+<div class="para"><div align="right"><pre class="programlisting">
+pete:K3xcO1Qnx8LFN:1000:1000:Peter Hernberg,,,1-800-FOOBAR:/home/pete:/bin/bash
+</pre></div></div>
+    <div class="para">
+Gördüğünüz gibi anlaşılması oldukça kolaydır. Her girdi için yukarıda anlatılan altı alan vardır ve alanlar birbirinden : ile ayrılırlar. Kullanıcı kimlik denetimi sadece bu kadarcık karışık olsaydı bu NASIL belgesine ihtiyaç olmazdı.
+  </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Gölgelenmiş Parolalar</div><dl><dd><div class="para">
+Sisteminizdeki <tt>/etc/passwd</tt> dosyasına bakarsanız aşağıdakine benzer olduğunu görürsünüz :
+    </div>
+<div class="para"><div align="right"><pre class="programlisting">
+pete:x:1000:1000:Peter Hernberg,,,1-800-FOOBAR:/home/pete:/bin/bash
+</pre></div></div>
+    <div class="para">
+Şifrelenmiş parola nereye gitti? Buna yanıt vermeden önce biraz açıklama yapmak gerekiyor.
+  </div><div class="para">
+Kullanıcılar hakkındaki, şifrelenmiş parolaları dahil, tüm bilgilerin tutulduğu
+<tt>/etc/passwd</tt> dosyası tüm kullanıcılar tarafından okunabildiğinden herhangi bir kullanıcı sistemdeki tüm kullanıcıların şifrelenmiş parolalarını elde edebilir. Parolalar şifrelenmiş olsalar bile parola-kırma programları yaygın olarak bulunmaktadır. Bu güvenlik tehditiyle mücadele edebilmek için gölgelenmiş parolalar geliştirilmiştir.
+   </div><div class="para">
+Bir sistemde gölgelenmiş parolalar etkin kılındığında <tt>/etc/passwd</tt> dosyasındaki parola alanına x yazılır ve kullanıcının gerçek şifrelenmiş parolası <tt>/etc/shadow</tt> dosyasında saklanır. <tt>/etc/shadow</tt> dosyası sadece root tarafından okunabildiği için kötü niyetli kullanıcılar başkalarının
+parolalarını kıramazlar. <tt>/etc/shadow</tt> dosyası her girdi için kullanıcı adı, şifrelenmiş parola ve parolanın geçerliliği ile ilgili bir kaç alan içerir. Örnek bir girdi aşağıdaki gibidir:
+    </div>
+<div class="para"><div align="right"><pre class="programlisting">
+pete:/3GJllg1o4152:11009:0:99999:7:::
+</pre></div></div>
+  </dd></dl> <div class="head3"><a name="id3" id="id3"></a><tt>/etc/group</tt> ve <tt>/etc/gshadow</tt></div><dl><dd><div class="para">
+Grup bilgisi <tt>/etc/group</tt> dosyasında saklanır. Dosya biçimi <tt>/etc/passwd</tt>'e benzer. Her girdi için grup adı, parolası, grup numarası (gid) ve birbirinden virgülle ayrılmış grup üyelerinin yeraldığı alanlar bulunur. <tt>/etc/group</tt> içindeki bir girdi aşağıdaki gibidir:
+     </div>
+<div class="para"><div align="right"><pre class="programlisting">
+pasta:x:103:spagetti,fettucini,linguine,vermicelli
+</pre></div></div>
+    <div class="para">
+Parola alanındaki “x” ifadesinden anlaşıldığı gibi grup parolaları da gölgelenebilir. Neredeyse hiçbir grubun parolası olmasa da gölgelenmiş grup parolalarının <tt>/etc/gshadow</tt> dosyasında saklandığını hatırlatmakta fayda var.
+  </div></dd></dl> <div class="head3"><a name="id4" id="id4"></a>MD5 şifreli parolalar</div><dl><dd><div class="para">
+Geleneksel olarak Unix parolaları <b><tt>crypt()</tt></b> işlevi kullanılarak şifrelenir. (<b><tt>crypt()</tt></b> işlevi hakkında daha fazla bilgi almak için <a class="link" href="../man/man3/man3-crypt.html" title="crypt"><b><tt>crypt(3)</tt></b></a> kılavuz dosyasını okuyabilirsiniz.) Bilgisayarların hızlı gelişimi bu işlevle şifrelenmiş parolaların kolayca kırılabilir hale gelmesine yol açtı. Internet'in ortaya çıkmasıyla parola-kırma görevini çok sayıda düğüme dağıtabilmek mümkün hale geldi. Bir çok 'güncel' dağıtım parolaların daha güçlü MD5 çırpılama algoritmasıyla şifrelenebilmesi seçeneğiyle gelmektedir (MD5 çırpılama algoritmasıyla ilgili ayrıntılı bilgi <a class="ulink" href="http://www.faqs.org/rfcs/rfc1321.html" target="_top">RFC 1321</a> adresinden alınabilir). MD5 şifreli parolalar kullanarak parola-kırmanın tamamen önüne geçilemese bile oldukça zorlaştırılır.
+  </div></dd></dl> <div class="head3"><a name="id5" id="id5"></a>Karışıklığı önlemek</div><dl><dd><div class="para">
+Gördüğünüz gibi sisteminizde kullanıcı kimlik kanıtlamasında kullanılacak bilgileri saklamak için farklı yöntemler mevcuttur (MD5 şifrelemesi olmadan gölgelenmiş parolalar, parolaların MD5 ile şifrelenip <tt>/etc/passwd</tt> dosyasında saklanması, vs.). login veya su gibi programlar parolaları nasıl doğrulayacaklarını nereden biliyorlar? Daha kötüsü, sisteminizde parolaların saklanma biçimini değiştirirseniz ne olur? Parolanıza ihtiyaç duyan programlar parolaların artık farklı biçimde saklandığını nasıl bilecekler? Bu soruların yanıtı bizi PAM'e götürür.
+  </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/user-auth-howto-intro.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/user-auth-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/user-auth-howto-pam.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Giriş </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> PAM (Eklenebilir Kimlik Kanıtlama Modülleri)</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

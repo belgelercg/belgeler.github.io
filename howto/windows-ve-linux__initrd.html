@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:50+03:00" /><title>initrd.img Dosyasının Oluşturulması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/windows-ve-linux__terminal.html" title="X Terminal Sisteminin Yapılması" /><link rel="previous" href="../howto/windows-ve-linux__terminal.html" title="X Terminal Sisteminin Yapılması" /><link rel="next" href="../howto/windows-ve-linux_kernel.html" title="Çekirdeğin derlenmesi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">initrd.img Dosyasının Oluşturulması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/windows-ve-linux__terminal.html">Önceki</a> </td><th width="60%" align="center">X Terminal Sisteminin Yapılması</th><td width="20%" align="right"> <a accesskey="n" href="../howto/windows-ve-linux_kernel.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="windows-ve-linux__initrd" id="windows-ve-linux__initrd"></a><tt>initrd.img</tt> Dosyasının Oluşturulması</div><dl><dd><div class="para">
+Burada, önce kurulum sırasında ayırdığımız ek disk bölümü üzerinde bir dosya sistemi oluşturacağız sonra da onu kök dosya sistemine bağlayacağız. Kök dosya sisteminizin <tt>/dev/hda1</tt> disk bölümünde olduğunu, takas alanının <tt>/dev/hda2</tt> bölümünde olduğunu, ayırdığınız ek disk bölümünün de <tt>/dev/hda3</tt> olduğunu varsayacağım. Hangi disk bölümlerinin ne için kullanıldığını <b><tt>sfdisk</tt></b> komutu ile öğrenebilirsiniz:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>/sbin/sfdisk -l</tt></b>
+
+Disk /dev/hda: 4870 silindir, 255 kafa, 63 sektör/iz
+birimler = 8225280 baytlık silindir, 1024 baytlık blok, 0'den başlayarak
+
+                              silindir   blok
+   Aygıt Önykl Balangıç Bitiş sayısı   sayısı
+/dev/hda1   *      0+   1200    1200-   9647001+  83  Linux
+/dev/hda2       1201    1324     123-    987966   82  Linux takas
+/dev/hda3       1325+   2525    1200-   9647001       Boş
+  ...
+</pre></div></div>
+    <div class="para">
+Siz tam böyle olmasa da benzer bir liste alacaksınız. Şimdi <tt>/dev/hda3</tt> üzerinde bir ext3 dosya sistemi oluşturalım:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>/sbin/mke2fs -b 1024 -O sparse_super,filetype,has_journal /dev/hda3</tt></b>
+</pre></div></div>
+    <div class="para">
+Bu komut ile blok boyu 1024 bayt olan bir dosya sistemi oluşturduk. Blok boyunu özellikle 1024 bayt olarak seçtim. Çünkü çekirdek ramdiski 1024 baytlık bloklarla oluşturur. Ramdiskin bir örneğini bu disk bölümü üzerinde oluşturacağımızdan doğru boyut raporu alabilmek için 1024 bayt blok boyuna sahip bir dosya sistemine ihtiyacımız var. Kök disk bölümü genelde 4096 baytlık blok boyunda oluştururlur. Onun için kök disk bölümünde bu işi yapmamız doğru olmazdı.
+    </div><div class="para">
+Oluşturduğumuz dosya sisteminini kök dizine bağlamadan kullanamayız. Onun için <tt>/a3</tt> isminde bir dizin oluşturacağız, sonra da <tt>/dev/hda3</tt>'ü buraya bağlayacağız. Disk bölümünü bağlamadan önce bu disk bölümü ile ilgili bilgiyi <tt>/etc/fstab</tt> dosyasına ek bir satır olarak girelim ki, sistemi her yeniden başlattığınızda bu disk bölümü açılış sırasında <tt>/a3</tt> altına bağlansın:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>echo "/dev/hda3    /a3     ext3    defaults  1 2" &gt;&gt; /etc/fstab</tt></b>
+# <b><tt>mount /a3</tt></b>
+</pre></div></div>
+    <div class="para">
+İlk komutta <tt>/dev/hda3</tt> ile ilgili bilgiyi <tt>/etc/fstab</tt> dosyasının sonuna bir satır olarak ekledik. Bu komutta dikkat edeceğini şey <tt>/etc/fstab</tt>'dan önce iki tane <tt>&gt;</tt> konulması gerektiğidir. Bir tane <tt>&gt;</tt> koyarsanız dosya silinir va dosyaya sadece bu satır yazılır. Halbuki biz dosya sonuna ek bir satır girmek istiyoruz. Onun için <tt>&gt;</tt> işaretinden peşpeşe 2 tane kullanmamız gerekiyor. Dikkatli olun!
+    </div><div class="para">
+İkinci satırda ise <tt>/dev/hda3</tt>'ü <tt>/a3</tt> dizinine bağladık. Nereden belli? <b><tt>mount</tt></b> komutu böyle tek parametreli kullanıldığında diğer parametreleri almak için <tt>/etc/fstab</tt> dosyasına bakar. Bu komutu bir daha kullanmayacağız. Bundan sonra sistemi her açtığınızda <tt>/a3</tt> bağlı olacak.
+    </div><div class="para">
+<tt>/a3</tt> dizinine geçip, bir dizin açıyoruz (ramdisk dizini) ve ramdisk dizinine giriyoruz:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cd /a3</tt></b>
+# <b><tt>mkdir ramdisk</tt></b>
+# <b><tt>cd ramdisk</tt></b>
+</pre></div></div>
+    <div class="para">
+Bu dizine <b><tt>initrdyap</tt></b> isminde bir dosya açıyoruz ve bu dosyayı çalıştırılabilir bir dosya yapıyoruz:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>touch initrdyap</tt></b>
+# <b><tt>chmod +x initrdyap</tt></b>
+</pre></div></div>
+    <div class="para">
+Sonra da bu dosyanın içine aşağıdakileri yazıyoruz:
+    </div>
+<div class="para"><div align="right"><pre class="screen">#!/bin/bash
+
+compress=1
+target="/export/netlogon/autoboot/initrd.img"
+rc=0
+
+IMAGESIZE=12000
+
+MNTIMAGE="/a3/ramdisk/initrd"
+IMAGE="/a3/ramdisk/initrd.rd"
+MNTPOINT="/a3/ramdisk/initrd.mnt"
+
+dd if=/dev/zero of=$IMAGE bs=1k count=$IMAGESIZE 2&gt; /dev/null || exit 1
+
+LODEV=$(echo findlodev | /sbin/nash --quiet)
+
+if [ -z "$LODEV" ]; then
+    echo "loopback aygıtlarının hepsi kullanılmış." &gt;&amp;2
+    exit 1
+fi
+
+/sbin/losetup ${LODEV} $IMAGE || exit 1
+
+echo y | /sbin/mke2fs $LODEV $IMAGESIZE &gt;/dev/null 2&gt;/dev/null
+/sbin/tune2fs -i0 $LODEV &gt;/dev/null
+
+if [ -n "$verbose" ]; then
+    echo "$LODEV aygıtı kullanılıyor"
+fi
+
+mount -t ext2 $LODEV $MNTPOINT || {
+        echo "Loopback aygıtı yok"
+        exit 1
+}
+
+(cd $MNTIMAGE; tar cf - .) | (cd $MNTPOINT; tar xf -) || exit 1
+
+umount $MNTPOINT
+/sbin/losetup -d $LODEV
+
+if [ -n "$compress" ]; then
+    gzip -9 &lt; $IMAGE &gt; $target || rc=1
+else
+    cp -a $IMAGE $target || rc=1
+fi
+
+exit $rc
+</pre></div></div>
+    <div class="para">
+Bu betiği adından da anlaşılacağı üzere <tt>initrd.img</tt> dosyasını oluşturmakta kullanacağız. Şimdi bu betiğin çalışması için gereken dizinleri oluşturalım:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>mkdir initrd</tt></b>
+# <b><tt>mkdir initrd.mnt</tt></b>
+</pre></div></div>
+    <div class="para">
+Ramdiski oluşturacağımız dizin <tt>initrd</tt> dizini; <tt>initrd.mnt</tt> dizini boş kalacak. Orayı betik kullanacak.
+Betiği şimdi çalıştıracağız ve betik 12000 kB'lık <tt>/a3/ramdisk/initrd.rd</tt> dosyası ile bu dosyanın sıkıştırılmış hali olan <tt>/export/netlogon/autoboot/initrd.img</tt> dosyasını oluşturacak:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>./initrdyap</tt></b></pre></div></div>
+    <div class="para">
+Komut, herşey yolunda giderse konsolda hiçbir çıktı vermeyecek ve bahsettiğim 2 dosyayı oluşturacak. Konsola bir çıktı veriyorsa bu bir hata iletisidir. Birşeyleri eksik ya da yanlış yapmış olabilirsiniz. Bu betiği kendim yazmadım, <b><tt>/sbin/mkinitrd</tt></b> betiğinden bizim için gereksiz satırları temizledim ve kalan kodu biraz değiştirdim. (Amerika'yı yeniden keşfetmenin alemi yok). <b><tt>/sbin/mkinitrd</tt></b>'nin kullandığı yöntem bize <tt>/a3/ramdisk/initrd</tt> dizininde normal bir dizin gibi çalışma imkanı veriyor. Yani oraya yerleştireceğimiz ve kaldıracağımız dosyalar <tt>initrd.img</tt> dosyasında değişiklik bilgisi olarak görünmeyecek. Diğer yöntemlerde görünür ve dosya gereksiz yere şişer.
+   </div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/windows-ve-linux__terminal.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/windows-ve-linux__terminal.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/windows-ve-linux_kernel.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">X Terminal Sisteminin Yapılması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Çekirdeğin derlenmesi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

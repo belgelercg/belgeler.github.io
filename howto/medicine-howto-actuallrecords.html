@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:53+03:00" /><title>Bir Tıbbi Kayıt Uygulaması Yüklemek (henüz hazır değil)</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/medicine-howto.html" title="Linux Tıp NASIL" /><link rel="previous" href="../howto/medicine-howto-veterinary.html" title="Veterinerlik Uygulamaları" /><link rel="next" href="../howto/medicine-howto-Imaging.html" title="Görüntü İşleme Uygulamaları" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Bir Tıbbi Kayıt Uygulaması Yüklemek (henüz hazır değil)</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/medicine-howto-veterinary.html">Önceki</a> </td><th width="60%" align="center">Linux Tıp NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/medicine-howto-Imaging.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="medicine-howto-actuallrecords" id="medicine-howto-actuallrecords"></a>Bir Tıbbi Kayıt Uygulaması Yüklemek (henüz hazır değil)</div><dl><dd> <div class="head3"><a name="id1" id="id1"></a>Açıklama</div><dl><dd><div class="para">
+Bu NASIL belgesini, gerçek bir NASIL belgesine dönüştüremeyeceğim. Bu kısım küçültüldü, daha fazla geliştirilmeyecek ama yine de tamamen kaldırılmayacak.
+</div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Bu kısmın meselesi</div><dl><dd><div class="para">
+Bu kısım, yazdığım bu NASIL belgesinin içinde bir <i>NASIL</i> olmaya başladı.
+Bu noktada, mevcut sistemlere nasıl yükleme yapılacağına dair kullanılabilir yönergeler sunacağım ya da bu yönergelerin bulunduğu yerlere referans vereceğim.
+    </div></dd></dl> <div class="head3"><a name="id3" id="id3"></a>Okuyucular Hakkında Varsayımlarım</div><dl><dd><div class="para">
+Elimden geldiğinde bu uygulamaların nasıl yükleneceğine dair ayrıntılı açıklamalar yapacağım, ancak söyleyeceklerim tam olarak ne yazacağınız olacak (ya da en azından benim açımdan çalışan komutları yazacağım). Buradaki sorun, Microsoft tabanlı Windows sistemlerini kullanan kullanıcıların, kabuk istemcisi ya da dizinlere geçme gibi gerekli şeylere aşina olmamasıdır. Daha açık konuşursak, birçoğumuz bilgisayarla sadece Grafiksel Kullanıcı Arayüzü (GUI'ler) ile etkileştik, ancak kurulum sırasında bir terminale ya da kabuğa benzeyen Komut Satırı Arayüzü (CLI) ile etkileşmek zorunda kalacaksınız.
+    </div><div class="para">
+Eğer bahsedilen konu hakkında bir fikriniz yoksa, kabuk istemcilerinin ne olduğunu ya da özellikle GUI'siz Unix tabanlı bir işletim sisteminin neye benzediğini birine (belki de bana) sormanızı tavsiye ederim.
+    </div></dd></dl> <div class="head3"><a name="id4" id="id4"></a>OIO</div><dl><dd> <div class="head4"><a name="id14" id="id14"></a>Nedir?</div><dl><dd><div class="para">
+OIO sistemi yüksek kademeli bir soyutlama ile başlar - "formlar" ile modelleme. Formlar ilerleme notlarını modelleme/kurma ve saire için kullanılır. OIO sistemi arka planda ilişkisel veritabanı kullanımı sağlar (PostgreSQL) Böylece, 1) veri/meta veri/sunum ayrımlarını daha belirgin kılar,  2) diğer sistemlerle bütünleşme sağlar (örneğin, GNUMed, SQL Clinic ve saire), 3) kuyruk yorumlaması/genişletmesini daha kolay yapar (SQL ile).
+      </div><div class="para">
+Eğer OpenHealth e-posta listesinin arşivlerini incelerseniz, GEHR ve OIO'ya dair geniş kapsamlı tartışmalar göreceksiniz. GEHR de aynı yaklaşımı sunar ancak bunu "model" soyutlamasının gelişmiş kademesi olarak tanımlardı. OIO/GEHR tutumunun avantajı, meta verilerin içeriklerinin tak ve çalıştır mantığına uymasıydı, yani sistem kolayca genişletilebiliyor ve uyarlanabiliyordu ve aynı zamanda taşınabilir tıbbi kayıtların kolayca gerçeklenmesine olanak tanıyordu.
+      </div></dd></dl> <div class="head4"><a name="id24" id="id24"></a>OIO NASIL Yüklenir</div><dl><dd><div> <div class="head5"><a name="id124" id="id124"></a>Belge üzerine bir çift söz:</div></div><div class="para">
+OIO'nun geliştiricilerinin yazdığı kadar çok ve gerçekten iyi belgelendirme yapmak için itina gösteremem. Özellikle eğer aceleniz varsa, size karışık gelebilecek bazı bölümlerin olduğunu biliyorum. :) Buna rağmen, lütfen  <a class="ulink" href="http://www.txoutcome.org" target="_top">OIO</a> kurulum belgesini okuyun ve geri gelin. Eğilimim gittikçe Debian yönüne kaydığı için, geliştiriciler OIO'yu tüm dağıtımlar için desteklemeye başladıkları zaman, belgeyi daha da genişletmeyi düşünüyorum.
+      </div><div> <div class="head5"><a name="id224" id="id224"></a>Debian Yüklemesi İçin Başlangıç Notları</div></div><div> <div class="head6"><a name="id1224" id="id1224"></a>PostgreSQL Üzerindeki Değişiklikler</div></div><div class="para">
+En büyük sorunlardan biri Zope'un PostgreSQL veritabanına neden bağlanamadığını bulmaktı. Olan biten şey, aslında (ayrıntıları daha sonra vereceğim) 'postgres' kullanıcısının yetkisinin doğrulanmamasıydı. Bu sorunun Krebs yetkilendirmesinin öntanımlı olarak yüklenmemesinden kaynaklandığını düşündüm. Bu sorunu düzeltmek için, <b><tt>cd /etc/PostgreSQL/</tt></b> yapmanız ve <tt>pg_hba.conf</tt> dosyasını bulmanız gerekiyor. İstediğiniz düzenleyiciyi kullanabilirsiniz; yapmanız gereken tek şey veritabanına kimlerine bağlanmasına izin verilip verilmediğini söyleyen kodları bulmak. Ne yazık ki, şimdilik uygulamanın çalışmasını sağlamak için yaptığım tek şey bunları değiştirmek:
+        </div>
+<div class="para"><pre class="literallayout">
+local        all                                           peer sameuser
+host         all         127.0.0.1     255.0.0.0           ident sameuser
+host         all         0.0.0.0       0.0.0.0             reject
+</pre></div>
+        <div class="para">Bunları şunlara çevirin:</div>
+<div class="para"><pre class="literallayout">
+local        all                                           trust
+host         all         127.0.0.1     255.0.0.0           trust
+host         all         0.0.0.0       0.0.0.0             reject
+</pre></div>
+        <div> <div class="head6"><a name="id2224" id="id2224"></a>TimeStamp Hatası</div></div><div class="para">
+Bu sorunla tesadüfen karşılaştım:
+</div>
+<div class="para"><pre class="literallayout">
+2 Mar 2002 Cumartesi, dude@deletia.com yazmış:
+...
+&gt; Bir formu arşivlemem için sorulan kısma kadar geldim.
+&gt;
+&gt; 'now' düğmesine bastım ve 'Create a new version'u seçtim ve
+&gt; aşağıdaki hatayı aldım:
+&gt; Bu html sayfasının kaynağı:
+&gt; &lt;strong&gt;Error Value: ERROR:  Bad timestamp external representation
+&gt; '2002/02/03 17:22:58 US/Pacific'
+
+Aynı sorunla günün sonunda karşılaştım. :-)
+Bunun nedeni, PostgreSQL'in saat diliminin, US/Pacific zaman dilimine
+benzememesiydi. Çözüm, zaman damgasını GMT zamanıyla yapmaktı.
+
+Çözüm için aşağıdakileri OIO/forms/archive_form/archive_b yöntemine ekleyin:
+++++++++++++++++++++++++++++++++
+&lt;dtml-if time&gt;
+ &lt;dtml-call "REQUEST.set('time_string', _.str(time.toZone('GMT')))"&gt;
+&lt;/dtml-if&gt;
+++++++++++++++++++++++++++++++++
+(parametre listesinde time=time_string olduğundan emin olun)
+==========================================
+&lt;!--#in "putin_archived_forms_c(
+                   form=name,
+                   archivedname=newname,
+                   version=newversion_value,
+                   time=time_string,
+                   creator=creator,
+                   description=description
+     )"--&gt;
+==========================================
+Artık, basitçe zaman damgasını
+GMT zamanına dönüştüren bir rutinimiz var- günışığından yararlanma durumuna
+göre US/Pacific için GMT-7 ya da GMT-8 olduğunu düşünüyorum.
+
+Saygılar,
+
+Andrew
+---
+Andrew P. Ho, M.D.
+OIO: Open Infrastructure for Outcomes
+www.TxOutcome.Org
+</pre></div>
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/caution.png" /></td><th class="admon">Dikkat</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+OIO'nun orijinal dağıtımında, kaynak kodunu değiştirirken sadece 'time=time' olduğunu göreceksiniz, bu yüzden bunu <b><tt>time=time_string</tt></b> olarak değiştirdiğinizden emin olun.
+        </div><div class="para">
+Bu sorunun yeni 1.0 sürümünde düzeleceğini söyleyebilirim.
+</div></td></tr></table></div><div> <div class="head6"><a name="id3224" id="id3224"></a>Port Sorunları</div></div><div class="para">
+Zope'un varsayılan portunu, vekil sunucularla anlaşmazlığı kaldırmak için 8080'den 9673'e çevirdiğine dikkat edin. Zope'un kullandığı portları belirtmedikçe, OIO'yu doğrudan çalıştırmanız mümkün olmayacaktır. Genel OIO dizinine girip, Özellikler kısmını seçerek bunları düzeltebilirsiniz. Ya da OIO URL'sinin sonuna <tt>/manage</tt> ekleyebilirsiniz. Örneğin, <tt>http://localhost:8673/OIO</tt> ise, şu şekilde olacaktır: <tt>http://localhost:9673/OIO/manage</tt>
+    </div><div class="para">
+<tt>base_URL</tt> ve <tt>form_URL</tt> alanlarını arayacaksınız ve OIO'nun öntanımlı olarak 8080 portunu kullandığını göreceksiniz. Bu sayıyı 9673'e çevirmek zorundasınız.
+          </div></dd></dl></dd></dl> <div class="head3"><a name="id5" id="id5"></a>FreePM</div><dl><dd> <div class="head4"><a name="id15" id="id15"></a>FreePM İçin Açıklamalar</div><dl><dd><div class="para">
+Genellikle muayenehaneler için yararlı olduğunu düşündüğüm ikinci uygulama. (Temel  uğraşılarımdan birisi olduğu için kesinlikle kullanacağım.)
+      </div></dd></dl> <div class="head4"><a name="id25" id="id25"></a>Nereden Edinebilirim?</div><dl><dd><div class="para">
+Zope ürünleri ve python gibi, uygulamayı çalıştıracak herşeyi içeren paketi <a class="ulink" href="http://www.freepm.org:8080/freepm_download/fpm_downloads" target="_top">buradan</a>  <tt>FreePM-1.0b6-FULL-linux2-x86.tar.gz</tt>'yi seçerek indirebilirsiniz. Aynı zamanda tüm belgelendirme de birlikte gelecektir.
+      </div></dd></dl> <div class="head4"><a name="id35" id="id35"></a>FreePM'in Temel Yüklemesi</div><dl><dd><div class="para">
+FreePM uygulamasını çalıştırmak için gerekli olan herşeyin bulunduğu 14 MB'lık gzip'li dosyayı indirdiğinizi varsayıyoruz. Buna rağmen, Zope ayrı olarak da yüklenebildiğinden ve Zope kullanan başka uygulamalarınız da olabileceğine göre, FreePM'i Zope ile ayrı olarak nasıl yükleyebileceğinize dair ipuçları da vereceğim.
+      </div><div> <div class="head5"><a name="id135" id="id135"></a>14MB'lık FreePM Paketi İle Yüklemek</div></div><div class="para">
+14 MB'lık paketi indirdikten sonra, <tt>extensions_for_1.0b6.tar.gz</tt> paketini de indirdiğinizi farzediyorum.  Bu noktada, aslında gzip'li tar dosyalarını nereye açtığınız pek fark etmiyor, ancak gene de işimi güvenli ve temiz yapmak istiyorum; bu yüzden her birini kendi dizinine taşıyacağım. Şimdi, dosyayı açmak için <b><tt>gunzip FreePM-1.0b6-FULL-linux2-x86.tar.gz</tt></b> ve ardından <b><tt>tar xvf FreePM-1.0b6-FULL-linux2-x86.tar.gz</tt></b> yapın.
+        </div><div class="para">
+Tar dosyasının açılması bittikten sonra, <tt>FreePM-1.0b6-FULL-linux2-x86</tt> adında yeni bir dizin göreceksiniz. İşleri daha da kolaylaştırmak için bu dizinin ismini <tt>FreePM</tt> olarak değiştireceğim, bu yüzden bu komut satırını uygulayın: <b><tt>mv FreePM-1.0b6-FULL-linux2-x86 FreePM</tt></b>
+        </div><div class="para">
+<tt>extensions_for_1.0b6.tar.gz</tt> dosyasını yeni oluşturduğumuz FreePM dizinine taşıyalım ve <tt>Extension</tt> dizinin içine taşıyıp <b><tt>tar xvf</tt></b> kullanarak açalım.
+        </div><div> <div class="head5"><a name="id235" id="id235"></a>Zope Sunucusunu Yüklemek</div></div><div class="para">
+Tim Cook, Zope'u yüklemek için bir betik yazacak kadar kibar ve nazik bir insan. <tt>FreePM</tt> dizinine girince (14 MB'lık dosyayı açtığımız zaman oluşturduğumuz dizin), <b><tt>./install</tt></b> ile betiği çalıştırabilirsiniz.
+        </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/caution.png" /></td><th class="admon">Dikkat</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+YÖNETİCİ ADINIZI VE PAROLANIZI yazmayı unutmayın, aksi takdirde Zope sunucusunu yeniden kurmak ve yönetici için yeni bir parola seçmek zorundasınız.
+        </div></td></tr></table></div><div> <div class="head5"><a name="id335" id="id335"></a>Zope Sunucusunu Çalıştırmak</div></div><div class="para">
+Tim Cook, aynı zamanda sunucuyu başlatmak ve durdurmak için de iki betik yazdı. FreePM dizininde olduğumuzdan emin olun. Eğer dizindeyseniz <tt>start</tt> ve <tt>stop</tt> adlı dosyaları göreceksiniz. Bu betikler, <b><tt>./install</tt></b> betiğini çalıştırdığınız yerde bulunuyor. Zope sunucusunu çalıştırmak için, <b><tt>./start</tt></b> komutunu verin. Aynı zamanda, Zope süreçlerini uygunsuz durdurmaya yarayan CTRL-C kombinasyonunun yerine, <b><tt>./stop</tt></b> yazarak servisin emniyetli şekilde kapatılmasını sağlayabilirsiniz.
+        </div><div> <div class="head5"><a name="id435" id="id435"></a>FreePM Zope Ürünlerini Yüklemek </div></div><div class="para">
+Zope ürünlerini yüklemek hakkında söylemek istediğim ilk şey, ilk kullanıcı olan Admin'in sadece diğer kullanıcıları ekleme hakkının olduğu ancak hiçbir ürünü kendi kendine yönetemeyeceğidir.  İlk yapmanız gereken şey, yeni bir kullanıcı eklemek ve o kullanıcıyı idareci yapmaktır.
+        </div><div class="para">
+Çalışan bir Zope sunucusuna girmek için, bir ağ tarayıcısı açıp <tt>http://127.0.0.1:8080</tt> yazmanız ya da Zope sunucunuzun ne kadar yeni olduğuna bağlı olarak <tt>http://127.0.0.1:9673</tt> yazmanız gerekiyor. Eğer yükleme sırasındaki çıktıya bakarsanız, hangi portu kullanmanız gerektiğini göreceksiniz.
+        </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Zope, port bağlantısını değiştirdiği için eski port olan 8080'in kullanılması karmaşaya yol açabilir.
+        </div></td></tr></table></div><div class="para">
+Bu noktada, zope giriş sayfasını okuyun ve doğru portu kullandığınızdan emin olun.
+        </div><div class="para">
+Zope yönetim arayüzü olduğunu belirten bağa tıklayın ya da <tt>http:127.0.0.1:8080/manage</tt> yazarak yönetici arabirimine ulaşın. Eğer sol çerçevenin üzerinde bir kök dizini görüyorsanız, doğru bölüme geldiniz. Aynı sayfada olduğumuzdan emin olun, şimdi sağ çerçevedeki Kök Dizin simgesine tıklayın.
+        </div><div class="para">
+Sağ köşede, kök dizininin içeriğini göreceksiniz.
+        </div><div class="para">
+<i>acl_users</i> dizinini arayın ve tıklayın. Yeni Kullanıcı Ekle seçeneğini seçin ve gerekli alanları doldurun. Alan kısmını boş bırakın. Görev seçtiğinizden emin olun. Öncelikle bu kullanıcı için <i>manager</i> kısmına tıklayın.
+        </div><div class="para">
+Zope kullanarak tamamen oturum kapatmakta sıkıntı çekmiştim, bu yüzden diğer kullanıcılara  geçmeden önce, tüm tarayıcı pencerelerini kapattığınızdan emin olun.
+        </div><div class="para">
+Eğer bir kullanıcıya yönetici yetkisi verdiyseniz, oturumu yeniden açmak zorundasınız. Yani, tüm tarayıcı pencerelerini kapatın ve yeni bir zope yönetim ekranı açın. Bu noktada, size yine bir oturum açma sorgusu gösterecektir. Yeni kullanıcı adınızı ve parolanızı girin.
+        </div><div class="para">
+Kullanıcı olarak (admin kullanıcısı değil) oturum açtıktan sonra, sol üst köşedeki Kök Dizini'ne tıklayın. Sağ çerçevede Import/Export düğmelerini seçin. Yeni bir ekran göreceksiniz. "Import File Name" alanına, FreePM Product.zexp ifadesini girin ve "Import" düğmesine basın. İşleminizin başarılı olduğuna dair bir ekran göreceksiniz.
+        </div><div class="para">
+Bir sonraki adım, sol üst köşedeki Kök Dizini simgesine tıklamak olacak. tekrar İmport/Export düğmesine basın, ancak bu sefer FreePM.zexp'i dahil edeceksiniz. Şimdi "Import" düğmesine tıklayın.
+        </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/caution.png" /></td><th class="admon">Dikkat</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+FreePM.zexp Zope ürününün çok büyük olduğunu ve dahil edilmesinin uzun zaman alacağını unutmayın ve bu yüzden tarayıcınızdan bir hata alırsanız şaşırmayın. Bu aşamada, nerseyse saçımı başımı yolmak üzereydim çünkü gerçekte neyin yanlış gittiği konusunda fikir sahibi değildim. Aslında yanlış giden hiçbir şey yoktu, sadece boyutu fazla olduğu için (32 MB) zope ürününün dahil edilmesi zaman alıyordu. Yapılan işlemlerden emin olmak istiyorsanız, FreePM.zexp dahil edilirken python'un iş üzerinde olduğunu göreceğiniz <b><tt>top</tt></b> unix komutunu kullanmanızı öneririm.
+        </div></td></tr></table></div><div> <div class="head5"><a name="id535" id="id535"></a>FreePM'i çalıştırmak </div></div><div class="para">
+FreePM'i çalıştırmak için, bir tarayıcı penceresi açmanız ve <tt>http://127.0.0.1:8080/FreePM</tt> adresine gitmeniz gerekiyor.
+        </div><div class="para">
+FreePM'in karşılama ekranıyla karşılaşacaksınız. Buna rağmen, şimdiye kadar yalnızca hastaları ekledim, ancak diğer hiçbir hassas ayarla oynamadım. Bu kısım, çok çalışma gerektiren bir kısım.
+        </div></dd></dl></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/medicine-howto-veterinary.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/medicine-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/medicine-howto-Imaging.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Veterinerlik Uygulamaları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Görüntü İşleme Uygulamaları</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

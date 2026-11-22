@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:09+03:00" /><title>Menü Seçenekleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/ncurses-howto-menus.html" title="Menü Kütüphanesi" /><link rel="previous" href="../howto/ncurses-howto-multivaluemenus.html" title="Çok Değerli Menüler" /><link rel="next" href="../howto/ncurses-howto-menuuserptr.html" title="Faydalı Kullanıcı Göstericisi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Menü Seçenekleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/ncurses-howto-multivaluemenus.html">Önceki</a> </td><th width="60%" align="center">Menü Kütüphanesi</th><td width="20%" align="right"> <a accesskey="n" href="../howto/ncurses-howto-menuuserptr.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="ncurses-howto-menuopt" id="ncurses-howto-menuopt"></a>Menü Seçenekleri</div><dl><dd><div class="para">
+Evet, şimdi artık menünüzde pekçok özellikler ile birtakım farklılıklar oluşturmak için can atıyorsunuzdur. Biliyorum. Renk istiyorsunuz!!! Metin kipinde çalışan şu <a class="ulink" href="http://www.jersey.net/~debinjoe/games/" target="_top">dos oyunları</a> gibi hoş menüler oluşturmak istiyorsunuz. <tt>set_menu_fore()</tt> ve <tt>set_menu_back()</tt> işlevleri seçili öğenin görünüm özelliklerini değiştirmek için kullanılır. İsimleri yanıltıcıdır. Hiçbir işe yaramayacak olan menünün ön ve arka fon renklerini değiştirmezler.
+</div><div class="para">
+<tt>set_menu_grey()</tt> işlevi menüdeki seçilemez öğelerinin görünüm özelliklerini değiştirmek için kullanılır. Bu da bizi bir öğe için oldukça ilginç ve tekil olan <tt>O_SELECTABLE</tt>'a getirmektedir. Bunu <tt>item_opts_off()</tt> işlevi ile kapatabiliriz ve bundan sonra öğe seçilemez hale gelir. Bu durum şu hoş pencere menülerindeki gri öğe durumuna benzemektedir. Bütün bunları pratiğe bir örnekle dökelim.
+</div><dl class="example"><dt class="example"><a class="example" name="idxmp97" id="idxmp97"></a><b>Örnek 12.23. Menü Seçenekleri Örneği</b></dt><dd class="example">
+<div class="para"><div align="right"><pre class="programlisting">
+#include &lt;menu.h&gt;
+
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
+#define CTRLD   4
+
+char *choices[] = {
+  "Choice 1",
+  "Choice 2",
+  "Choice 3",
+  "Choice 4",
+  "Choice 5",
+  "Choice 6",
+  "Choice 7",
+  "Exit",
+};
+
+int main()
+{ ITEM **my_items;
+  int c;
+  MENU *my_menu;
+  int n_choices, i;
+  ITEM *cur_item;
+
+  /* Curses kipini ilklendir */
+  initscr();
+  start_color();
+  cbreak();
+  noecho();
+  keypad(stdscr, TRUE);
+  init_pair(1, COLOR_RED, COLOR_BLACK);
+  init_pair(2, COLOR_GREEN, COLOR_BLACK);
+  init_pair(3, COLOR_MAGENTA, COLOR_BLACK);
+
+  /* Öğeleri ilklendir */
+  n_choices = ARRAY_SIZE(choices);
+  my_items = (ITEM **)calloc(n_choices + 1, sizeof(ITEM *));
+  for(i = 0; i &lt; n_choices; ++i)
+    my_items[i] = new_item(choices[i], choices[i]);
+  my_items[n_choices] = (ITEM *)NULL;
+  item_opts_off(my_items[3], O_SELECTABLE);
+  item_opts_off(my_items[6], O_SELECTABLE);
+
+  /* Menüyü oluştur */
+  my_menu = new_menu((ITEM **)my_items);
+
+  /* Menünün ön ve arka fon rengini ayarla */
+  set_menu_fore(my_menu, COLOR_PAIR(1) | A_REVERSE);
+  set_menu_back(my_menu, COLOR_PAIR(2));
+  set_menu_grey(my_menu, COLOR_PAIR(3));
+
+  /* Menüyü ekrana yaz */
+  mvprintw(LINES - 3, 0,
+    "Seçilen öğeyi görmek için &lt;ENTER&gt;'a basınd");
+  mvprintw(LINES - 2, 0,
+    "Hareket etmek için Yukarı ve Aşağı tuşlarını kullanın "
+    "(Çıkmak için F1)");
+  post_menu(my_menu);
+  refresh();
+
+  while((c = getch()) != KEY_F(1))
+  { switch(c)
+    { case KEY_DOWN:
+        menu_driver(my_menu, REQ_DOWN_ITEM);
+        break;
+      case KEY_UP:
+        menu_driver(my_menu, REQ_UP_ITEM);
+        break;
+      case 10: /* Enter */
+        move(20, 0);
+        clrtoeol();
+        mvprintw(20, 0, "Seçilen öğe : %s",
+                 item_name(current_item(my_menu)));
+        pos_menu_cursor(my_menu);
+        break;
+    }
+  }
+  unpost_menu(my_menu);
+  for(i = 0; i &lt; n_choices; ++i)
+    free_item(my_items[i]);
+  free_menu(my_menu);
+  endwin();
+}
+</pre></div></div></dd></dl></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/ncurses-howto-multivaluemenus.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/ncurses-howto-menus.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/ncurses-howto-menuuserptr.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Çok Değerli Menüler </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Faydalı Kullanıcı Göstericisi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

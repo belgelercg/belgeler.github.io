@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:29+03:00" /><title>İleti verisinin sınanması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/spam-filtering-techniques.html" title="Teknikler" /><link rel="previous" href="../howto/spam-filtering-senderauth.html" title="Gönderici Yetkilendirme Şemaları" /><link rel="next" href="../howto/spam-filtering-collateral.html" title="Dolaylı Spamın Engellenmesi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">İleti verisinin sınanması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/spam-filtering-senderauth.html">Önceki</a> </td><th width="60%" align="center">Teknikler</th><td width="20%" align="right"> <a accesskey="n" href="../howto/spam-filtering-collateral.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="spam-filtering-datachecks" id="spam-filtering-datachecks"></a>İleti verisinin sınanması</div><dl><dd><div class="para">
+İletinin içeriğine bakmanın zamanı geldi. Bu, ileti tamamen kabul edildikten sonra spam ve virüs tarayıcılarının yaptıklarına benzer bir işlemdir.  Ancak, bizim durumumuzda bu sınamaları, posta kabul edilmeden yani, sonuncu <b><tt>250</tt></b> yanıtından önce yapacağız. Böylece, daha sonra reddederek <a href="../howto/spam-filtering-glossary.html#spam-filtering-colspam" class="xref" title="Dolaylı Spam">Dolaylı Spam</a> üretmeksizin postayı daha SMTP aktarımı bitmeden reddetme şansımız olacak.
+    </div><div class="para">
+Eğer posta alıcılarınız çok meşgulse (büyük bir site ve bir kaç tane MX), bu makinelerde bu sınamaların bir kaçını bile uygulamak oldukça pahalıya malolabilir. Özellikle, <a href="../howto/spam-filtering-datachecks.html#spam-filtering-virusscanners" class="xref" title="Virüs Tarayıcıları">Virüs Tarayıcıları</a> ve <a href="../howto/spam-filtering-datachecks.html#spam-filtering-spamscanners" class="xref" title="Spam Tarayıcıları">Spam Tarayıcıları</a>'nın çalıştırlması büyük miktarda işlemci zamanı harcanmasına sebep olur.
+    </div><div class="para">
+Böyle bir durumda, bu tarama işlemlerine adanmış bir makine ayarlamak iyi bir çözüm olabilir. Sunucu tarafında çalışabilen çoğu anti-spam ve anti-virus yazılım ağ üzerinden çalıştırılabilmektedir.
+    </div> <div class="head4"><a name="spam-filtering-headerchecks" id="spam-filtering-headerchecks"></a>İleti başlıklarının sınanması</div><dl><dd>
+      <div class="variablelist"><dl><dt><span class="term"><a name="spam-filtering-headersmissing" id="spam-filtering-headersmissing"></a>Eksik başlık satırları</span></dt><dd class="varlist"><div class="para">
+<a class="link" href="../rfc/rfc2822.html" title="Genel Ağ İleti Biçimi">RFC 2822</a> bir iletinin en azından şu başlıkları içermesini <i>zorunlu</i> kılar:
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+From: ...
+To: ...
+Subject: ...
+Message-ID: ...
+Date: ...
+</pre></div></div>
+        <div class="para">
+Bu satırlardan herhangi birinin yokluğu iletinin bir <a href="../howto/spam-filtering-glossary.html#spam-filtering-mua" class="xref" title="Posta İstemcisi">Posta İstemcisi</a> tarafından üretilmediğini ve büyük olasılıkla bir döküntü posta olduğunu gösterir<sup>[<a name="id39" href="#ftn.id39" id="id39">39</a>]</sup>.
+        </div></dd><dt><span class="term"><a name="spam-filtering-headersyntax" id="spam-filtering-headersyntax"></a>Başlık Adresinin Sözdizimi Sınaması</span></dt><dd class="varlist"><div class="para">
+İleti başlığındaki adresler (<b><tt>To:</tt></b>, <b><tt>Cc:</tt></b>, <b><tt>From:</tt></b> ... başlıkları), sözdizimsel olarak geçerli olmak zorundadır. Daha fazla birşey söylemeye gerek yok.
+        </div></dd><dt><span class="term"><a name="spam-filtering-headeraddress" id="spam-filtering-headeraddress"></a>Basit Başlık Adresi Doğrulaması</span></dt><dd class="varlist"><div class="para">
+İleti başlığındaki her adres için:
+        </div>
+        <ul type="disc" class="itemizedlist"><li>
+Eğer adres yerelse,  <i>yerel kısım</i> (@ işaretinden önceki parça) geçerli bir posta kutusu ismi mi?
+          </li><li>
+Eğer adres uzaksa, <i>alanadı parçası</i>  (@ işaretinden sonraki parça) mevcut mu?
+        </li></ul>
+      </dd><dt><span class="term"><a name="spam-filtering-headercallout" id="spam-filtering-headercallout"></a>Başlık Adresi Varlık Doğrulaması</span></dt><dd class="varlist"><div class="para">
+Bu, <a href="../howto/spam-filtering-smtpchecks.html#spam-filtering-callback" class="xref" title="Gönderici Varlık Sınaması">Gönderici Varlık Sınaması</a> ve <a href="../howto/spam-filtering-smtpchecks.html#spam-filtering-callforward" class="xref" title="Alıcı Varlık Sınaması">Alıcı Varlık Sınaması</a>'na benzer şekilde çalışır. Bir <a href="../howto/spam-filtering-glossary.html#spam-filtering-dsn" class="xref" title="Teslimat Durum Bildirimi">Teslimat Durum Bildirimi</a>'nın kabul edilip edilmeyeceğini saptamak için her gönderici adresin birincil posta alıcısına erişilerek adres doğrulatılmaya çalışılır.
+      </div></dd></dl></div></dd></dl> <div class="head4"><a name="spam-filtering-jmsr" id="spam-filtering-jmsr"></a>Döküntü Posta İmza Depoları</div><dl><dd><div class="para">
+Döküntü postayı diğerlerinden ayıran bir özellik, çok sayıda adrese gönderilmiş olmasıdır. Eğer 50 alıcı belli bir iletiyi spam olarak nitelemişse, posta size teslim edilirken, iletiyi kabul edip etmemek noktasında neden bu fiili durumu kullanmayasınız? Daha da iyisi, spamcıları bilen kamuya açık bir havuzu beslemek için neden bir <a href="../howto/spam-filtering-glossary.html#spam-filtering-spamtrap" class="xref" title="Spam Tuzağı">Spam Tuzağı</a> ayarlamayasınız?
+      </div><div class="para">
+Böyle havuzlar var:
+      </div>
+      <ul type="disc" class="itemizedlist"><li><a class="ulink" href="http://razor.sf.net/" target="_top">Razor</a></li><li><a class="ulink" href="http://pyzor.sf.net/" target="_top">Pyzor</a></li><li><a class="ulink" href="http://rhyolite.com/anti-spam/dcc/" target="_top">Distributed Checksum Clearinghouse (DCC)</a></li></ul>
+      <div class="para">
+Bu araçlar sadece, döküntü posta olarak bilinen bir iletinin bir eşdeğer kopyasını aldığınızda tetiklenen basit imza sınamaları yaparak çalışırlar. Bunlar ileti içinde bilinen kalıpları arayarak değil, ileti başlığındaki ve gövdesindeki belli değişiklikleri hesaba katarak değerlendirme yaparlar.
+      </div></dd></dl> <div class="head4"><a name="spam-filtering-garbagechars" id="spam-filtering-garbagechars"></a>Baskı karakteri olmayan karakterlerin varlığı</div><dl><dd><div class="para">
+Baskı karakteri olmayan karakterleri içeren iletilere nadir de olsa rastlanır. Böyle bir ileti, hemen hemen daima bir virüs ya da uygun bir MIME kodlaması olmaksızın batı dillerinde yazılmamış bir spam türü olarak karşımıza çıkar.
+      </div><div class="para">
+Özel bir durum, iletinin boş karakter (sıfırıncı karakter - `\0') içermesi durumudur. Baskı karakteri olmayan karakterlerin karmaşıklığı karşısında bunun yararından çok zararı olacağını düşünseniz bile en azından bu karakteri sınamayı düşünebilirsiniz. Çünkü, <a class="ulink" href="http://asg.web.cmu.edu/cyrus/" target="_top">Cyrus Posta Araçları</a> gibi bazı <a class="link" href="../howto/spam-filtering-glossary.html#spam-filtering-mda">posta teslimatçıları</a> bu karakteri içeren postaları eninde sonunda reddedecektir<sup>[<a name="id40" href="#ftn.id40" id="id40">40</a>]</sup>.
+Eğer böyle bir yazılım kullanıyorsanız, boş karakterlerden kurtulmayı kesinlikle hesaba katmalısınız.
+      </div><div class="para">
+Diğer taraftan, RFC 822 belirtimi (artık atıl) iletilerde boş karakteri açıkça yasaklamamıştır. Bu sebeple, bu tür postaları reddetmek yerine, iletiden bu karakterleri ayıkladıktan sonra postayı Cyrus'a teslim etmek daha iyi bir yol olabilir.
+      </div></dd></dl> <div class="head4"><a name="spam-filtering-mimeerrors" id="spam-filtering-mimeerrors"></a>MIME sınamaları</div><dl><dd><div class="para">
+Benzer şekilde, gelen iletinin MIME yapısı değerlendirmeye alınırsa bu işlem çekilen zahmete değebilir. MIME çözümleme hataları veya tutarsızlıkları çok sık ortaya çıkmaz; fakat bu olursa, ileti kesinlikle döküntüdür. Üstelik böyle hatalar bundan sonraki <a href="../howto/spam-filtering-datachecks.html#spam-filtering-fileext" class="xref" title="Eklenti Sınamaları">Eklenti Sınamaları</a>, <a href="../howto/spam-filtering-datachecks.html#spam-filtering-virusscanners" class="xref" title="Virüs Tarayıcıları">Virüs Tarayıcıları</a>, <a href="../howto/spam-filtering-datachecks.html#spam-filtering-spamscanners" class="xref" title="Spam Tarayıcıları">Spam Tarayıcıları</a> gibi sınamalar açısından ortaya çıkabilecek sorunların habercisi olabilir.
+      </div><div class="para">
+Başka bir deyişle, eğer MIME kodlaması kuraldışıysa iletiyi reddedin.
+      </div></dd></dl> <div class="head4"><a name="spam-filtering-fileext" id="spam-filtering-fileext"></a>Eklenti Sınamaları</div><dl><dd><div class="para">
+Son zamanlarda istemediğiniz halde birileri size bir Windows ekran koruyucusu (“.scr”) veya bir Windows Program bilgi dosyası (“.pif”) gönderdi mi?
+      </div><div class="para">
+Ekinde “Windows çalıştırılabilirleri” - yukarıdaki gibi üç harfli uzantıları olan dosyalar - olan iletileri önlemeyi gözönünde bulundurun. Bu sınama <a href="../howto/spam-filtering-datachecks.html#spam-filtering-virusscanners" class="xref" title="Virüs Tarayıcıları">Virüs Tarayıcıları</a>nın tükettiğinden daha az sistem kaynağı tüketeceği gibi ayrıca, anti-virus tarayıcınızda henüz imzası bulunmayan yeni virüsleri de yakalamanızı sağlayacaktır.
+      </div><div class="para">
+Bu tür dosya uzantılarının az çok kapsamlı bir listesini<br /><a class="ulink" href="http://support.microsoft.com/default.aspx?scid=kb;EN-US;290497" target="_top">http://support.microsoft.com/default.aspx?scid=kb;EN-US;290497</a> adresinde bulabilirsiniz.
+      </div></dd></dl> <div class="head4"><a name="spam-filtering-virusscanners" id="spam-filtering-virusscanners"></a>Virüs Tarayıcıları</div><dl><dd><div class="para">
+Sunucu tarafında çalışan bir miktar virüs tarayıcı mevcuttur. Bazıları:
+      </div>
+      <ul type="disc" class="itemizedlist"><li><a class="ulink" href="http://www.vanja.com/tools/sophie/" target="_top">Sophie</a></li><li><a class="ulink" href="http://www.kapersky.com/" target="_top">KAVDaemon</a></li><li><a class="ulink" href="http://clamav.elektrapro.com/" target="_top">ClamAV</a></li><li><a class="ulink" href="http://www.sald.com/" target="_top">DrWeb</a></li></ul>
+      <div class="para">
+Tehlike arzetmesi olası dosyaları (“.zip” dosyaları gibi) sadece isimlerine bakarak engellemek istemiyorsanız böyle tarayıcılar işe yarar. Ayrıca bunlar bir posta eki olmayan  “Bagle.R” virüsü (2004 Mart'ında ortaya çıkmıştı) gibi virüsleri de yakalayabilir.
+      </div><div class="para">
+Çoğu durumda, virüs taraması yapan makinenin sizin posta alıcınız olması gerekmez. Bu virüs tarayıcıların çoğu bir ağ bağlantısı üzerinden başka bir konakta çalıştırılabilir.
+      </div><div class="para">
+Antivirüs yazılımları genellikle bilinen virüsleri imzalarından ya da <i>virüs tanımlarından</i> saptar. Yeni virüsler geliştirildiğinden bunların düzenli aralıklarla güncellenmeleri gerekir. Ayrıca, olası en yüksek doğruluğun sağlanması için yazılımın kendisinin de güncel olması gerekir.
+      </div></dd></dl> <div class="head4"><a name="spam-filtering-spamscanners" id="spam-filtering-spamscanners"></a>Spam Tarayıcıları</div><dl><dd><div class="para">
+Benzer şekilde, anti-spam yazılımlar iletileri standartlara uyumluluk açısından değerlendirerek, <a href="../howto/spam-filtering-dnschecks.html#spam-filtering-dnsbl" class="xref" title="DNS Karalisteleri">DNS Karalisteleri</a> ve <a href="../howto/spam-filtering-datachecks.html#spam-filtering-jmsr" class="xref" title="Döküntü Posta İmza Depoları">Döküntü Posta İmza Depoları</a> gibi sınamalar yaparak ve içeriklerini büyükçe bir ampirik kümeye göre değerlendirerek sınıflandırmakta kullanılabilir. Sonuçta, bu tür yazılımlar iletinin ne derece spam olabileceğini belirten bir puan verirler. Eğer bu puan belli bir eşik değeri aşmışsa iletinin spam olabileceğine karar verilebilir.
+      </div><div class="para">
+Sunucu tarafında çalışan ampirik antispam filtrelerinden çok tanınmış ikisi:
+      </div>
+        <ul type="disc" class="itemizedlist"><li><a name="spam-filtering-spamassassin" id="spam-filtering-spamassassin"></a><a class="ulink" href="http://www.spamassassin.org/" target="_top">SpamAssassin</a></li><li><a name="spam-filtering-brightmail" id="spam-filtering-brightmail"></a><a class="ulink" href="http://www.brightmail.com/" target="_top">BrightMail</a></li></ul>
+      <div class="para">
+Spamcılar bu araçların kullandıkları çeşitli sınamaları alt edecek yöntemler (örn, “GR0W lO 1NCH35” gibi oldukça yaratıcı dizgeler) buldukça bu araçlar da sürekli geliştirilmektedir. Antivirüs yazılımlarında olduğu gibi bu yazılımlar da olası en yüksek doğruluğu sağlamak için sıkça güncellenmelidir.
+      </div><div class="para">
+Ben SpamAssassin kullanıyorum, makine özkaynaklarına olan etkisini en aza indirmek için onu savunma hattımın önüne yerleştirmedim. Benim kişisel adresime günde 500 civarında döküntü posta teslim edilmeye çalışılıyor. Bunlardan yaklaşık 50 tanesi SpamAssassin tarafından sınanacağı noktaya ulaşabiliyorlar. Bu 50 iletinin dışında posta kutuma her iki ya da üç günde bir, tek bir ileti düşüyor.
+      </div></dd></dl><div class="footnotes"><br /><hr width="100" align="left" /><div class="footnote"><div class="para"><sup>[<a name="ftn.id39" href="#id39" id="ftn.id39">39</a>] </sup>
+Posta listelerinin sunucuları gibi bazı özel amaçlı posta aktarımcıları "boş adresli" (bkz. <a href="../howto/spam-filtering-glossary.html#spam-filtering-dsn" class="xref" title="Teslimat Durum Bildirimi">Teslimat Durum Bildirimi</a>) iletiler için kendiliklerinden bir <tt>Message-ID:</tt> başlığını üretmezler. Bu tür iletiler boş bir <a href="../howto/spam-filtering-glossary.html#spam-filtering-envfrom" class="xref" title="Zarf Göndericisi">Zarf Göndericisi</a>nin varlığıyla kendilerini belli ederler.</div></div><div class="footnote"><div class="para"><sup>[<a name="ftn.id40" href="#id40" id="ftn.id40">40</a>] </sup>
+IMAP protokolü posta istemcilerine boş karakterlerin aktarılmasına izin vermez. Bu bakımdan, Cyrus geliştiricileri bu karakteri içeren postalardan kurtulmanın en kolay yolu olarak onları reddetme kararı aldılar.</div></div></div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/spam-filtering-senderauth.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/spam-filtering-techniques.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/spam-filtering-collateral.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Gönderici Yetkilendirme Şemaları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Dolaylı Spamın Engellenmesi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

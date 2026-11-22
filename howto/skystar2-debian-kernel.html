@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:17+03:00" /><title>Çekirdek kurulumu</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/skystar2-debian.html" title="Debian Kurulumu" /><link rel="previous" href="../howto/skystar2-debian.html" title="Debian Kurulumu" /><link rel="next" href="../howto/skystar2-debian-player.html" title="Görünteleyici Kurulumu" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Çekirdek kurulumu</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/skystar2-debian.html">Önceki</a> </td><th width="60%" align="center">Debian Kurulumu</th><td width="20%" align="right"> <a accesskey="n" href="../howto/skystar2-debian-player.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="skystar2-debian-kernel" id="skystar2-debian-kernel"></a>Çekirdek kurulumu</div><dl><dd><div class="para">
+<a class="ulink" href="http://kernel.org" target="_top">http://kernel.org</a>'dan 2.6.13.1 veya daha yeni bir sürümü indirdiğinizi, <tt>/usr/src</tt> dizinine kaydettiğinizi ve paketi açtığınızı varsayıyorum.
+  </div><div class="para">
+Çekirdeğin kaynak kodlarının <tt>/usr/src/linux-2.6.13.1</tt> dizininde olduğunu varsayıyorum. Bu çekirdek, eski başlık ve asm dosyalarında bir sürü uyarı veriyor. Ben iki defa derleme yaptım, bu yüzden; çünkü, ileride sistemde paket derlemek zorunda kalırsam, sorunlarla boğuşmak istemem. Siz bu işlemi baştan yapın ve tek derleme ile işi bitirin. Yapacağınız, basit bir işlem (root olarak):
+  </div><ul type="disc" class="itemizedlist"><li><div class="para">
+<tt>/usr/src/linux-2.6.13.1/include/asm-i386</tt> dizinideki her şeyi <tt>/usr/include/asm</tt> dizine kopyalayın.
+    </div></li><li><div class="para">
+<tt>/usr/include</tt> dizini altındaki <tt>linux</tt> dizinini içindekilerle birlikte silin. <tt>/usr/src/linux-2.6.13.1/include/linux</tt> dizinini <tt>/usr/include</tt> altına <tt>linux</tt> sembolik bağı ile bağlayın. Bu dizini kopyalamamalısınız, çünkü derleme işlemi bu dizinin içeriğini değiştiriyor. Bazı paketler kurulum sırasında çekirdeğin başlık dosyalarının kurulu çekirdeğin başlık dosyaları olmasına önem verirler ve bu dizindeki <tt>version.h</tt> ve <tt>modversion.h</tt> dosyasına bakarlar. Yalnız ben o kadar uğraşmama rağmen <tt>modversion.h</tt> oluşmadı. Bu yeni çekirdeğe özgü bir durum sanırım. (Bu noktada Debian'ın yapısını bozuyoruz ama listelerde sorulan ve yanıtı olmayan pek çok sorunun asıl kaynağı burası; ben çekirdeği hep böyle derlerim ama Debian'ın yapısını bozmak istemeyince iki derleme yapmak zorunda kaldım.)
+    </div></li></ul>
+  <div class="para">
+Bu işlemi bitirdikten sonra <tt>/boot/config-2.6.8-2-386</tt> dosyasını <tt>.config</tt> dosyası olarak <tt>/usr/src/linux-2.6.13.1</tt> dizinine kopyalayın ve <tt>/usr/src/linux-2.6.13.1</tt> dizinine girip komut satırına <b><tt>make menuconfig</tt></b> yazıp yapılandırmayı başlatın. Kopyaladığınız <tt>.config</tt> dosyası okunmuş olacağından sadece skystar2 için gereken modülleri ve bu sürüme özgü ek modülleri yapılandırmaya eklemek yetecek. Debian'ın eski çekirdeğinde skystar2 kartının modülleri sanırım ya yoktu (doğrusu bakmadım, yeniden derleyeceksem, çekirdeğin en yenisi derlerim) ya da bu kartı adamdan saymamışlar. Bu yüzden nasılsa <tt>.config</tt> ile eski yapılandırma etkin oluyor deyip bu adımı atlayıp geçmeyin.
+  </div><div class="para">
+Çekirdeğin Kconfig dosyasından bir alıntı (türkçe çevirisiyle):
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+config DVB_B2C2_FLEXCOP
+        tristate "Technisat/B2C2 FlexCopII(b) and FlexCopIII adapters"
+        depends on DVB_CORE
+        select DVB_STV0299
+        select DVB_MT352
+        select DVB_MT312
+        select DVB_NXT2002
+        select DVB_STV0297
+        select DVB_BCM3510
+        help
+          B2C2 Inc. tarafından yapılmış sayısal TV alıcılırı için destek.
+          Technisats PCI kartları ve USB kutularına destek içerir.
+
+          Böyle bir aygıtınız varsa ve kullanmak istiyorsanız Y deyin.
+
+config DVB_B2C2_FLEXCOP_PCI
+        tristate "Technisat/B2C2 Air/Sky/Cable2PC PCI"
+        depends on DVB_B2C2_FLEXCOP &amp;&amp; PCI
+        help
+          Technisat/B2C2 tarafından yapılmış Air/Sky/CableStar2 PCI kartlar
+          için destek.
+
+          Böyle bir aygıtınız varsa ve kullanmak istiyorsanız Y deyin.
+
+config DVB_B2C2_FLEXCOP_USB
+        tristate "Technisat/B2C2 Air/Sky/Cable2PC USB"
+        depends on DVB_B2C2_FLEXCOP &amp;&amp; USB
+        help
+          Technisat/B2C2 tarafından yapılmış Air/Sky/CableStar2 USB1.1 kutular
+          için destek.
+
+          Böyle bir aygıtınız varsa ve kullanmak istiyorsanız Y deyin.
+
+config DVB_B2C2_FLEXCOP_DEBUG
+        bool "Enable debug for the B2C2 FlexCop drivers"
+        depends on DVB_B2C2_FLEXCOP
+        help
+          Say Y if you want to enable the module option to control debug messages
+          of all B2C2 FlexCop drivers.
+          (Bu lazım değil)
+</pre></div></div>
+  <div class="para">
+Yapılandırmada,
+  </div>
+<div class="para"><pre class="literallayout">  Device Drivers
+    Multimedia Devices
+      Digital Video Broadcasting Devices
+</pre></div>
+  <div class="para">
+adımlarıyla ulaştığınız penceredeki ve alt bölümlerindeki tüm modülleri &lt;M&gt; olarak işaretleyin. Hepsi bu.
+  </div><div class="para">
+&lt;exit&gt;'leri seçerek yapılandırmadan çıkın, sonunda yapılandırmayı kaydedeyim mi diye soracak. Yes'i seçin.
+  </div><div class="para">
+Şimdi Debian paketimizi oluşturacağız:
+  </div>
+<div class="para"><div align="right"><pre class="screen"># make deb-pkg</pre></div></div>
+  
+<div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">Çekirdeğin başka paket yöneticileri için de desteği var. Geçerli <b><tt>make</tt></b> seçeneklerini görmek için <b><tt>make help</tt></b> yazın. Bu yeni çekirdekler de bir harika <tt>:-)</tt></div> Çekirdek derlemek hiç bu kadar kolay olmamıştı.</td></tr></table></div>
+  <div class="para">
+Bu işlemin bitiminde, herşey yolunda gitmişse,  <tt>/usr/src</tt> altında <tt>linux-2.6.13.1_2.6.13.1_i386.deb</tt> ya da benzer bir adla yeni bir dosya bulacaksınız. Bu paketi kuralım:
+  </div>
+<div class="para"><div align="right"><pre class="screen"># dpkg -i linux-2.6.13.1_2.6.13.1_i386.deb</pre></div></div>
+  <div class="para">
+Yalnız, <tt>/boot</tt> dizinine baktığımda bu işlemin <tt>initrd</tt> dosyasını oluşturmamış olduğunu gördüm ve kendim oluşturdum:
+  </div>
+<div class="para"><div align="right"><pre class="screen"># mkinitrd -o /boot/initrd.img-2.6.13.1 2.6.13.1</pre></div></div>
+  <div class="para">
+Daha bitmedi makineyi hemen yeniden başlatmayın. Grub'ın yeni çekirdekle açmasını sağlamamız lazım. <tt>/boot/grub/menu.lst</tt> dosyasını bir metin düzenleyici ile açın ve mevcut çekirdekler listesinin <b><tt>öncesine</tt></b> şu satırları ekleyin (grub menüsündeki ilk satırlar olmak üzere):
+  </div>
+<div class="para"><div align="right"><pre class="screen">title           Debian GNU/Linux, kernel 2.6.13.1 Default
+root            (hd1,0)
+kernel          /boot/vmlinuz-2.6.13.1 root=/dev/hdb1 ro
+initrd          /boot/initrd.img-2.6.13.1
+savedefault
+boot
+
+title           Debian GNU/Linux, kernel 2.6.13.1 Default (recovery mode)
+root            (hd1,0)
+kernel          /boot/vmlinuz-2.6.13.1 root=/dev/hdb1 ro single
+initrd          /boot/initrd.img-2.6.13.1
+savedefault
+boot
+</pre></div></div>
+  <div class="para">
+Benim Linux sistemim <tt>hdb1</tt>'de kurulu, siz <tt>(hd1,0)</tt> ve <tt>/dev/hdb1</tt> yerine kendi sisteminizin kurulu olduğu disk bölümüyle ilgili değerleri yazın (İpucu: dosyadaki mevcut satırlara bakarak ne yazacağınıza karar verebilirsiniz.) Bir de dosyanın hemen hemen başlarında
+  </div>
+<div class="para"><pre class="literallayout">default         0</pre></div>
+  <div class="para">
+diye bir satır olmalı, bu satırdaki değer 0 değilse 0 yapın. Dosyayı kaydedip çıkın ve komut satırına,
+  </div>
+<div class="para"><div align="right"><pre class="screen"># grub install hd0</pre></div></div>
+  <div class="para">
+yazın. Tabii sizin grub'ınız ilk sabit diskin başındaysa bu geçerli, ikincideyse hd0 yerine hd1 yazmalısınız. Bu komut grub'ı açılış için güncelleyecek. Sistemi yeniden başlatmadan önce yapacak bir kaç işlem kaldı.
+  </div><div class="para">
+<tt>/usr/src/linux-2.6.13.1/Documentation/dvb</tt> dizinine girin ve şu komutu verin:
+  </div>
+<div class="para"><div align="right"><pre class="screen"># perl get_dvb_firmware nxt2002</pre></div></div>
+  <div class="para">
+Bu komutu çalıştırabilmek için internete bağlı olmalısınız, çünkü betik, bir paket indirecek ve bu paketten bir dosya çıkarıp (<tt>SkyNETU.sys</tt>), bu dosyadan da kartın yerleşik olması gereken yazılımını (firmware) elde edecek.
+  </div><div class="para">
+İşlemin bitiminde dizinin içinde <tt>dvb-fe-nxt2002.fw</tt> adında yeni bir dosya bulacaksınız. Bu dosyayı <tt>/usr/lib/hotplug/firmware</tt> dizinine kopyalayın.
+  </div><div class="para">
+Eğer bir 3D ekran kartınız varsa (nvidia gibi) ve X için 3D sürücülerini kurmuşsanız, onları çekirdek değiştiği için kullanamayacaksınız. Synaptic'i açın ve daha önce kurduğunuz bu paketi sistemden kaldırmasını isteyin. Yok kendiniz kurmuşsanız (benim gibi) Synaptic'ten bazı xlib paketlerini yeniden kurmasını istemelisiniz. Synaptic'in geçmişinden bir alıntı:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+Commit Log for Mon Sep 12 17:55:28 2005
+
+
+Şu paketler yeniden kuruldu:
+xlibmesa-dri (4.3.0.dfsg.1-14)
+xlibmesa-gl (4.3.0.dfsg.1-14)
+xlibmesa-gl-dev (4.3.0.dfsg.1-14)
+xlibmesa-glu (4.3.0.dfsg.1-14)
+xlibmesa-glu-dev (4.3.0.dfsg.1-14)
+</pre></div></div>
+  <div class="para">
+Ayrıca, <tt>/etc/X11/XF86Config-4</tt> dosyasında evvelce yaptığınız değişiklikleri geri almalısınız. Bu işlem benim için,
+  </div>
+<div class="para"><pre class="literallayout">   Load    "GLcore"</pre></div>
+  <div class="para">
+satırını devreye sokmak ve
+  </div>
+<div class="para"><pre class="literallayout">   Load    "glx"</pre></div>
+  <div class="para">
+satırın iptal etmek, ayrıca,
+  </div>
+<div class="para"><pre class="literallayout">   Driver          "nvidia"</pre></div>
+  <div class="para">
+satırını iptal edip
+  </div>
+<div class="para"><pre class="literallayout">   Driver          "nv"</pre></div>
+  <div class="para">
+satırını devreye sokmak şeklinde oldu. Siz de benzer işlemleri yapmalısınız. Yoksa, X açılmayacaktır. Daha sonra (bu kurulum bittikten sonra) isterseniz, yeni çekirdeğinize göre ekran kartınızın yeni 3D sürücülerini kurarsınız.
+  </div><div class="para">
+Artık sistemi yeniden başlatmak için hazırız. Hemen yapın. Daha yapacak çok işimiz var.
+  </div><div class="para">
+Herşey yolunda gitmişse sistem her zamanki gibi açılacaktır. Bir bakın bakalım, modüllerimiz yüklenmiş mi?
+  </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>lsmod</tt></b>
+    ...
+b2c2_flexcop_pci       10648  0
+b2c2_flexcop           31628  1 b2c2_flexcop_pci
+dvb_core               84776  1 b2c2_flexcop
+mt352                   7044  1 b2c2_flexcop
+bcm3510                11524  1 b2c2_flexcop
+stv0299                11912  1 b2c2_flexcop
+nxt2002                 9988  1 b2c2_flexcop
+firmware_class         11008  4 bttv,b2c2_flexcop,bcm3510,nxt2002
+stv0297                 9728  1 b2c2_flexcop
+mt312                   8708  1 b2c2_flexcop
+    ...
+i2c_core               22416  13 tuner,bttv,i2c_algo_bit,tveeprom,b2c2_flexcop,
+mt352,bcm3510,stv0299,nxt2002,stv0297,mt312,via686a,i2c_sensor
+    ...
+</pre></div></div>
+  <div class="para">
+Bütün listeyi buraya almadım. Bu listedekine benzer modülleri (satırların başındakiler) görüyorsanız, herşey yolunda demektir. Bu çıktıdan anlaşılacağı üzere bir bttv kartınız varsa, onu da gerekiyorsa, kullanmaya devam edebilirsiniz, tabii ki aynı anda değil. İki kart kardeş kardeş geçinip gidecektir <tt>:-)</tt>
+  </div><div class="para">
+Çekirdek kartımızı tanıdığına göre, onu kullanabileceğimiz uygulama paketlerini sisteme yükleyip kanalları izlemeye çalışalım.
+  </div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/skystar2-debian.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/skystar2-debian.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/skystar2-debian-player.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Debian Kurulumu </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Görünteleyici Kurulumu</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

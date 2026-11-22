@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:51+03:00" /><title>Yapılandırma</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/xdm-terminal-nasil.html" title="XDM Terminal" /><link rel="previous" href="../howto/xdm-terminal-nasil_gereken.html" title="Neler Gerekli?" /><link rel="next" href="../howto/xdm-terminal-nasil_baslat.html" title="Başlatma" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Yapılandırma</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/xdm-terminal-nasil_gereken.html">Önceki</a> </td><th width="60%" align="center">XDM Terminal</th><td width="20%" align="right"> <a accesskey="n" href="../howto/xdm-terminal-nasil_baslat.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="xdm-terminal-nasil_ayar" id="xdm-terminal-nasil_ayar"></a>Yapılandırma</div><dl><dd><div class="para">
+Bu bölümde gerekli olan ayar dosyalarına nasıl ulaşacağınız ve ayarlayacağınız anlatılmaktadır. Bu sayede Terminal işlevinin düzgün bir şekilde çalışması sağlanacaktır. Yalnız şunu sakın unutmayın. Bazı Linux dağıtımları bu ayar dosyalarını çeşitli dizinler altına koyabilirler. Sizin sisteminiz için geçerli olan PATH yolları farklı olabilir. Mesela XDM dosyaları ya <tt>/etc/X11</tt> dizini altında ya da <tt>/usr/X11R6/lib/X11</tt> dizini altında olabilir. Keza başlatma dosyaları da öyle. Bazı Linux dağıtımlarında başlatma dosyaları <tt>/etc/init.d</tt> veya <tt>/etc/rc.d</tt> dizinleri altında bulunabilir. Bu yüzden kendi sisteminizi biraz tanımakta fayda vardır.
+    </div> <div class="head3"><a name="id1" id="id1"></a>Sunucu Makina Yapılandırması</div><dl><dd><div class="para">
+Yeni Linux dağıtımlarının bir çoğunda, güvenlik nedeni ile <tt>xdm-config</tt> dosyasının içinde aşağıdaki satır bulunmaktadır: (Gizlice dinlemeyi önlemek için):
+      </div>
+<div class="para"><div align="right"><pre class="screen">DisplayManager.requestPort: 0</pre></div></div>
+      <div class="para">
+Fakat bizim bu güvenlik satırını iptal etmemiz gerekmekdedir. Onu da şöyle yapabiliriz:
+      </div>
+<div class="para"><div align="right"><pre class="screen">! DisplayManager.requestPort: 0</pre></div></div>
+      <div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/warning.png" /></td><th class="admon">Uyarı</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">Bu işlemin güvenlik açığı oluşturabileceğini unutmayın.</div></td></tr></table></div><div class="para">
+<tt>Xaccess</tt> dosyası sunucu makinaya XDM üzerinden login yapabilecek olan istemci makinaların isimlerini tanımlamak içindir. Bu dosyayı şu şekilde değiştirebilirsiniz:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+%hostlist bilgisayar-A bilgisayar-B
+* CHOOSER %hostlist
+</pre></div></div>
+      <div class="para">
+<b><tt>Bilgi</tt></b>: Tabii buradaki bilgisayar-A, bilgisayar-B v.b., istemci makina olacak makinaların isimleri olmalıdır. Eğer 1 tane istemci varsa bile yukarıdaki şekilde tanımlanabilir (sadece ismi yazılarak)
+      </div><div class="para">
+<tt>Xservers</tt> dosyasında biraz dikkatli olmamız gerekir. Çünkü bu hassas dosyada sunucu makinadaki XDM ile irtibata geçecek olan istemci makinaların ismi yazılması gerekir. Bu dosyayı ilk açtığımızda aşağıdakine benzer bir satır olabilir ve bu satırı KESİNLİKLE değiştirmiyoruz:
+      </div>
+<div class="para"><div align="right"><pre class="screen">:0 local /usr/X11R6/bin/X</pre></div></div>
+      <div class="para">
+Ancak bu dosyanın içine ve yukardaki satırdan hemen sonraki boşluğa istemci makinaların isimlerini girmemiz gerekir. Bu kısaca şöyle olabilir:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+bilgisayar-A:0 foreign
+bilgisayar-B:0 foreign
+</pre></div></div>
+      <div class="para">
+<tt>Xresources</tt> dosyasının içinde ise, yerleşim, pencere büyüklügü, login penceresinin renkleri vs. fazla önem taşımayan ayarlar durur. Bu dosya içinde birşey değiştirmenize gerek yok. Aynen olduğu gibi bırakabilirsiniz.
+      </div><div class="para">
+<tt>xdm</tt> başlatma betiğinde bir şey değiştirmenize gerek yok. Tek yapmanız gereken xdm'in otomatik olarak boot (sistem açılışı) esnasında başlamasını sağlamak. Yoksa root olarak elle başlatabilirsiniz. (xdm komutunu vermek yeterli olacaktır).
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>İstemci Makina Yapılandırması</div><dl><dd><div class="para">
+<tt>inittab</tt> dosyası içindeki XDM ayarlarının herhangi bir seçenek olmadan çalıştırılması gerekmektedir. Yoksa sunucu makinadaki pencere yöneticisinin başlatılması ve istemci makinanın ekranında gösterilmesini engelleyecektir.
+        Bu yüzden bu dosya içindeki <tt>XDM</tt> başlatılırken, <tt>ACCESS CONTROL RESTRICTIONS</tt> (Erişim denetim sınırlamaları) kontrolu yapılmamalıdır. Bu yüzden inittab dosyasında aşağıdakilere benzer değişiklikler yapılabilir:
+      </div><dl class="example"><dt class="example"><a class="example" name="idxmp52" id="idxmp52"></a><b>Örnek 20.1. </b></dt><dd class="example"><div class="para"><div align="right"><pre class="screen">
+id:5:initdefault
+x:5:respawn:/usr/X11R6/bin/X -ac
+</pre></div></div></dd></dl><dl class="example"><dt class="example"><a class="example" name="idxmp53" id="idxmp53"></a><b>Örnek 20.2. </b></dt><dd class="example"><div class="para"><div align="right"><pre class="screen">
+id:4:initdefault:
+x1:4:respawn:/usr/X11R6/bin/X -ac
+</pre></div></div><div class="para">
+<b><tt>Açıklaması:</tt></b> <tt>id:&lt;runlevel&gt;:initdefault</tt> satırları ile hangi çalışma seviyesinde (runlevel) sistemin başlatılacağı belirtilir. Bir sonraki satırda ise X-Sunucusu  -ac seçenekleri ile otomatikman başlar.
+      </div></dd></dl></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/xdm-terminal-nasil_gereken.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/xdm-terminal-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/xdm-terminal-nasil_baslat.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Neler Gerekli? </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Başlatma</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

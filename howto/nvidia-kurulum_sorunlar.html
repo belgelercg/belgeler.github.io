@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:55+03:00" /><title>Olası Hatalar ve Tavsiyeler</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/nvidia-kurulum.html" title="NVIDIA 1.0-4191 Kurulumu" /><link rel="previous" href="../howto/nvidia-kurulum_startx.html" title="startx" /><link rel="next" href="../howto/procmail-nasil.html" title="Procmail ile Eposta Filtreleme NASIL" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Olası Hatalar ve Tavsiyeler</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/nvidia-kurulum_startx.html">Önceki</a> </td><th width="60%" align="center">NVIDIA 1.0-4191 Kurulumu</th><td width="20%" align="right"> <a accesskey="n" href="../howto/procmail-nasil.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="nvidia-kurulum_sorunlar" id="nvidia-kurulum_sorunlar"></a>Olası Hatalar ve Tavsiyeler</div><dl><dd><div class="para">Kurulum esnasında ve sonrasında karşılaşabileceğiniz hataları
+    kısaca gözden geçirelim</div> <div class="head3"><a name="id1" id="id1"></a>NVIDIA_kernel (modül) paketinin kurulumunda</div><dl><dd><div class="para">Bu RPM paketini kurarken</div><div class="para"><div align="right"><pre class="screen">
+#error Modules should never use kernel-headers system headers
+#error but headers from an appropriate kernel-source
+</pre></div></div><div class="para">hatası alırsanız, çekirdek kaynak paketinin kurulu olmadığına
+      işaret edebilir. Çekirdek kaynak paketini sisteminize kurun.</div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Log dosyası</div><dl><dd><div class="para">XFree86'nın Log dosyası <tt>/var/log/XFree86.0.log</tt>'dur.
+      Herhangi bir hata karşısında</div><div class="para"><div align="right"><pre class="screen">
+$ startx   --   -verbose  5   -logverbose  5
+</pre></div></div><div class="para">komutunu verin ve daha sonra <tt>/var/log/XFree86.0.log</tt> dosyasını
+      inceleyin ve başkasından yardım istediğinizde bu dosyayıda sorunuza
+      ekleyin. Sorunun çözümünde bu dosya daha hızlı bir şekilde yardımcı
+      olacaktır.</div></dd></dl> <div class="head3"><a name="id3" id="id3"></a>TNT Kartlarına özel bazı durumlar</div><dl><dd><div class="para">TNT kartlarına özel bilinen birçok hata düzeltilmiş durumda.
+      Ancak bazı durumlarda (SGRAM/SDRAM kullanan TNT kartlarında) grafik
+      kartının yanlış BIOS kullanması sonucu, bu kurulacak olan sürücülerin
+      görevlerini yapmadığı durumlar olabilir.</div><div class="para">Sürücünün kullandığınız grafik kartını çalıştırmaması halinde;</div><div class="variablelist"><dl><dt><span class="term">SDRAM/SGRAM tespiti yapın,</span></dt><dd class="varlist"><div class="para">Bilgisayarı ilk açtığınızda RAM'lerı sayarken kısa bir
+            süre içinde ekranda kullandığınız RAM türünü yazar.Buna dikkat
+            edin. Burdan tespit edebilirsiniz.</div></dd><dt><span class="term">tar.gz paketlerinden derlemeyi deneyin</span></dt><dd class="varlist"><div class="para">Bunun için bütün paketleri tar.gz olarak indirin.</div><div class="para">NVIDIA_kernel dosyasının açın ve
+            <tt>os-registry.c</tt> dosyasını herhangi bir
+            metin düzenleyici ile açın.</div><div class="para">NVreg_VideoMemoryTypeOverride</div><div class="para">satırını bulun. Bu satırınn üstündeki açıklamayı dikkatle
+            okuyun ve kullandığınız SDRAM/SGRAM olmasına göre bu değişkenin
+            değerini 1 veya 0 olarak değiştirin. Kaydedin
+            ve işleme <tt>make</tt> komutu ile devam edin.</div></dd></dl></div><div class="para">Ayrıntılı açıklamalar için README dosyasını gözden geçirmeyi
+      unutmayın.</div></dd></dl> <div class="head3"><a name="id4" id="id4"></a>Bazı oyunlara haz özellikler</div><dl><dd><div class="para">Bazı oyunlara has özellikler ve fazladan uygulanması gereken başka
+      ayarlar olabilir. Bunun için lütfen ilk önce,
+      <tt>/usr/share/doc/NVIDIA_GLX-1.0/README</tt>
+      dosyasını gözden geçirin. Bu oyunların çalışabilmesi için bazı
+      extra seçeneklerin verilmesi gerekebilir. Mesela birçok oyunun
+      çalışabilmesi için 800x600 veya 640x480 çözünümlerinin
+      <tt>XF86Config-4</tt>
+      dosyasında tanımlanması gerekir. Mesela aşağıdaki örnekdeki gibi:</div><div class="para"><div align="right"><pre class="screen">
+......
+......
+Subsection "Display"
+Depth 16
+Modes "1024x768" "800x600" "640x480"
+EndSubsection
+.......
+.......
+</pre></div></div></dd></dl> <div class="head3"><a name="id5" id="id5"></a>Nvidia Logosunu istemiyorum</div><dl><dd><div class="para">Nvidia sürücülerini kurduktan sonra, X sunucusu başlarken NVIDIA
+      logosu bazen sinir bozucu olabilir. Eğer başlangıçda bu logonun
+      görülmemesini istiyorsanız <tt>Section "Device"</tt>
+      bölümüne <tt>Option   "NoLogo"   "true"</tt>
+      satırını ekleyebilirsiniz. Logo bir daha görünmeyecektir.</div></dd></dl> <div class="head3"><a name="id6" id="id6"></a>AGP ayarları</div><dl><dd><div class="para"><tt>nvidia.o</tt> çekirdel modülü ile AGP kullanımını
+      çeşitli şekilde yapabilirsiniz. Mesela NVIDIA sürücüsünün kendi AGP
+      modülü (NVAGP) veya Linux çekirdeğindeki AGP Modülü (AGPGART).</div><div class="para">Bunun ayarlanması için "NvAGP" seçeneğinden sonra bir
+      tamsayı değer vermeniz gereklidir. Kısaca şöyle</div><div class="para"><div align="right"><pre class="screen">
+  Option "NvAgp" "0" ... AGP desteği etkin değil
+  Option "NvAgp" "1" ... mümkünse NVAGP kullan
+  Option "NvAgp" "2" ... mümkünse AGPART kullan
+  Option "NvAGP" "3" ... ilk önce AGPGART, sonra NVAGP kullanmayı dene
+</pre></div></div><div class="para">Nvidia modülünün kararlı olmaması halinde, yukardaki ayarlar ile
+      biraz oynanması belki bir çözüm yolu olabilir. Bazı durumlarda bu
+      özelliğin kaldırılmasında da fayda vardır.</div><div class="para">AGPGART çekirdek modülünün kullanılabilmesi için çekirdek ile
+      birlikte derlenmesi gerekmektedir ya çekirdek modülü olarak ya da statik
+      olarak ilintilenmiş şekilde. Eğer AGPGART statik olarak ilintilenirse
+      bu sefer AGP desteği kullanılamaz. Bu yüzden modül olarak derlemek en
+      güzeli.</div><div class="para">NVIDIA'nın kendi AGP desteği aşağıdaki AGP chiplerde
+      mevcuttur:</div><div class="para"><div align="right"><pre class="screen">
+  o Intel 440LX
+  o Intel 440BX
+  o Intel 440GX
+  o Intel 815 ("Solano")
+  o Intel 820 ("Camino")
+  o Intel 830
+  o Intel 840 ("Carmel")
+  o Intel 845 ("Brookdale")
+  o Intel 845G
+  o Intel 850 ("Tehama")
+  o Intel 860 ("Colusa")
+  o AMD 751 ("Irongate")
+  o AMD 761 ("IGD4")
+  o AMD 762 ("IGD4 MP")
+  o VIA 8371
+  o VIA 82C694X
+  o VIA KT133
+  o VIA KT266
+  o RCC 6585HE
+  o Micron SAMDDR ("Samurai")
+  o Micron SCIDDR ("Scimitar")
+  o nForce AGP
+  o ALi 1621
+  o ALi 1631
+  o ALi 1647
+  o ALi 1651
+  o ALi 1671
+  o SiS 630
+  o SiS 633
+  o SiS 635
+  o SiS 645
+  o SiS 730
+  o SiS 733
+  o SiS 735
+  o SiS 745
+</pre></div></div></dd></dl> <div class="head3"><a name="id7" id="id7"></a>AGP hızı</div><dl><dd><div class="para">Eğer bazı durumlarda kararlı olmama durumu varsa, bu durumda AGP
+      hızını biraz aşağıya çekmekte de yarar olabilir. Bunun için
+      <tt>modules.conf</tt> dosyasındaki <tt>nvidia</tt>
+      ile ilgili <tt>options</tt> satırında
+      <tt>NVreg_ReqAGPRate</tt> ile hızı belirleyebilirsiniz.
+      Mesela:</div><div class="para"><div align="right"><pre class="screen">
+alias char-major-195 nvidia
+options nvidia NVreg_ReqAGPRate=2  # force AGP Rate to 2x
+</pre></div></div><div class="para">veya</div><div class="para"><div align="right"><pre class="screen">
+options nvidia NVreg_ReqAGPRate=1  # force AGP Rate to 1x
+</pre></div></div><div class="para">Diğer bazı anakartlara has özellikleri ayrıntılı bir şekilde
+      README dosyasında bulabilirsiniz. (Athlon Motherbords with VIA KX133
+      or 694X chip set,ASUS K7V, ALi1541, ALi1647)</div><div class="para"></div></dd></dl> <div class="head3"><a name="id8" id="id8"></a>TV-OUT Kullanımı</div><dl><dd><div class="para">Eğer Nvidia kartınızın TV-OUT (S-Video) özelligi varsa, TV
+      çıkışını kullanabilirsiniz.</div><div class="para">TV-OUT tespiti için aşağıdaki komutu verin ve Encoder çıktısına
+      dikkat edin:</div><div class="para"><div align="right"><pre class="screen">
+# cat  /var/log/XFree86.0.log  |  grep  Encoder
+
+(--) NVIDIA(0): Detected TV Encoder: NVIDIA
+</pre></div></div><div class="para"><tt>XF86Config</tt> dosyasındaki çözünürlüklerin
+      aşağıdaki gibi olmasına dikkat edin:</div><div class="para"><div align="right"><pre class="screen">
+#  cat  /etc/X11/XF86Config-4   |    grep  Modes
+
+Modes    "1024x768" "800x600" "640x480"
+</pre></div></div><div class="para"><tt>XF86Config</tt> dosyasındaki
+      <tt>Section "Screen"</tt>
+      bölümüne <tt>Option "TVStandard" "ULKE_KODU"</tt>
+      şeklinde bir satır eklemeniz gerekli. Ülke kodları aşağıdaki gibidir.
+      Türkiye için PAL-B kullanılır.</div><div class="para"><div align="right"><pre class="screen">
+"PAL-B"  : used in Belgium, Denmark, Finland, Germany, Guinea,
+                   Hong Kong, India, Indonesia, Italy, Malaysia, The
+                   Netherlands, Norway, Portugal, Singapore, Spain,
+                   Sweden, and Switzerland
+"PAL-D"  : used in China and North Korea
+"PAL-G"  : used in Denmark, Finland, Germany, Italy, Malaysia,
+                   The Netherlands, Norway, Portugal, Spain, Sweden,
+                   and Switzerland
+"PAL-H"  : used in Belgium
+"PAL-I"  : used in Hong Kong and The United Kingdom
+"PAL-K1" : used in Guinea
+"PAL-M"  : used in Brazil
+"PAL-N"  : used in France, Paraguay, and Uruguay
+"PAL-NC" : used in Argentina
+"NTSC-J" : used in Japan
+"NTSC-M" : used in Canada, Chile, Colombia, Costa Rica, Ecuador,
+                   Haiti, Honduras, Mexico, Panama, Puerto Rico, South
+                   Korea, Taiwan, United States of America, and Venezuela
+</pre></div></div><div class="para">Geçersiz veya yanlış bir ülke kodu vermeniz halinde
+      <tt>Option "TVStandard" "NTSC-M"</tt>
+      satırı öntanımlı olarak kullanılır.</div><div class="para">Daha sonra aynı bölüme
+      <tt>Option "ConnectedMonitor" "TV"</tt>
+      satırını ekleyerek, televizyon ekranının bir monitor gibi
+      kullanılmasını sağlayan satırı ekleyin.</div><div class="para">Son olarak, görüntünün biçemini belirleyin. Bu kablolu
+      yayın girişleri için SVIDEO, anten girişleri için COMPOSITE'dir.
+      (bende SVIDEO):
+      <tt>Option "TVOutFormat" "SVIDEO"</tt></div><div class="para">Hepsi bu kadar. Bundan sonra televizyonu tıpkı bir monitor gibi
+      kullanabilirsiniz.</div><div class="para">Ayrıntılar için lütfen README dosyasını gözden geçirmeyi
+      unutmayın.</div></dd></dl> <div class="head3"><a name="id9" id="id9"></a>LAPTOP ayarları</div><dl><dd><div class="para">Laptoplarda da NVIDIA sürücülerinin kurulması aynen normal
+      monitorlar gibidir. Fazla bir fark yoktur.</div><div class="para">NVIDIA Version 1.0-2802 den beri video bios hesaplanması dinamik
+      olarak yapılmaktadır. Ancak Laptop ekranlarında durum farklı olduğu
+      için bu hesaplama <tt>"SoftEDIDs" "0"</tt> satırı ile
+      engellenebilir. Daha sonra "Mobile" modül seçeneğinin seçilmesi
+      gereklidir.</div><div class="para">"Mobile" modül seçeneğinin alabileceği değerler
+      şunlardır.</div><div class="para"><div align="right"><pre class="screen">
+0xFFFFFFFF : let the kernel module auto detect the correct value
+             1 : Dell laptops
+             2 : non-Compal Toshiba laptops
+             3 : all other laptops
+             4 : Compal Toshiba laptops
+             5 : Gateway laptops
+</pre></div></div><div class="para">Mesela benim Laptopum Toshiba Satellite 2410-404. Benim bu
+      açıklamalara göre <tt>modules.conf</tt> dosyamdaki ayarlar
+      şu şekilde:</div><div class="para"><div align="right"><pre class="screen">
+alias   char-major-195   nvidia
+options   nvidia   NVreg_SoftEDIDs=0   NVreg_Mobile=4
+</pre></div></div><div class="para">Sizde kendinize göre ayarlarınızı bu bilgiler ışığında sanırım
+      değiştirebilirssiniz.</div><div class="para">Ayrıntılar için lütfen README dosyasına gözatmayı unutmayın.</div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/nvidia-kurulum_startx.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/nvidia-kurulum.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/procmail-nasil.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">startx </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Procmail ile Eposta Filtreleme NASIL</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

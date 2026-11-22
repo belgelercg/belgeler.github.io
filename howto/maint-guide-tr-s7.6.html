@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:04+03:00" /><title>pbuilder paketi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/maint-guide-tr-s7.html" title="Paketin hatalara karşı denetimi" /><link rel="previous" href="../howto/maint-guide-tr-s7.5.html" title="debi komutu" /><link rel="next" href="../howto/maint-guide-tr-s8.html" title="Paketin Debian'a gönderilmesi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">pbuilder paketi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/maint-guide-tr-s7.5.html">Önceki</a> </td><th width="60%" align="center">Paketin hatalara karşı denetimi</th><td width="20%" align="right"> <a accesskey="n" href="../howto/maint-guide-tr-s8.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="maint-guide-tr-s7.6" id="maint-guide-tr-s7.6"></a><tt>pbuilder</tt> paketi</div><dl><dd><div class="para">
+Temiz bir çevrede (<tt>chroot</tt>), paket bağımlılıklarının doğrulanması için <tt>pbuilder</tt> paketi çok faydalıdır. Bu, farklı mimariler için otoderleyici altında kaynak koddan temiz bir paket oluşturulmasını garanti eder, bu şekilde ciddi bir öneme sahip RC (release critical: dağıtımda kritik önemde) sınıfında yer alan bir seri FTBFS'den (Fails To Build From Source: Kaynak Koddan Derlemede Başarısızlıklar) kaçınılmış olunur. Debian otoderleyicisi için <a class="ulink" href="http://buildd.debian.org/" target="_top">http://buildd.debian.org/</a> adresine bakınız.
+      </div><div class="para">
+<b><tt>pbuilder</tt></b> komutunun en temel kullanım şekli, doğrudan root kullanıcısı tarafından çağrılması durumudur. Örneğin, aşağıdaki komutu <tt>.orig.tar.gz</tt>, <tt>.diff.gz</tt> ve <tt>.dsc</tt> dosyalarının bir arada bulunduğu dizinde çalıştırınız:
+      </div>
+<div class="para"><div align="right"><pre class="screen">root # <b><tt>pbuilder create</tt></b> # ikinci seferde: pbuilder update
+root # <b><tt>pbuilder build foo.dsc</tt></b>
+</pre></div></div>
+      <div class="para">
+Yeni oluşturulan paketler <tt>/var/cache/pbuilder/result/</tt> dizinine root iyeliğinde yerleştirilecektir.
+      </div><div class="para">
+<b><tt>pdebuild</tt></b> komutu <b><tt>pbuilder</tt></b> komutunun paket işlevlerini normal bir kullanıcı olarak kullanmanıza yardımcı olur. <tt>.orig.tar.gz</tt> dosyasının bulunduğu kaynak kodun kök dizininde aşağıdaki komutu çalıştırınız:
+      </div>
+<div class="para"><div align="right"><pre class="screen">$ <b><tt>sudo pbuilder create</tt></b> # ikinci seferde: sudo pbuilder update
+$ <b><tt>pdebuild</tt></b>
+</pre></div></div>
+       <div class="para">
+Yeni oluşturulan paketler yine <tt>/var/cache/pbuilder/result/</tt> dizinine yerleştirilecek fakat dosyalar root iyeliğinde olmayacaktır.<sup>[<a name="id56" href="#ftn.id56" id="id56">56</a>]</sup>
+      </div><div class="para">
+<b><tt>pbuilder</tt></b> tarafından kullanılması için ilave apt-kaynakları eklemek isterseniz <tt>~/.pbuilderrc</tt> veya <tt>/etc/pbuilderrc</tt> içindeki <tt>OTHERMIRROR</tt>'ı ayarlayıp aşağıdaki komutu çalıştırınız (Sarge için):
+      </div>
+<div class="para"><div align="right"><pre class="screen">$ <b><tt>sudo pbuilder update --distribution sarge --override-config</tt></b>
+</pre></div></div>
+      <div class="para">
+<tt>--override-config</tt> seçeneğine <tt>chroot</tt> ortamında apt-kaynaklarının güncellenmesi için ihtiyaç vardır.
+      </div><div class="para">
+<a class="ulink" href="http://www.netfort.gr.jp/~dancer/software/pbuilder.html" target="_top">http://www.netfort.gr.jp/~dancer/software/pbuilder.html</a> adresine, <b><tt>pdebuild(1)</tt></b>, <b><tt>pbuilderrc(5)</tt></b> ve <b><tt>pbuilder(8)</tt></b> kılavuz sayfalarına bakınız.
+      </div><div class="footnotes"><br /><hr width="100" align="left" /><div class="footnote"><div class="para"><sup>[<a name="ftn.id56" href="#id56" id="ftn.id56">56</a>] </sup>Bu noktada, <tt>/var/cache/pbuilder/result/</tt> dizinine kullanıcının yazabilmesi için gerekli izinleri vermenizi ve <tt>~/.pbuilderrc</tt> veya <tt>/etc/pbuilderrc</tt> dosyasının
+      </div>
+<div class="para"><div align="right"><pre class="screen">AUTO_DEBSIGN=yes</pre></div></div>
+      <div class="para">
+satırını içermesini sağlamanızı öneririm.
+      </div><div class="para">
+Bu, üretilen paketleri <tt>~/.gnupg/</tt> dizinindeki kendi GPG anahtarınızla imzalamanızı mümkün kılacaktır. <tt>pbuilder</tt> paketinin geliştirilmesi sürmekte olduğundan en güncel resmi belgeleri inceleyerek yapılandırmayı bir de kendiniz gözden geçirmelisiniz.</div></div></div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/maint-guide-tr-s7.5.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/maint-guide-tr-s7.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/maint-guide-tr-s8.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">debi komutu </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Paketin Debian'a gönderilmesi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

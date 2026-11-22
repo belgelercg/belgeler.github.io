@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2019-10-17T22:36:15+03:00" /><title>POP3 Sunucu Kurulumu</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/qmail-kurulumu-nasil_kur-2.html" title="B. İkinci Tür Kurulum" /><link rel="previous" href="../howto/qmail-kurulumu-nasil_kur-2.sqweb.html" title="Sqwebmail Kurulumu" /><link rel="next" href="../howto/qmail-kurulumu-nasil_yasal-uyari.html" title="C. Telif Hakkı ve Lisans" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">POP3 Sunucu Kurulumu</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/qmail-kurulumu-nasil_kur-2.sqweb.html">Önceki</a> </td><th width="60%" align="center">B. İkinci Tür Kurulum</th><td width="20%" align="right"> <a accesskey="n" href="../howto/qmail-kurulumu-nasil_yasal-uyari.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="qmail-kurulumu-nasil_kur-2.pop3" id="qmail-kurulumu-nasil_kur-2.pop3"></a>POP3 Sunucu Kurulumu</div><dl><dd><div class="para">
+        POP3 şifre doğrulaması için vpopmail ile gelen <tt>vchkpw</tt>
+        programını kullanacağız.
+      </div>
+Aşağıdaki ifadeleri <tt>qmail-pop3.sh</tt> diye bir dosyaya yazın:
+<div class="para"><div align="right"><pre class="screen">
+#!/bin/sh
+env - PATH="/var/qmail/bin:/usr/local/bin" \
+tcpserver -H -R -l 0 0 pop3 /var/qmail/bin/qmail-popup MAILSUNUCU \
+/home/vpopmail/bin/vchkpw /var/qmail/bin/qmail-pop3d Maildir &amp;
+</pre></div></div>
+<div class="para">
+<tt>MAILSUNUCU</tt> yerine sizin eposta sunucunuzun tam
+        adı (örn: mail.enderunix.org) ile değiştirin, daha sonra
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# chmod 755   qmail-pop3.sh
+# ./qmail-pop3.sh
+</pre></div></div>
+<div class="para">komutu ile pop3 sunucusunu çalıştırabilirsiniz.
+      </div><div class="para">
+        Açılışta çalıştırmak için
+      </div><div class="variablelist"><dl><dt><span class="term">FreeBSD</span></dt><dd class="varlist"><div class="para">
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# cp    qmail-pop3.sh /usr/local/etc/rc.d
+# chmod 755   /usr/local/etc/rc.d/qmail-pop3.sh
+</pre></div></div></dd><dt><span class="term">Red Hat ve Mandrake</span></dt><dd class="varlist"><div class="para">
+              <tt>qmail-pop3.sh</tt> dosyasını <tt>/etc/rc.d/init.d</tt>
+              altına kopyalayın <tt>/etc/rc.d/rc.local</tt> dosyasına
+              <tt>/etc/rc.d/init.d/qmail-pop3.sh</tt> ifadesini yazın.
+              </div></dd><dt><span class="term">Solaris</span></dt><dd class="varlist">
+<div class="para"><div align="right"><pre class="screen">
+# cp qmail-pop3.sh /etc/init.d
+# chmod 700  /usr/local/etc/rc.d/qmail-pop3.sh
+# ln -s /etc/init.d/qmail-pop3.sh /etc/rc2.d/S91qmail-pop3
+# ln -s /etc/init.d/qmail-pop3.sh /etc/rc2.d/K91qmail-pop3
+</pre></div></div></dd></dl></div><div class="para">
+        INETD'den pop3'ü çalıştırmak isterseniz. <tt>/etc/inetd.conf</tt>
+        dosyasına
+</div>
+<div class="para"><div align="right"><pre class="screen">
+pop3 stream tcp nowait root /var/qmail/bin/qmail-popup ¬
+  MAILHOST /home/vpopmail/bin/vchkpw /var/qmail/bin/qmail-pop3d Maildir
+</pre></div></div>
+<div class="para">ve son olarak</div>
+<div class="para"><div align="right"><pre class="screen">
+# kill -HUP inetd_pid
+</pre></div></div>
+<div class="para">yazınız.
+      </div><div class="para">
+        POP3'den epostalarınızı çekmek için Netscape Messanger ve Mozilla'da
+        kullanıcı adı olarak <tt>kullanıcıadı%example.com</tt>,
+        Outlook ve Outlook Express'de 
+<tt>kullanıcıadı@example.com</tt>
+        şeklinde tanımlar kullanın.
+      </div><div class="para">
+        Eğer alanadınız sistem yoneticisi tarafından öntanımlı alanadı olarak
+        tanımlanmış ise sadece kullanıcıadı yazmanız yeterlidir.
+      </div><div class="para">
+        2. tür kurulumu bitirdik. <a class="link" href="../howto/qmail-kurulumu-nasil_test.html#qmail-kurulumu-nasil_kavsak">Kaldığımız yere</a> dönüp kurulumlar için ortak olan işlemlere devam
+       edebiliriz. Özellikle <a href="../howto/qmail-kurulumu-nasil_ozellestirilir.html" class="xref" title="Qmail'in Özelleştirilmesi">Qmail'in Özelleştirilmesi</a>
+       kısmını mutlaka okuyunuz.
+      </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/qmail-kurulumu-nasil_kur-2.sqweb.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/qmail-kurulumu-nasil_kur-2.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/qmail-kurulumu-nasil_yasal-uyari.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Sqwebmail Kurulumu </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> C. Telif Hakkı ve Lisans</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

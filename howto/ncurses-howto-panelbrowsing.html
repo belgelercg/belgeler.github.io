@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:08+03:00" /><title>Panel Penceresinde Gezinmek</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/ncurses-howto-panels.html" title="Panel Kütüphanesi" /><link rel="previous" href="../howto/ncurses-howto-compilepanels.html" title="Panel Kütüphanesi ile derleme" /><link rel="next" href="../howto/ncurses-howto-userptrusing.html" title="Kullanıcı İşaretçilerini Kullanmak" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Panel Penceresinde Gezinmek</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/ncurses-howto-compilepanels.html">Önceki</a> </td><th width="60%" align="center">Panel Kütüphanesi</th><td width="20%" align="right"> <a accesskey="n" href="../howto/ncurses-howto-userptrusing.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="ncurses-howto-panelbrowsing" id="ncurses-howto-panelbrowsing"></a>Panel Penceresinde Gezinmek</div><dl><dd><div class="para">
+Biraz karmaşık bir örnek aşağıda verilmiştir. Bu program sekme tuşu kullanılarak gezilebilen 3 pencere oluşturmaktadır. Koda bir göz atın.
+</div><dl class="example"><dt class="example"><a class="example" name="idxmp89" id="idxmp89"></a><b>Örnek 12.15. Panel Penceresi Gezinti Örneği</b></dt><dd class="example">
+<div class="para"><div align="right"><pre class="programlisting">
+#include &lt;panel.h&gt;
+
+#define NLINES 10
+#define NCOLS 40
+
+void init_wins(WINDOW **wins, int n);
+void win_show(WINDOW *win, char *label, int label_color);
+void print_in_middle(WINDOW *win, int starty, int startx, int width,
+    char *string, chtype color);
+
+int main()
+{ WINDOW *my_wins[3];
+  PANEL  *my_panels[3];
+  PANEL  *top;
+  int ch;
+
+  /* Curses kipini ilklendir */
+  initscr();
+  start_color();
+  cbreak();
+  noecho();
+  keypad(stdscr, TRUE);
+
+  /* Tüm renkleri ilklendir */
+  init_pair(1, COLOR_RED, COLOR_BLACK);
+  init_pair(2, COLOR_GREEN, COLOR_BLACK);
+  init_pair(3, COLOR_BLUE, COLOR_BLACK);
+  init_pair(4, COLOR_CYAN, COLOR_BLACK);
+
+  init_wins(my_wins, 3);
+
+  /* Her pencereyi bir panele bağla */    /* Sıralama aşağıdan yukarıya */
+  my_panels[0] = new_panel(my_wins[0]);   /* 0'a  it, sıra: stdscr-0 */
+  my_panels[1] = new_panel(my_wins[1]);   /* 1'e  it, sıra: stdscr-0-1 */
+  my_panels[2] = new_panel(my_wins[2]);   /* 2'ye it, sıra: stdscr-0-1-2 */
+
+  /* Kullanıcı işaretçilerini bir sonraki panele ayarla */
+  set_panel_userptr(my_panels[0], my_panels[1]);
+  set_panel_userptr(my_panels[1], my_panels[2]);
+  set_panel_userptr(my_panels[2], my_panels[0]);
+
+  /* Yığını güncelle. 2. panel en üstte olacak */
+  update_panels();
+
+  /* Ekranda göster */
+  attron(COLOR_PAIR(4));
+  mvprintw(LINES - 2, 0,
+    "Pencerelerde gezinmek için tab kullanın (Çıkmak için F1)");
+  attroff(COLOR_PAIR(4));
+  doupdate();
+
+  top = my_panels[2];
+  while((ch = getch()) != KEY_F(1))
+  { switch(ch)
+    { case 9:
+        top = (PANEL *)panel_userptr(top);
+        top_panel(top);
+        break;
+    }
+    update_panels();
+    doupdate();
+  }
+  endwin();
+  return 0;
+}
+
+/* Tüm pencereleri yazdır */
+void init_wins(WINDOW **wins, int n)
+{ int x, y, i;
+  char label[80];
+
+  y = 2;
+  x = 10;
+  for(i = 0; i &lt; n; ++i)
+  { wins[i] = newwin(NLINES, NCOLS, y, x);
+    sprintf(label, "Pencere Numaası %d", i + 1);
+    win_show(wins[i], label, i + 1);
+    y += 3;
+    x += 7;
+  }
+}
+
+/* Pencereyi bir çerçeve ve isimle göster */
+void win_show(WINDOW *win, char *label, int label_color)
+{ int startx, starty, height, width;
+
+  getbegyx(win, starty, startx);
+  getmaxyx(win, height, width);
+
+  box(win, 0, 0);
+  mvwaddch(win, 2, 0, ACS_LTEE);
+  mvwhline(win, 2, 1, ACS_HLINE, width - 2);
+  mvwaddch(win, 2, width - 1, ACS_RTEE);
+
+  print_in_middle(win, 1, 0, width, label, COLOR_PAIR(label_color));
+}
+
+void print_in_middle (WINDOW *win, int starty, int startx, int width,
+    char *string, chtype color)
+{ int length, x, y;
+  float temp;
+
+  if(win == NULL)
+    win = stdscr;
+  getyx(win, y, x);
+  if(startx != 0)
+    x = startx;
+  if(starty != 0)
+    y = starty;
+  if(width == 0)
+    width = 80;
+
+  length = strlen(string);
+  temp = (width - length)/ 2;
+  x = startx + (int)temp;
+  wattron(win, color);
+  mvwprintw(win, y, x, "%s", string);
+  wattroff(win, color);
+  refresh();
+}
+</pre></div></div></dd></dl></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/ncurses-howto-compilepanels.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/ncurses-howto-panels.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/ncurses-howto-userptrusing.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Panel Kütüphanesi ile derleme </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Kullanıcı İşaretçilerini Kullanmak</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

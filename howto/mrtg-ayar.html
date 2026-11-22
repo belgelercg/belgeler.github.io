@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:26+03:00" /><title>cfgmaker Kullanarak Temel Ayar Dosyalarının Oluşturulması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/mrtg.html" title="MRTG Kurulumu" /><link rel="previous" href="../howto/mrtg-kurulum.html" title="Red Hat Linux Üzerine MRTG Kurulumu" /><link rel="next" href="../howto/mrtg-ozellestirme.html" title="Temel Ayar Dosyalarının İsteğe Göre Düzenlenmesi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">cfgmaker Kullanarak Temel Ayar Dosyalarının Oluşturulması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/mrtg-kurulum.html">Önceki</a> </td><th width="60%" align="center">MRTG Kurulumu</th><td width="20%" align="right"> <a accesskey="n" href="../howto/mrtg-ozellestirme.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="mrtg-ayar" id="mrtg-ayar"></a><tt>cfgmaker</tt> Kullanarak Temel Ayar Dosyalarının Oluşturulması</div><dl><dd><div class="para">
+Daha önce de belirtildiği gibi, MRTG yanında bir çok yardımcı araçla gelmektedir. Bunların en önemlisi <tt>/usr/bin/cfgmaker</tt> betiğidir. Bu dosyayı kullanarak, izlemek istediğimiz cihazlar için otomatik olarak ham bir ayar dosyası yaratabiliriz.
+  </div><div class="para">
+Bu betikle ilgili ayrıntılı bilgi almak için komut satırına herhangi bir parametre vermeden <b><tt>cfgmaker</tt></b> yazın. Betiğin kullanımıyla ilgili açıklamalar görüntülenecektir. Daha düzenli bilgi almak için cfgmaker man sayfalarına bakabilirsiniz.
+  </div><div class="para">
+Bu belgede, öncelikle ham ayar dosyasını en çok kullanılan şekilde oluşturup daha sonra bu dosya üzerinde istediğim değişiklikleri yapma yolunu takip edeceğim.
+  </div><div class="para">
+İlk olarak Cisco Router ile ilgili bilgileri geçici bir dosya içine almak istiyorum. Bunun için <b><tt>cfgmaker</tt></b> programını daha önce <b><tt>router</tt></b> üzerinde yaptığım ayarlara uygun olarak çalıştırıp
+bulunduğum dizinde <tt>deneme001.cfg</tt> adında bir ham ayar dosyası oluşturacağım:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>[root@camel root]#</tt> <b><tt>cfgmaker public@192.168.2.254 &gt; deneme001.cfg</tt></b>
+</pre></div></div>
+  <div class="para">
+Bu komut içinde kullanılan, <tt>public</tt> kelimesi daha önce <b><tt>router</tt></b> üzerinde yaptığımız tanıma uygun olarak <tt>snmp-server community</tt> anlamına geliyor. Bu kelime <b><tt>router</tt></b> üzerinde yaptığımız tanımla aynı olmalıdır. Bu dizge  ile aygıt adresini <tt>@</tt> sembolü ile ayırmalıyız. Yönlendirici IP
+adresi de daha önce belirtildiği üzere <tt>192.168.2.254</tt> olacaktır. Son olarak da betiğin çıktısını bulunduğum dizinde <tt>deneme001.cfg</tt> adlı yeni dosyaya yönlendiriyorum.
+  </div><div class="para">
+Yukarda verdiğim komutun ardından, betiğin bir kısım çıktıları ekranda uzun bir liste halinde görüntülendi. Bu noktada listenin birkaç satırdan oluşup kısa kalması <b><tt>cfgmaker</tt></b> betiğinin yönlendirici ya da aygıta erişemediğinin belirtisi olabilir.
+  </div><div class="para">
+Kısa süren bu ilk işlemden sonra oluşturduğumuz <tt>deneme001.cfg</tt> isimli dosyayı inceleyip içeriğinde neler olduğuna bakalım:
+  </div><div class="para">
+Dosyanın ilk kısmı şu şekilde olacaktır :
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+# Created by
+# /usr/bin/cfgmaker public@192.168.2.254
+
+
+### Global Config Options
+
+# for UNIX
+# WorkDir: /home/http/mrtg
+
+# or for NT
+# WorkDir: c:\mrtgdata
+
+### Global Defaults
+
+# to get bits instead of bytes and graphs growing to the right
+# Options[_]: growright, bits
+</pre></div></div>
+  <div class="para">
+İlk iki satır bu dosyanın <b><tt>cfgmaker</tt></b> betiği tarafından hangi parametreyle oluşturulduğunu gösteriyor ve bu alan <tt>#</tt> ile kapatılmış durumda. Buradaki bilgiler kullanılmamaktadır.
+  </div><div class="para">
+<tt>Global Config Options</tt> yazısıyla başlayan kısım, MRTG’yi kullanacağınız işletim sistemine göre daha sonra değişiklik yapmanız gerekecek olan ayarları içeriyor. Burada sadece bir tane işletim sistemi tanımlamaya izin verilmiştir. Dolayısıyla ihtiyaca göre ya UNIX ya da NT <tt>Workdir</tt> satırının başındaki <tt>#</tt> kaldırılacaktır. Ve ardından da uygun çalışma dizini belirtilir.
+  </div><div class="para">
+Son kısımda ise grafikler oluşturulurken hangi kriterlere uyulması gerektiği belirlenebiliyor. Burada <tt>#</tt> simgesi kaldırılarak yapılacak değişiklikler oluşturulacak tüm grafiksel sayfalara uygulanacaktır. Burada kullanılabilecek seçeneklerle ilgili ayrıntılı bilgi <b><tt>cfgmaker</tt></b> man
+sayfalarından temin edilebilir.
+  </div><div class="para">
+<b><tt>cfgmaker</tt></b> tarafından oluşturulan <tt>deneme001.cfg</tt> adlı dosyanın bu kısımdan sonraki içeriği,
+sorguladığımız cihaza bağlı olarak çeşitlilik gösterebiliyor. Hem dosyanın çok uzun olması hem de tekrarlanan içerik yüzünden dosyanın tamamını burada incelemeyeceğim. Yalnızca <b><tt>cfgmaker</tt></b> tarafından anlamlı olarak nitelendirilen birkaç arabirim ve kullanılamayacak türde birkaç arabirime örnek vereceğim.
+  </div><div class="para">
+Cihaz sorgulaması sonucu elde edilen veriler şu şekilde görünecektir :
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+######################################################################
+# System: router
+# Description: Cisco Internetwork Operating System Software
+#  IOS (tm) C1700 Software (C1700-SV3Y-M), Version 12.2(1), RELEASE SOFTWARE (fc2)
+#  Copyright (c) 1986-2001 by cisco Systems, Inc.
+#  Compiled Fri 27-Apr-01 08:47 by cmong
+# Contact:
+# Location:
+######################################################################
+</pre></div></div>
+  <div class="para">
+Burada, Cisco Router üzerinde çalışan IOS hakkında bazı önemsiz bilgiler yer alıyor.
+  </div><div class="para">
+Hemen ardından ilk anlamlı arabirim hakkında çeşitli bilgiler verilmiştir:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+### Interface 1 &gt;&gt; Descr: 'FastEthernet0' | Name: 'Fa0' | Ip: '192.168.2.254' |¬
+ Eth: '00-03-6b-9a-1c-fc' ###
+
+Target[192.168.2.254_1]: 1:public@192.168.2.254:
+SetEnv[192.168.2.254_1]: MRTG_INT_IP="192.168.2.254" MRTG_INT_DESCR="FastEthernet0"
+MaxBytes[192.168.2.254_1]: 12500000
+Title[192.168.2.254_1]: Traffic Analysis for 1 -- router
+PageTop[192.168.2.254_1]: &lt;H1&gt;Traffic Analysis for 1 -- router&lt;/H1&gt;
+ &lt;TABLE&gt;
+  &lt;TR&gt;&lt;TD&gt;System:&lt;/TD&gt;&lt;TD&gt;router in &lt;/TD&gt;&lt;/TR&gt;
+  &lt;TR&gt;&lt;TD&gt;Maintainer:&lt;/TD&gt;&lt;TD&gt;&lt;/TD&gt;&lt;/TR&gt;
+  &lt;TR&gt;&lt;TD&gt;Description:&lt;/TD&gt;
+  &lt;TD&gt;FastEthernet0 connected to EthernetLAN &lt;/TD&gt;&lt;/TR&gt;
+  &lt;TR&gt;&lt;TD&gt;ifType:&lt;/TD&gt;&lt;TD&gt;ethernetCsmacd (6)&lt;/TD&gt;&lt;/TR&gt;
+  &lt;TR&gt;&lt;TD&gt;ifName:&lt;/TD&gt;&lt;TD&gt;Fa0&lt;/TD&gt;&lt;/TR&gt;
+  &lt;TR&gt;&lt;TD&gt;Max Speed:&lt;/TD&gt;&lt;TD&gt;12.5 MBytes/s&lt;/TD&gt;&lt;/TR&gt;
+  &lt;TR&gt;&lt;TD&gt;Ip:&lt;/TD&gt;&lt;TD&gt;192.168.2.254 ()&lt;/TD&gt;&lt;/TR&gt;
+ &lt;/TABLE&gt;
+</pre></div></div>
+  <div class="para">
+İlk satır <tt>#</tt> ile başlıyor. Bunun anlamı yeni bir arabirim tanımı yapılıyor olmasıdır. Burada arabirim için kullanılabilecek çeşitli tanımlamalar (Descr, Name, Ip, Eth) görülmektedir.
+  </div><div class="para">
+MRTG, verileri inceleyip grafik haline getirmek için bundan sonraki satırları kullanacaktır. Köşeli parantez içindeki tanımlar otomatik olarak oluşturulacak web sayfalarının dosya adlarıdır. Bunlar <b><tt>cfgmaker</tt></b> tarafından otomatik olarak tespit edilip hazırlanmıştır. Burada ilk satırdaki <tt>Target[192.168.2.254_1]</tt> ifadesi sadece bu arabirim için geçerli bir tanımlamadır. Aynı türden başka bir arabirim olsa bile aynı isimli bir tanımlama yapılamaz. Bu satırlar:
+  </div>
+    <dl><dt><span class="glossterm"><tt>Target[192.168.2.254_1]:1:public@192.168.2.254:</tt></span></dt><dd class="halfpara"><div class="para">
+Grafiği çizilecek arabirimi ifade etmektedir. 192.168.2.254 adresli cihaz üzerindeki 1
+numaralı arabirimdir.
+    </div></dd><dt><span class="glossterm"><tt>SetEnv[192.168.2.254_1]:MRTG_INT_IP=”192.168.2.254” MRTG_INT_DESC=””</tt></span></dt><dd class="halfpara"><div class="para">
+Grafiklerin tepesinde yer alacak olan açıklayıcı bilgilerin içeriğini belirler.
+    </div></dd><dt><span class="glossterm"><tt>Title[192.168.2.254_1]:Traffic Analysis for 1 – router</tt></span></dt><dd class="halfpara"><div class="para">
+Otomatik olarak oluşturulacak web sayfasının başlığını ifade etmektedir.
+    </div></dd><dt><span class="glossterm"><tt>PageTop[192.168.2.254_1]:&lt;H1&gt;Traffic Analysis for 1 – router &lt;/H1&gt;</tt></span></dt><dd class="halfpara"><div class="para">
+Otomatik olarak oluşturulacak web sayfasında, açıklayıcı bilgilerin üstünde görünecek başlık.
+    </div></dd></dl>
+  <div class="para">
+Bunun ardından ikinci anlamlı arabirim hakkında çeşitli bilgiler verilmiştir:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+### Interface 2 &gt;&gt; Descr: 'Serial0' | Name: 'Se0' | Ip: '' | Eth: ' ###
+
+Target[192.168.2.254_2]: 2:public@192.168.2.254:
+SetEnv[192.168.2.254_2]: MRTG_INT_IP="" MRTG_INT_DESCR="Serial0"
+MaxBytes[192.168.2.254_2]: 193000
+Title[192.168.2.254_2]: Traffic Analysis for 2 -- router
+PageTop[192.168.2.254_2]: &lt;H1&gt;Traffic Analysis for 2 -- router&lt;/H1&gt;
+ &lt;TABLE&gt;
+  &lt;TR&gt;&lt;TD&gt;System:&lt;/TD&gt;&lt;TD&gt;router in &lt;/TD&gt;&lt;/TR&gt;
+  &lt;TR&gt;&lt;TD&gt;Maintainer:&lt;/TD&gt;&lt;TD&gt;&lt;/TD&gt;&lt;/TR&gt;
+  &lt;TR&gt;&lt;TD&gt;Description:&lt;/TD&gt;&lt;TD&gt;Serial0 &lt;/TD&gt;&lt;/TR&gt;
+  &lt;TR&gt;&lt;TD&gt;ifType:&lt;/TD&gt;&lt;TD&gt;frame-relay (32)&lt;/TD&gt;&lt;/TR&gt;
+  &lt;TR&gt;&lt;TD&gt;ifName:&lt;/TD&gt;&lt;TD&gt;Se0&lt;/TD&gt;&lt;/TR&gt;
+  &lt;TR&gt;&lt;TD&gt;Max Speed:&lt;/TD&gt; &lt;TD&gt;193.0 kBytes/s&lt;/TD&gt;&lt;/TR&gt;
+ &lt;/TABLE&gt;
+</pre></div></div>
+  <div class="para">
+Ayrı bir grafik çizilerek görüntülenecek ikinci arabirim için diğeriyle aynı ifadeler
+kullanılmıştır. Bu sefer de HTML kısmıyla ilgili açıklamalar yapalım:
+  </div><div class="para">
+Otomatik olarak oluşturulacak olan web sayfaları içinde tablolamayla düzen sağlanmaktadır. Görüldüğü gibi temel HTML bilgisiyle bu alanlar kolaylıkla düzenlenebilir. Tablo içinde yer alan <tt>System, Maintainer, Description, ifType, ifName</tt> ve <tt>Max Speed</tt> ifadeleri ve karşılıkları istenildiği gibi değiştirilebilir. Ancak web sayfalarında doğru ve anlamlı bilgilerin görünmesi için bu değişiklikleri yaparken dikkatli hareket etmek gereklidir.
+  </div><div class="para">
+<b><tt>cfgmaker</tt></b> tarafından oluşturulan ham ayar dosyası içinde yer yer karşınıza çıkabilecek bazı anlamsız arabirim tanımlamaları olabilir. Bu tanımlamalar ayar dosyasından tamamen çıkarılabilir. Bu tanımlamalar <tt>#</tt> ile kapatılmıştır. Bunlardan bazılarına örnek verelim:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+### Interface 3 &gt;&gt; Descr: 'Null0' | Name: 'Nu0' | Ip: ' | Eth: ''
+###
+### The following interface is commented out because:
+### * it is a cisco Null0 interface
+</pre></div></div>
+  <div class="para">
+Ölçülüp grafik çizmeye elverişli olmayan bir tanımlamadır. Bu ve devamındaki ilişkili satırlar dosyadan çıkarılabilir.
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+### Interface 5 &gt;&gt; Descr: 'Foreign Exchange Office 1/0' | Name: 'Foreign
+### Exchange Office 1/0' | Ip: ' | Eth: '
+###
+### The following interface is commented out because:
+### * has a speed of 0 which makes no sense
+</pre></div></div>
+  <div class="para">
+Ölçülüp grafik çizmeye elverişli olmayan bir tanımlamadır. Çünkü bu bir FXO arabirimidir.
+Bu ve devamındaki ilişkili satırlar dosyadan çıkarılabilir.
+  </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/mrtg-kurulum.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/mrtg.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/mrtg-ozellestirme.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Red Hat Linux Üzerine MRTG Kurulumu </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Temel Ayar Dosyalarının İsteğe Göre Düzenlenmesi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

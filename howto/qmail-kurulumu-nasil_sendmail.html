@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2019-10-17T22:36:15+03:00" /><title>Sendmail'in Durdurulması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/qmail-kurulumu-nasil.html" title="QMAIL Kurulumu NASIL" /><link rel="previous" href="../howto/qmail-kurulumu-nasil_qmail-files.html" title="Yapılandırma Dosyaları" /><link rel="next" href="../howto/qmail-kurulumu-nasil_test.html" title="Qmail'in Çalışmasının Test Edilmesi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Sendmail'in Durdurulması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/qmail-kurulumu-nasil_qmail-files.html">Önceki</a> </td><th width="60%" align="center">QMAIL Kurulumu NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/qmail-kurulumu-nasil_test.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="qmail-kurulumu-nasil_sendmail" id="qmail-kurulumu-nasil_sendmail"></a>Sendmail'in Durdurulması</div><dl><dd>
+<div class="para"><div align="right"><pre class="screen">
+# ps ax | grep sendmail
+</pre></div></div>
+<div class="para">
+komutu ile sendmail süreç numarasını
+      bulun ve
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# kill -TERM sendmail_PID
+</pre></div></div>
+<div class="para">ile sendmail sürecini
+öldürün. Büyük ihtimalle sendmail otomatik olarak her açılışta çalışıyordur.
+Kendi sisteminize göre makina tekrar açıldığında sendmail'in çalışmasını
+engelleyin:
+      </div><div class="variablelist"><dl><dt><span class="term">FreeBSD</span></dt><dd class="varlist"><div class="para">
+<tt>/etc/rc.conf</tt> dosyasında
+<tt>sendmail_enable="YES"</tt> ifadesini
+<tt>sendmail_enable="NONE"</tt> olarak değiştirin ve
+şu komutları verin:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# mv /usr/libexec/sendmail/sendmail/usr/libexec/sendmail/sendmail.bak
+# mv /usr/sbin/sendmail /usr/sbin/sendmail.bak
+# chmod 0 /usr/libexec/sendmail/sendmail.bak /usr/sbin/sendmail.bak
+
+# ln -s /var/qmail/bin/sendmail /usr/libexec/sendmail/sendmail
+# ln -s /var/qmail/bin/sendmail /usr/sbin/sendmail
+
+# mv /usr/sbin/newaliases /usr/sbin/newaliases.bck
+# ln -s /var/qmail/bin/newaliases /usr/sbin/newaliases
+</pre></div></div>
+            </dd><dt><span class="term">OpenBSD</span></dt><dd class="varlist"><div class="para">
+<tt>/etc/rc.conf</tt> dosyasında
+<tt>sendmail_enable="-q30"</tt> ifadesini
+<tt>sendmail_enable="NO"</tt> olarak değiştirin ve
+aşağıdaki komutları verin:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# mv /usr/libexec/sendmail/sendmail  /usr/libexec/sendmail/sendmail.bak
+# mv /usr/sbin/sendmail  /usr/sbin/sendmail.bak
+# chmod 0 /usr/libexec/sendmail/sendmail.bak  /usr/sbin/sendmail.bak
+
+# ln -s /var/qmail/bin/sendmail   /usr/libexec/sendmail/sendmail
+# ln -s /var/qmail/bin/sendmail   /usr/sbin/sendmail
+
+# mv /usr/sbin/newaliases /usr/sbin/newaliases.bck
+# ln -s /var/qmail/bin/newaliases /usr/sbin/newaliases
+</pre></div></div>
+            </dd><dt><span class="term">Red Hat ve Mandrake</span></dt><dd class="varlist">
+<div class="para"><div align="right"><pre class="screen">
+# ntsys
+</pre></div></div>
+            <div class="para">
+komutunu çalıştırın ve sendmail kısmındakı
+<tt>*</tt> ifadesini kaldırın.. En iyisi
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# rpm -e --nodeps sendmail
+</pre></div></div>
+<div class="para">komutu ile tümden sendmail'i silin :))
+            </div><div class="para">
+Sonra da aşağıdaki komutları verin.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# mv /usr/libexec/sendmail /usr/libexec/sendmail.bak
+# mv /usr/sbin/sendmail /usr/sbin/sendmail.bak
+# chmod 0 /usr/libexec/sendmail.bak /usr/sbin/sendmail.bak
+# ln -s /var/qmail/bin/sendmail /usr/libexec/sendmail
+# ln -s /var/qmail/bin/sendmail /usr/sbin/sendmail
+
+# mv /bin/newaliases /bin/newaliases.bck
+# ln -s /var/qmail/bin/newaliases /bin/newaliases
+</pre></div></div>
+            </dd><dt><span class="term">Solaris</span></dt><dd class="varlist">
+<div class="para"><div align="right"><pre class="screen">
+#mv /etc/init.d/sendmail /sendmail.bck
+</pre></div></div>
+            <div class="para">
+Ayrıca <tt>/etc/rc2.d/</tt> veya <tt>/etc/rc3.d</tt>
+dizinlerinde sendmail'i çalıştıran bağları kaldırınız.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# mv /usr/lib/sendmail /usr/lib/sendmail/sendmail.bak
+# mv /usr/sbin/sendmail /usr/sbin/sendmail.bak
+
+# chmod 0 /usr/libexec/sendmail.bak /usr/sbin/sendmail.bak
+# ln -s /var/qmail/bin/sendmail /usr/libexec/sendmail
+# ln -s /var/qmail/bin/sendmail /usr/sbin/sendmail
+
+# mv /usr/bin/newaliases /usr/bin/newaliases.bck
+# ln -s /var/qmail/bin/newaliases /usr/bin/newaliases
+</pre></div></div>
+            </dd></dl></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/qmail-kurulumu-nasil_qmail-files.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/qmail-kurulumu-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/qmail-kurulumu-nasil_test.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Yapılandırma Dosyaları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Qmail'in Çalışmasının Test Edilmesi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:50+03:00" /><title>DHCPD Yapılandırması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/windows-ve-linux_sunucu.html" title="Sunucu Makinaya Linux kurulması" /><link rel="previous" href="../howto/windows-ve-linux_sunucu.html" title="Sunucu Makinaya Linux kurulması" /><link rel="next" href="../howto/windows-ve-linux_samba.html" title="Samba ve Ağ Yapılandırması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">DHCPD Yapılandırması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/windows-ve-linux_sunucu.html">Önceki</a> </td><th width="60%" align="center">Sunucu Makinaya Linux kurulması</th><td width="20%" align="right"> <a accesskey="n" href="../howto/windows-ve-linux_samba.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="windows-ve-linux_dhcpd" id="windows-ve-linux_dhcpd"></a>DHCPD Yapılandırması</div><dl><dd><div class="para">
+DHCP sunuculuğu yapan uygulamanın ismi <b><tt>dhcpd</tt></b> ve <b><tt>dhcpd</tt></b>'nin yapılandırma dosyası <tt>/etc/dhcpd.conf</tt>'dur. Alışılagelen, bir DHCP sunucunun bir DNS sunucusu ile birlikte çalışmasıdır. DNS sunucusu her Linux dağıtımında bulunur. Ama biz kullanmayacağız. Küçük Windows ağlarında istemci Windows'lar sunucularına kendi isimlerini kendileri gönderirler. Kuracağımız X terminali ağında ise Linux'ların sadece sunucuya bağlanana kadar ve sadece IP adresine ihtiyaçları olur, bağlandıktan sonra ise bu adresin önemi kalmaz, her türlü işlem için sunucu makinanın IP adresini ve ismini kullanırlar. Yani bir DNS sunucusuna asla ihtiyacımız yok. İsim çözümlemesi de gerekmiyor, yani <tt>hosts</tt> dosyası filan düzenlemeyeceğiz. Samba kendi ile ilgili kısmı kendisi zaten hallediyor olacak.
+      </div><div class="para">
+Bir önceki bölümde makinadan yararlanabilecek harici makinaların hangi ağdan gelebileceklerini belirlemiştik. Bunun dışında bir istek daha DHCP sunucuna gelmeden durdurulacağından, DHCP sunucuna gelen her isteğe sen kimsin nesin diye sormadan istediği IP adresini verebiliriz. <tt>/etc/dhcpd.conf</tt> dosyasını bu politika doğrultusunda düzenliyoruz. Eğer <tt>/etc</tt> dizininde bu dosya yoksa <b><tt>touch dhcpd.conf</tt></b> komutu ile dosyayı oluşturun. Eğer bir önceki bölümde anlatılan <tt>hosts.allow</tt> dosyasını düzenlemeden buraya geçtiyseniz bir önceki sayfaya geçip bu işlemi yapın. Bu, sistem güvenliği ile ilgili temel bir yapılandırmadır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">allow booting;
+allow bootp;
+ddns-update-style none;
+
+option domain-name "buguner.home";
+max-lease-time 720;
+default-lease-time 360;
+
+subnet 10.10.10.0 netmask 255.255.255.0 {
+  server-name "nilgun.buguner.home";
+  pool {
+    range 10.10.10.2 10.10.10.253;
+    allow all clients;
+  }
+}</pre></div></div>
+      <div class="para">
+Şimdi <b><tt>dhcpd</tt></b>'yi başlatalım ve bakalım çalışıyor mu?
+       </div>
+<div class="para"><div align="right"><pre class="screen"><tt># </tt><b><tt>/sbin/chkconfig dhcpd on</tt></b>
+<tt># </tt><b><tt>/sbin/service dhcpd start</tt></b>
+dhcpd başlatılıyor:                                                [  TAMAM  ]
+<tt># </tt><b><tt>netstat -Nlp | grep dhcp</tt></b>
+udp        0      0 0.0.0.0:bootps          0.0.0.0:*
+¬   1181/dhcpd
+raw        0      0 0.0.0.0:icmp            0.0.0.0:*               7
+¬   1181/dhcpd
+</pre></div></div>
+       <div class="para">
+Çalışıyormuş <tt>:-)</tt>. İlk komut, <b><tt>dhcpd</tt></b>'nin makinanın her açılışında çalışmasını sağlayacak düzenlemeyi yapar, ikinci komut ise hizmeti hemen başlatır. Makinamızı bu işlem için açıp kapatmak zorunda kalmadık. Eğer <b><tt>dhcpd</tt></b>'yi başlattığınızda yukarıdakinden farklı olarak bazı iletiler alıyorsanız <tt>dhcpd.conf</tt> dosyanızda birşeyler yanlış olmuş demektir. Bu takdirde gerekli düzeltmeyi yapıp, birinci komut hariç işlemi tekrarlayın. <tt>1181/dhcpd</tt> sizin çıktınızda farklı olabilir. <tt>1181</tt>, <b><tt>dhcpd</tt></b>'nin süreç kimlik numarasıdır (PID).
+      </div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/windows-ve-linux_sunucu.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/windows-ve-linux_sunucu.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/windows-ve-linux_samba.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Sunucu Makinaya Linux kurulması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Samba ve Ağ Yapılandırması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

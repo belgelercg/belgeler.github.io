@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:08+03:00" /><title>Panelleri Hareket Ettirmek ve Boyutlandırmak</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/ncurses-howto-panels.html" title="Panel Kütüphanesi" /><link rel="previous" href="../howto/ncurses-howto-userptrusing.html" title="Kullanıcı İşaretçilerini Kullanmak" /><link rel="next" href="../howto/ncurses-howto-panelshowhide.html" title="Panelleri Gizlemek ve Göstermek" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Panelleri Hareket Ettirmek ve Boyutlandırmak</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/ncurses-howto-userptrusing.html">Önceki</a> </td><th width="60%" align="center">Panel Kütüphanesi</th><td width="20%" align="right"> <a accesskey="n" href="../howto/ncurses-howto-panelshowhide.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="ncurses-howto-panelmoveresize" id="ncurses-howto-panelmoveresize"></a>Panelleri Hareket Ettirmek ve Boyutlandırmak</div><dl><dd><div class="para">
+<b><tt>move_panel()</tt></b> işlevi paneli istenen konuma taşımak için kullanılabilir. Panelin yığın içerisindeki konumunu değiştirmez. Panele bağlı pencereler üzerinde <tt>mvwin()</tt> yerine <tt>move_panel()</tt> kullandığınızdan emin olun.
+</div><div class="para">
+Bir paneli yeniden boyutlandırmak biraz karmaşıktır. Doğrudan bu işi yapacak bir işlev yoktur. Bir paneli yeniden boyutlandırmanın yolu istenen boyutlarda bir pencere oluşturmak ve <tt>replace_panel()</tt> ile boyutu değiştirilmek istenen pencereyi değiştirmektir. Eski pencereyi silmeyi unutmayın. Bir panele bağlı pencere <tt>panel_window()</tt> ile bulunabilir.
+</div><div class="para">
+Aşağıdaki program bahsedilenleri basit bir şekilde göstermektedir. Her zamanki gibi pencereler üzerinde sekme tuşu ile hareket edebilirsiniz. Etkin paneli yeniden boyutlandırmak için 'r''ye taşımak için 'm''ye basın. Daha sonra ok tuşları ile taşıma ve boyutlandırmanızı yapın, bitince enter ile sonlandırın. Bu örnek kullanıcı bilgilerini kullanarak işlemler yapmaktadır.
+</div><dl class="example"><dt class="example"><a class="example" name="idxmp90" id="idxmp90"></a><b>Örnek 12.16. Panel Taşıma ve Yeniden Boyutlandırma Örneği</b></dt><dd class="example">
+<div class="para"><div align="right"><pre class="programlisting">
+#include &lt;panel.h&gt;
+
+typedef struct _PANEL_DATA {
+  int x, y, w, h;
+  char label[80];
+  int label_color;
+  PANEL *next;
+}PANEL_DATA;
+
+#define NLINES 10
+#define NCOLS 40
+
+void init_wins(WINDOW **wins, int n);
+void win_show(WINDOW *win, char *label, int label_color);
+void print_in_middle(WINDOW *win, int starty, int startx, int width,
+     char *string, chtype color);
+void set_user_ptrs(PANEL **panels, int n);
+
+int main()
+{ WINDOW *my_wins[3];
+  PANEL  *my_panels[3];
+  PANEL_DATA  *top;
+  PANEL *stack_top;
+  WINDOW *temp_win, *old_win;
+  int ch;
+  int newx, newy, neww, newh;
+  int size = FALSE, move = FALSE;
+
+  /* Curses kipi ilklendirme */
+  initscr();
+  start_color();
+  cbreak();
+  noecho();
+  keypad(stdscr, TRUE);
+
+  /* Tüm renkleri ilklendir */
+  init_pair(1, COLOR_RED, COLOR_BLACK);
+  init_pair(2, COLOR_GREEN, COLOR_BLACK);
+  init_pair(3, COLOR_BLUE, COLOR_BLACK);
+  init_pair(4, COLOR_CYAN, COLOR_BLACK);
+
+  init_wins(my_wins, 3);
+
+  /* Her panele bir oencere ata */        /* Sıra aşağıdan yukarıya */
+  my_panels[0] = new_panel(my_wins[0]);   /* 0'a  it, sıra: stdscr-0 */
+  my_panels[1] = new_panel(my_wins[1]);   /* 1'e  it, sıra: stdscr-0-1 */
+  my_panels[2] = new_panel(my_wins[2]);   /* 2'ye it, sıra: stdscr-0-1-2 */
+
+  set_user_ptrs(my_panels, 3);
+  /* Yığın sıralamasını güncelle. 2. panel en tepede olacak */
+  update_panels();
+
+  /* Ekrana göster */
+  attron(COLOR_PAIR(4));
+  mvprintw(LINES - 3, 0,
+    "Taşımak için 'm' , yeniden boyutlandırma için 'r' kullanın");
+  mvprintw(LINES - 2, 0,
+    "Pencereler arasında gezinmek için tab kullanın (Çıkmak için F1)");
+  attroff(COLOR_PAIR(4));
+  doupdate();
+
+  stack_top = my_panels[2];
+  top = (PANEL_DATA *)panel_userptr(stack_top);
+  newx = top-&gt;x;
+  newy = top-&gt;y;
+  neww = top-&gt;w;
+  newh = top-&gt;h;
+  while((ch = getch()) != KEY_F(1))
+  { switch(ch)
+    { case 9:         /* Tab */
+        top = (PANEL_DATA *)panel_userptr(stack_top);
+        top_panel(top-&gt;next);
+        stack_top = top-&gt;next;
+        top = (PANEL_DATA *)panel_userptr(stack_top);
+        newx = top-&gt;x;
+        newy = top-&gt;y;
+        neww = top-&gt;w;
+        newh = top-&gt;h;
+        break;
+      case 'r':       /* Yeniden boyutlandır */
+        size = TRUE;
+        attron(COLOR_PAIR(4));
+        mvprintw(LINES - 4, 0,
+            "Yeniden boyutlandırmaya giriş: "
+            "Ok tuşları ile boyutlandırın ve "
+            "bitirmek için &lt;ENTER&gt; kullanın");
+        refresh();
+        attroff(COLOR_PAIR(4));
+        break;
+      case 'm':       /* Move */
+        attron(COLOR_PAIR(4));
+        mvprintw(LINES - 4, 0,
+          "Taşıma kipine girildi: "
+          "Taşımak için ok tuşlarını ve "
+          "bitirmek için &lt;ENTER&gt; kullanın");
+        refresh();
+        attroff(COLOR_PAIR(4));
+        move = TRUE;
+        break;
+      case KEY_LEFT:
+        if(size == TRUE)
+        { --newx;
+          ++neww;
+        }
+        if(move == TRUE)
+          --newx;
+        break;
+      case KEY_RIGHT:
+        if(size == TRUE)
+        { ++newx;
+          --neww;
+        }
+        if(move == TRUE)
+          ++newx;
+        break;
+      case KEY_UP:
+        if(size == TRUE)
+        { --newy;
+          ++newh;
+        }
+        if(move == TRUE)
+          --newy;
+        break;
+      case KEY_DOWN:
+        if(size == TRUE)
+        { ++newy;
+          --newh;
+        }
+        if(move == TRUE)
+          ++newy;
+        break;
+      case 10:        /* Enter */
+        move(LINES - 4, 0);
+        clrtoeol();
+        refresh();
+        if(size == TRUE)
+        { old_win = panel_window(stack_top);
+          temp_win = newwin(newh, neww, newy, newx);
+          replace_panel(stack_top, temp_win);
+          win_show(temp_win, top-&gt;label, top-&gt;label_color);
+          delwin(old_win);
+          size = FALSE;
+        }
+        if(move == TRUE)
+        { move_panel(stack_top, newy, newx);
+          move = FALSE;
+        }
+        break;
+    }
+    attron(COLOR_PAIR(4));
+    mvprintw(LINES - 3, 0,
+      "Taşımak için 'm', yeniden boyutlandırmak için 'r' kullanın");
+    mvprintw(LINES - 2, 0,
+      "Pencereler arasında gezinti için tab kullanın "
+        "(Çıkmak için F1)");
+    attroff(COLOR_PAIR(4));
+    refresh();
+    update_panels();
+    doupdate();
+  }
+  endwin();
+  return 0;
+}
+
+/* Tüm pencereleri yazdır */
+void init_wins(WINDOW **wins, int n)
+{ int x, y, i;
+  char label[80];
+
+  y = 2;
+  x = 10;
+  for(i = 0; i &lt; n; ++i)
+  { wins[i] = newwin(NLINES, NCOLS, y, x);
+    sprintf(label, "Pencere Numarası %d", i + 1);
+    win_show(wins[i], label, i + 1);
+    y += 3;
+    x += 7;
+  }
+}
+
+/* Herbir panel için PANEL_DATA veri yapısını tanımla */
+void set_user_ptrs(PANEL **panels, int n)
+{ PANEL_DATA *ptrs;
+  WINDOW *win;
+  int x, y, w, h, i;
+  char temp[80];
+
+  ptrs = (PANEL_DATA *)calloc(n, sizeof(PANEL_DATA));
+
+  for(i = 0;i &lt; n; ++i)
+  { win = panel_window(panels[i]);
+    getbegyx(win, y, x);
+    getmaxyx(win, h, w);
+    ptrs[i].x = x;
+    ptrs[i].y = y;
+    ptrs[i].w = w;
+    ptrs[i].h = h;
+    sprintf(temp, "Pencere Numarası %d", i + 1);
+    strcpy(ptrs[i].label, temp);
+    ptrs[i].label_color = i + 1;
+    if(i + 1 == n)
+      ptrs[i].next = panels[0];
+    else
+      ptrs[i].next = panels[i + 1];
+    set_panel_userptr(panels[i], &amp;ptrs[i]);
+  }
+}
+
+/* Pencereyi bir çerçeve ve bir isimle göster */
+void win_show(WINDOW *win, char *label, int label_color)
+{ int startx, starty, height, width;
+
+  getbegyx(win, starty, startx);
+  getmaxyx(win, height, width);
+
+  box(win, 0, 0);
+  mvwaddch(win, 2, 0, ACS_LTEE);
+  mvwhline(win, 2, 1, ACS_HLINE, width - 2);
+  mvwaddch(win, 2, width - 1, ACS_RTEE);
+
+  print_in_middle(win, 1, 0, width, label, COLOR_PAIR(label_color));
+}
+
+void print_in_middle(WINDOW *win, int starty, int startx, int width,
+    char *string, chtype color)
+{ int length, x, y;
+  float temp;
+
+  if(win == NULL)
+    win = stdscr;
+  getyx(win, y, x);
+  if(startx != 0)
+    x = startx;
+  if(starty != 0)
+    y = starty;
+  if(width == 0)
+    width = 80;
+
+  length = strlen(string);
+  temp = (width - length)/ 2;
+  x = startx + (int)temp;
+  wattron(win, color);
+  mvwprintw(win, y, x, "%s", string);
+  wattroff(win, color);
+  refresh();
+}
+</pre></div></div></dd></dl><div class="para">
+Ana programdaki <b><tt>while</tt></b> döngüsüne dikkatinizi verin. Bir kere basılan tuşun türünü buldu mu uygun davranışı göstermektedir. Eğer 'r' basıldıysa yeniden boyutlandırma başlamaktadır. Bundan sonra kullanıcı ok tuşlarına bastıkça yeni boyutları güncellenmektedir. Kullanıcı &lt;ENTER&gt;'a bastığı anda o anki seçim sona erer ve panel açıklanan mantıkla yeniden boyutlandırılır. Yeniden boyutlandırma kipinde program pencerenin nasıl yeniden boyutlandırıldığını göstermez. Okuyucuya yeniden boyutlandırma sırasında noktalı bir çerçeve ile yeni boyutu gösterme işi bir alıştırma olarak bırakılmıştır.
+</div><div class="para">
+Kullanıcı 'm''e bastığında taşıma kipi başlar. Bu, yeniden boyutlandırmaktan daha kolaydır. Ok tuşlarına bastıkça yeni konum güncellenir ve &lt;ENTER&gt; ile <tt>move_panel()</tt> çağrılarak panel taşıma işlemi sonlandırılır.
+</div><div class="para">
+Bu programda <tt>PANEL_DATA</tt> olarak ifade edilen kullanıcı bilgisi önemli bir rol oynamaktadır. Açıklama satırlarında da yazdığı gibi <tt>PANEL_DATA</tt> panel boyutu, ismi, isim rengi ve sıralamadaki sonraki panele işaretçi bilgilerini tutmaktadır.
+</div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/ncurses-howto-userptrusing.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/ncurses-howto-panels.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/ncurses-howto-panelshowhide.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Kullanıcı İşaretçilerini Kullanmak </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Panelleri Gizlemek ve Göstermek</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

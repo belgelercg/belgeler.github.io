@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:28+03:00" /><title>SMTP Aktarımı</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/spam-filtering-background.html" title="Altyapı" /><link rel="previous" href="../howto/spam-filtering-goodbadugly.html" title="İyi, Kötü, Çirkin" /><link rel="next" href="../howto/spam-filtering-techniques.html" title="Teknikler" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">SMTP Aktarımı</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/spam-filtering-goodbadugly.html">Önceki</a> </td><th width="60%" align="center">Altyapı</th><td width="20%" align="right"> <a accesskey="n" href="../howto/spam-filtering-techniques.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="spam-filtering-smtpintro" id="spam-filtering-smtpintro"></a>SMTP Aktarımı</div><dl><dd><div class="para">
+SMTP internette posta teslimatı için kullanılan protokolün ismidir. Protokolün ayrıntılı açıklamasını <a class="link" href="../rfc/rfc2821.html" title="Basit Posta Aktarım Protokolü (SMTP)">RFC 2821</a>'de bulabilirsiniz. Ayrıca, Dave Crocker'ın <a class="ulink" href="http://www.brandenburg.com/specifications/draft-crocker-mail-arch-00.htm" target="_top">İnternet Postalarının Mimarisi</a>'ne bakışını da okumanızı öneririm.
+    </div><div class="para">
+Posta teslimatları bağlanan konak (istemci) ile bağlanılan konak (sunucu) arasındaki SMTP işlemleri ile yapılır.
+    </div><div class="para">
+Tipik bir SMTP aktarımında, istemci <b><tt>EHLO</tt></b>, <b><tt>MAIL FROM:</tt></b>, <b><tt>RCPT TO:</tt></b> ve <b><tt>DATA</tt></b> gibi komutlar gönderir. Sunucunuz her komuta 3 rakamlık bir sayısal kod (komutun kabul edildiğini belirmek için  <b><tt>2<i><tt>xx</tt></i></tt></b>, geçici bir sorun ya da kısıtlayıcı bir durum için <b><tt>4<i><tt>xx</tt></i></tt></b>, kesin ve mutlak başarısızlık halinde <b><tt>5<i><tt>xx</tt></i></tt></b>) ve bunu izleyen insanların anlayabileceği bir açıklama ile yanıt verir. Bu kodların tamamı <a class="link" href="../rfc/rfc2821.html" title="Basit Posta Aktarım Protokolü (SMTP)">RFC 2821</a>'de açıklanmıştır.
+    </div><div class="para">
+SMTP aktarımında eniyi durum senaryosu genel olarak birbirini izleyen şu adımlardan oluşur:
+    </div>
+    <div class="table"><div class="formaltitle"><b><a name="spam-filtering-smtpdialogue" id="spam-filtering-smtpdialogue"></a>Tablo 6.2. Basit SMTP diyaloğu</b></div><table cellpadding="3" cellspacing="0" summary="Basit SMTP diyaloğu" border="1"><colgroup><col /><col /></colgroup><thead><tr><th align="left">İstemci</th><th align="left">Sunucu</th></tr></thead><tbody><tr><td align="left"><div class="para">Sunucuya bir TCP bağlantısı kurar.</div></td><td align="left"><div class="para">SMTP (veya halefi olan ESMTP) diyaloğuna hazır olduğunu belirtmek için  <b><tt>220</tt></b> koduyla başlayan bir karşılama iletisi gönderir:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+220 <i>sunucu.f.q.d.n</i> ESTMP...
+</pre></div></div>
+</td></tr><tr><td align="left"><div class="para">
+Bir <b><tt>HELO</tt></b> (artık atıl) ya da  <b><tt>EHLO</tt></b> ile başlayan ve kendi <a href="../howto/spam-filtering-glossary.html#spam-filtering-fqdn" class="xref" title="Nitelikli Alan Adı">Nitelikli Alan Adı</a>nı içeren bir selamlaşma komutu ile kendini tanıtır:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+EHLO <i>istemci.f.q.d.n</i>
+</pre></div></div>
+</td><td align="left"><div class="para">
+Bir <b><tt>250</tt></b> yanıtı ile bu selamı kabul eder. Eğer istemci selamlaşma komutunun gelişmiş sürümünü (<b><tt>EHLO</tt></b>) kullanmışsa, sunucunuz onun çok satırlı yanıtları işleme yeterliliğinde olduğunu anlar ve normal olarak kendi yeteneklerini belirten satırları gönderir:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+250-<i>sunucu.f.q.d.n</i> Hello ...
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250-STARTTLS
+250-AUTH
+250 HELP
+</pre></div></div>
+  <div class="para">
+Bu yanıt <b><tt>PIPELINING</tt></b> yetisini içeriyorsa, istemci bu noktadan sonra herbiri için ayrı ayrı yanıt beklemeksizin bir çok komutu bir kerede gönderir.
+</div></td></tr><tr><td align="left"><div class="para">
+<a href="../howto/spam-filtering-glossary.html#spam-filtering-envfrom" class="xref" title="Zarf Göndericisi">Zarf Göndericisi</a>ni belirterek yeni bir posta aktarımı başlatır:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+MAIL FROM:&lt;<i>gönderen</i>@<i>adres</i>&gt;
+</pre></div></div>
+</td><td align="left"><div class="para">
+Göndericinin kabul edildiğini belirten bir <b><tt>250</tt></b> yanıtı gönderir.
+</div></td></tr><tr><td align="left"><div class="para">
+İletinin <a class="link" href="../howto/spam-filtering-glossary.html#spam-filtering-envto">Zarf Alıcıları</a>nı bir defada liste halinde yollar:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+RCPT TO:&lt;<i>alıcı</i>@<i>adres</i>&gt;
+</pre></div></div>
+</td><td align="left"><div class="para">
+Her komuta o alıcı için teslimatın kabul mü edildiğine (<b><tt>2<i>xx</i></tt></b>), geçici bir sorun mu oluştuğuna (<b><tt>4<i>xx</i></tt></b>) yoksa red mi edildiğine (<b><tt>5<i>xx</i></tt></b>) dair bir yanıt döndürür.
+</div></td></tr><tr><td align="left"><div class="para">
+İletiyi göndermeye hazır olduğunu belirten bir <b><tt>DATA</tt></b> komutu gönderir.
+</div></td><td align="left"><div class="para">
+Komutun geçici olarak kabul edildiğini belirten <b><tt>354</tt></b> yanıtını gönderir.
+</div></td></tr><tr><td align="left"><div class="para">
+<a class="link" href="../rfc/rfc2822.html" title="Genel Ağ İleti Biçimi">RFC 2822</a> uyumlu başlık satırları (<tt>From:</tt>, <tt>To:</tt>, <tt>Subject:</tt>, <tt>Date:</tt>, <tt>Message-ID:</tt> gibi) ile başlayan iletiyi aktarmaya başlar. Başlık ve gövde bir boş satırla ayrılır. İletinin sonunda ileti sonunu belirten ve tek bir nokta içeren ek bir satır göndererek ileti aktarımını bitirir.
+</div></td><td align="left"><div class="para">
+İletinin kabul edildiğin belirten <b><tt>250</tt></b> yanıtını gönderir.
+</div></td></tr><tr><td align="left"><div class="para">
+Eğer teslim edilecek başka iletiler de varsa, bir <b><tt>MAIL FROM:</tt></b> komutu gönderir. Aksi takdirde, <b><tt>QUIT</tt></b> der ya da yaygın bir durum olarak basitçe bağlantıyı keser.
+</div></td><td align="left"><div class="para">
+Bağlantıyı keser.
+</div></td></tr></tbody></table></div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/spam-filtering-goodbadugly.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/spam-filtering-background.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/spam-filtering-techniques.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">İyi, Kötü, Çirkin </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Teknikler</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

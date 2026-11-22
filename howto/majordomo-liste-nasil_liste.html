@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:35+03:00" /><title>Yeni liste açılması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/majordomo-liste-nasil.html" title="Majordomo Liste Yöneticisi Kurulumu NASIL" /><link rel="previous" href="../howto/majordomo-liste-nasil_sorunlar.html" title="Yaşanabilecek Olası Sorunlar" /><link rel="next" href="../howto/majordomo-liste-nasil_majorcool.html" title="Majorcool Kurulumu ve Ayarları" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Yeni liste açılması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/majordomo-liste-nasil_sorunlar.html">Önceki</a> </td><th width="60%" align="center">Majordomo Liste Yöneticisi Kurulumu NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/majordomo-liste-nasil_majorcool.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="majordomo-liste-nasil_liste" id="majordomo-liste-nasil_liste"></a>Yeni liste açılması</div><dl><dd><div class="para">
+      arkadas adında bir yeni liste açacağımızı düşünelim.
+</div><div class="para"><div align="right"><pre class="screen">$touch /usr/local/majordomo/lists/arkadas</pre></div></div><div class="para">
+      Bu komut ile eposta adreslerinin tutulacağı dosyayı oluşturuyoruz.
+</div><div class="para"><div align="right"><pre class="screen">$touch /usr/local/majordomo/lists/arkadas.info</pre></div></div><div class="para">
+      <tt>arkadas.info</tt> dosyasını oluşturuyoruz. Bu dosya içine
+      yazdıklarınız liste için tanıtım iletisi niteliğindedir.
+    </div><div class="para">
+      Majordomo kurulumunuza göre aşagıdaki satırları <tt>/etc/mail/aliases</tt>
+      dosyasına ekleyip <tt>newaliases</tt> komutunu çalıştıralım.
+</div><div class="para"><div align="right"><pre class="screen">
+arkadas: "|/usr/local/majordomo/wrapper resend -l arkadas arkadas-list"
+arkadas-list: :include:/usr/local/majordomo/lists/arkadas
+arkadas-test: can@olympos.gen.tr,
+arkadas-owner: can@olympos.gen.tr,
+owner-arkadas: can@olympos.gen.tr,
+arkadas-approval : can@olympos.gen.tr,
+arkadas-request: "|/usr/local/majordomo/wrapper majordomo -l arkadas"
+</pre></div></div><div class="para">
+      (Aman newaliases komutunu çalıştırmayı unutmayın:)
+    </div><div class="para">
+      Aşağıdaki satırı eposta iletimizin gövdesinde majordomo adresine göndererek
+      <tt>config</tt> dosyamızı oluşturalım.
+</div><div class="para"><div align="right"><pre class="screen">config arkadas arkadas.admin</pre></div></div><div class="para">
+      Bu komut size <tt>/usr/local/majordomo/lists/arkadas.config</tt>
+      adında öntanımlı bir yapılandırma dosyası oluşturacaktır.
+    </div><div class="para">
+      Şimdi listenizi test edebilirsiniz. Majordomo adresine
+</div><div class="para"><div align="right"><pre class="screen">subscribe can@olympos.gen.tr</pre></div></div><div class="para">
+      komutunu gönderin. Üyelik için bir doğrulama satırı alacaksınız.
+      Bu satırı tekrar aynı adrese gönderdiğinizde üyeliğiniz onaylanacaktır.
+    </div><div class="para">
+      ŞİMDİ.. <tt>arkadas.config</tt> dosyasını değiştirmeyi göreceğiz.
+    </div><div class="variablelist"><dl><dt><span class="term">Yönetici parolası nasıl değiştirilir?</span></dt><dd class="varlist"><div class="para">
+            <tt>arkadas.config</tt> dosyasının içinde
+</div>
+<div class="para"><div align="right"><pre class="screen">admin_passwd = default.arkadas</pre></div></div>
+<div class="para">
+            yazan bir satır bulacaksınız. <tt>default.arkadas</tt>
+            kelimesini yeni parolanızla değiştirebilirsiniz.
+          </div></dd><dt><span class="term">lists komut çıktısında gelen tanımlamaları nasıl değiştiririm?</span></dt><dd class="varlist"><div class="para">
+            Majordomo'ya <tt>lists</tt> komutu gönderildiğinde listenin
+            ne olduğu ilgili bir açıklama satırı görürsünüz.
+            <tt>description = öğrencilerin listesi</tt>
+            satırında "öğrencilerin listesi" dizgesini kendi listenize
+            göre değiştirin.
+          </div></dd><dt><span class="term">İletilere nasıl dipnot ekleyebilirim?</span></dt><dd class="varlist"><div class="para">
+            Dosya içinde iki <tt>END</tt> satırı arasına yazacağınız herşey
+            gönderilen her iletinin alt kısmına eklenir.
+</div><div class="para"><div align="right"><pre class="screen">
+message_footer &lt;&lt; END
+
+BENİM YENİ
+DİPNOTUM
+
+END
+</pre></div></div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/warning.png" /></td><th class="admon">Uyarı</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+            Bu kısımda yeralan her <tt>--</tt> açıklama olarak ele
+            alınıp yoksayılacağından yazarken dikkatli olun.
+          </div></td></tr></table></div></dd><dt><span class="term">Listeye üye olmayanlarda listeye mesaj atabiliyor. Bunu nasıl engellerim?</span></dt><dd class="varlist"><div class="para">
+            <tt>restrict_post = arkadas</tt>
+            satırını yerleştirmeniz, sadece liste üyelerinin mesaj atmasını sağlar.
+          </div></dd><dt><span class="term">Her epostanın konu satırına nasıl önek yapabilirim?</span></dt><dd class="varlist"><div class="para">
+            <tt>subject_prefix = konu_öneki</tt>
+          </div></dd><dt><span class="term">Herkesin listeme üye olmasını istemiyorum, benden onay almalarını istiyorum</span></dt><dd class="varlist"><div class="para">
+            <tt>subscribe_policy = closed</tt>
+            satırı liste yönecisinden onay alınmasını sağlar.
+          </div></dd></dl></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/majordomo-liste-nasil_sorunlar.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/majordomo-liste-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/majordomo-liste-nasil_majorcool.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Yaşanabilecek Olası Sorunlar </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Majorcool Kurulumu ve Ayarları</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

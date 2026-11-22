@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:19+03:00" /><title>Derleme ve Çalıştırma</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/rtlinux-howto.html" title="RTLinux için Modül Geliştirme NASIL" /><link rel="previous" href="../howto/rtlinux-howto-rtlinuxprogramming.html" title="RTLinux Programları Yazmak" /><link rel="next" href="../howto/rtlinux-howto-interprocess.html" title="Süreçlerarası İletişim" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Derleme ve Çalıştırma</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/rtlinux-howto-rtlinuxprogramming.html">Önceki</a> </td><th width="60%" align="center">RTLinux için Modül Geliştirme NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/rtlinux-howto-interprocess.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="rtlinux-howto-compile" id="rtlinux-howto-compile"></a>Derleme ve Çalıştırma</div><dl><dd><div class="para"><tt>hello.c</tt> programını çalıştırmak için  (tabii ki RTLinux açılışından sonra) aşağıdaki adımları sırası ile yapmalısınız:
+</div>
+<ol class="orderedlist" start="ignore" type="1"><li><div class="listitem"><div class="para">
+GCC derleyicisini kullanarak kaynak kodunu derleyip bir modül oluşturun. Birşeyleri basitleştirmek adına bir Makefile oluşturmak daha iyidir. Böylece kodu derlemek için tek ihtiyacınız <b><tt>make</tt></b> yazmak olacaktır.
+</div><div class="para">
+Aşağıdaki satırları <tt>Makefile</tt> isimli bir dosyaya yazarak Makefile'ı oluşturabilirsiniz:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+include rtl.mk
+all: hello.o
+clean:
+    rm -f *.o
+hello.o: hello.c
+    $(CC) ${INCLUDE} ${CFLAGS} -c hello.c
+</pre></div></div>
+</div></li><li><div class="listitem"><div class="para">
+<tt>rtl.mk</tt> dosyasını <tt>hello.c</tt> ve <tt>Makefile</tt> ile aynı dizinin içine kopyalayın. <tt>rtl.mk</tt> dosyası, kodu derlemek için gerekli bütün seçenekleri içeren bir başlık dosyasıdır. Bunu RTLinux kaynak ağacından kopyalayabilirsiniz ve <tt>hello.c</tt> dosyasının yanına koyabilirsiniz.
+</div></div></li><li><div class="listitem"><div class="para">
+Kodu derlemek için '<b><tt>make</tt></b>' komutunu kullanın:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+$ <b><tt>make</tt></b>
+</pre></div></div>
+</div></li><li><div class="listitem"><div class="para">
+Oluşan ikilik nesne dosyası RTLinux tarafından çalıştırılacak çekirdeğe eklenmelidir. Bunun için '<b><tt>rtlinux</tt></b>' komutunu kullanmak gerekir (tabii önce 'root' olmak gerekir).
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>rtlinux start hello</tt></b>
+</pre></div></div>
+</div></li></ol>
+<div class="para">
+Artık <b><tt>hello.o</tt></b> programının iletisini saniyede bir yazdırması izleyebiliyor olmalısınız. Makinenizin yapılandırmasına bağlı olarak çıktıyı konsolda doğrudan ya da
+</div>
+<div class="para"><div align="right"><pre class="screen">
+$ <b><tt>dmesg</tt></b>
+</pre></div></div>
+<div class="para">
+komutunu girerek görebilirsiniz. Programı sonlandırmak için modülü çekirdekten ayırmanız gerekir. Bunu yapmak için:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+$ <b><tt>rtlinux stop hello</tt></b>
+</pre></div></div>
+<div class="para">
+Modülü eklemek ve çıkarmak için diğer bir yol da sırayla <b><tt>insmod</tt></b> ve <b><tt>rmmod</tt></b> kullanmaktır.
+</div><div class="para">
+Burada örnek programımızı çok basit yaptık. Gördüğümüzün aksine burada bir programda çok sayıda evre olabilir. Öncelik evre oluşturulurken belirtilebilir ve daha sonra değiştirilebilir. Ayrıca kullanılacak işlemci zamanlama algoritmasını da seçebiliriz. Aslında kendi zamanlama algoritmamızı kendimiz yazabiliriz!
+</div><div class="para">
+Örneğimizde, evreye öncelik olarak 1 verebilir ve <tt>evre_kodu()</tt> işlevinin başlangıcına aşağıdaki satırları ekleyerek FIFO zamanlamasını seçebiliriz :
+</div>
+<div class="para"><div align="right"><pre class="screen">
+struct sched_param p;
+p.sched_priority = 1;
+pthread_setschedparam (pthread_self(), SCHED_FIFO, &amp;p);
+</pre></div></div>
+</dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/rtlinux-howto-rtlinuxprogramming.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/rtlinux-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/rtlinux-howto-interprocess.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">RTLinux Programları Yazmak </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Süreçlerarası İletişim</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,842 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2006-10-18T18:18:40+03:00" /><title>C. squidGuard.cgi dosyası</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/proxy-fw.html" title="Internet'e Bağlanırken Gerekenler: Firewall ve Proxy" /><link rel="previous" href="../howto/proxy-fw_filter-conf.html" title="B. filter.conf dosyası" /><link rel="next" href="../howto/proxy-fw_perde-xml.html" title="D. perde.xml dosyası" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">C. squidGuard.cgi dosyası</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/proxy-fw_filter-conf.html">Önceki</a> </td><th width="60%" align="center">Internet'e Bağlanırken Gerekenler: Firewall ve Proxy</th><td width="20%" align="right"> <a accesskey="n" href="../howto/proxy-fw_perde-xml.html">Sonraki</a></td></tr></table></td></tr></table><div class="appendix"> <div class="titlepage"><div><div class="head2"><a name="proxy-fw_squidGuard-txt" id="proxy-fw_squidGuard-txt"></a>C. <tt>squidGuard.cgi</tt> dosyası</div></div></div><dl><dd>
+<div class="para" align="right"><pre class="screen">
+#! /usr/bin/perl -w
+#
+# Explain to the user that the URL is blocked and by which rule set
+#
+# By Pål Baltzersen 1999 (pal.baltzersen@ost.eltele.no)
+# French texts thanks to Fabrice Prigent (fabrice.prigent@univ-tlse1.fr)
+#
+# The last version may be found anytime at:
+#    http://ftp.ost.eltele.no/pub/www/proxy/squidGuard/contrib/
+#
+
+# By accepting this notice, you agree to be bound by the following
+# agreements:
+#
+# This software product, squidGuard, is copyrighted (C) 1999 by ElTele
+# Øst AS, Oslo, Norway, with all rights reserved.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License (version 2) as
+# published by the Free Software Foundation.  It is distributed in the
+# hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+# the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+# PURPOSE.  See the GNU General Public License (GPL) for more details.
+#
+# You should have received a copy of the GNU General Public License
+# (GPL) along with this program.
+
+use strict;
+use Socket;
+#
+# GLOBAL VALUES:
+#
+my ($clientaddr,$clientname,$clientuser,$clientgroup,$targetgroup,$url);
+my ($lang,@supported,$image,$redirect,$autoinaddr,$proxy,$proxymaster);
+my (%msgconf,%title,%logo,%msg,%tab,%word);
+my ($protocol,$address,$port,$path,$refererhost,$referer);
+sub msginit();
+sub getpreferedlang(@);
+sub parsequery($);
+sub status($);
+sub redirect($);
+sub content($);
+sub expires($);
+sub title($);
+sub terminator();
+sub msg($$);
+sub table($$@);
+sub href($);
+sub gethostnames($);
+sub spliturl($);
+sub showhtml($);
+sub showimage($$$);
+sub showinaddr($$$$$);
+
+#
+# CONFIGURABLE OPTIONS:
+#
+@supported   = ("en (English),", "fr (Français),", "no (norsk)", "tr (Türkçe).");       # "en", "fr", "no" etc.
+$image       = "/forbidden.gif";                                        # RELATIVE TO DOCUMENT_ROOT
+$redirect    = "http://10.254.254.254/forbidden.gif";           # "" TO AVOID REDIRECTION
+$proxy       = "perde.bizimfirma.com.tr";                                       #
+$proxymaster = "webmaster\@bizimfirma.com.tr";                          #
+$autoinaddr  = 2;                       # 0|1|2;
+                                        # 0 TO NOT REDIRECT
+                                        # 1 TO AUTORESOLVE &amp; REDIRECT IF UNIQUE
+                                        # 2 TO AUTORESOLVE &amp; REDIRECT TO FIRST NAME
+#
+# CONFIGURABLE MESSAGES:
+#
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# !!! NOTE1: ALLWAYS ESCAPE EMBEDDED VARIABLES (I.E. \$var)         !!!
+# !!!        IF YOU DON'T YOU MAY OPEN A SECURITY HOLE              !!!
+# !!! NOTE2: TRIPLE ESCAPE EMBEDDED `\', `"', `$', `@', `%' and `&amp;' !!!
+# !!!        (I.E. \\\\, \\\", \\\$, \\\@, \\\&amp;)                !!!
+# !!! NOTE3: ESCAPE OTHER SPECIAL INLINE CHARACTERS                 !!!
+# !!!        (I.E. \;, \')                                          !!!
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#
+sub msginit() {
+  ($clientaddr,$clientname,$clientuser,$clientgroup,$targetgroup,$url)
+    = parsequery($ENV{"QUERY_STRING"});
+  ($protocol,$address,$port,$path) = spliturl($url);
+  $lang = getpreferedlang(@supported);
+  $lang = "tr";
+
+
+  %word-&gt;{"unknown"}-&gt;{"en"}            # THE WORD "unknown"
+    = "unknown";                        # --------- "" ---------
+  %word-&gt;{"unknown"}-&gt;{"fr"}            # "unknown" IN FRENCH
+    = "inconnu";                        # CHANGE TO YOUR LOCALE
+  %word-&gt;{"unknown"}-&gt;{"no"}            # "unknown" IN NORWEGIAN
+    = "ukjent";                         # CHANGE TO YOUR LOCALE
+ %word-&gt;{"unknown"}-&gt;{"tr"}             # "unknown" IN Turkish
+    = "bilinmeyen";                     # CHANGE TO YOUR LOCALE
+
+  %title-&gt;{"default"}-&gt;{"en"}           # THE DEFAULT TITLE
+    = [ "403 Forbidden" ];              # --------- "" ---------
+  %title-&gt;{"default"}-&gt;{"fr"}           # --------- "" ---------
+    = [ "403 Interdit" ];               # --------- "" ---------
+  %title-&gt;{"default"}-&gt;{"no"}           # --------- "" ---------
+    = [ "403 Sperret" ];                # --------- "" ---------
+  %title-&gt;{"default"}-&gt;{"tr"}           # --------- "" ---------
+    = [ "403 Yasak" ];          # --------- "" ---------
+
+
+  %msgconf-&gt;{"default"}                 # THE "default" MESSAGE CONFIG
+                                        # (USED WHEN NO OTHER MSGS APPLIES):
+    = [ "msg:H1:default",               # SHOW MSG "default" AS &lt;H1&gt; (DEFINED BELOW)
+        "tab:R,C,L:info"                # SHOW "info" AS &lt;TABLE&gt; &amp; COLUMNS ALIGNED R,C,L
+        . ":clientaddr"                 # AND WITH THESE ELEMENTS (DEFINED BELOW)
+        . ":clientname"                 # --------- "" --------- "" ---------
+        . ":clientuser"                 # --------- "" --------- "" ---------
+        . ":clientgroup"                # --------- "" --------- "" ---------
+        . ":url"                        # --------- "" --------- "" ---------
+        . ":targetgroup",               # --------- "" --------- "" ---------
+        "msg:P:proxymaster",            # SHOW "proxymaster" AS &lt;P&gt; (DEFINED BELOW)
+        "msg:P:refresh"                 # SHOW "refresh" AS &lt;P&gt; (DEFINED BELOW)
+      ];
+
+  %msgconf-&gt;{"unknown"}                 # THE "unknown" CLIENT MESSAGE CONFIG:
+    = [ "msg:H1:unknown",               # SHOW "unknown" AS &lt;H1&gt; (DEFINED BELOW)
+        "tab:R,C,L:info"                # SHOW "info" AS &lt;TABLE&gt; &amp; COLUMNS ALIGNED R,C,L
+        . ":clientaddr"                 # AND WITH THESE ELEMENTS (DEFINED BELOW)
+        . ":clientname"                 # --------- "" --------- "" ---------
+        . ":clientuser"                 # --------- "" --------- "" ---------
+        . ":clientgroup",               # --------- "" --------- "" ---------
+        "msg:P:proxymaster",            # SHOW "proxymaster" AS &lt;P&gt; (DEFINED BELOW)
+        "msg:P:refresh"                 # SHOW "refresh" AS &lt;P&gt; (DEFINED BELOW)
+      ];
+  %msgconf-&gt;{%word-&gt;{"unknown"}-&gt;{$lang}}
+    = %msgconf-&gt;{"unknown"};
+
+  %msgconf-&gt;{"in-addr"}                 # THE MESSAGE CONFIG FOR THE "in-addr" DEST GROUP:
+    = [ "msg:H1:alternatives",          # SHOW "alternatives" AS &lt;H1&gt; (DEFINED BELOW)
+        "alternatives",                 # SHOW THE ALTERNATIV DOMAIN ADDRESSES
+        "referermaster",                # SHOW "referermaster" (DEFINED BELOW)
+        "msg:P:refresh"                 # SHOW "refresh" AS &lt;P&gt; (DEFINED BELOW)
+      ];
+
+  %msgconf-&gt;{"noalternatives"}          # DITTO WHEN THERE ARE NO DOMAIN ADDRESS ALTERNATIVES:
+    = [ "msg:H1:in-addr",               # SHOW "in-addr" AS &lt;H1&gt; (DEFINED BELOW)
+        "tab:R,C,L:info"                # SHOW "info" AS &lt;TABLE&gt; &amp; COLUMNS ALIGNED R,C,L
+        . ":clientaddr"                 # AND WITH THESE ELEMENTS (DEFINED BELOW)
+        . ":clientname"                 # --------- "" --------- "" ---------
+        . ":clientuser"                 # --------- "" --------- "" ---------
+        . ":clientgroup"                # --------- "" --------- "" ---------
+        . ":domainurl"                  # --------- "" --------- "" ---------
+        . ":targetgroup",               # --------- "" --------- "" ---------
+        "msg:H3:noalternatives",        # SHOW "noalternatives" AS &lt;H3&gt; (DEFINED BELOW)
+        "msg:P:webmaster",              # SHOW "webmaster" AS &lt;P&gt; (DEFINED BELOW)
+        "msg:P:refresh"                 # SHOW "refresh" AS &lt;P&gt; (DEFINED BELOW)
+      ];
+
+  %msg-&gt;{"default"}-&gt;{"en"}                     # THE MSG TEXT "default" IN "en" (ENGLISH):
+    = [ "Access to this site is blocked" ];     #
+  %msg-&gt;{"default"}-&gt;{"fr"}                     # THE MSG TEXT "default" IN "fr" (FRENCH):
+    = [ "L\'accès à ce site est bloqué" ];      #
+  %msg-&gt;{"default"}-&gt;{"no"}                     # THE MSG TEXT "default" IN "no" (NORWEGIAN):
+    = [ "Siden er sperret" ];                   #
+ %msg-&gt;{"default"}-&gt;{"tr"}                      # THE MSG TEXT "default" IN "tr" (TURKISH):
+    = [ "Bu siteye erişim yasaklanmıştır" ];    #
+
+                                                # THE "info" TABLE IN "en" (ENGLISH):
+  %tab-&gt;{"info"}-&gt;{"caption"}-&gt;{"en"}           # THE "info" TABLE'S TITLE:
+    = [ "Additional information:" ];            #
+  %tab-&gt;{"info"}-&gt;{"clientaddr"}-&gt;{"en"}        # THE "clientaddr" MSG OPTION:
+    = [ "Client address", "=", "\$clientaddr" ];#
+  %tab-&gt;{"info"}-&gt;{"clientname"}-&gt;{"en"}        # THE "clientname" MSG OPTION:
+    = [ "Client name", "=", "\$clientname" ];   #
+  %tab-&gt;{"info"}-&gt;{"clientuser"}-&gt;{"en"}        # THE "clientuser" MSG OPTION:
+    = [ "Client user", "=", "\$clientuser" ];   #
+  %tab-&gt;{"info"}-&gt;{"clientgroup"}-&gt;{"en"}       # THE "clientgroup" MSG OPTION:
+    = [ "Client group", "=", "\$clientgroup" ]; #
+  %tab-&gt;{"info"}-&gt;{"url"}-&gt;{"en"}               # THE "url" MSG OPTION:
+    = [ "URL", "=", "\$url" ];                  #
+  %tab-&gt;{"info"}-&gt;{"domainurl"}-&gt;{"en"}         # THE "domainurl" MSG OPTION:
+    = [ "URL", "=", "\$protocol://&lt;U&gt;\$address&lt;/U&gt;\$port\$path" ];
+  %tab-&gt;{"info"}-&gt;{"targetgroup"}-&gt;{"en"}       # THE "targetgroup" MSG OPTION:
+    = [ "Target group", "=", "\$targetgroup" ]; #
+
+  %tab-&gt;{"info"}-&gt;{"caption"}-&gt;{"fr"}           # DITTO IN "fr" (FRENCH):
+    = [ "Information complémentaire:" ];        # --------- "" ---------
+  %tab-&gt;{"info"}-&gt;{"clientaddr"}-&gt;{"fr"}        # --------- "" ---------
+    = [ "Adresse de la machine", "=", "\$clientaddr" ];
+  %tab-&gt;{"info"}-&gt;{"clientname"}-&gt;{"fr"}        # --------- "" ---------
+    = [ "Nom de la machine", "=", "\$clientname" ];
+  %tab-&gt;{"info"}-&gt;{"clientuser"}-&gt;{"fr"}        # --------- "" ---------
+    = [ "Utilisateur", "=", "\$clientuser" ];   # --------- "" ---------
+  %tab-&gt;{"info"}-&gt;{"clientgroup"}-&gt;{"fr"}       # --------- "" ---------
+    = [ "Groupe", "=", "\$clientgroup" ];       # --------- "" ---------
+  %tab-&gt;{"info"}-&gt;{"url"}-&gt;{"fr"}               # --------- "" ---------
+    = [ "URL", "=", "\$url" ];                  # --------- "" ---------
+  %tab-&gt;{"info"}-&gt;{"domainurl"}-&gt;{"fr"}         # --------- "" ---------
+    = [ "URL", "=", "\$protocol://&lt;U&gt;\$address&lt;/U&gt;\$port\$path" ];
+  %tab-&gt;{"info"}-&gt;{"targetgroup"}-&gt;{"fr"}       # --------- "" ---------
+    = [ "Groupe cible", "=", "\$targetgroup" ]; # --------- "" ---------
+
+  %tab-&gt;{"info"}-&gt;{"caption"}-&gt;{"no"}           # DITTO IN "no" (NORWEGIAN):
+    = [ "Tilleggsinformasjon:" ];               # --------- "" ---------
+  %tab-&gt;{"info"}-&gt;{"clientaddr"}-&gt;{"no"}        # --------- "" ---------
+    = [ "Klientadresse", "=", "\$clientaddr" ]; # --------- "" ---------
+  %tab-&gt;{"info"}-&gt;{"clientname"}-&gt;{"no"}        # --------- "" ---------
+    = [ "Klientnavn", "=", "\$clientname" ];    # --------- "" ---------
+  %tab-&gt;{"info"}-&gt;{"clientuser"}-&gt;{"no"}        # --------- "" ---------
+    = [ "Brukerident", "=", "\$clientuser" ];   # --------- "" ---------
+  %tab-&gt;{"info"}-&gt;{"clientgroup"}-&gt;{"no"}       # --------- "" ---------
+    = [ "Klientgruppe", "=", "\$clientgroup" ]; # --------- "" ---------
+  %tab-&gt;{"info"}-&gt;{"url"}-&gt;{"no"}               # --------- "" ---------
+    = [ "URL", "=", "\$url" ];                  # --------- "" ---------
+  %tab-&gt;{"info"}-&gt;{"domainurl"}-&gt;{"no"}         # --------- "" ---------
+    = [ "URL", "=", "\$protocol://&lt;U&gt;\$address&lt;/U&gt;\$port\$path" ];
+  %tab-&gt;{"info"}-&gt;{"targetgroup"}-&gt;{"no"}       # --------- "" ---------
+    = [ "Målkategori", "=", "\$targetgroup" ];  # --------- "" ---------
+                                                # THE "info" TABLE IN "en" (ENGLISH):
+  %tab-&gt;{"info"}-&gt;{"caption"}-&gt;{"tr"}           # THE "info" TABLE'S TITLE:
+    = [ "Bilgileriniz:" ];              #
+  %tab-&gt;{"info"}-&gt;{"clientaddr"}-&gt;{"tr"}        # THE "clientaddr" MSG OPTION:
+    = [ "Sizin IP Adresiniz", "=", "&lt;font face=bold&gt;&lt;b&gt;\$clientaddr&lt;/b&gt;&lt;/font&gt;" ];#
+   %tab-&gt;{"info"}-&gt;{"clientuser"}-&gt;{"tr"}       # THE "clientuser" MSG OPTION:
+    = [ "Kimliğiniz", "=", "&lt;b&gt;\$clientuser&lt;/b&gt;" ];       #
+  %tab-&gt;{"info"}-&gt;{"clientgroup"}-&gt;{"tr"}       # THE "clientgroup" MSG OPTION:
+    = [ "İzin Grubunuz", "=", "&lt;b&gt;\$clientgroup&lt;/b&gt;" ];   #
+  %tab-&gt;{"info"}-&gt;{"url"}-&gt;{"tr"}               # THE "url" MSG OPTION:
+    = [ "Erişmek istediğiniz adres", "=", "&lt;b&gt;\$url&lt;/b&gt;" ];                       #
+  %tab-&gt;{"info"}-&gt;{"domainurl"}-&gt;{"tr"}         # THE "domainurl" MSG OPTION:
+    = [ "", "", "" ];
+   %tab-&gt;{"info"}-&gt;{"clientname"}-&gt;{"tr"}       # --------- "" ---------
+    = [ "", "", "" ];   # --------- "" ---------
+%tab-&gt;{"info"}-&gt;{"targetgroup"}-&gt;{"tr"} # --------- "" ---------
+    = [ "", "", "" ];   # --------- "" ---------
+
+  %msg-&gt;{"proxymaster"}-&gt;{"en"}
+    = [ "If you think this is an error, send &lt;U&gt;this page&lt;/U&gt; to",
+        "&lt;A HREF=\\\"mailto:\$proxymaster\\\"&gt;\$proxymaster&lt;/A&gt;" ];
+  %msg-&gt;{"proxymaster"}-&gt;{"fr"}
+    = [ "Si vous pensez qu\'il s\'agit d\'une erreur, envoyez &lt;U&gt;cette page&lt;/U&gt; à",
+        "&lt;A HREF=\\\"mailto:\$proxymaster\\\"&gt;\$proxymaster&lt;/A&gt;" ];
+  %msg-&gt;{"proxymaster"}-&gt;{"no"}
+    = [ "Om du mener dette er feil, så send &lt;U&gt;denne siden&lt;/U&gt; til",
+        "&lt;A HREF=\\\"mailto:\$proxymaster\\\"&gt;\$proxymaster&lt;/A&gt;" ];
+ %msg-&gt;{"proxymaster"}-&gt;{"tr"}
+    = [ "Eğer bunun bir hata olduğunu düşünüyorsanız, &lt;BR&gt;&lt;U&gt;bu sayfayı&lt;/U&gt;",
+        "&lt;A HREF=\\\"mailto:\$proxymaster\\\"&gt;\$proxymaster&lt;/A&gt; adresine gönderin." ];
+
+  %msg-&gt;{"refresh"}-&gt;{"en"}
+    = [ "You may need to use the browser's \&amp;lt\;Reload\&amp;gt\; button&lt;BR&gt;",
+        "or even \&amp;lt\;Keyboard Shift\&amp;gt\;+\&amp;lt\;Browser Reload\&amp;gt\;&lt;BR&gt;",
+        "to get rid of this page after an access rule change" ];
+  %msg-&gt;{"refresh"}-&gt;{"fr"}
+    = [ "Vous avez peut-être besoin d\'utiliser le bouton \&amp;lt\;Recharger\&amp;gt\;&lt;BR&gt;",
+        "ou même \&amp;lt\;Shift\&amp;gt\;+\&amp;lt\;Recharger\&amp;gt\;&lt;BR&gt;",
+        "après un changement de règles" ];
+  %msg-&gt;{"refresh"}-&gt;{"no"}
+    = [ "Du kan trenge å bruke browserens \&amp;lt\;Reload\&amp;gt\; knapp&lt;BR&gt;",
+        "eller til og med",
+        "\&amp;lt\;Tastatur Shift\&amp;gt\;+\&amp;lt\;Browser Reload\&amp;gt\;&lt;BR&gt;",
+        "for å bli kvitt denne siden etter endring i adgangskontrollen" ];
+  %msg-&gt;{"refresh"}-&gt;{"tr"}
+    = [ "Erişim kuralları değişikliğinden sonra bu sayfayı, &lt;BR&gt;tarayıcınızın",
+        "\&amp;lt\;Yeniden Yükle\&amp;gt\; tuşunu&lt;BR&gt;",
+        "veya \&amp;lt\;Shift\&amp;gt\;+\&amp;lt\;Yeniden Yükle\&amp;gt\; kullanarak&lt;BR&gt;",
+        "yeniden yüklemeniz gerekebilir" ];
+
+  %msg-&gt;{"timerefresh"}-&gt;{"en"}
+    = [ "You may need to use the browser's \&amp;lt\;Reload\&amp;gt\; button&lt;BR&gt;",
+        "or even \&amp;lt\;Keyboard Shift\&amp;gt\;+\&amp;lt\;Browser Reload\&amp;gt\;&lt;BR&gt;",
+        "to get rid of this page after transition from&lt;BR&gt;",
+        "a time zone with access restrictions" ];
+  %msg-&gt;{"timerefresh"}-&gt;{"fr"}
+    = [ "Vous avez peut-être besoin d\'utiliser le bouton \&amp;lt\;Recharger\&amp;gt\;&lt;BR&gt;",
+        "ou même \&amp;lt\;Shift\&amp;gt\;+\&amp;lt\;Recharger\&amp;gt\;&lt;BR&gt;",
+        "après un changement de zone temporelle d\'interdiction" ];
+  %msg-&gt;{"timerefresh"}-&gt;{"no"}
+    = [ "Du kan trenge å bruke browserens \&amp;lt\;Reload\&amp;gt\; knapp&lt;BR&gt;",
+        "eller til og med",
+        "\&amp;lt\;Tastatur Shift\&amp;gt\;+\&amp;lt\;Browser Reload\&amp;gt\;&lt;BR&gt;",
+        "for å bli kvitt denne siden ved overgang fra",
+        "et tidsrom med sperring" ];
+  %msg-&gt;{"timerefresh"}-&gt;{"tr"}
+    = [ "Erişim kısıtlaması olan bir zaman diliminden çıktığınızda&lt;BR&gt; bu sayfayı, tarayıcınızın",
+        "\&amp;lt\;Yeniden Yükle\&amp;gt\; tuşunu&lt;BR&gt;",
+        "veya \&amp;lt\;Shift\&amp;gt\;+\&amp;lt\;Yeniden Yükle\&amp;gt\; kullanarak&lt;BR&gt;",
+        "yeniden yüklemeniz gerekebilir" ];
+
+  %msg-&gt;{"unknown"}-&gt;{"en"}
+    = [ "Access denied because&lt;BR&gt;",
+        "your clienten is&lt;BR&gt;",
+        "unknown to \$proxy"];
+  %msg-&gt;{"unknown"}-&gt;{"fr"}
+    = [ "Accès interdit car &lt;BR&gt;",
+        "votre client est &lt;BR&gt;",
+        "inconnu de \$proxy"];
+  %msg-&gt;{"unknown"}-&gt;{"no"}
+    = [ "Adgang nektes fordi&lt;BR&gt;",
+        "denne klienten ikke er&lt;BR&gt;",
+        "definert på \$proxy" ];
+  %msg-&gt;{"unknown"}-&gt;{"tr"}
+    = [ "Tarayıcınız \$proxy &lt;BR&gt;",
+        "tarafından tanınmadığından &lt;BR&gt;",
+        "erişiminiz engellendi" ];
+
+  %msg-&gt;{"in-addr"}-&gt;{"en"}
+    = [ "Surfing on plain &lt;U&gt;IP-addresses&lt;/U&gt;&lt;BR&gt;",
+        "is denied from this client&lt;BR&gt;",
+        "for security reasons" ];
+  %msg-&gt;{"in-addr"}-&gt;{"fr"}
+    = [ "Naviguer sur des &lt;U&gt;adresses IP&lt;/U&gt;&lt;BR&gt;",
+        "est refusé à cette machine&lt;BR&gt;",
+        "pour des raisons de sécurité" ];
+  %msg-&gt;{"in-addr"}-&gt;{"no"}
+    = [ "Av sikkerhetsgrunner er&lt;BR&gt;",
+        "surfing på &lt;U&gt;IP-adresser&lt;/U&gt;&lt;BR&gt;",
+        "ikke tillatt fra denne klienten" ];
+  %msg-&gt;{"in-addr"}-&gt;{"tr"}
+    = [ "Güvenlik nedeni ile IP adreslerini",
+        "kullanarak bu istemciden sörf yapmak",
+        "yasaklanmıştır." ];
+
+  %msg-&gt;{"alternatives"}-&gt;{"en"}
+    = [ "The following possible alternatives were found:" ];
+  %msg-&gt;{"alternatives"}-&gt;{"fr"}
+    = [ "Les alternatives suivantes sont possibles:" ];
+  %msg-&gt;{"alternatives"}-&gt;{"no"}
+    = [ "Følgende mulige alternativer ble funnet:" ];
+  %msg-&gt;{"alternatives"}-&gt;{"tr"}
+    = [ "Aşağıdaki alternatifler bulundu:" ];
+
+  %msg-&gt;{"noalternatives"}-&gt;{"en"}
+    = [ "No alternative domainname were found&lt;BR&gt;",
+        "for the server &lt;U&gt;\$address&lt;/U&gt;" ];
+  %msg-&gt;{"noalternatives"}-&gt;{"fr"}
+    = [ "Aucun nom de domaine alternatif n\'a été&lt;BR&gt;",
+        "trouvé pour le serveur &lt;U&gt;\$address&lt;/U&gt;" ];
+  %msg-&gt;{"noalternatives"}-&gt;{"no"}
+    = [ "Finner alternative ingen domenenavn&lt;BR&gt;",
+        " for serveren &lt;U&gt;\$address&lt;/U&gt;" ];
+  %msg-&gt;{"noalternatives"}-&gt;{"en"}
+    = [ "Sunucu &lt;U&gt;\$address&lt;/U&gt; için başka&lt;BR&gt;",
+        "alan adı alternatifi bulunamadı" ];
+
+  %msg-&gt;{"referermaster"}-&gt;{"en"}
+    = [ "Send complaints to the",
+        "&lt;A HREF=\\\"mailto:webmaster\@\$refererhost\\\"&gt;webmaster&lt;/A&gt;&lt;BR&gt;",
+        "of &lt;A HREF=\\\"\$referer\\\"&gt;\$referer&lt;/A&gt;&lt;BR&gt;",
+        "and ask him to correct the link(s) that points to \$url&lt;BR&gt;",
+        "in &lt;A HREF=\\\"\$referer\\\"&gt;\$referer&lt;/A&gt;,&lt;BR&gt;",
+        "with the supposedly correct alternative above" ];
+  %msg-&gt;{"referermaster"}-&gt;{"fr"}
+    = [ "Envoyez les demandes au",
+        "&lt;A HREF=\\\"mailto:webmaster\@\$refererhost\\\"&gt;webmaster&lt;/A&gt;&lt;BR&gt;",
+        "de &lt;A HREF=\\\"\$referer\\\"&gt;\$referer&lt;/A&gt;&lt;BR&gt;",
+        "et demandez lui corriger les liens qui pointent sur \$url&lt;BR&gt;",
+        "dans &lt;A HREF=\\\"\$referer\\\"&gt;\$referer&lt;/A&gt;,&lt;BR&gt;",
+        "avec l\'alternative (supposée correcte) suivante" ];
+  %msg-&gt;{"referermaster"}-&gt;{"no"}
+    = [ "Send evt. klager til",
+        "&lt;A HREF=\\\"mailto:webmaster\@\$refererhost\\\"&gt;webmaster&lt;/A&gt;&lt;BR&gt;",
+        "for &lt;A HREF=\\\"\$referer\\\"&gt;\$referer&lt;/A&gt;&lt;BR&gt;",
+        "og be ham rette linken(e) som peker til \$url&lt;BR&gt;",
+        "i &lt;A HREF=\\\"\$referer\\\"&gt;\$referer&lt;/A&gt;,&lt;BR&gt;",
+        "med det antatt korrekte alternativet over" ];
+  %msg-&gt;{"referermaster"}-&gt;{"tr"}
+    = [ "Şikayetlerinizi &lt;A HREF=\\\"\$referer\\\"&gt;\$referer&lt;/A&gt;'in",
+        "&lt;A HREF=\\\"mailto:webmaster\@\$refererhost\\\"&gt;webyöneticisine&lt;/A&gt;&lt;BR&gt;",
+        "bildirin ve &lt;A HREF=\\\"\$referer\\\"&gt;\$referer&lt;/A&gt;'de &lt;BR&gt;",
+        "\$url'e işaret eden bağları, yukarıda bulunan alternatifle&lt;BR&gt;",
+        "değiştirmesini rica edin." ];
+
+  %msg-&gt;{"webmaster"}-&gt;{"en"}
+    = [ "Send complaints to the &lt;U&gt;webmaster&lt;/U&gt;",
+        "for &lt;U&gt;\$protocol://\$address&lt;/U&gt;&lt;BR&gt;",
+        "and request for a &lt;EM&gt;domainname&lt;/EM&gt; to the server" ];
+  %msg-&gt;{"webmaster"}-&gt;{"fr"}
+    = [ "Envoyez les demandes au &lt;U&gt;webmaster&lt;/U&gt;",
+        "pour &lt;U&gt;\$protocol://\$address&lt;/U&gt;&lt;BR&gt;",
+        "et demandez un &lt;EM&gt;nom de domaine&lt;/EM&gt; pour le serveur" ];
+  %msg-&gt;{"webmaster"}-&gt;{"no"}
+    = [ "Send evt. klager til &lt;U&gt;webmaster&lt;/U&gt;",
+        "for &lt;U&gt;\$protocol://\$address&lt;/U&gt;&lt;BR&gt;",
+        "og anmod om å få knyttet serveren til et &lt;EM&gt;domenenavn&lt;/EM&gt;" ];
+  %msg-&gt;{"webmaster"}-&gt;{"tr"}
+    = [ "&lt;U&gt;\$protocol://\$address&lt;/U&gt; için",
+         "şikayetlerinizi &lt;U&gt;webyöneticisine&lt;/U&gt;",
+        "bildirin ve sunucu için &lt;BR&gt;",
+        "&lt;EM&gt;alan adı&lt;/EM&gt; isteyin" ];
+
+  %msg-&gt;{"deflang"}-&gt;{"en"}
+    = [ "This message is in English because \\\"en\\\"",
+        "is the first supported language&lt;BR&gt;",
+        "of those your browser is set up",
+        "to report as prefered.&lt;BR&gt;",
+        "Supported languages are:",
+        @supported ];
+  %msg-&gt;{"deflang"}-&gt;{"fr"}
+    = [ "Ce message est en français car \\\"fr\\\"",
+        "est la première langue supportée&lt;BR&gt;",
+        "parmi celles que votre navigateur signale comme",
+        "préférée.&lt;BR&gt;",
+        "Les langues supportées sont:",
+        @supported ];
+  %msg-&gt;{"deflang"}-&gt;{"no"}
+    = [ "Denne meldingen er på norsk fordi \\\"no\\\"",
+        "er det første støttede sproget&lt;BR&gt;",
+        "av de din nettleser er satt opp til",
+        "å rapportere som foretrukket.&lt;BR&gt;",
+        "Støttede sprog er:",
+        @supported ];
+
+  %logo-&gt;{"default"}-&gt;{"url"}
+    = "http://www.squidguard.org/images/squidGuard.gif";
+  %logo-&gt;{"default"}-&gt;{"href"}
+    = "http://www.squidguard.org/";
+
+  %logo-&gt;{"default"}-&gt;{"url"}
+    = "http://10.254.254.254/forbidden.gif";
+  %logo-&gt;{"default"}-&gt;{"href"}
+    = "http://10.254.254.254";
+}
+#
+# END OF CONFIGURABLE OPTIONS
+#
+
+#
+# SUBROUTINES:
+#
+
+#
+# RETURN THE FIRST SUPPORTED LANGUAGE OF THE BROWSERS PREFERRED OR THE
+# DEFAULT:
+#
+sub getpreferedlang(@) {
+  my @supported = @_;
+  my @languages = split(/\s*,\s*/,$ENV{"HTTP_ACCEPT_LANGUAGE"}) if(defined($ENV{"HTTP_ACCEPT_LANGUAGE"}));
+  my $lang;
+  my $supp;
+  push(@languages,$supported[0]);
+  for $lang (@languages) {
+    $lang =~ s/\s.*//;
+    for $supp (@supported) {
+      $supp =~ s/\s.*//;
+      return($lang) if ($lang eq $supp);
+    }
+  }
+}
+
+#
+# PARSE THE QUERY_STRING FOR KNOWN KEYS:
+#
+sub parsequery($) {
+  my $query       = shift;
+  my $clientaddr  = %word-&gt;{"unknown"}-&gt;{$lang};
+  my $clientname  = %word-&gt;{"unknown"}-&gt;{$lang};
+  my $clientuser  = %word-&gt;{"unknown"}-&gt;{$lang};
+  my $clientgroup = %word-&gt;{"unknown"}-&gt;{$lang};
+  my $targetgroup = %word-&gt;{"unknown"}-&gt;{$lang};
+  my $url         = %word-&gt;{"unknown"}-&gt;{$lang};
+  if (defined($query)) {
+    while ($query =~ /^\&amp;?([^\&amp;=]+)=\"([^\"]*)\"(.*)/ || $query =~ /^\&amp;?([^\&amp;=]+)=([^\&amp;=]*)(.*)/) {
+      my $key = $1;
+      my $value = $2;
+      $value = %word-&gt;{"unknown"}-&gt;{$lang} unless(defined($value) &amp;&amp; $value &amp;&amp; $value ne "unknown");
+      $query = $3;
+      if ($key =~ /^(clientaddr|clientname|clientuser|clientgroup|targetgroup|url)$/) {
+        eval "\$$key = \$value";
+      }
+      if ($query =~ /^url=(.*)/) {
+        $url = $1;
+        last;
+      }
+    }
+  }
+  return($clientaddr,$clientname,$clientuser,$clientgroup,$targetgroup,$url);
+}
+
+#
+# PRINT HTTP STATUS HEARER:
+#
+sub status($) {
+  my $status = shift;
+  print "Status: $status\n";
+}
+
+#
+# PRINT HTTP LOCATION HEARER:
+#
+sub redirect($) {
+  my $location = shift;
+  print "Location: $location\n";
+}
+
+#
+# PRINT HTTP CONTENT-TYPE HEARER:
+#
+sub content($) {
+  my $contenttype = shift;
+  print "Content-Type: $contenttype\n";
+}
+
+#
+# PRINT HTTP LAST-MODIFIED AND EXPIRES HEARER:
+#
+sub expires($) {
+  my $ttl = shift;
+  my $time = time;
+  my @day = ("Sun","Mon","Tue","Wed","Thu","Fri","Sat");
+  my @month = ("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec");
+  my ($sec,$min,$hour,$mday,$mon,$year,$wday) = gmtime($time);
+  printf "Last-Modified: %s, %d %s %d", $day[$wday],$mday,$month[$mon],$year+1900;
+  printf " %02d:%02d:%02d GMT\n", $hour,$min,$sec;
+  ($sec,$min,$hour,$mday,$mon,$year,$wday) = gmtime($time+$ttl);
+  printf "Expires: %s, %d %s %d", $day[$wday],$mday,$month[$mon],$year+1900;
+  printf " %02d:%02d:%02d GMT\n", $hour,$min,$sec;
+}
+
+#
+# PRINT THE INITIAL HTML TAGS FOR HTML, HEAD, TITLE BODY AND H1:
+#
+sub title($) {
+  my $msgid = shift;
+  my $defl  = $supported[0];
+  my $text;
+  $defl =~ s/\s.*//;
+  print "\n&lt;!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n";
+  print " \"http://www.w3.org/TR/html4/loose.dtd\"&gt;\n";
+
+  print "\n&lt;HTML&gt;\n";
+
+
+  print " &lt;HEAD&gt;\n  &lt;TITLE&gt;\n";
+  if (defined($msg{$msgid}{$lang})) {
+    for $text (@{$title{$msgid}{$lang}}) {
+      eval "\$text = \"$text\"";
+      print "       $text\n";
+    }
+  } else {
+    for $text (@{$title{"default"}{$lang}}) {
+      eval "\$text = \"$text\"";
+      print "       $text\n";
+    }
+  }
+  if ($lang eq "tr" ) {
+        print " &lt;meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-9\"&gt;\n";
+        }
+
+  print "  &lt;/TITLE&gt;\n &lt;/HEAD&gt;\n";
+  print " &lt;BODY BGCOLOR=\"#FFFFFF\"&gt;\n";
+  print "  &lt;TABLE BORDER=0 ALIGN=CENTER WIDTH=100%&gt;\n";
+  print "   &lt;TR&gt;\n";
+  print "    &lt;TD ALIGN=LEFT VALIGN=BOTTOM&gt;\n";
+  print "     &lt;FONT SIZE=7&gt;\n";
+  print "      &lt;B&gt;\n       &lt;U&gt;\n";
+  if (defined($msg{$msgid}{$lang})) {
+    for $text (@{$title{$msgid}{$lang}}) {
+      eval "\$text = \"$text\"";
+      print "       $text\n";
+    }
+  } else {
+    for $text (@{$title{"default"}{$lang}}) {
+      eval "\$text = \"$text\"";
+      print "       $text\n";
+    }
+  }
+  print "       &lt;/U&gt;\n      &lt;/B&gt;\n";
+  print "     &lt;/FONT&gt;\n";
+  print "    &lt;/TD&gt;\n";
+  print "    &lt;TD ROWSPAN=2 ALIGN=RIGHT&gt;\n";
+  if (defined($logo{$msgid}{"url"})) {
+    print "     &lt;A HREF=\"$logo{$msgid}{\"href\"}\"&gt;&lt;IMG\n";
+  } else {
+    print "     &lt;A HREF=\"$logo{\"default\"}{\"href\"}\"&gt;&lt;IMG\n";
+  }
+  if (defined($logo{$msgid}{"url"})) {
+    print "     SRC=\"$logo{$msgid}{\"url\"}\" BORDER=0 ALIGN=TOP&gt;&lt;/A&gt;\n";
+  } else {
+    print "     SRC=\"$logo{\"default\"}{\"url\"}\" BORDER=0 ALIGN=TOP&gt;&lt;/A&gt;\n";
+  }
+  print "    &lt;/TD&gt;\n";
+  print "   &lt;/TR&gt;\n";
+  if ($lang eq $defl &amp;&amp; defined($msg{"deflang"}{$lang})) {
+    print "   &lt;TR&gt;&lt;!-- \$msg{\"deflang\"}{$lang} --&gt;\n";
+    print "    &lt;TD ALIGN=LEFT VALIGN=TOP&gt;\n";
+    print "     &lt;FONT &gt;\n";
+    print "      &lt;B&gt;\n";
+    for $text (@{$msg{"deflang"}{$lang}}) {
+      eval "\$text = \"$text\"";
+      print "       $text\n";
+    }
+    print "      &lt;/B&gt;\n";
+    print "     &lt;/FONT&gt;\n";
+    print "    &lt;/TD&gt;\n";
+    print "   &lt;/TR&gt;\n";
+  }
+  print "  &lt;/TABLE&gt;\n";
+}
+
+#
+# PRINT THE ENDING HTML TAGS FOR BODY AND HTML:
+#
+sub terminator() {
+  print " &lt;/BODY&gt;\n&lt;/HTML&gt;\n";
+}
+
+#
+# PRINT A MESSAGE WITH THE SPECIFIED TYPE (P,H1,H2,..):
+#
+sub msg($$) {
+  my ($type,$msgid) = @_;
+  my $text;
+  print "  &lt;$type ALIGN=CENTER&gt;&lt;!-- \$msg{$msgid}{$lang} --&gt;\n";
+  if (defined($msg{$msgid}{$lang})) {
+    for $text (@{$msg{$msgid}{$lang}}) {
+      eval "\$text = \"$text\"";
+      print "   $text\n";
+    }
+  } else {
+    print "   &lt;EM&gt;&lt;B&gt;ERROR: missing message \"$msgid\"&lt;/B&gt;&lt;/EM&gt;\n";
+  }
+  print "  &lt;/$type&gt;\n";
+}
+
+#
+# PRINT A TABLE WITH THE SPECIFIED FORMAT:
+#
+sub table($$@) {
+  my @format = split(/,/,shift);
+  my $table  = shift;
+  my $cols   = @format;
+  my @msgids = @_;
+  my $msgid;
+  my $text;
+  my %type;
+  %type-&gt;{"L"} = [ "&lt;TD ALIGN=LEFT&gt;", "&lt;/TD&gt;" ];
+  %type-&gt;{"C"} = [ "&lt;TD ALIGN=CENTER&gt;", "&lt;/TD&gt;" ];
+  %type-&gt;{"R"} = [ "&lt;TD ALIGN=RIGHT&gt;", "&lt;/TD&gt;" ];
+  %type-&gt;{"l"} = [ "&lt;TD ALIGN=LEFT&gt;", "&lt;/TD&gt;" ];
+  %type-&gt;{"c"} = [ "&lt;TD ALIGN=CENTER&gt;", "&lt;/TD&gt;" ];
+  %type-&gt;{"r"} = [ "&lt;TD ALIGN=RIGHT&gt;", "&lt;/TD&gt;" ];
+  print "  &lt;TABLE BORDER=0 ALIGN=CENTER&gt;&lt;!-- table(\"$table\") --&gt;\n";
+  if (defined($tab{$table})) {
+    if (defined($tab{$table}{"caption"}{$lang})) {
+      #print "   &lt;CAPTION ALIGN=LEFT&gt;\n";
+      print "   &lt;TD ALIGN=LEFT&gt;\n";
+      print "    &lt;FONT SIZE=+1&gt;\n";
+      for $text (@{$tab{$table}{"caption"}{$lang}}) {
+        eval "\$text = \"$text\"";
+        print "    $text\n";
+      }
+      print "    &lt;/FONT&gt;\n";
+      #print "   &lt;/CAPTION&gt;\n";
+      print "   &lt;/TD&gt;\n";
+    }
+    for $msgid (@msgids) {
+      print "   &lt;TR&gt;\n";
+      if (defined($tab{$table}{$msgid}{$lang})) {
+        my $i = 0;
+        for $text (@{$tab{$table}{$msgid}{$lang}}) {
+          eval "\$text = \"$text\"";
+          print "    $type{$format[$i]}[0]\n";
+          print "     $text\n";
+          print "    $type{$format[$i]}[1]\n";
+          $i++;
+        }
+      } else {
+        print "   $type{$format[0]}[0]\n";
+        print "    &lt;EM&gt;&lt;B&gt;ERROR: missing table message \"$msgid\"&lt;/B&gt;&lt;/EM&gt;\n";
+        print "   $type{$format[0]}[1]\n";
+      }
+      print "   &lt;/TR&gt;\n";
+    }
+  } else {
+    print "   &lt;TR&gt;\n";
+    print "    &lt;TD ALIGN=CENTER&gt;\n";
+    print "     &lt;EM&gt;&lt;B&gt;ERROR: missing message \"$msgid\"&lt;/B&gt;&lt;/EM&gt;\n";
+    print "    &lt;/TD&gt;\n";
+    print "   &lt;/TR&gt;\n";
+  }
+  print "  &lt;/TABLE&gt;\n";
+}
+
+#
+# PRINT A LINK HREF:
+#
+sub href($) {
+  my $href = shift;
+  print "&lt;A HREF=\"$href\"&gt;$href&lt;/A&gt;";
+}
+
+#
+# REVERSE LOOKUP AND RETURN NAMES:
+#
+sub gethostnames($) {
+  my $address = shift;
+  my ($name,$aliases) = gethostbyaddr(inet_aton($address), AF_INET);
+  my @names;
+  if (defined($name)) {
+    push(@names,$name);
+    if (defined($aliases) &amp;&amp; $aliases) {
+      for(split(/\s+/,$aliases)) {
+        next unless(/\./);
+        push(@names,$_);
+      }
+    }
+  }
+  return(@names);
+}
+
+#
+# SPLIT AN URL INTO PROTOCOL, ADDRESS, PORT AND PATH:
+#
+sub spliturl($) {
+  my $url      = shift;
+  my $protocol = "";
+  my $address  = "";
+  my $port     = "";
+  my $path     = "";
+  $url =~ /^([^\/:]+):\/\/([^\/:]+)(:\d*)?(.*)/;
+  $protocol = $1 if(defined($1));
+  $address  = $2 if(defined($2));
+  $port     = $3 if(defined($3));
+  $path     = $4 if(defined($4));
+  return($protocol,$address,$port,$path);
+}
+
+#
+# SHOW THE CONFIGURED MESSAGE AS HTML:
+#
+sub showhtml($) {
+  my $msgid = shift;
+  status("403 Forbidden");
+  content("text/html");
+  expires(0);
+  title($msgid);
+  $msgid = "default" unless(defined($msgconf{$msgid}));
+  if (defined($msgconf{$msgid})) {
+    print "  &lt;!-- showhtml(\"$msgid\") --&gt;\n";
+    for (@{$msgconf{$msgid}}) {
+      my @config = split(/:/);
+      my $type = shift(@config);
+      if ($type eq "msg") {
+        msg($config[0],$config[1]);
+      } elsif ($type eq "tab") {
+        table(shift(@config),shift(@config),@config);
+      }
+    }
+  } else {
+    print "  &lt;P&gt;&lt;EM&gt;&lt;B&gt;ERROR: missing msgconf for \"$msgid\"&lt;/B&gt;&lt;/EM&gt;&lt;/P&gt;\n";
+  }
+  terminator();
+}
+
+#
+# SEND OUT AN IMAGE:
+#
+sub showimage($$$) {
+  my ($type,$file,$redirect) = @_;
+  content("image/$type");
+  expires(300);
+  redirect($redirect) if($redirect);
+  print "\n";
+  open(GIF, "$ENV{\"DOCUMENT_ROOT\"}$file");
+  print &lt;GIF&gt;;
+  close(GIF)
+}
+
+#
+# SHOW THE INADDR ALERNATIVES WITH OPTIONAL ATOREDIRECT:
+#
+sub showinaddr($$$$$) {
+  my ($targetgroup,$protocol,$address,$port,$path) = @_;
+  my $msgid = $targetgroup;
+  my @names = gethostnames($address);
+  if($autoinaddr == 2 &amp;&amp; @names || $autoinaddr &amp;&amp; @names==1) {
+    status("301 Moved Permanently");
+    redirect("$protocol://$names[0]$port$path");
+  } elsif (@names&gt;1) {
+    status("300 Multiple Choices");
+  } elsif (@names) {
+    status("301 Moved Permanently");
+  } else {
+    status("404 Not Found");
+  }
+  if ($path =~ /\.(gif|jpg|jpeg|mp3|mpg|mpeg|avi|mov)$/i) {
+    showimage("gif",$image,$redirect);
+  } elsif (@names) {
+    content("text/html");
+    expires(0);
+    title($msgid);
+    $msgid = "in-addr" unless(defined($msgconf{$msgid}));
+    if (defined($msgconf{$msgid})) {
+      print "  &lt;!-- showinaddr(\"$msgid\") --&gt;\n";
+      for (@{$msgconf{$msgid}}) {
+        my @config = split(/:/);
+        my $type = shift(@config);
+        if ($type eq "msg") {
+          msg($config[0],$config[1]);
+        } elsif ($type eq "tab") {
+          table(shift(@config),shift(@config),@config);
+        } elsif ($type eq "alternatives") {
+          print "  &lt;TABLE BORDER=0 ALIGN=CENTER&gt;\n";
+          for (@names) {
+            print "   &lt;TR&gt;\n    &lt;TD ALIGN=LEFT&gt;\n     &lt;FONT SIZE=+1&gt;";
+            href("$protocol://$_$port$path");
+            print "\n     &lt;/FONT&gt;\n    &lt;/TD&gt;\n   &lt;/TR&gt;\n";
+          }
+          print "  &lt;/TABLE&gt;\n\n";
+          if (defined($ENV{"HTTP_REFERER"}) &amp;&amp; $ENV{"HTTP_REFERER"} =~ /:\/\/([^\/:]+)/) {
+            $refererhost = $1;
+            $referer = $ENV{"HTTP_REFERER"};
+            msg("H4","referermaster");
+          }
+        }
+      }
+    } else {
+      print "  &lt;P&gt;&lt;EM&gt;&lt;B&gt;ERROR: missing msgconf for \"$msgid\"&lt;/B&gt;&lt;/EM&gt;&lt;/P&gt;\n";
+    }
+    terminator();
+  } else {
+    showhtml("noalternatives");
+  }
+}
+
+#
+# NOW JUST DO IT:
+#
+msginit();
+if ($targetgroup eq "in-addr") {
+  showinaddr($targetgroup,$protocol,$address,$port,$path);
+} elsif ($url =~ /\.(gif|jpg|jpeg|mp3|mpg|mpeg|avi|mov)$/i) {
+  status("403 Forbidden");
+  showimage("gif",$image,$redirect);
+} else {
+  showhtml($clientgroup);
+}
+exit 0;
+</pre></div>
+    </dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/proxy-fw_filter-conf.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/proxy-fw.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/proxy-fw_perde-xml.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">B. filter.conf dosyası </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> D. perde.xml dosyası</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

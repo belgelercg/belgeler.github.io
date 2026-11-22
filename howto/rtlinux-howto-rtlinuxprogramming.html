@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:19+03:00" /><title>RTLinux Programları Yazmak</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/rtlinux-howto.html" title="RTLinux için Modül Geliştirme NASIL" /><link rel="previous" href="../howto/rtlinux-howto-whyrtlinux.html" title="Neden RTLinux" /><link rel="next" href="../howto/rtlinux-howto-compile.html" title="Derleme ve Çalıştırma" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">RTLinux Programları Yazmak</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/rtlinux-howto-whyrtlinux.html">Önceki</a> </td><th width="60%" align="center">RTLinux için Modül Geliştirme NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/rtlinux-howto-compile.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="rtlinux-howto-rtlinuxprogramming" id="rtlinux-howto-rtlinuxprogramming"></a>RTLinux Programları Yazmak</div><dl><dd> <div class="head3"><a name="rtlinux-howto-writingmodulles" id="rtlinux-howto-writingmodulles"></a>Modül Yazımına Giriş</div><dl><dd><div class="para">Modül nedir, dersek? Bir Linux modülü <b><tt>gcc</tt></b>'nin <tt>-c</tt> seçeneği ile kullanılması sonucu oluşan nesne dosyasından başka birşey değildir. Bir modül, sıradan bir C dili dosyasının <tt>main()</tt> işlevi olmaksızın derlenmesiyle oluşur. <tt>main()</tt> işlevi yerine <tt>init_module/cleanup_module</tt> işlev çifti vardır:
+</div>
+<ul type="disc" class="itemizedlist"><li><tt>init_module()</tt> işlevi, modül çekirdeğe eklenirken çağrılır. Bu işlev başarı halinde 0, başarısızlık halinde negatif değer döndürmelidir.
+</li><li><tt>cleanup_module()</tt> işlevi, tam modül kaldırılırken çağrılır.
+</li></ul>
+<div class="para">
+Genellikle, <tt>init_module()</tt> ya çekirdekle bir şeyler için bir eylemcinin varlığını bildirir ya da bir çekirdek işlevini kendi kodu ile değiştirir (genellikle kod bir şeyler yaptıktan sonra orjinal işlevi çağırır). <tt>cleanup_module()</tt> işlevinin <tt>init_module()</tt> işlevinin yaptığını geri aldığı kabul edilir, böylece modül emniyetle kaldırılabilir.
+</div><div class="para">
+Örneğin, eğer siz <tt>module.c</tt> diye bir C dosyası yazarsanız (<tt>main()</tt> işlevi <tt>init_module()</tt> ve <tt>cleanup_module()</tt> işlevleriyle değiştirilerek), bu kod,
+</div>
+<div class="para"><div align="right"><pre class="screen">$ <b><tt>gcc -c {BAZI-SEÇENEKLER} my_module.c</tt></b></pre></div></div>
+<div class="para">
+ile bir modüle dönüştürülebilir. Bu komut;
+</div>
+<div class="para"><div align="right"><pre class="screen">$ <b><tt>insmod module.o</tt></b></pre></div></div>
+<div class="para">
+gibi bir '<b><tt>insmod</tt></b>' komutuyla çekirdeğe eklenebilen <tt>module.o</tt> isimli bir modül dosyası oluşturur. Benzer biçimde, bu modülü kaldırmak için '<b><tt>rmmod</tt></b>' komutunu kullanabilirsiniz:
+</div>
+<div class="para"><div align="right"><pre class="screen">$ <b><tt>rmmod module</tt></b></pre></div></div>
+</dd></dl> <div class="head3"><a name="rtlinux-howto-creatingthreads" id="rtlinux-howto-creatingthreads"></a>RTLinux Evrelerinin Oluşturulması</div><dl><dd><div class="para">
+Bir gerçek zamanlı uygulama genellikle çeşitli evrelerin çalışmalarının birleşimidir. Evreler bir ortak adres uzayını paylaşan hafif süreçlerdir. RTLinux'da, bütün evreler Linux çekirdeğinin adres uzayını paylaşır. Evreleri kullanmanın avantajı, evreler arasındaki geçişin bağlamsal geçişlere göre oldukça ucuz olmasıdır. Aşağıdaki örnekte görüleceği gibi farklı işlevler kullanarak bir evrenin çalışması üzerinde tam bir denetim kurabiliriz.
+</div></dd></dl> <div class="head3"><a name="rtlinux-howto-exampleprogramme" id="rtlinux-howto-exampleprogramme"></a>Örnek Bir Program</div><dl><dd><div class="para">
+Bir evrenin çalışmasını anlamanın en iyi yolu, bir gerçek zamanlı programı izlemektir. Örneğin, aşağıda görünen program her saniye bir kez çalışacak ve her bir yineleme sırasında 'Merhaba Dunya' yazacak.
+</div><dl class="example"><dt class="example"><a class="example" name="idxmp21" id="idxmp21"></a><b>Örnek 12.1. hello.c dosyası</b></dt><dd class="example"><div class="para"><div align="right"><pre class="programlisting">
+#include &lt;rtl.h&gt;
+#include &lt;time.h&gt;
+#include &lt;pthread.h&gt;
+
+pthread_t evre;
+
+void * evre_kodu(void)
+{
+        pthread_make_periodic_np(pthread_self(), gethrtime(), 1000000000);
+
+        while (1)
+        {
+                pthread_wait_np ();
+                rtl_printf("Merhaba Dunya\n");
+        }
+
+        return 0;
+}
+
+int init_module(void)
+{
+   return pthread_create(&amp;evre, NULL, evre_kodu, NULL);
+}
+
+void cleanup_module(void)
+{
+   pthread_delete_np(evre);
+}
+</pre></div></div></dd></dl><div class="para">
+Şöyle <tt>init_module()</tt> ile başlayalım. <tt>init_module()</tt>, <b><tt>pthread_create()</tt></b> işlevini çağırır. Bu, çağrılan evre ile aynı anda çalışan yeni bir evre oluşturmak içindir. <i>Bu işlev sadece Linux çekirdek evresinden çağrılabilir (<tt>init_module()</tt> kullanılarak)</i>.
+</div>
+<div class="para"><pre class="literallayout">
+int  pthread_create(pthread_t      *evre,
+                    pthread_attr_t *oznitelik,
+                    void           * (*evre_kodu)(void *),
+                    void           *arg);
+</pre></div>
+<div class="para">
+Oluşturulan yeni evre <tt>pthread.h</tt> başlık dosyasında tanımlanan <b><tt>pthread_t</tt></b> türündedir. Bu evre, <tt>evre_kodu()</tt> işlevini,  argümanını <i><tt>arg</tt></i> ile aktararak çalıştırır. <i><tt>oznitelik</tt></i> değişkeni yeni evreye uygulanacak evre özniteliklerini belirler. Eğer <i><tt>oznitelik</tt></i> NULL ise, öntanımlı öznitelikler kullanılır.
+</div><div class="para">
+Bundan dolayı burada, <tt>evre_kodu()</tt> argümansız çağrılır. <tt>evre_kodu</tt> üç bileşenden (ilklendirme, çalışma ve sonlandırma) oluşur.
+</div><div class="para">
+İlkllendirme aşamasında <tt>pthread_make_periodic_np()</tt> çağrısı yapılır.
+</div>
+<div class="para"><pre class="literallayout">
+int pthread_make_periodic_np(pthread_t evre,
+                             hrtime_t  başlatma_anı,
+                             hrtime_t  süre);
+</pre></div>
+<div class="para">
+<tt>pthread_make_periodic_np</tt> <i><tt>evre</tt></i>'yi çalışmaya hazır olarak imler. Evre <i><tt>başlatma_anı</tt></i>'nda çalışmasına başlayacak ve nanosaniyelerle belirlenmiş bir <i><tt>süre</tt></i>'yle çalışacaktır.
+</div><div class="para">
+<tt>gethrtime</tt> işlevi sistemin başlamasından beri geçen zamanı nanosaniyeler cinsinden döndürür.
+</div>
+<div class="para"><pre class="literallayout">
+hrtime_t gethrtime(void);
+</pre></div>
+<div class="para">
+Bu zaman asla sıfırlanamaz ya da ayarlanamaz. <tt>gethrtime</tt>, daima monoton artan değerler verir. <b><tt>hrtime_t</tt></b> türü, 64 bitlik işaretli tamsayı belirtir.
+</div><div class="para">
+<tt>pthread_make_periodic_np()</tt> çağrısıyla evre, işlemci zamanlayıcısına bu evreyi bir saniyede bir çalıştırmasını söyler. Bu, evre için ilklendirme bölümünün sonudur.
+</div><div class="para">
+<tt>while()</tt> döngüsü, çalışmakta olan gerçek zamanlı evreyi sonraki <i><tt>süre</tt></i>'nin başlamasına kadar beklemeye alacak <tt>pthread_wait_np()</tt> işlevine bir çağrı ile başlar. Bu evre önceki bir <tt>pthread_make_periodic_np</tt> çağrısını ile devreye alınır. Evre tekrar çağrılır çağrılmaz, başka bir <tt>pthread_wait_np()</tt> çağrısıyla karşılaşana kadar <tt>while</tt> döngüsünde kalanlar çalıştırılır.
+</div><div class="para">
+Bizim döngüden çıkmamızı sağlayacak bir yol olmadığından bu evre 1Hz'lik sıklıkla çalıştırılmaya devam edecektir. Programı sonlandırmanın tek yolu <b><tt>rmmod</tt></b> komutu ile onu çekirdekten ayırmaktır. Bu, evreye ayrılan özkaynakları serbest bırakarak evrenin iptal edilmesini sağlayan <tt>pthread_delete_np()</tt> işlevini çağıracak olan <tt>cleanup_module()</tt> işlevini çağıracaktır.
+</div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/rtlinux-howto-whyrtlinux.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/rtlinux-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/rtlinux-howto-compile.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Neden RTLinux </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Derleme ve Çalıştırma</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

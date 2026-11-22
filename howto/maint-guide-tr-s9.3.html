@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:05+03:00" /><title>Yeni üstdüzey dağıtım (gerçekçi)</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/maint-guide-tr-s9.html" title="Paketin Güncellenmesi" /><link rel="previous" href="../howto/maint-guide-tr-s9.2.html" title="Yeni üstdüzey dağıtım (kolay yol)" /><link rel="next" href="../howto/maint-guide-tr-s9.4.html" title="orig.tar.gz dosyası" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Yeni üstdüzey dağıtım (gerçekçi)</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/maint-guide-tr-s9.2.html">Önceki</a> </td><th width="60%" align="center">Paketin Güncellenmesi</th><td width="20%" align="right"> <a accesskey="n" href="../howto/maint-guide-tr-s9.4.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="maint-guide-tr-s9.3" id="maint-guide-tr-s9.3"></a>Yeni üstdüzey dağıtım (gerçekçi)</div><dl><dd><div class="para">
+Paketleri Debian arşivi için hazırlarken, oluşan paketleri ayrıntılı bir şekilde kontrol etmelisiniz. Burada bunun daha gerçekçi bir örneği var:
+      </div><ol class="orderedlist" start="ignore" type="1"><li><div class="listitem"><div class="para">Yeni üstdüzey kaynaktaki değişiklikleri doğrulayın:
+        </div><ul type="disc" class="itemizedlist"><li><div class="para">
+Yeni üstdüzey sürümün <tt>changelog</tt>, <tt>NEWS</tt> ve yeni sürümle birlikte dağıtılmış her ne başka belgelesi varsa okuyunuz.
+          </div></li><li><div class="para">
+<tt>diff -urN</tt>'yi kullanarak eski ve yeni sürüm arasındaki değişikliklerin esas olarak nerelerde yapılmış olduğunu  anlamaya çalışın ve ayrıca, şüpheli gördüğünüz herşeye bir göz atın.
+          </div></li></ul>
+        </div></li><li><div class="listitem"><div class="para">
+Eski Debian paketini yenisine uyarlayın:
+        </div><ul type="disc" class="itemizedlist"><li><div class="para">
+Kaynak tar paketini açın ve kaynak ağacının kökünü <tt>&lt;paketismi&gt;-&lt;üstdüzey_sürümü&gt;/</tt> olarak yeniden isimlendirin, <b><tt>cd</tt></b> ile dizinin içine girin.
+          </div></li><li><div class="para">
+Sıkıştırılmış tar dosyasını üst dizine kopyalayın ve ismini <tt>&lt;paketismi&gt;_&lt;üstdüzey_sürümü&gt;.orig.tar.gz</tt> olarak değiştirin.
+          </div></li><li><div class="para">
+Eski kaynak ağacına yaptığınız benzer değişiklikleri yeni kaynak ağacına da yapın. Olası yöntemler şunlar olabilir:
+          </div><ul type="disc" class="itemizedlist"><li style="list-style-type: disc"><b><tt>zcat </tt></b><i><tt>/dosya/yolu/&lt;paketismi&gt;_&lt;eski_sürüm&gt;</tt></i><b><tt>.diff.gz | patch -p1</tt></b> komutu,
+            </li><li style="list-style-type: disc"><b><tt>uupdate</tt></b> komutu,
+            </li><li style="list-style-type: disc">
+Eğer kaynak kod yönetimi için bir Subversion deposunu kullanıyorsanız, <b><tt>svn merge</tt></b> komutu kullanın veya
+            </li><li style="list-style-type: disc">
+eğer <b><tt>dpatch</tt></b> ile paketlendiyse basitçe eski kaynak kodundaki <tt>debian/</tt> dizinini kopyalayın
+            </li></ul>
+          </li><li><div class="para">
+Eski <tt>changelog</tt> kayıtlarını koruyun (sesler geliyor... ama bazen kazalar olabiliyor...)
+          </div></li><li><div class="para">
+Yeni paket sürümü, üstdüzey sürüm numarasına <tt>-1</tt> Debian yayım numarası eklenmesiyle elde edilen yeni sürüm numarası olacaktır, örn., <tt>0.9.13-1</tt>.
+          </div></li><li><div class="para">
+<tt>debian/changelog</tt> dosyasının başına bu yeni sürümü "New Upstream Release" (Yeni üstdüzey dağıtım) şeklinde bir girdi olarak ekleyin. Örneğin, <b><tt>dch -v 0.9.13-1</tt></b>.
+          </div></li><li><div class="para">
+Özlü bir şekilde, yeni sürümde bildirilmiş hataları gidermek üzere yaptığınız değişiklikleri açıklayın ve <tt>changelog</tt> dosyasında bu hataları kapatın.
+          </div></li><li><div class="para">
+Özlü bir şekilde, yeni sürümde bildirilmiş hataları gidermek üzere üstdüzey geliştiricinin yaptığı değişiklikleri açıklayın ve <tt>changelog</tt> dosyasında bu hataları kapatın.
+          </div></li><li><div class="para">
+Eğer yama/birleştir (patch/merge) temiz bir şekilde uygulanmazsa, neyin hatalı gitmiş olabileceğini araştırın (ipuçları <tt>.rej</tt> dosyalarındadır). Genellikle sorun, yaptığınız yamanın üstdüzey kodlara zaten uygulanmış olması nedeniye yamanın ilgisiz kalmasıdır.
+          </div></li><li><div class="para">
+Yeni sürüme geçiş sessiz ve rahatsız etmeden olmalıdır (var olan kullanıcılar yeni sürüme geçişi, eski hataların düzeltildiğini ve yeni özelliklerinin eklendiğini farketmeleri dışında farketmemelidir).<sup>[<a name="id58" href="#ftn.id58" id="id58">58</a>]</sup>
+          </div></li><li><div class="para">
+Eğer silinmiş şablon dosyaları herhangi bir nedenle eklemek ihtiyacı duyarsanız, <b><tt>dh_make</tt></b> komutunu <tt>-o</tt> seçeneği ile zaten debianlaşmış dizinde çalıştırıp daha sonra da bunları düzenleyiniz.
+          </div></li><li><div class="para">
+Mevcut Debian değişiklikleri yeniden değerlendirilmelidir; aksini zorlayan nedenler olmadıkça üstdüzey sürümün (öyla ya da böyle) zaten sağladığı elemanları atın, yoksa onları saklamayı unutmayın.
+          </div></li><li><div class="para">
+Eğer derleme sistemine özgü herhangi bir değişiklik yapıldıysa (bunu 1. adımdan bileceksiniz), <tt>debian/rules</tt> ve <tt>debian/control</tt> dosyalarını derleme bağımlılıkları açısından gerekliyse güncelleyin.
+          </div></li></ul>
+        </div></li><li><div class="listitem"><div class="para">
+Yeni paketi <a href="../howto/maint-guide-tr-s6.3.html" class="xref" title="debuild komutu">debuild komutu</a> veya <a href="../howto/maint-guide-tr-s7.6.html" class="xref" title="pbuilder paketi">pbuilder paketi</a> bölümünde açıklandığı gibi derleyiniz. Bunun için <b><tt>pbuilder</tt></b> kullanımı da tercih edilebilir.
+        </div></div></li><li><div class="listitem"><div class="para">
+Yeni paketlerin olması gerektiği gibi derlendiğini doğrulayın:
+        </div><ul type="disc" class="itemizedlist"><li><a href="../howto/maint-guide-tr-s7.html" class="xref" title="Paketin hatalara karşı denetimi">Paketin hatalara karşı denetimi</a> bölümündekileri uygulayın.
+          </li><li><a href="../howto/maint-guide-tr-s9.6.html" class="xref" title="Paket yükseltiminin doğrulanması">Paket yükseltiminin doğrulanması</a> bölümündekileri uygulayın.
+          </li><li><a class="ulink" href="http://www.debian.org/Bugs/" target="_top">Debian Hata İzleme Sistemi</a>nde hala açık olan fakat giderilmiş hatalar var mı diye tekrar kontrol edin.
+          </li><li>
+Paketin doğru dağıtıma gönderildiğinden, uygun hata kapatmalarının <tt>Closes:</tt> alanında listelendiğinden, <tt>Maintainer:</tt> ve <tt>Changed-By:</tt> alanlarının eşleştiğinden ve dosyanın GPG imzalı olduğundan, v.s. emin olmak için <tt>.changes</tt> dosyasının içeriğini kontrol edin.
+          </li></ul>
+        </div></li><li><div class="listitem"><div class="para">
+Paketleme sırasında birşeyi düzeltmek için bir değişiklik yaparsanız, 2. adıma dönerek herşey aklınıza yatana kadar işlemleri tekrarlayın.
+        </div></div></li><li><div class="listitem"><div class="para">
+Eğer paketinizin sponsorlarca desteklenmesi gerekiyorsa, derleme aşamasında özel seçenekler kullanılması gerekliyse (<b><tt>dpkg-buildpackage -sa -v ...</tt></b> gibi) bunları not alın ve sponsorlarınızın paketi düzgün şekilde oluşturmaları için onları bilgilendirin.
+        </div></div></li><li><div class="listitem"><div class="para">
+Paketi arşive kendiniz gönderecekseniz, <a href="../howto/maint-guide-tr-s8.html" class="xref" title="Paketin Debian'a gönderilmesi">Paketin Debian'a gönderilmesi</a> bölümünde açıklananları uygulayın.
+        </div></div></li></ol><div class="footnotes"><br /><hr width="100" align="left" /><div class="footnote"><div class="para"><sup>[<a name="ftn.id58" href="#id58" id="ftn.id58">58</a>] </sup>
+Please make your package properly updates the config file upon upgrades
+using well designed <tt>postinst</tt> etc., so that it
+<b>doesn't</b> do things not wanted by the user!  These are
+the enhancements that explain <b>why</b> people choose Debian.
+When the upgrade is necessarily intrusive (eg., config files scattered
+through various home directories with totally different structure), you
+may consider to set package to the safe default (e.g., disabled service)
+and provide proper documentations required by the policy
+(<tt>README.Debian</tt> and <tt>NEWS.Debian</tt> ) as the last
+resort. But don't bother with the debconf note.
+</div></div></div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/maint-guide-tr-s9.2.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/maint-guide-tr-s9.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/maint-guide-tr-s9.4.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Yeni üstdüzey dağıtım (kolay yol) </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> orig.tar.gz dosyası</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

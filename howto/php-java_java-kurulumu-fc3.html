@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:26+03:00" /><title>Fedora Core 3 için</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/php-java_java-kurulumu.html" title="Java Kurulumu" /><link rel="previous" href="../howto/php-java_java-kurulumu.html" title="Java Kurulumu" /><link rel="next" href="../howto/php-java_java-kurulumu-debian.html" title="Debian için" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Fedora Core 3 için</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/php-java_java-kurulumu.html">Önceki</a> </td><th width="60%" align="center">Java Kurulumu</th><td width="20%" align="right"> <a accesskey="n" href="../howto/php-java_java-kurulumu-debian.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="php-java_java-kurulumu-fc3" id="php-java_java-kurulumu-fc3"></a>Fedora Core 3 için</div><dl><dd><div class="para">
+Sun/J2SDK Paketi indirilmelidir. <a class="ulink" href="http://java.sun.com" target="_top">http://java.sun.com</a> adresinden kendi kendini kuran (self-extracting) paketi (örn, <tt>j2sdk-1_4_2_08-linux-i586.bin</tt>, 35565 kB) indirin.
+  </div><div class="para">
+Ardından sisteme root olarak girin ve <tt>.bin</tt> uzantılı dosyayı indirdiğiniz dizinde aşağıdaki komutları çalıştırıp ekrana gelen yönergeleri izleyin. Size Sun firmasının kullanıcı sözleşmesi gösterilecek, sayfanın sonuna gelinceye kadar space tuşuna basın ve sonra <tt>yes</tt> yazarak sözleşmeyi kabul ettiğinizi iletin.
+  </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>chmod +x j2sdk-1_4_2_08-linux-i586.bin</tt></b>
+# <b><tt>./j2sdk-1_4_2_08-linux-i586.bin</tt></b>
+</pre></div></div>
+  <div class="para">
+Bu işlem sonunda aynı dizin altında <tt>j2sdk-1.4.2_08</tt> dizini altına paket açılmış olacak. Bu dizinin tam yolunun <tt>/usr/src/j2sdk-1.4.2_08</tt> olduğunu varsayıyorum. Siz aşağıdaki işlemlerde bunun yerine kendi dizin yolunuzu yazacaksınız.
+  </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cd /usr</tt></b>
+# <b><tt>mkdir java</tt></b>
+# <b><tt>cd java</tt></b>
+# <b><tt>ln -s /usr/src/j2sdk-1.4.2_08</tt></b>
+</pre></div></div>
+  <div class="para">
+<tt>/etc/profile</tt> dosyasına şu satırları ekleyin:
+  </div>
+<div class="para"><div align="right"><pre class="screen">JAVA_HOME=/usr/java/j2sdk1.4.2_08
+JDK_HOME=$JAVA_HOME
+PATH=$PATH:$JAVA_HOME/bin
+export $JAVA_HOME $JDK_HOME $PATH
+</pre></div></div>
+  <div class="para">
+Bu işlemin ardından dosyayı çalıştırıp yaptığımız ayarların etkin olmasını sağlıyoruz:
+  </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>. /etc/profile</tt></b></pre></div></div>
+  <div class="para">
+Şimdi kurulumuzu sınayalım:
+  </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>java -version</tt></b>
+java version "1.4.2_08"
+Java(TM) 2 Runtime Environment, Standard Edition (build 1.4.2_08-b03)
+Java HotSpot(TM) Client VM (build 1.4.2_08-b03, mixed mode)
+</pre></div></div>
+  <div class="para">
+Önemli bir ekleme daha yapalım. <tt>/etc/ld.so.conf</tt> dosyasını açıp aşağıdaki yolları dosyaya ekleyin. Hemen ardından <b><tt>ldconfig -v</tt></b> komutunu çalıştırıp yolların geçerli olmasını sağlamalısınız.
+  </div>
+<div class="para"><div align="right"><pre class="screen">/usr/java/j2sdk1.4.2_08/jre/lib/i386
+/usr/java/j2sdk1.4.2_08/jre/lib/i386/client
+/usr/java/j2sdk1.4.2_08/jre/lib/i386/server
+</pre></div></div>
+  <div class="para">
+PHP'nin Java modülü üç kütüphane dosyasını nedense standart kütüphane yollarında arıyor. Bu isteği yerine getirmek için dosyaları <tt>/usr/lib</tt> dizinine kopyalamak yeterli; siz isterseniz, sembolik bağ oluşturabilirsiniz:
+  </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cp /usr/java/j2sdk1.4.2_08/jre/lib/i386/libjava.so /usr/lib</tt></b>
+# <b><tt>cp /usr/java/j2sdk1.4.2_08/jre/lib/i386/libverify.so /usr/libjava</tt></b>
+# <b><tt>cp /usr/java/j2sdk1.4.2_08/jre/lib/i386/server/libjvm.so /usr/lib</tt></b>
+</pre></div></div>
+  <div class="para">ve bunu unutmuyoruz;</div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>ldconfig -v</tt></b></pre></div></div>
+  <div class="para">
+Böylece Java kurulumunu tamamlamış olduk.
+  </div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/php-java_java-kurulumu.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/php-java_java-kurulumu.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/php-java_java-kurulumu-debian.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Java Kurulumu </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Debian için</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

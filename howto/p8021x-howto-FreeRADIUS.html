@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:21+03:00" /><title>Kimlik Kanıtlama Sunucusu: FreeRADIUS'un Kurulması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/p8021x-howto.html" title="802.1X Port Tabanlı Kimlik Kanıtlama NASIL" /><link rel="previous" href="../howto/p8021x-howto-cert.html" title="Sertifikaların Sağlanması" /><link rel="next" href="../howto/p8021x-howto-xsupplicant.html" title="İstemci: Xsupplicant'ın Kurulması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Kimlik Kanıtlama Sunucusu: FreeRADIUS'un Kurulması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/p8021x-howto-cert.html">Önceki</a> </td><th width="60%" align="center">802.1X Port Tabanlı Kimlik Kanıtlama NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/p8021x-howto-xsupplicant.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="p8021x-howto-FreeRADIUS" id="p8021x-howto-FreeRADIUS"></a>Kimlik Kanıtlama Sunucusu: FreeRADIUS'un Kurulması</div><dl><dd><div class="para">
+FreeRADIUS tamamen GPL'li RADIUS sunucu uygulamasıdır. Kimlik kanıtlama mekanizmalarını geniş çapta destekler, ama bu belgede örnek olarak PEAP kullanılmıştır.
+ </div> <div class="head3"><a name="p8021x-howto-instradius" id="p8021x-howto-instradius"></a>FreeRADIUS'un Kurulumu</div><dl><dd><div class="procedure"><div class="formaltitle"><b>Yönerge 3.1. Kurulum</b></div><ol type="1"><li><div class="para">
+FreeRADIUS sitesine gidin, <a class="ulink" href="http://www.freeradius.org/" target="_top">http://www.freeradius.org/</a> ve en son sürümü indirin.
+   </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>cd /usr/local/src</tt></b>
+<tt># </tt><b><tt>wget ftp://ftp.freeradius.org/pub/radius/freeradius-1.0.0.tar.gz</tt></b>
+<tt># </tt><b><tt>tar zxfv freeradius-1.0.0.tar.gz</tt></b>
+<tt># </tt><b><tt>cd freeradius-1.0.0</tt></b>
+</pre></div></div>
+  </li><li><div class="para">
+Paketi yapılandırın, derleyin ve kurun:
+   </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>./configure</tt></b>
+<tt># </tt><b><tt>make</tt></b>
+<tt># </tt><b><tt>make install</tt></b>
+</pre></div></div>
+   <div class="para">
+<b><tt>configure</tt></b><i> betiğini çalıştırırken seçenek belirtebilirsiniz. Daha fazla bilgi için </i><b><tt>./configure --help</tt></b><i> kullanın veya README dosyasını okuyun.</i>
+    </div></li></ol></div><div class="para">
+Çalıştırabilir dosyalar <tt>/usr/local/bin</tt> ve <tt>/usr/local/sbin</tt>'e, yapılandırma dosyaları ise <tt>/usr/local/etc/raddb</tt> altına kurulur.
+ </div><div class="para">
+Eğer birşey yanlış giderse, kaynakla birlikte gelen <tt>INSTALL</tt> ve <tt>README</tt> dosyalarını okuyun. <a class="ulink" href="http://www.freeradius.org/faq/" target="_top">RADIUS SSS</a>'de değerli bilgiler içerir.
+ </div></dd></dl> <div class="head3"><a name="p8021x-howto-confradius" id="p8021x-howto-confradius"></a>FreeRADIUS'un Yapılandırılması</div><dl><dd><div class="para">
+FreeRADIUS büyük ve güçlü bir yapılandırma dosyasına sahiptir. O kadar büyüktür ki, bu dosya daha küçük birkaç dosyaya parçalanıp daha sonra bu dosyalar ana <tt>radius.conf</tt> dosyasına "dahil edilmektedir".
+ </div><div class="para">
+İstediğinizi yapmanız için FreeRADIUS'u kullanmanın ve ayağa kaldırmanın çeşitli yolları vardır: örn., kullanıcı bilgisini LDAP, SQL, PDC, Kerberos, vs.'den alın. Bu belgede, düz metin dosyası <tt>users</tt>'taki kullanıcı bilgisi kullanılmaktadır.
+ </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/tip.png" /></td><th class="admon">İpucu</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Yapılandırma dosyalarına ayrıntılı bir şekilde yorum satırları eklenmiştir, ama eğer yeterli gelmezse kaynakla birlikte gelen <tt>doc/</tt> dizini ek bilgi içerir.
+ </div></td></tr></table></div><div class="procedure"><div class="formaltitle"><b>Yönerge 3.2. Yapılandırma</b></div><ol type="1"><li><div class="para">
+Yapılandırma dosyaları <tt>/usr/local/etc/raddb/</tt> altında bulunabilir.
+   </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt># </tt><b><tt>cd /usr/local/etc/raddb/</tt></b>
+</pre></div></div>
+  </li><li><div class="para">
+Ana yapılandırma dosyası<tt>radiusd.conf</tt>'u açın, <i>ve yorum satırlarını okuyun!</i> Şifreli PEAP tüneli içinde, MS-CHAPv2 kimlik kanıtlama mekanizması kullanılır.
+   </div><ol type="a"><li><div class="para">
+MPPE [<a class="ulink" href="http://www.ietf.org/rfc/rfc3078.txt" target="_top">RFC3078</a>] PMK'yi AP'ye göndermekten sorumludur. Aşağıdaki ayarların yapıldığından emin olun:
+   </div>
+<div class="para"><div align="right"><pre class="programlisting">
+# MODULES altında mschap'ın yorum satırı gibi yer
+# almadığından emin olun!
+mschap {
+  # authtype değeri, eğer varsa, kimlik kanıtlama süresince
+  # Auth-Type'ın üstüne yazmak (veya eklemek) için kullanılacak.
+  # Normalde, MS-CHAP olmalı.
+  authtype = MS-CHAP
+
+  # eğer use_mppe no'ya ayarlanmamışsa, mschap,
+  # MS-CHAPv2 için,MS-CHAPv1 ve MS-MPPE-Recv-Key/MS-MPPE-Send-Key
+  # için MS-CHAP-MPPE-Keys ekleyecektir.
+  use_mppe = yes
+
+  # eğer mppe etkinse, require_encryption ile
+  # şifreleme etkinleştirilebilir.
+  #
+  require_encryption = yes
+
+  # require_strong her zaman 128 bitlik anahtar
+  # şifrelemesi gerektirir.
+  #
+  require_strong = yes
+
+  authtype = MS-CHAP
+  # modül kimlik kanıtlamayı kendi kendine yapabilir VEYA
+  # bir Windows Domain Controller kullanabilir. Bunun nasıl
+  # yapılacağı için radius.conf dosyasına bakınız.
+}
+</pre></div></div>
+      </li><li><div class="para">
+<tt>authorize</tt> ve <tt>authenticate</tt>'in şunları içerdiğinden emin olun:
+   </div>
+<div class="para"><div align="right"><pre class="programlisting">
+authorize {
+    preprocess
+    mschap
+    suffix
+    eap
+    files
+}
+
+authenticate {
+
+      #
+      #  MSCHAP kimlik kanıtlaması.
+      Auth-Type MS-CHAP {
+            mschap
+      }
+
+      #
+      #  EAP kimlik kanıtlamasına izin ver.
+      eap
+  }
+</pre></div></div>
+      </li></ol></li><li><div class="para">
+<tt>clients.conf</tt> dosyasını hangi ağa hizmet ettiğini belirlemek için değiştirin:
+   </div>
+<div class="para"><div align="right"><pre class="programlisting">
+# Burada, hangi ağa hizmet verdiğimizi belirliyoruz:
+client 192.168.0.0/16 {
+    # Bu Kimlik Kanıtlayıcı (erişim noktası) ve Kimlik
+    # Kanıtlama Sunucusu (RADIUS) arasında paylaşılan sırdır.
+    secret          = SharedSecret99
+    shortname       = testnet
+}
+</pre></div></div>
+    </li><li><div class="para">
+<tt>eap.conf</tt> da oldukça açık olmalı.
+    </div><ol type="a"><li><div class="para">
+<tt>default_eap_type</tt>'ı <tt>peap</tt>'e ayarlayınız:
+   </div>
+<div class="para"><div align="right"><pre class="programlisting">
+default_eap_type = peap
+</pre></div></div>
+      </li><li><div class="para">
+PEAP TLS kullandığı için TLS bölümü şunları içermeli:
+   </div>
+<div class="para"><div align="right"><pre class="programlisting">
+tls {
+    # Özel anahtar parolası
+       private_key_password = SecretKeyPass77
+    # Özel anahtar
+    private_key_file = ${raddbdir}/certs/cert-srv.pem
+    # Güvenilir Üst Sertifika Yetkilisi
+    CA_file = ${raddbdir}/certs/demoCA/cacert.pem
+    dh_file = ${raddbdir}/certs/dh
+    random_file = /dev/urandom
+    }
+</pre></div></div>
+      </li><li><div class="para">
+<tt>peap</tt> bölümünü bulun ve aşağıdakini içerdiğinden emin olun:
+   </div>
+<div class="para"><div align="right"><pre class="programlisting">
+peap {
+  #  Tünelli EAP oturumu tünelsiz EAP modülünden farklı
+  #  bir EAP türüne ihtiyaç duyar.
+  #  PEAP tünelinde Windows istemcileri tarafından
+  #  desteklenen öntanımlı tür olarak MS-CHAPv2
+  #  kullanmanızı tavsiye ederiz.
+  default_eap_type = mschapv2
+}
+</pre></div></div>
+      </li></ol></li><li><div class="para">
+Kullanıcı bilgisi bir düz metin dosyası olan <tt>users</tt>'ta tutulur. Kullanıcı bilgisini tutmak için daha karmaşık bir çözüm tercih edilebilirdi (SQL, LDAP, PDC, vs.)., şu an bir IETF taslağıdır.
+   </div><div class="para">
+<tt>users</tt> dosyasının aşağıdaki kaydı içerdiğinden emin olun:
+   </div>
+<div class="para"><div align="right"><pre class="screen">
+"testuser"      User-Password == "Secret149"
+</pre></div></div>
+   </li></ol></div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/p8021x-howto-cert.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/p8021x-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/p8021x-howto-xsupplicant.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Sertifikaların Sağlanması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> İstemci: Xsupplicant'ın Kurulması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2019-10-17T22:36:15+03:00" /><title>Kurulumun Tamamlanması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/qmail-kurulumu-nasil_kur-1.html" title="A. Birinci Tür Kurulum" /><link rel="previous" href="../howto/qmail-kurulumu-nasil_kur-1.html" title="A. Birinci Tür Kurulum" /><link rel="next" href="../howto/qmail-kurulumu-nasil_kur-1.ezmlm.html" title="Ezmlm Kurulumu" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Kurulumun Tamamlanması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/qmail-kurulumu-nasil_kur-1.html">Önceki</a> </td><th width="60%" align="center">A. Birinci Tür Kurulum</th><td width="20%" align="right"> <a accesskey="n" href="../howto/qmail-kurulumu-nasil_kur-1.ezmlm.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="qmail-kurulumu-nasil_kur-1.1" id="qmail-kurulumu-nasil_kur-1.1"></a>Kurulumun Tamamlanması</div><dl><dd><div class="para">
+1. tür kurulumda sistemdeki tüm kullanıcıların sistem kullanıcısı olacağını
+söylemiştik. Sistem kullanıcılarının eposta alabilmeleri için
+kullanıcıların home dizininde <tt>Maildir</tt> dizinin
+oluşturulması lazım. Bunun için <tt>/var/qmail/bin/</tt>
+dizinindeki <tt>maildirmake</tt> komutunu kullanacağız.
+Tek bir kullanıcı için <tt>Maildir</tt> dizini oluşturmak
+istersek:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# su - kullanıcı
+# /var/qmail/bin/maildirmake  ~kullanıcı/Maildir
+</pre></div></div>
+<div class="para">
+komutu ile kullanıcının ev dizininde kullanıcı haklarına sahip bir
+<tt>Maildir</tt> dizini  oluşur.
+      </div>
+Tek tek tüm kullanıcıların ev dizininde elle <tt>Maildir</tt>
+oluşturmak yerine, basit bir kaç kabuk betiği ile bu işi de halledelim..
+<div class="para"><div align="right"><pre class="screen"># echo "./Maildir/" &gt;.qmail</pre></div></div>komutu ile <tt>.qmail</tt>
+dosyasını oluşturun.
+
+<div class="para"><div align="right"><pre class="screen">
+# cp /etc/passwd /var/tmp/tmppass
+# cp .qmail  /var/tmp/
+</pre></div></div>
+<div class="para">
+komutu ile <tt>/etc/passwd</tt> dosyasındaki tüm kullanıcıların
+ev dizinlerinin yollarını <tt>qmailusers</tt> dosyasına ekleyelim.
+      </div><div class="para">
+Bu <tt>/var/tmp/tmppass</tt> dosyasını bir metin düzenleyici ile
+açın ve bu dosyadaki <tt>root</tt>, <tt>ftp</tt>,
+<tt>bin</tt>, <tt>daemon</tt>, <tt>wheel</tt>,
+<tt>lpr</tt>, <tt>tty</tt>, <tt>games</tt>,
+<tt>qmail</tt>* gibi sistemin kendisi ile alakalı kullanıcıların
+bilgilerini silin.
+      </div><div class="para">
+Daha sonra aşağıdaki betiği <tt>createmaildir.pl</tt> olarak
+kaydedin (bu dosyayı <a class="ulink" href="http://www.enderunix.org/docs/createmaildir.pl.gz" target="_top">http://www.enderunix.org/docs/createmaildir.pl.gz</a>  adresinden elde
+edebilirsiniz.)
+</div>
+<div class="para"><div align="right"><pre class="screen">
+###############################################
+# İsmail YENIGUL 27 Temmuz  createmaildir.pl
+#!/usr/bin/perl -w
+open(FILE,"&lt;/var/tmp/tmppass") or die ("Dosya acilamadi");
+while($line=&lt;FILE&gt;) {
+chomp($line);
+@USER=split(/:/,$line);
+$mdir="$USER[5]/Maildir";
+$home=$USER[5];
+$id=$USER[2];
+$gid=$USER[3];
+system("/var/qmail/bin/maildirmake $mdir") ;
+system("cp /var/tmp/.qmail $home");
+system("chown -R $id $mdir $home/.qmail");
+system("chgrp -R $gid $mdir $home/.qmail");
+
+}
+###############################################
+</pre></div></div>
+<div class="para"><tt>qmailusers</tt> dosyasından yukarıda bahsettiğim
+kullanıcıların ev dizini yollarını sildikten sonra
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# perl createmaildir.pl
+</pre></div></div>
+<div class="para">komutunu çalıştırarak sistemdeki
+kullanıcılar için otomatik olarak <tt>Maildir</tt> ve
+<tt>.qmail</tt> dosyasını oluşturun.
+(<tt>qmailuser</tt> ve <tt>createmaildir.pl</tt>
+dosyasının aynı dizinde olması lazım)
+      </div><div class="para">
+<tt>.qmail</tt> dosyasındaki <tt>./Maildir/</tt>
+bilgisi gelen postanın <tt>Maildir</tt> dizinine iletileceğini
+belirtir. <tt>./Maildir/</tt> ifadesinin en sonundaki
+<tt>/</tt> Maildir'ın bir dizin olduğunu belirtir. Eğer Maildir
+değilde <tt>Mailbox</tt> kullansaydınız bu <tt>.qmail</tt>
+dosyasının içeriği <tt>./Mailbox</tt> olacaktı.
+(<tt>Mailbox</tt> dosyası kullanılmasını tavsiye etmem..)
+      </div><div class="para">
+Var olan kullanıcıların <tt>Maildir</tt> dizinleri oluşturulduktan
+sonra yeni kullanıcılar için elle <tt>Maildir</tt> oluşturmak
+yerine <tt>/etc/skel</tt> dizininde <tt>Maildir</tt>
+oluşturarak bu dertten kurtulalım. Kullandığınız sisteme bağlı olarak:
+      </div><div class="variablelist"><dl><dt><span class="term">FreeBSD için</span></dt><dd class="varlist">
+<div class="para"><div align="right"><pre class="screen">
+# /var/qmail/bin/maildirmake /etc/share/skel/Maildir
+# echo "./Maildir/" &gt;/usr/share/skel/.qmail
+</pre></div></div></dd><dt><span class="term">Linux ve Solaris için</span></dt><dd class="varlist">
+<div class="para"><div align="right"><pre class="screen">
+# /var/qmail/bin/maildirmake /etc/skel/Maildir
+# echo "./Maildir/" &gt;/etc/skel/.qmail
+</pre></div></div></dd></dl></div><div class="para">
+Eğer <tt>dot-forward</tt> paketini kurduysaniz ve
+<tt>/var/qmail/rc</tt>'de dot-forward için gerekli değişikliği
+yaptıysanız, kullanıcıların <tt>.forward</tt> dosyasını kullanabilmesi
+için  <tt>.qmail</tt> dosyasını silmeleri gerekir.
+      </div><div class="para">
+<tt>dot-forward</tt> kurmadıysanız <tt>.qmail</tt>
+dosyasını <tt>.forward</tt> dosyası yerine kullanabilirsiniz.
+      </div><div class="para">
+Son olarak <a href="../howto/qmail-kurulumu-nasil_kur-1.pop3.html" class="xref" title="POP3 Sunucusu Kurulumu">POP3 Sunucusu Kurulumu</a> kısmına bakınız.
+      </div><div class="para">
+Sqwebmail kurulumu için <a href="../howto/qmail-kurulumu-nasil_kur-1.sqweb.html" class="xref" title="Sqwebmail Kurulumu">Sqwebmail Kurulumu</a>
+kısmına bakınız.
+      </div><div class="para">
+Courier-IMAP kurmak için <a href="../howto/qmail-kurulumu-nasil_kur-1.cimap.html" class="xref" title="Courier-IMAP Kurulumu">Courier-IMAP Kurulumu</a>
+kısmına bakınız.
+      </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/qmail-kurulumu-nasil_kur-1.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/qmail-kurulumu-nasil_kur-1.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/qmail-kurulumu-nasil_kur-1.ezmlm.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">A. Birinci Tür Kurulum </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Ezmlm Kurulumu</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

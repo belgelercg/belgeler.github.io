@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:26+03:00" /><title>Red Hat Linux Üzerine MRTG Kurulumu</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/mrtg.html" title="MRTG Kurulumu" /><link rel="previous" href="../howto/mrtg-nedir.html" title="Multi Router Traffic Grapher (MRTG) Nedir?" /><link rel="next" href="../howto/mrtg-ayar.html" title="cfgmaker Kullanarak Temel Ayar Dosyalarının Oluşturulması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Red Hat Linux Üzerine MRTG Kurulumu</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/mrtg-nedir.html">Önceki</a> </td><th width="60%" align="center">MRTG Kurulumu</th><td width="20%" align="right"> <a accesskey="n" href="../howto/mrtg-ayar.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="mrtg-kurulum" id="mrtg-kurulum"></a>Red Hat Linux Üzerine MRTG Kurulumu</div><dl><dd> <div class="head3"><a name="id1" id="id1"></a>İşletim Sistemi ve Çevre Bileşenleri</div><dl><dd><div class="para">
+Kurulumda işletim sistemi olarak Red Hat Linux 8.0 kullanılacaktır. İşletim sistemi hakkında bilgi ve tecrübeye sahip olmak, gerekli güncellemeleri yapmak uygulayıcıya bırakılmış konulardır.
+  </div><div class="para">
+Uygulamanın boyutlarına göre uygun bir donanım seçilmelidir. MRTG, daha önce de
+açıklandığı üzere anlık bilgiler sağladığı gibi geçmişe dönük izleme ve analiz yapmamıza da olanak sağlayan bir araçtır. Geçmişteki verileri kullanarak geleceğe dair doğru kararlar almak daima etkin bir planlamanın parçasıdır. Bu yüzden seçeceğimiz donanım bizi yarı yolda bırakmayacak türden olmalıdır. Gelecekteki olası bir kapasite artışı ya da azalışı kararı/ihtiyacı, ancak kesintisiz veri toplamayla doğru sonuca ulaşabilecektir.
+  </div><div class="para">
+Uygulamanın hangi seviyeye kadar inebildiğini göstermek için çok basit bir donanım
+bileşimi kullanacağım:
+  </div>
+    <div class="informaltable"><table cellpadding="3" cellspacing="1" style="background:#999999;" border="0"><colgroup><col /><col /></colgroup><tbody><tr style="background:#eeeedd;"><td>Donanım</td><td>Değerler</td></tr><tr style="background:#ffffee;"><td>IBM PC300</td><td>Kişisel Bilgisayar</td></tr><tr style="background:#ffffee;"><td>İşlemci</td><td>INTEL Pentium 166 MMX</td></tr><tr style="background:#ffffee;"><td>Bellek</td><td>64 MB</td></tr><tr style="background:#ffffee;"><td>Sabit Disk Kapasitesi</td><td>10 GB (IDE HDD)</td></tr><tr style="background:#ffffee;"><td>Ağ Kartı</td><td>3Com 3C905C-TX 10/100 Mbit</td></tr></tbody></table></div>
+  <div class="para">
+Red Hat Linux kurulumu ihtiyaçlarınıza en uygun şekilde yapılmalıdır. Linux üzerinde sadece MRTG ve web sunucu çalışacağı için diğer gereksiz paketler ya hiç kurulmamalı ya da kurulumdan sonra kaldırılmalıdır. Bu işlem, unutularak açık bırakılan gereksiz servislerin sistem üzerinde yaratacağı yükü azaltacak ve bunlardan doğabilecek olası güvenlik açıklarını en baştan bertaraf edecektir.
+  </div><div class="para">
+Bu aşamada “Sunucu Kurulumu” türü seçilerek işletim sistemi yüklenecektir.
+  </div><div class="para">
+Red Hat Linux işletim sisteminde, MRTG sistemini kullanacağınız ağ yapısına uygun olarak
+TCP/IP ayarlarını yapıp test edin.
+  </div><div class="para">
+Kurduğumuz Linux işletim sisteminde, gerekli TCP/IP ayarlarını yapalım:
+  </div>
+<div class="para"><pre class="literallayout">
+  IP ADDRESS: 192.168.2.213
+  NETMASK   : 255.255.255.0
+</pre></div>
+  <div class="para">
+Aynı ağdaki birkaç farklı IP adresini pingleyerek erişimi test edelim.
+  </div><div class="para">
+Denemeler için aynı ağ üzerinde çalışmakta olan “Cisco 1751 Router” ve bu ağın internet
+bağlantısını sağlayan “Motorola SurfBoard SB3100 kablo modem” kullanacağım.
+(izlemek istediğiniz cihazlar, linux ile aynı ağ üzerinde olmak zorunda değildir.)
+  </div><div class="para">
+Cisco 1751 Router Hakkında Gerekli Bilgiler :
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>router&gt;</tt><b><tt>show interfaces</tt></b>
+
+FastEthernet0 is up, line protocol is up
+  Hardware is PQUICC_FEC, address is 0003.6b9a.1cfc
+  Description: connected to EthernetLAN
+  Internet address is 192.168.2.254/24
+...
+
+Serial0 is up, line protocol is up
+  Hardware is PowerQUICC Serial
+  MTU 1500 bytes, BW 1544 Kbit, DLY 20000 usec,
+    reliability 255/255, txload 1/255, rxload 1/255
+  Encapsulation FRAME-RELAY, loopback not set
+...
+
+Serial0.1 is up, line protocol is up
+  Hardware is PowerQUICC Serial
+  Description: connected to Cisco1750_1
+  Internet address is 10.0.0.2/30
+</pre></div></div>
+  <div class="para">
+Cisco router, SNMP yoluyla bilgi alışverişine hazır hale getirilmelidir:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>router&gt;</tt><b><tt>enable</tt></b>
+Password:
+<tt>router#</tt><b><tt>configure terminal</tt></b>
+Enter configuration commands, one per line. End with CNTL/Z.
+<tt>router(config)#</tt><b><tt>snmp-server community public ro</tt></b>
+</pre></div></div>
+  <div class="para">
+<b><tt>Motorola SurfBoard SB3100 Kablo Modem Hakkında Gerekli Bilgiler:</tt></b>
+  </div><div class="para">
+Kablo TV şebekesi üzerinden internet bağlantısı sağlayan bir çok abone bu modemi
+kullanmaktadır. Bu modem kullanıldığı ortamdan bağımsız olarak genelde <tt>192.168.100.1</tt> IP adresini almaktadır. Bunu değiştirmek için modem çalışırken <tt>http://192.168.100.1/config.html</tt> adresine girilebilir. Bu modem için SNMP haberleşmesi her zaman açıktır.
+  </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>RPM Kullanarak MRTG’nin Kurulumu</div><dl><dd><div class="para">
+Kurulum için öncelikle MRTG’nin RPM kurulum dosyasına ihtiyacınız olacaktır.
+Bu dosyayı Red Hat Linux 8.0 kurulum CD’lerinin üçüncüsünden bulabileceğiniz gibi daha
+güncel bir sürüm için <a class="ulink" href="ftp://ftp.linux.org.tr/" target="_top">ftp://ftp.linux.org.tr/</a> adresini de ziyaret edebilirsiniz.
+  </div><div class="para">
+Kurulum CD’sinden bulmanız gereken dosya <tt>mrtg-2.9.17-8.i386.rpm</tt> olacaktır.
+  </div><div class="para">
+Kurulum yapmadan önce, başka RPM dosyalarına ihtiyaç olup olmadığına bakmalısınız:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>[root@camel /mnt/cdrom/RedHat/RPMS]#</tt> <b><tt>rpm -i --test mrtg-2.9.17-8.i386.rpm</tt></b>
+warning: mrtg-2.9.17-8.i386.rpm: V3 DSA signature: NOKEY, key ID db42a60e
+</pre></div></div>
+  <div class="para">
+Herhangi bir uyarı vermeden testi tamamladı. Artık RPM paketini kurabiliriz:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>[root@camel /mnt/cdrom/RedHat/RPMS]#</tt> <b><tt>rpm -ivh mrtg-2.9.17-8.i386.rpm</tt></b>
+warning: mrtg-2.9.17-8.i386.rpm: V3 DSA signature: NOKEY, key ID db42a60e
+Preparing...          ########################################### [100%]
+  1:mrtg              ########################################### [100%]
+</pre></div></div>
+  <div class="para">
+Kurulum da sorunsuz şekilde tamamlandı. MRTG, kullanıma hazır.
+  </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/mrtg-nedir.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/mrtg.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/mrtg-ayar.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Multi Router Traffic Grapher (MRTG) Nedir? </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> cfgmaker Kullanarak Temel Ayar Dosyalarının Oluşturulması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

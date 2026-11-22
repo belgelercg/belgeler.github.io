@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:00+03:00" /><title>Makefile Kullanımı</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/makefile-nasil.html" title="GNU Paket Yapılandırma Sistemi" /><link rel="previous" href="../howto/makefile-nasil-giris.html" title="Giriş" /><link rel="next" href="../howto/makefile-nasil-autoconf_automake.html" title="Autoconf ve Automake Kullanımı" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Makefile Kullanımı</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/makefile-nasil-giris.html">Önceki</a> </td><th width="60%" align="center">GNU Paket Yapılandırma Sistemi</th><td width="20%" align="right"> <a accesskey="n" href="../howto/makefile-nasil-autoconf_automake.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="makefile-nasil-kullanimi" id="makefile-nasil-kullanimi"></a>Makefile Kullanımı</div><dl><dd><div class="para">
+Uygulama geliştirirken sıklıkla nesne dosyalarımızı yeniden ve yeniden oluşturmak zorunda kalırız. Yerine göre <b><tt>gcc</tt></b>, <b><tt>ld</tt></b>, <b><tt>ar</tt></b> vb. uygulamaları tekrar tekrar aynı parametrelere çağırırız. İşte <b><tt>make</tt></b> ugulaması, programların yeniden derlenme sürecini otomatik hale getirmek, sadece değişen kısımların yeniden derlenmesini sağlamak suretiyle zamandan kazanmak ve işlemleri her zaman otomatik olarak doğru sırada yapmak için tasarlanmıştır.
+  </div> <div class="head3"><a name="makefile-nasil-kurallar" id="makefile-nasil-kurallar"></a>Temel Kurallar</div><dl><dd><div class="para">
+<b><tt>make</tt></b> uygulaması çalıştırıldığında, bulunulan dizinde sırasıyla <tt>GNUmakefile</tt>, <tt>makefile</tt> ve <tt>Makefile</tt> dosyalarını arar. Alternatif olarak <tt>-f</tt> seçeneği ile <tt>Makefile</tt> olarak kullanacağınız dosyayı da belirlemeniz mümkün olsa da standartların dışına çıkmamakta fayda var. <b><tt>make</tt></b> neyi nasıl yapacağını bu dosyalardan öğrenecektir. Eğer bulunduğunuz dizinde bir <tt>Makefile</tt> yok ise aşağıdaki gibi bir çıktı alacaksınız demektir:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt>$ </tt><b><tt>make</tt></b>
+make: *** No targets specified and no makefile found.  Stop.
+</pre></div></div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/tip.png" /></td><th class="admon">İpucu</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Genel kabul görmüşlüğü ve göz alışkanlığı açısından dosya adı olarak alternatiflerin yerine <tt>Makefile</tt> kullanmanızı öneririm.
+  </div></td></tr></table></div><div class="para">
+Bir <tt>Makefile</tt> aslında işlemlerin nasıl yapılacağını gösteren kural tanımlamalarından oluşmaktadır. Genel olarak dosyanın biçimi aşağıdaki gibidir:
+  </div><div class="para"><div align="right"><pre class="screen">
+hedef: bağımlılıklar
+&lt;<b>TAB</b>&gt; komut
+&lt;<b>TAB</b>&gt; komut
+&lt;<b>TAB</b>&gt; ...
+Diğer kurala geçmeden bir boş satır
+...
+</pre></div></div><div class="para">
+Burada en sık yapacağımız hata &lt;<b>TAB</b>&gt; tuşuna basmayı unutmak olacaktır. <tt>Makefile</tt> dosyasını hazırladığınız metin düzenleyiciden kaynaklanan bir sorun da olabilir. En iyisi <b><tt>emacs</tt></b> kullanarak <i>makefile-mode</i> ile yazmaktır, böylece hata yapma olasılığınız oldukça azalacaktır.
+  </div><div class="para">
+Kurallar arasında bir satır boş bırakılması <i>GNU make</i> için zorunlu olmamakla birlikte bazı Unix sürümleriyle uyumluluk için boşluk bırakılması gereklidir.
+  </div><div class="para">
+İlk satırda <i>hedef</i>'in oluşturulmasında etkili olan, bağımlılık yaratan dosyalar birbirinden boşluk ile ayrılmış olarak tek satırda listelenir. Eğer bağımlılık kısmında yer alan dosyalardan en az birinin son değiştirilme tarihi, hedef'ten daha yeni ise, hedef yeniden oluşturulur. Diğer durumda hedefin yeniden oluşturulmasına gerek olmadığı anlaşılır, çünkü hedefin bağımlı olduğu dosyalarda son oluşturmadan sonra bir değişiklik olmamıştır. Sonraki satırlarda bağımlılık yaratan bu dosyalardan hedefin oluşturulabilmesi için gerekli komutlar yer alır. Şimdi basit bir örnek yapalım:
+  </div><div class="para"><div align="right"><pre class="screen">
+  test: test.c
+      gcc -o test test.c
+</pre></div></div><div class="para">
+Bu örnekte hedef olarak <b><tt>test</tt></b> uygulaması derlenecektir. Uygulamanın bağımlı olduğu dosya <tt>test.c</tt>'dir. <tt>test.c</tt> dosyasında herhangi bir değişiklik olduğunda veya <b><tt>test</tt></b> silindiğinde, <b><tt>gcc -o test test.c</tt></b> komutu çalıştırılacak ve <b><tt>test</tt></b> yeniden oluşturulacaktır. Şimdi daha karışık bir örnek yapalım:
+  </div><div class="para"><div align="right"><pre class="screen">
+CC = gcc
+CFLAGS = -O2 -Wall -pedantic
+LIBS = -lm -lnsl
+
+test: test.o
+    $(CC) $(CFLAGS) $(LIBS) -o test test.o
+
+test.o: test.c
+    $(CC) $(CFLAGS) -c test.c
+
+clean:
+    rm -f test *.o
+
+install: test
+    cp test /usr/bin
+
+</pre></div></div><div class="para">
+İlk satırda <tt>CC</tt> değişkenine kullanacağımız derleyiciyi atıyoruz. <tt>Makefile</tt> dosyaları içerisinde bu şekilde değişken tanımlaması yapıp, değişkeni dosya içerisinde <tt>$(değişken)</tt> olarak kullanabiliriz. İkinci satırda ise derleyiciye vereceğimiz bazı seçenekleri <tt>CFLAGS</tt> değişkenine atıyoruz. Üçüncü satırda uygulamamızın kullandığı kütüphaneleri listeledik. Ardından ilk kuralımız geliyor. <b><tt>test</tt></b> uygulaması <tt>test.o</tt> dosyasına bağımlı olarak belirtilmiş ve <tt>test.o</tt>'dan <b><tt>test</tt></b>'in oluşturulabilmesi için gerekli komut hemen altında listelenmiştir. Değişkenlerin değerlerini yerine koyduğumuzda komutumuz <b><tt>gcc -O2 -Wall -pedantic -lm -lnsl -o test test.o</tt></b> şeklinde olacaktır.
+  </div><div class="para">
+İkinci kuralımız <tt>test.o</tt>'nun nasıl oluşturulacağını belirtmektedir. Aslında bu iki kural bir önceki örnekte olduğu gibi birleştirilebilir, ancak mantığı anlatabilmek için burada ikiye bölünmüştür. <tt>test.c</tt> dosyasında bir değişiklik olduğunda <tt>test.o</tt> dosyası hemen altında listelenen komutla yeniden oluşturulur: <b><tt>gcc -O2 -Wall -pedantic -c test.c</tt></b>
+  </div><div class="para">
+Üçüncü kuralımızda çalıştığımız dizinde nasıl temizlik yapacağımızı belirtiyoruz. <b><tt>make clean</tt></b> komutunu çalıştırdığımızda <b><tt>test</tt></b> dosyası ve <tt>.o</tt> ile biten nesne dosyaları silinecektir. Bir sonraki kuralımız ise <b><tt>install</tt></b>. Bu kuralda da <b><tt>test</tt></b> dosyasında bir değişme olduğunda <b><tt>cp test /usr/bin</tt></b> komutu ile dosyayı <tt>/usr/bin</tt> dizini altına kopyalıyoruz.
+  </div><div class="para">
+<tt>Makefile</tt> içerisindeki her bir kural <b><tt>make</tt></b> uygulamasına seçenek olarak verilebilir ve ayrıca işletilebilir. Yukarıdaki gibi bir <tt>Makefile</tt> dosyasına sahipsek <b><tt>make test.o</tt></b>  komutuyla sadece <tt>test.o</tt> için verilen kuralın çalıştırılmasını sağlayabiliriz. Veya <b><tt>make install</tt></b> komutuyla sadece <b><tt>install</tt></b> kuralının çalışmasını sağlayabiliriz. Ancak <b><tt>install</tt></b> aynı zamanda <b><tt>test</tt></b>'e bağımlı olduğundan <b><tt>test</tt></b>'in kuralı da çalışır. Aynı şekilde <b><tt>test</tt></b> de <tt>test.o</tt>'ya bağlı olduğundan <tt>test.o</tt> kuralı da çalışacaktır. Komutu seçenek vermeden sadece <b><tt>make</tt></b> şeklinde çalıştırdığınızda ise <tt>Makefile</tt> dosyasını okur ve bulduğu ilk kuralı işler. Bizim örneğimizde ilk kural test olduğu için test dosyasının oluşturulabilmesi için gerekli işlemleri yapacaktır. Bu nedenle <tt>Makefile</tt> dosyalarında ilk kural çoğu zaman <tt>all: test install</tt> gibi olur. Böylece her defasında <b><tt>make xxx</tt></b> yazmak yerine sadece <b><tt>make</tt></b> yazarak hız kazanmış oluruz.
+  </div><div class="para">
+Bu örneği iyice anlamadan sonraki bölümlere devam etmeyiniz. <b><tt>make</tt></b> uygulamasının bu basit ama bir o kadar da güçlü mantığını tam olarak anladığınızda onu sadece kodunuzu derlemek için değil, çok farklı amaçlar için de kullanabileceğinizi göreceksiniz. Hemen bir örnek verelim, bir sanaldoku (web) uygulamanız var ve buradan <tt>isim:telefon</tt> şeklinde bir metin dosyasına giriş yapılıyor. Eğer bu metin dosyası değiştiğinde çalışacak şekilde bir kural tanımlarsanız, mesela metin dosyası her değiştiğinde bu dosyayı okuyup ayrıştırarak veritabanına kayıt edecek bir uygulamanın çalıştırılması sağlanabilir. Örneğimiz pek işe yarar bir şey olmadı ama eminim mantığı anlamışsınızdır.
+  </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Aslında <b><tt>make</tt></b> için verilebilecek en iyi örneklerden bir tanesi de Debian sanalyöresidir. Debian sanalyöresi, tamamen statik HTML sayfalardan oluşur. Bu sayede yansılanması daha kolay hale gelir ve statik sayfalar sanaldoku sunucusuna çok az yük getirir. Ancak binlerce sayfadan oluşan Debian sanalyöresi, statik olmasına rağmen çok hızlı güncellenebilmektedir. Aynı zamanda yöreyi ziyaret ettiyseniz farketmiş olacağınız gibi, sanaldoku istemciniz dil ayarına göre sayfanın o dile çevirilmiş bir sürümü mevcut ise karşınıza o getirilmektedir. Tüm bu dinamiklik alt tarafta kullanılan, çoğunluğu <tt>wml</tt>, binlerce dosya tarafından sağlanmaktadır. Her 3-4 saatte bir CVS'de bulunan kaynak kodu çekilerek <b><tt>make</tt></b> ile <tt>wml</tt> dosyalarından HTML dosyaları üretilmekte, sayfalar arası aşamalar düzenlenmekte, farklı dillere çevirilen sayfalar kontrol edilmekte, bazı programlar ve betikler çalıştırılmaktadır. Kısaca özetlemek gerekirse böyle ama gerçekte tüm yörenin yeniden oluşturulması için gerçekten oldukça karmaşık işlemler yapılmaktadır. İlgilenenler <a class="ulink" href="http://www.debian.org/devel/website/desc" target="_top">http://www.debian.org/devel/website/desc</a> adresine bakabilir.
+  </div></td></tr></table></div><div class="para">
+Yukarıdaki <tt>Makefile</tt> örneğimize tekrar dönelim. <b><tt>make clean</tt></b> komutunu çalıştırdığımızda derleme sonrasında oluşan dosyalar silinmektedir. Peki, bulunduğumuz dizinde ismi <tt>clean </tt> olan bir dosya mevcut ise ne olur?
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>$ </tt><b><tt>make clean</tt></b>
+make: `clean' is up to date.
+</pre></div></div>
+  <div class="para">
+Gördüğünüz gibi <tt>clean</tt> adında bir dosya var olduğu ve <tt>clean</tt> için bağımlılık listesi olmadığından dolayı kuralın güncelliğini koruduğunu ve alttaki komutların çalıştırılmaması gerektiğini düşündü. İşte bu  gibi durumlar için özel bir kural mevcuttur: <tt>.PHONY</tt>
+  </div><div class="para">
+Yukarıda anlatılan sorunu giderebilmek için <tt>Makefile</tt> dosyamızın içeriğine aşağıdaki kuralı da eklemeliyiz:
+  </div><div class="para"><div align="right"><pre class="screen">.PHONY: clean</pre></div></div><div class="para">
+Böylelikle <b><tt>make clean</tt></b> komutunun, bulunulan dizinde <tt>clean</tt> adında bir dosya olsa bile düzgün olarak çalışmasını sağlamış olduk.
+  </div></dd></dl> <div class="head3"><a name="makefile-nasil-karmasik" id="makefile-nasil-karmasik"></a>Daha Karmaşık Makefile Dosyaları</div><dl><dd><div class="para">
+Önceki bölümde temel olarak <b><tt>make</tt></b> kullanımı üzerinde durduk. Örnek bir <tt>Makefile</tt> hazırladık. Ancak tek bir kaynak dosyasından oluşturulan bir uygulama için <b><tt>make</tt></b> o kadar da yararlı bir şey değil. Zaten gerçekte de en küçük uygulama bile onlarca kaynak dosyadan oluşur. Şimdi böyle bir uygulama için <tt>Makefile</tt> hazırlayalım.
+  </div><dl class="example"><dt class="example"><a class="example" name="idxmp64" id="idxmp64"></a><b>Örnek 7.1. Soyut kurallar kullanılmamış Makefile</b></dt><dd class="example"><div class="para"><div align="right"><pre class="screen">
+CC = g++
+CFLAGS = -O2 -Wall -pedantic
+LIBS = -lnsl -lm
+INCLUDES = -I/usr/local/include/custom
+
+all: server client
+
+server: ortak.o server.o list.o que.o \
+            data.o hash.o
+    $(CC) $(CFLAGS) $(LIBS) -o server ortak.o server.o \
+            list.o que.o data.o hash.o
+
+client: ortak.o client.o
+    $(CC) $(CFLAGS) $(LIBS) -o client ortak.o client.o
+
+ortak.o: ortak.cpp ortak.h
+    $(CC) $(CFLAGS) $(INCLUDES) -c ortak.cpp
+
+server.o: server.cpp server.h ortak.h
+    $(CC) $(CFLAGS) $(INCLUDES) -c server.cpp
+
+client.o: client.cpp client.h ortak.h
+    $(CC) $(CFLAGS) $(INCLUDES) -c client.cpp
+
+list.o: list.cpp list.h
+    $(CC) $(CFLAGS) $(INCLUDES) -c list.cpp
+
+que.o: que.cpp que.h
+    $(CC) $(CFLAGS) $(INCLUDES) -c que.cpp
+
+data.o: data.cpp data.h
+    $(CC) $(CFLAGS) $(INCLUDES) -c data.cpp
+
+hash.o: hash.cpp hash.h
+    $(CC) $(CFLAGS) $(INCLUDES) -c hash.cpp
+
+install: client server
+    mkdir -p /usr/local/bin/test
+    cp client /usr/local/bin/test
+    cp server /usr/local/bin/test
+
+uninstall:
+    rm -rf /usr/local/bin/test
+
+clean:
+    rm -f *.o server client
+
+.PHONY: clean
+</pre></div></div></dd></dl><div class="para">
+Kullandığımız derleyici, derleyici seçenekleri, kütüphaneler gibi değerleri değişkenlere atamakla neler kazandığımıza bir bakalım. Derleyici parametrelerini değiştirmeye karar verdiğimizde değişken kullanmıyor olsaydık 9 farklı yerde bu değişikliği el ile yapmak zorunda kalacaktır. Fakat şimdi ise sadece <tt>CFLAGS</tt> değişkeninin değerini değiştirmemiz yeterli olacaktır.
+  </div><div class="para">
+Ancak gene de yukarıdaki gibi bir <tt>Makefile</tt> yazmak uzun sürecek bir işlemdir. Eğer uygulamanız 60 cpp dosyasından oluşuyorsa ve 60 farklı nesne için tek tek kuralları yazmak zorunda kalıyorsanız bu hoş  olmaz. Çünkü tüm <tt>.o</tt> dosyalarını üretebilmek için vereceğimiz komut aynı: <tt>$(CC) $(CFLAGS) $(INCLUDES) -c xxx.cpp</tt>. Oysa biz 60 defa bu komutu tekrar yazmak zorundayız. İşte bu noktada soyut kurallar (<i>abstract rules</i>) imdadımıza yetişir.
+  </div><div class="para">
+Bir soyut kural <tt>*.u1</tt> uzantılı bir dosyadan nasıl <tt>*.u2</tt> uzantılı bir dosyanın üretileceğini tanımlar. Genel olarak kullanımı aşağıdaki gibidir:
+  </div><div class="para"><div align="right"><pre class="screen">
+.u1.u2:
+    komutlar
+    komutlar
+...
+</pre></div></div><div class="para">
+Burada <tt>u1</tt> kaynak dosyanın uzantısı iken, <tt>u2</tt> hedef dosyanın uzantısıdır. Bu tür kullanımda dikkat ederseniz bağımlılık tanımlamaları yer almamaktadır. Çünkü tanımladığımız soyut genel kural için bağımlılık belirtmek çok anlamlı değildir. Bunun yerine <tt>.u1</tt>  uzantılı bir dosyadan <tt>.u2</tt> uzantılı dosya üretmede istisnai olarak farklı bağımlılıkları olan kurallar da ileride vereceğimiz örnekte olduğu gibi belirtilebilir.
+  </div><div class="para">
+Soyut kurallar tanımlarken aşağıdaki özel değişkenleri kullanmak gerekecektir:
+  </div><ul type="disc" class="itemizedlist"><li><b><tt> $&lt; </tt></b> Değiştiği zaman hedefin yeniden oluşturulması gereken bağımlılıkları gösterir.
+    </li><li><b><tt> $@ </tt></b> Hedefi temsil eder.
+    </li><li><b><tt> $^ </tt></b> Geçerli kural için tüm bağımlılıkları temsil eder.
+    </li></ul><div class="para">
+Bu bilgiler ışığında hemen bir örnek verelim. Uzantısı <tt>.cpp</tt> olan bir kaynak kodundan nesne kodunu üretebilmek için aşağıdaki gibi bir kural tanımlayabiliriz:
+  </div><div class="para"><div align="right"><pre class="screen">
+.cpp.o:
+    g++ -c $&lt;
+</pre></div></div><div class="para">
+Şimdi biraz daha açıklık getirelim. Kaynak dosyamızın adı <tt>helper.cpp</tt> ve amacımız <tt>helper.o</tt> nesne dosyasını üretmek olsun. Yukarıdaki kural kaynak dosyamız için çalıştığında <tt>.cpp.o:</tt> satırı yüzünden <tt>helper.cpp</tt>  oluşacak <tt>helper.o</tt> için bir bağımlılık durumunu alır. Bu nedenle $&lt; değişkeni <tt>helper.cpp</tt>'yi gösterir. Bu sayede <tt>helper.o</tt> dosyası üretilmiş olacaktır.
+  </div><div class="para">
+Şimdi aynı mantıkla nesne dosyalarından çalıştırılabilir programımızı üretelim.
+  </div><div class="para"><div align="right"><pre class="screen">
+.o:
+    g++ $^ -o $@
+</pre></div></div><div class="para">
+Bu biraz daha karışık çünkü çalıştırılabilir dosyamızın uzantısı olmayacak. Eğer tek bir uzantı verilmiş ise bunun birinci uzantı olduğu ve ikincinin boş olduğu düşünülür.
+  </div><div class="para">
+Soyut kurallar tanımladığımızda yapmamız gereken iki işlem daha var. Bunlardan birincisi kullandığımız uzantıların neler olduğunu belirtmektir. Bu işlem için <tt>.SUFFIXES</tt> özel değişkeni kullanılır:
+  </div><div class="para"><div align="right"><pre class="screen">.SUFFIXES: .cpp .o</pre></div></div><div class="para">
+Diğer yapmamız gereken işlem ise üretilecek çalıştırılabilir dosyamızın hangi nesne dosyalarına, nesne dosyalarımızın ise hangi kaynak dosyalarına bağımlı olduğunu belirtmek olacaktır. İşin en güç tarafı budur. Her zaman doğru değerleri yazmak o kadar kolay olmayabilir. Bu noktada <b><tt>gcc</tt></b> derleyicisi <tt>-MM</tt> seçeneğiyle bize yardımcı olacaktır. Aşağıdaki ekran çıktısına bakalım:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt>$ </tt><b><tt>g++ -MM -c server.cpp</tt></b>
+server.o: server.cpp server.h ortak.h
+<tt>$ </tt>
+</pre></div></div><div class="para">
+Görüldüğü gibi <tt>server.o</tt> için gerekli <tt>Makefile</tt> kuralını bizim için hatasız olarak verdi. Tek yapmamız gereken bu satırları kopyalayıp <tt>Makefile</tt> içerisine yapıştırmaktır. Şimdi bölümün başında verdiğimiz <tt>Makefile</tt> dosyasını bu yöntemle yeniden yazalım:
+  </div><dl class="example"><dt class="example"><a class="example" name="idxmp65" id="idxmp65"></a><b>Örnek 7.2. Soyut kuralların kullanıldığı Makefile</b></dt><dd class="example"><div class="para"><div align="right"><pre class="screen">
+CC = g++
+CFLAGS = -O2 -Wall -pedantic
+LIBS = -lnsl -lm
+INCLUDES = -I/usr/local/include/custom
+SERVER_nesneCTS = ortak.o server.o list.o que.o data.o hash.o
+CLIENT_nesneCTS = ortak.o client.o
+
+all: server client
+
+.SUFFIXES: .cpp .o
+
+.cpp.o:
+    $(CC) $(CFLAGS) $(INCLUDES) -c $&lt;
+
+.o:
+    $(CC) $(CFLAGS) $(LIBS) $^ -o $@
+
+server: $(SERVER_nesneCTS)
+client: $(CLIENT_nesneCTS)
+ortak.o: ortak.cpp ortak.h
+server.o: server.cpp server.h ortak.h
+client.o: client.cpp client.h ortak.h
+list.o: list.cpp list.h
+que.o: que.cpp que.h
+data.o: data.cpp data.h
+hash.o: hash.cpp hash.h
+
+install: client server
+    mkdir -p /usr/local/bin/test
+    cp client /usr/local/bin/test
+    cp server /usr/local/bin/test
+
+uninstall:
+    rm -rf /usr/local/bin/test
+
+clean:
+    rm -f *.o server client
+
+.PHONY: clean
+</pre></div></div></dd></dl></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/makefile-nasil-giris.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/makefile-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/makefile-nasil-autoconf_automake.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Giriş </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Autoconf ve Automake Kullanımı</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

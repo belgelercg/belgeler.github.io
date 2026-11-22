@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:11+03:00" /><title>glorgMolehill.c</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/opengl-giris_ekler.html" title="A. Örnek Programlar" /><link rel="previous" href="../howto/opengl-giris_ekler-cube.html" title="cube.c" /><link rel="next" href="../howto/opengl-giris_ekler-lesson4.html" title="lesson4.c" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">glorgMolehill.c</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/opengl-giris_ekler-cube.html">Önceki</a> </td><th width="60%" align="center">A. Örnek Programlar</th><td width="20%" align="right"> <a accesskey="n" href="../howto/opengl-giris_ekler-lesson4.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="opengl-giris_ekler-glorgMolehill" id="opengl-giris_ekler-glorgMolehill"></a>glorgMolehill.c</div><dl><dd>
+<div class="para"><div align="right"><pre class="screen">
+#include &lt;GL/glut.h&gt;
+
+GLfloat mat_red_diffuse[] = { 0.7, 0.0, 0.1, 1.0 };
+GLfloat mat_green_diffuse[] = { 0.0, 0.7, 0.1, 1.0 };
+GLfloat mat_blue_diffuse[] = { 0.0, 0.1, 0.7, 1.0 };
+GLfloat mat_yellow_diffuse[] = { 0.7, 0.8, 0.1, 1.0 };
+GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+GLfloat mat_shininess[] = { 100.0 };
+GLfloat knots[8] = { 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0 };
+GLfloat pts1[4][4][3], pts2[4][4][3];
+GLfloat pts3[4][4][3], pts4[4][4][3];
+GLUnurbsObj *nurb;
+int u, v;
+
+static void
+display(void)
+{
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glCallList(1);
+  glFlush();
+}
+
+int
+main(int argc, char **argv)
+{
+  glutInit(&amp;argc, argv);
+  glutCreateWindow("molehill");
+  glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+  glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+  glEnable(GL_LIGHTING);
+  glEnable(GL_LIGHT0);
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_AUTO_NORMAL);
+  glEnable(GL_NORMALIZE);
+  nurb = gluNewNurbsRenderer();
+  gluNurbsProperty(nurb, GLU_SAMPLING_TOLERANCE, 25.0);
+  gluNurbsProperty(nurb, GLU_DISPLAY_MODE, GLU_FILL);
+
+  /* Build control points for NURBS mole hills. */
+  for(u=0; u&lt;4; u++) {
+    for(v=0; v&lt;4; v++) {
+      /* Red. */
+      pts1[u][v][0] = 2.0*((GLfloat)u);
+      pts1[u][v][1] = 2.0*((GLfloat)v);
+      if((u==1 || u == 2) &amp;&amp; (v == 1 || v == 2))
+        /* Stretch up middle. */
+        pts1[u][v][2] = 6.0;
+      else
+        pts1[u][v][2] = 0.0;
+
+      /* Green. */
+      pts2[u][v][0] = 2.0*((GLfloat)u - 3.0);
+      pts2[u][v][1] = 2.0*((GLfloat)v - 3.0);
+      if((u==1 || u == 2) &amp;&amp; (v == 1 || v == 2))
+        if(u == 1 &amp;&amp; v == 1)
+          /* Pull hard on single middle square. */
+          pts2[u][v][2] = 15.0;
+        else
+          /* Push down on other middle squares. */
+          pts2[u][v][2] = -2.0;
+      else
+        pts2[u][v][2] = 0.0;
+
+      /* Blue. */
+      pts3[u][v][0] = 2.0*((GLfloat)u - 3.0);
+      pts3[u][v][1] = 2.0*((GLfloat)v);
+      if((u==1 || u == 2) &amp;&amp; (v == 1 || v == 2))
+        if(u == 1 &amp;&amp; v == 2)
+          /* Pull up on single middple square. */
+          pts3[u][v][2] = 11.0;
+        else
+          /* Pull up slightly on other middle squares. */
+          pts3[u][v][2] = 2.0;
+      else
+        pts3[u][v][2] = 0.0;
+
+      /* Yellow. */
+      pts4[u][v][0] = 2.0*((GLfloat)u);
+      pts4[u][v][1] = 2.0*((GLfloat)v - 3.0);
+      if((u==1 || u == 2 || u == 3) &amp;&amp; (v == 1 || v == 2))
+        if(v == 1)
+          /* Push down front middle and right squares. */
+          pts4[u][v][2] = -2.0;
+        else
+          /* Pull up back middle and right squares. */
+          pts4[u][v][2] = 5.0;
+      else
+        pts4[u][v][2] = 0.0;
+    }
+  }
+  /* Stretch up red's far right corner. */
+  pts1[3][3][2] = 6;
+  /* Pull down green's near left corner a little. */
+  pts2[0][0][2] = -2;
+  /* Turn up meeting of four corners. */
+  pts1[0][0][2] = 1;
+  pts2[3][3][2] = 1;
+  pts3[3][0][2] = 1;
+  pts4[0][3][2] = 1;
+
+  glMatrixMode(GL_PROJECTION);
+  gluPerspective(55.0, 1.0, 2.0, 24.0);
+  glMatrixMode(GL_MODELVIEW);
+  glTranslatef(0.0, 0.0, -15.0);
+  glRotatef(330.0, 1.0, 0.0, 0.0);
+
+  glNewList(1, GL_COMPILE);
+    /* Render red hill. */
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_red_diffuse);
+    gluBeginSurface(nurb);
+      gluNurbsSurface(nurb, 8, knots, 8, knots,
+        4 * 3, 3, &amp;pts1[0][0][0],
+        4, 4, GL_MAP2_VERTEX_3);
+    gluEndSurface(nurb);
+
+    /* Render green hill. */
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_green_diffuse);
+    gluBeginSurface(nurb);
+      gluNurbsSurface(nurb, 8, knots, 8, knots,
+        4 * 3, 3, &amp;pts2[0][0][0],
+        4, 4, GL_MAP2_VERTEX_3);
+    gluEndSurface(nurb);
+
+    /* Render blue hill. */
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_blue_diffuse);
+    gluBeginSurface(nurb);
+      gluNurbsSurface(nurb, 8, knots, 8, knots,
+        4 * 3, 3, &amp;pts3[0][0][0],
+        4, 4, GL_MAP2_VERTEX_3);
+    gluEndSurface(nurb);
+
+    /* Render yellow hill. */
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_yellow_diffuse);
+    gluBeginSurface(nurb);
+      gluNurbsSurface(nurb, 8, knots, 8, knots,
+        4 * 3, 3, &amp;pts4[0][0][0],
+        4, 4, GL_MAP2_VERTEX_3);
+    gluEndSurface(nurb);
+  glEndList();
+
+  glutDisplayFunc(display);
+  glutMainLoop();
+  return 0;             /* ANSI C requires main to return int. */
+}
+</pre></div></div>
+      </dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/opengl-giris_ekler-cube.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/opengl-giris_ekler.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/opengl-giris_ekler-lesson4.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">cube.c </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> lesson4.c</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

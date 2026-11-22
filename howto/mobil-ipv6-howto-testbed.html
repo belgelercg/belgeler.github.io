@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:38+03:00" /><title>Deneme ortamı</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/mobil-ipv6-howto.html" title="Linux Gezici IPv6 NASIL" /><link rel="previous" href="../howto/mobil-ipv6-howto-MIPv6.html" title="Linux için Gezici IPv6" /><link rel="next" href="../howto/mobil-ipv6-howto-dotest.html" title="Denemelerin Yapılması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Deneme ortamı</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/mobil-ipv6-howto-MIPv6.html">Önceki</a> </td><th width="60%" align="center">Linux Gezici IPv6 NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/mobil-ipv6-howto-dotest.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="mobil-ipv6-howto-testbed" id="mobil-ipv6-howto-testbed"></a>Deneme ortamı</div><dl><dd><div class="para">
+Artık MIPL ile yamanmış çalışan bir çekirdeğiniz, kurulu araçlarınız ve başlangıç betikleriniz hazır olmalı. Eğer yolunda gitmeyen bir şeyler varsa önceki bölümleri dikkatlice gözden geçirmelisiniz.
+  </div> <div class="head3"><a name="mobil-ipv6-howto-testcase" id="mobil-ipv6-howto-testcase"></a>Deneme</div><dl><dd><div class="para">
+Denemelerimiz için kullanacağımız adresler yerel adresler olacaktır. Küresel adresleri de kullanmanız mümkündür ama yerel adreslere bağlantıların çalışmayacağını unutmayın!  Deneme ortamımız <a class="link" href="../howto/mobil-ipv6-howto-testbed.html#mobil-ipv6-howto-mipv6testbed" title="Şekil 6.2. Gezici IPv6 deneme ortamı">şekilde görüldüğü gibi</a> dört düğümden oluşuyor.
+  </div><div class="variablelist"><dl><dt><span class="term">HA - Ev Yetkilisi</span></dt><dd class="varlist"><div class="para">
+HA ev ağında bulunur ve adresi <b><tt>fec0:106:2700::2</tt></b>'dir, bir kablosuz arabirime sahiptir.
+  </div></dd><dt><span class="term">MN - Gezici Düğüm</span></dt><dd class="varlist"><div class="para">
+MN "ev ağında" iken adresi <b><tt>fec0:106:2700::4</tt></b>'dir. Başka bir ağa gittiğinde ise yeni bir "konuma bağlı" adres üretir.
+  </div></dd><dt><span class="term">R - Bizim Yönlendirici</span></dt><dd class="varlist"><div class="para">
+Ev ağından internete bağlayan yönlendiricidir. Sahip olduğu kablosuz arabirimin adresi <b><tt>fec0:106:2700::1</tt></b>, kablolu arabirimin adresi ise <b><tt>fec0:106:2300::2</tt></b>'dir.
+  </div></dd><dt><span class="term">AR - Erişilen Yönlendiricisi</span></dt><dd class="varlist"><div class="para">
+AR ile R arasındaki bağlantı "internet" olması gerekirken deneme ortamımızda sadece çapraz kablo olacaktır (aslında herhangi bir ağ olabilir). AR iki arabirime sahiptir; R ile bağlantıyı sağlayan kablolu arabirimin adresi <b><tt>fec0:106:2300::1</tt></b>, kablosuz arabirimin adresi ise <b><tt>fec0:106:1100::1</tt></b>'dir.
+  </div></dd></dl></div>
+    <div class="figure"><div class="formaltitle"><b><a name="mobil-ipv6-howto-mipv6testbed" id="mobil-ipv6-howto-mipv6testbed"></a>Şekil 6.2. Gezici IPv6 deneme ortamı</b></div><div class="mediaobject"><img src="images/mobil-ipv6/mipv6-testbed.png" class="imagedata" align="middle" width="550" alt="" /></div></div>
+  </dd></dl> <div class="head3"><a name="mobil-ipv6-howto-stepbystep" id="mobil-ipv6-howto-stepbystep"></a>Adım adım yapılandırma</div><dl><dd> <div class="head4"><a name="mobil-ipv6-howto-fullyipv6" id="mobil-ipv6-howto-fullyipv6"></a>Tamamen işlevsel IPv6 ağının hazırlanması</div><dl><dd><div class="para">
+Gezici IP'yi denemeye başlamadan önce tamamen işlevsel bir IPv6 ağına ihtiyacımız var. Tüm düğümler birbirlerini pingleyebilmelidir. <i>Burası kritiktir</i>. Eğer, örneğin, AR HA'yı pingleyemiyor ise, bağlama (binding) güncellemesi olmayacaktır.
+      </div><div class="para">
+IPv6 kullanarak ağ oluşturmak için sadece özet bilgiler vereceğim. IPv6 ağı oluşturmakla ilgili daha fazla bilgi için Peter Bieringer'in yazdığı harika <a href="../howto/ipv6-howto.html" class="xref" title="Linux IPv6 NASIL">Linux IPv6 NASIL</a> belgesini okuyabilirsiniz.
+      </div><div class="para">
+Burada basitlik için şifrelemeyi gözardı ettim - <i>AMA kablosuz ağlarla ilgilendiğinizde HER ZAMAN şifreleme kullanmalısınız!</i>
+      </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/warning.png" /></td><th class="admon">Uyarı</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Farklı kablosuz ağların farklı ESSID'leri olacağını da unutmayın!
+      </div></td></tr></table></div>
+      <div class="variablelist"><dl><dt><span class="term">MN</span></dt><dd class="varlist"><div class="para">
+Gezici Düğümün bir kablosuz arabirimi vardır. <tt>forwarding</tt> kapatılmalı fakat <tt>autoconf</tt> ve <tt>ra</tt>'lar kabul edilmelidir:
+      </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>iwconfig eth0 mode ad-hoc essid homenet enc off</tt></b>
+# <b><tt>ifconfig eth0 inet6 add fec0:106:2700::4/64</tt></b>
+# <b><tt>echo "0" &gt; /proc/sys/net/ipv6/conf/eth0/forwarding</tt></b>
+# <b><tt>echo "1" &gt; /proc/sys/net/ipv6/conf/eth0/autoconf</tt></b>
+# <b><tt>echo "1" &gt; /proc/sys/net/ipv6/conf/eth0/accept_ra</tt></b>
+# <b><tt>echo "1" &gt; /proc/sys/net/ipv6/conf/eth0/accept_redirects</tt></b>
+# <b><tt>/etc/init.d/mobile-ip6 start</tt></b>
+</pre></div></div>
+      </dd><dt><span class="term">HA</span></dt><dd class="varlist"><div class="para">
+Ev Yetkilisinin bir kablosuz arabirimi vardır. Fiziksel arabirimden aldığı paketleri sanal tünel arabirimine teslim etmek için normal yönlendirme kullanacağından <tt>forwarding</tt> açık olmalıdır.</div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">Bir öntanımlı rota (route) eklemelisiniz, aksi halde HA ziyaret edilen yerel ağdaki MN ile bağlantı sorunu yaşar. Mümkün olan çözümlerden biri HA'nın ev ağında öntanımlı yönlendirici olarak kullanılmasıdır.</div></td></tr></table></div>
+      
+<div class="para"><div align="right"><pre class="screen"># <b><tt>iwconfig eth0 mode ad-hoc essid homenet enc off</tt></b>
+# <b><tt>ifconfig eth0 inet6 add fec0:106:2700::2/64</tt></b>
+# <b><tt>echo "1" &gt; /proc/sys/net/ipv6/conf/eth0/forwarding</tt></b>
+# <b><tt>echo "0" &gt; /proc/sys/net/ipv6/conf/eth0/autoconf</tt></b>
+# <b><tt>echo "0" &gt; /proc/sys/net/ipv6/conf/eth0/accept_ra</tt></b>
+# <b><tt>echo "0" &gt; /proc/sys/net/ipv6/conf/eth0/accept_redirects</tt></b>
+# <b><tt>ip route add ::/0 via fec0:106:2700::1</tt></b>
+# <b><tt>/etc/init.d/mobile-ip6 start</tt></b>
+</pre></div></div>
+       </dd><dt><span class="term">R</span></dt><dd class="varlist"><div class="para">
+Bizim Yönlendirici biri kablolu diğeri kablosuz iki arabirime sahiptir. Yönlendericide <tt>forwarding</tt> açık olmalıdır
+      </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>ifconfig eth0 inet6 add fec0:106:2300::2/64</tt></b>
+# <b><tt>iwconfig eth1 mode ad-hoc essid homenet enc off</tt></b>
+# <b><tt>ifconfig eth1 inet6 add fec0:106:2700::1/64</tt></b>
+# <b><tt>echo "1" &gt; /proc/sys/net/ipv6/conf/all/forwarding</tt></b>
+# <b><tt>echo "0" &gt; /proc/sys/net/ipv6/conf/all/autoconf</tt></b>
+# <b><tt>echo "0" &gt; /proc/sys/net/ipv6/conf/all/accept_ra</tt></b>
+# <b><tt>echo "0" &gt; /proc/sys/net/ipv6/conf/all/accept_redirects</tt></b>
+# <b><tt>ip route add fec0:106:1100::/64 via fec0:106:2300::1</tt></b>
+</pre></div></div>
+       </dd><dt><span class="term">AR</span></dt><dd class="varlist"><div class="para">
+Erişilen Yönlendirici de (ziyaret edilen ağdaki) biri kablolu diğeri kablosuz iki arabirime sahiptir. <tt>forwarding</tt> açık olmalıdır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>ifconfig eth0 inet6 add fec0:106:2300::1/64</tt></b>
+# <b><tt>iwconfig eth1 mode ad-hoc essid visitnet enc off</tt></b>
+# <b><tt>ifconfig eth1 inet6 add fec0:106:1100::1/64</tt></b>
+# <b><tt>echo "1" &gt; /proc/sys/net/ipv6/conf/all/forwarding</tt></b>
+# <b><tt>echo "0" &gt; /proc/sys/net/ipv6/conf/all/autoconf</tt></b>
+# <b><tt>echo "0" &gt; /proc/sys/net/ipv6/conf/all/accept_ra</tt></b>
+# <b><tt>echo "0" &gt; /proc/sys/net/ipv6/conf/all/accept_redirects</tt></b>
+# <b><tt>ip route add fec0:106:2700::/64 via fec0:106:2300::2</tt></b>
+</pre></div></div>
+       </dd></dl></div>
+     <div class="para">
+Proc değişkenlerini değiştirmek yerine <i>sysctl</i> kullanabilirsiniz.
+     </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">Deneme ortamımızda statik rotalar oluşturduğumuz için her konaktan diğerlerini pingleyebilmeniz gerekir.</div></td></tr></table></div>
+     </dd></dl> <div class="head4"><a name="mobil-ipv6-howto-confmipv6" id="mobil-ipv6-howto-confmipv6"></a>Gezici IPv6 Yapılandırması</div><dl><dd><div class="para">
+Son yapılandırma <tt>network-mip6.conf</tt> dosyasındaki MIPv6 ayarlarıdır. Debian ve Slackware'de bu dosya <tt>/etc/</tt> dizininde bulunur. (RedHat'de ise <tt>/etc/sysconfig/</tt> dizinindedir.) Dosya, içeriğini kendi açıklayan türdedir.
+    </div><div class="variablelist"><dl><dt><span class="term">HA</span></dt><dd class="varlist"><div class="para">
+Ev yetkilisinin yapılandırma dosyası aşağıdaki ayarları içermelidir:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cat /etc/network-mip6.conf</tt></b>
+
+# Home Agent configuration file
+FUNCTIONALITY=ha
+DEBUGLEVEL=1
+MIN_TUNNEL_NR=1
+MAX_TUNNEL_NR=5
+TUNNEL_SITELOCAL=yes
+</pre></div></div>
+    </dd><dt><span class="term">MN</span></dt><dd class="varlist"><div class="para">
+Gezici Düğüm yapılandırma dosyası aşağıdaki gibi olmalıdır:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cat /etc/network-mip6.conf</tt></b>
+
+# Mobile Node configuration file
+FUNCTIONALITY=mn
+DEBUGLEVEL=1
+TUNNEL_SITELOCAL=yes
+MIN_TUNNEL_NR=1
+MAX_TUNNEL_NR=3
+HOMEDEV=mip6mnha1
+HOMEADDRESS=fec0:106:2700::4/64  # MN's home adress
+HOMEAGENT=fec0:106:2700::2/64    # HA's address
+</pre></div></div>
+    </dd><dt><span class="term">Artık gezici-IP'yi başlatabiliriz</span></dt><dd class="varlist">
+<div class="para"><div align="right"><pre class="screen"># <b><tt>/etc/init.d/mobile-ip6 start</tt></b>
+Starting Mobile IPv6: OK
+</pre></div></div>
+    </dd></dl></div>
+  <div class="para">
+Ev yetkilisi üzerinde, gezici-ip6'nın başladığını doğrulamak için <b><tt>ifconfig</tt></b> komutunu kullanabilirsiniz. Eğer tünel(ler)i, <i><tt>ip6tnl1</tt></i>, görüyorsanız gezici-ip6 başlamış demektir:
+  </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>ifconfig</tt></b>
+eth1     Link encap:Ethernet  HWaddr 00:02:2D:2D:DE:79
+          inet6 addr: fec0:106:2700::2/64 Scope:Site
+          inet6 addr: fe80::202:2dff:fe2d:de79/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:618 errors:6 dropped:6 overruns:0 frame:6
+          TX packets:1485 errors:22 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:100
+          RX bytes:87914 (85.8 KiB)  TX bytes:252596 (246.6 KiB)
+          Interrupt:3 Base address:0x100
+
+ip6tnl1  Link encap:UNSPEC  HWaddr 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00 <a name="mobil-ipv6-howto-tunnel1" id="mobil-ipv6-howto-tunnel1"></a><b style="background: transparent url(&quot;../images/xsl/callouts/1.png&quot;) no-repeat left 40%;">  </b>
+          UP POINTOPOINT RUNNING NOARP  MTU:1460  Metric:1
+          RX packets:6 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:6 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0
+          RX bytes:576 (576.0 b)  TX bytes:624 (624.0 b)
+
+ip6tnl2  Link encap:UNSPEC  HWaddr 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00 <a name="mobil-ipv6-howto-tunnel2" id="mobil-ipv6-howto-tunnel2"></a><b style="background: transparent url(&quot;../images/xsl/callouts/2.png&quot;) no-repeat left 40%;">  </b>
+          UP RUNNING NOARP  MTU:1460  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0
+          RX bytes:0 (0.0 b)  TX bytes:0 (0.0 b)
+
+lo       Link encap:Local Loopback
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:16436  Metric:1
+          RX packets:8 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:8 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0
+          RX bytes:560 (560.0 b)  TX bytes:560 (560.0 b)
+</pre></div></div>
+  <div class="para">
+<div class="calloutlist"><table border="0" summary="Dikkat edilecek hususlar" cellspacing="0" cellpadding="3" width="100%"><tr><td width="15" valign="top" align="left" class="coimage"><a href="#mobil-ipv6-howto-tunnel1"><img src="../images/xsl/callouts/1.png" alt="1" border="0" /></a> </td><td valign="top" align="left"><div class="para">Tünel faal ve bağlantılara hazırdır.</div></td></tr><tr><td width="15" valign="top" align="left" class="coimage"><a href="#mobil-ipv6-howto-tunnel2"><img src="../images/xsl/callouts/2.png" alt="2" border="0" /></a> </td><td valign="top" align="left"><div class="para">Diğer hazır tünel.</div></td></tr></table></div>
+    </div><div class="para">
+<tt>mipv6</tt> çekirdek modüllerinin de yüklendiğini göreceksiniz (MN):
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>lsmod</tt></b>
+Module                  Size  Used by    Not tainted
+mip6_mn                59888   0  (unused)
+ipv6_tunnel            11448   1  [mip6_mn]
+mip6_base              40728   0  [mip6_mn]
+ipv6                  179764  -1  [mip6_mn ipv6_tunnel mip6_base]
+...
+</pre></div></div>
+    </dd></dl> <div class="head4"><a name="mobil-ipv6-howto-ARradvd" id="mobil-ipv6-howto-ARradvd"></a>Erişilen Yönlendirici üzerinde radvd yapılandırması</div><dl><dd><div class="para">
+MN (gezici düğüm) yeni bir ağa geldiğinde, bu ağın yerel adreslerine göre yapılandırmasını yapar. Eğer başarılı olursa sıradaki aşamaya geçer. Bu aşamayı <a class="ulink" href="http://www.ietf.org/rfc/rfc2462.txt" target="_top">[RFC2462]  (IPv6 Stateless Address Autoconfiguration)</a> belgesinden aktarıyorum:
+  </div><div class="blockquote"><div class="para">
+Otomatik yapılandırmanın sıradaki aşaması bir Yönlendirici Bilgilendirmesinin bulunmasını ya da Yönlendirici bulunmadığı bilgisinin edinilmesini kapsar. Eğer yönlendirici mevcut ise, istemcinin otomatik yapılandırmasının tipini de içeren Yönlendirici Bilgilendirmesini göndermelidir. Yönlendirici yoksa duruma bağlı otomatik yapılandırma kullanılmalıdır.
+    </div><div class="para">
+Yönlendiriciler Yönlendirme Bilgilendirmesini periyodik olarak gönderirler ama başarılı bilgilendirmeler arasındaki gecikmeler genellikle otomatik yapılandırma yapan istemcinin beklemek istediğinden daha uzun sürer. İstemciler bilgilendirmeyi çabucak alabilmek için bir ya da daha fazla Yönlendirici Talebini tüm yönlendiricilerin çoklu gönderim grubuna gönderirler.
+   </div><div class="attribution">    -- page 8</div></div><div class="para">
+Burada <a class="ulink" href="http://v6web.litech.org/radvd/" target="_top">RADVD</a> kullanıyoruz.
+  </div><div class="para">
+IPv6 Durumsuz Adres Yapılandırması hakkında ayrıntılı bilgi edinmek için <a class="ulink" href="http://www.ietf.org/rfc/rfc2462.txt" target="_top">[RFC2462]</a>  belgesini okuyun.
+  </div><div class="para">
+RADVD'yi AR'nin kablosuz arabirimi üzerinde yapılandıracağız. <tt>radvd.conf</tt> dosyası aşağıdakileri içermelidir:
+  </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cat /etc/radvd.conf</tt></b>
+interface eth1
+{
+      AdvSendAdvert on;
+      AdvIntervalOpt on;
+
+      MinRtrAdvInterval 3;
+      MaxRtrAdvInterval 10;
+      AdvHomeAgentFlag off;
+
+      prefix fec0:106:1100::/64
+      {
+          AdvOnLink on;
+          AdvAutonomous on;
+          AdvRouterAddr on;
+      };
+};
+</pre></div></div>
+  <div class="para"><b><tt>radvd</tt></b>'yi başlatın:
+  </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>/etc/init.d/radvd start</tt></b></pre></div></div>
+  <div class="para">
+Artık <b><tt>radvd</tt></b> iletilerinin gerçekten düzenli olarak gönderilip gönderilmediğini kontrol etmek için <b><tt>radvdump</tt></b> komutunu kullanabiliyor olmalısınız:
+  </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>radvdump</tt></b>
+Router advertisement from fe80::202:2dff:fe54:d1b2 (hoplimit 255)
+Received by interface eth1
+      # Note: {Min,Max}RtrAdvInterval cannot be obtained with radvdump
+      AdvCurHopLimit: 64
+      AdvManagedFlag: off
+      AdvOtherConfigFlag: off
+      AdvHomeAgentFlag: off
+      AdvReachableTime: 0
+      AdvRetransTimer: 0
+      Prefix fec0:106:1100::/64
+              AdvValidLifetime: 2592000
+              AdvPreferredLifetime: 604800
+              AdvOnLink: on
+              AdvAutonomous: on
+              AdvRouterAddr: off
+      AdvSourceLLAddress: 00 02 2D 54 D1 B2
+</pre></div></div>
+  <div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+HA üzerinde <b><tt>radvd</tt></b> kullanır ve <tt>autoconf</tt>'u (proc içinde) yetkilendirirseniz statik adresinizin yanı sıra MN üzerinde otomatik oluşturulan (gereksiz) bir IPv6 adresiniz daha olacaktır.</div></td></tr></table></div>
+      </dd></dl> <div class="head4"><a name="mobil-ipv6-howto-radvdar" id="mobil-ipv6-howto-radvdar"></a>Ev yetkilisi üzerinde radvd yapılandırması</div><dl><dd><div class="para">
+MN'nin ne zaman evde olduğunu bilebilmesi için HA, RA'lar da göndermelidir. Bu yüzden HA üzerinde de <b><tt>radvd</tt></b>'yi yetkilendirilmeliyiz. <tt>/etc/radvd.conf</tt> dosyası aşağıdakileri içermelidir:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# cat <b><tt>/etc/radvd.conf</tt></b>
+interface eth0
+{
+  AdvSendAdvert on;
+  MaxRtrAdvInterval 3;
+  MinRtrAdvInterval 1;
+  AdvIntervalOpt off;
+  AdvHomeAgentFlag on;
+  HomeAgentLifetime 10000;
+  HomeAgentPreference 20;
+  AdvHomeAgentInfo on;
+  prefix fec0:106:2700::2/64
+  {
+    AdvRouterAddr on;
+    AdvOnLink on;
+    AdvAutonomous on;
+    AdvPreferredLifetime 10000;
+    AdvValidLifetime 12000;
+  };
+};
+</pre></div></div>
+    <div class="para">
+HA üzerinde <b><tt>radvd</tt></b> iletilerinin gönderilip gönderilmediğini kontrol etmek için <b><tt>radvdump</tt></b> komutunu kullanın:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>radvdump</tt></b>
+Router advertisement from fe80::202:2dff:fe54:d11e (hoplimit 255)
+Received by interface eth0
+    # Note: {Min,Max}RtrAdvInterval cannot be obtained with radvdump
+    AdvCurHopLimit: 64
+    AdvManagedFlag: off
+    AdvOtherConfigFlag: off
+    AdvHomeAgentFlag: on
+    AdvReachableTime: 0
+    AdvRetransTimer: 0
+    Prefix fec0:106:2700::2/64
+            AdvValidLifetime: 12000
+            AdvPreferredLifetime: 10000
+            AdvOnLink: on
+            AdvAutonomous: on
+            AdvRouterAddr: on
+    AdvSourceLLAddress: 00 02 2D 54 D1 1E
+    AdvHomeAgentInfo:
+            HomeAgentPreference: 20
+            HomeAgentLifetime: 1000
+#
+# <b><tt>ifconfig eth0</tt></b>
+eth0  Link encap:Ethernet  HWaddr 00:90:7D:F3:03:1A
+      inet6 addr: fec0:106:2700:0:290:7dff:fef3:31a/64 Scope:Site <a name="mobil-ipv6-howto-newaddress" id="mobil-ipv6-howto-newaddress"></a><b style="background: transparent url(&quot;../images/xsl/callouts/1.png&quot;) no-repeat left 40%;">  </b>
+      inet6 addr: fec0:106:2700::4/64 Scope:Site                  <a name="mobil-ipv6-howto-staticadr" id="mobil-ipv6-howto-staticadr"></a><b style="background: transparent url(&quot;../images/xsl/callouts/2.png&quot;) no-repeat left 40%;">  </b>
+      inet6 addr: fe80::290:7dff:fef3:31a/64 Scope:Link           <a name="mobil-ipv6-howto-linkaddrs" id="mobil-ipv6-howto-linkaddrs"></a><b style="background: transparent url(&quot;../images/xsl/callouts/3.png&quot;) no-repeat left 40%;">  </b>
+      UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+      RX packets:513 errors:89 dropped:89 overruns:0 frame:85
+      TX packets:140 errors:41 dropped:0 overruns:0 carrier:0
+      collisions:0 txqueuelen:100
+      RX bytes:56084 (54.7 Kb)  TX bytes:19212 (18.7 Kb)
+      Interrupt:3 Base address:0x100
+</pre></div></div>
+    <div class="para">
+<div class="calloutlist"><table border="0" summary="Dikkat edilecek hususlar" cellspacing="0" cellpadding="3" width="100%"><tr><td width="15" valign="top" align="left" class="coimage"><a href="#mobil-ipv6-howto-newaddress"><img src="../images/xsl/callouts/1.png" alt="1" border="0" /></a> </td><td valign="top" align="left"><div class="para">
+Otomatik oluşturulan yeni (gereksiz) adres. <tt>autoconf</tt> değerini <tt>/proc/sys/net/ipv6/conf/eth0/autoconf</tt>  dosyasında 1 yaptığımız için MN HA'nın öneki ve kendi MAC adresini birleştirerek bu yeni adresi oluşturur. Bu adresin oluşturulmasından kaçınılabileceğini sanmıyorum.
+  </div></td></tr><tr><td width="15" valign="top" align="left" class="coimage"><a href="#mobil-ipv6-howto-staticadr"><img src="../images/xsl/callouts/2.png" alt="2" border="0" /></a> </td><td valign="top" align="left"><div class="para">
+Asıl statik IPv6 adresimiz.
+  </div></td></tr><tr><td width="15" valign="top" align="left" class="coimage"><a href="#mobil-ipv6-howto-linkaddrs"><img src="../images/xsl/callouts/3.png" alt="3" border="0" /></a> </td><td valign="top" align="left"><div class="para">
+Sistem açılışında oluşturulan yerele özgü adres.
+  </div></td></tr></table></div></div></dd></dl></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/mobil-ipv6-howto-MIPv6.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/mobil-ipv6-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/mobil-ipv6-howto-dotest.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Linux için Gezici IPv6 </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Denemelerin Yapılması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

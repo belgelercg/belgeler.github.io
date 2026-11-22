@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:49+03:00" /><title>Karşılaşılan Sorunlar</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/pdc-2-samba-nasil.html" title="WindowsPDC 2 SAMBA" /><link rel="previous" href="../howto/pdc-2-samba-nasil_security.html" title="İleri Düzey Güvenlik" /><link rel="next" href="../howto/pdc-2-samba-nasil_wins.html" title="Wins Sunucu" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Karşılaşılan Sorunlar</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/pdc-2-samba-nasil_security.html">Önceki</a> </td><th width="60%" align="center">WindowsPDC 2 SAMBA</th><td width="20%" align="right"> <a accesskey="n" href="../howto/pdc-2-samba-nasil_wins.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="pdc-2-samba-nasil_prb" id="pdc-2-samba-nasil_prb"></a>Karşılaşılan Sorunlar</div><dl><dd><div class="para">
+En çok karşılaşılan sorun yeni bir makinayı domaine eklemeye çalıştığımızda
+karşımıza çıkar.
+      </div><ul type="disc" class="itemizedlist"><li><div class="para">
+<i>The following error accured attempting to join the domain "TEST":</i>
+          </div><div class="para">
+<i>The credentials supplied conflict with an exiting set of credentials.</i>
+          </div><div class="para">
+Bu sorunun sebebi çok basittir. Eğer daha önceden makinanıza herhangi bir sürücü
+tanıtmışsanız bu hata mesajıyla karşılaşırsınız. Tanıttığınız tüm diskleri
+kaldırın.
+          </div></li><li><div class="para">
+<i>The following error accured attempting to join the domain "TEST":</i>
+          </div><div class="para">
+<i>Logon failure: unkonwn user name or bad password.</i>
+    </div><div class="para">Veya</div><div class="para">
+<i>The following error accured attempting to join the domain "TEST":</i>
+          </div><div class="para">
+<i>Because the username that you entered was a local machine or computer username.</i>
+          </div><div class="para">
+(Tam olarak böyle değil hata mesajı ama anlamı buydu)
+          </div><div class="para">
+Siz aslında doğru kullanıcı adı ve parolası girdiğiniz halde bu mesajı
+alıyorsanız girdiğiniz kullanıcı root yetkisi olamayan bir kullanıcıdır.
+Unutmayın bir makinayı domaine ancak root yetkileri olan bir kullanıcı
+ekleyebilir. Bunun için [global] kısmında "admin users = root"
+belirtmişseniz root kullanıcısı olarak makinayı domaine sokmalı daha
+sonra normal kullanıcı ismiyle sisteme giriş yapmalısınız.
+          </div><div class="para">
+Eğer herşey doğru ve hala domaine kullanıcı olarak giriş yapamıyorsanız
+makinanızı önce "a" isimli bir workgroup'a alın. Makinayı yeniden başlatıp
+tekrar "test" domainine sokmaya çalışın.
+          </div></li><li><div class="para">
+<i>Windows cannot logon to the TEST domain because the TEST domain is not
+avaliable or not present</i>
+          </div><div class="para">
+(Tam olarak böyle de olmayabilir hata mesajını aklımda kaldığı kadarıyla
+yazdım)
+          </div><div class="para">
+Gibi bir hata mesajını sisteme giriş yaparken alıyorsanız, mutlaka
+<tt>trust machine</tt> ile ilgili bir sorununuz vardır.
+Makina ismini <tt>smbpasswd</tt> ve <tt>/etc/passwd</tt>
+dosyalarından silip makinayı en baştan domaine giriş yaptırmaya çalışın.
+          </div></li><li><div class="para">
+<i>The following error accured attempting to changethe computer name
+to "egemen2": (The domain "TEST" wat joined under the old computer name "egemen")
+Access is denied</i>
+          </div><div class="para">
+Microsoft'un anlamını açık olarak belirttiği ender hata mesajlarından biri
+aslına bakarsanız. Eğer "test" domainindeyken makinanızın ismini değiştirirseniz
+bu hata mesajını alırsınız. Önce makinanızı bir workgroup'a alıp makinanızın
+ismini değiştirin sonra tekrar "test" domainine alın.
+          </div></li><li><div class="para">
+Eğer ağınızda bazı makinalara ulaşılamıyor ve hata mesajıyla karşılaşıyorsanız
+bunun nedeni gene <tt>Trust Account</tt>'tur... Makinayı yeniden
+sisteme giriş yaptırmaya çalışın.
+          </div></li></ul></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/pdc-2-samba-nasil_security.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/pdc-2-samba-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/pdc-2-samba-nasil_wins.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">İleri Düzey Güvenlik </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Wins Sunucu</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

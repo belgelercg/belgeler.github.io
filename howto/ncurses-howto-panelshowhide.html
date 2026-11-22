@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:09+03:00" /><title>Panelleri Gizlemek ve Göstermek</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/ncurses-howto-panels.html" title="Panel Kütüphanesi" /><link rel="previous" href="../howto/ncurses-howto-panelmoveresize.html" title="Panelleri Hareket Ettirmek ve Boyutlandırmak" /><link rel="next" href="../howto/ncurses-howto-panelabove.html" title="panel_above() ve panel_below()" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Panelleri Gizlemek ve Göstermek</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/ncurses-howto-panelmoveresize.html">Önceki</a> </td><th width="60%" align="center">Panel Kütüphanesi</th><td width="20%" align="right"> <a accesskey="n" href="../howto/ncurses-howto-panelabove.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="ncurses-howto-panelshowhide" id="ncurses-howto-panelshowhide"></a>Panelleri Gizlemek ve Göstermek</div><dl><dd><div class="para">
+Bir panel <tt>hide_panel()</tt> işlevi kullanılarak gizlenebilir. Bu işlev sadece onu panel yığınından kaldırır, böylece <tt>update_panels()</tt> ve <tt>doupdate()</tt> işlevleri kullanıldığında ekrandan saklanmış olur. Gizlenmiş panel ile ilintili PANEL yapısını bozmaz. Tekrar gösterilmek istenirse <tt>show_panel()</tt> işlevi kullanılmalıdır.
+</div><div class="para">
+Aşağıdaki program panellerin gizlenmesini göstermektedir. 'a' veya 'b' veya 'c' ye sırasıyla birinci, ikinci ve üçüncü pencereleri gizlemek veya göstermek için basın. Pencerenin gizlenip gizlenmediği bilgisini saklayan küçük bir hide isimli değişken ile kullanıcı verisini kullanmaktadır. Bir nedenden ötürü panelin gizlenip gizlenmediğini söyleyen <b><tt>panel_hidden()</tt></b> işlevi çalışmamaktadır. Michael Andres tarafından gönderilen bir hata raposu <a class="ulink" href="http://www.geocrawler.com/archives/3/344/1999/9/0/2643549/" target="_top">buradadır</a>.
+</div><dl class="example"><dt class="example"><a class="example" name="idxmp91" id="idxmp91"></a><b>Örnek 12.17.  Panel Gizleme ve Gösterme Örneği</b></dt><dd class="example">
+<div class="para"><div align="right"><pre class="programlisting">
+#include &lt;panel.h&gt;
+
+typedef struct _PANEL_DATA {
+  int hide;       /* eğer panel gizlenmişse TRUE */
+}PANEL_DATA;
+
+#define NLINES 10
+#define NCOLS 40
+
+void init_wins(WINDOW **wins, int n);
+void win_show(WINDOW *win, char *label, int label_color);
+void print_in_middle(WINDOW *win, int starty, int startx, int width,
+     char *string, chtype color);
+
+int main()
+{ WINDOW *my_wins[3];
+  PANEL  *my_panels[3];
+  PANEL_DATA panel_datas[3];
+  PANEL_DATA *temp;
+  int ch;
+
+  /* Curses kipi ilklendir */
+  initscr();
+  start_color();
+  cbreak();
+  noecho();
+  keypad(stdscr, TRUE);
+
+  /* Tüm renkleri ilklendir */
+  init_pair(1, COLOR_RED, COLOR_BLACK);
+  init_pair(2, COLOR_GREEN, COLOR_BLACK);
+  init_pair(3, COLOR_BLUE, COLOR_BLACK);
+  init_pair(4, COLOR_CYAN, COLOR_BLACK);
+
+  init_wins(my_wins, 3);
+
+  /* Her panele bir pencere bağla */      /* Sıralama aşağıdan yukarıya */
+  my_panels[0] = new_panel(my_wins[0]);   /* 0'a  it, sıra: stdscr-0 */
+  my_panels[1] = new_panel(my_wins[1]);   /* 1'e  it, sıra: stdscr-0-1 */
+  my_panels[2] = new_panel(my_wins[2]);   /* 2'ye it, sıra: stdscr-0-1-2 */
+
+  /* Hiçbir şeyin gizlenmediğiniz söyleyerek panel bilgisini ilklendir */
+  panel_datas[0].hide = FALSE;
+  panel_datas[1].hide = FALSE;
+  panel_datas[2].hide = FALSE;
+
+  set_panel_userptr(my_panels[0], &amp;panel_datas[0]);
+  set_panel_userptr(my_panels[1], &amp;panel_datas[1]);
+  set_panel_userptr(my_panels[2], &amp;panel_datas[2]);
+
+  /* Yığın sıralamasını güncelle. 2. panel en üstte olacak */
+  update_panels();
+
+  /* Ekranda göster */
+  attron(COLOR_PAIR(4));
+  mvprintw(LINES - 3, 0, "Pencereleri şu tuşlarla gizleyin veya gösterin"
+      " 'a'(ilk pencere)  'b'(ikinci pencere)  'c'(üçüncü pencere)");
+  mvprintw(LINES - 2, 0, "Çıkmak için F1");
+
+  attroff(COLOR_PAIR(4));
+  doupdate();
+
+  while((ch = getch()) != KEY_F(1))
+  { switch(ch)
+    { case 'a':
+        temp = (PANEL_DATA *)panel_userptr(my_panels[0]);
+        if(temp-&gt;hide == FALSE)
+        { hide_panel(my_panels[0]);
+          temp-&gt;hide = TRUE;
+        }
+        else
+        { show_panel(my_panels[0]);
+          temp-&gt;hide = FALSE;
+        }
+        break;
+      case 'b':
+        temp = (PANEL_DATA *)panel_userptr(my_panels[1]);
+        if(temp-&gt;hide == FALSE)
+        { hide_panel(my_panels[1]);
+          temp-&gt;hide = TRUE;
+        }
+        else
+        { show_panel(my_panels[1]);
+          temp-&gt;hide = FALSE;
+        }
+        break;
+      case 'c':
+        temp = (PANEL_DATA *)panel_userptr(my_panels[2]);
+        if(temp-&gt;hide == FALSE)
+        { hide_panel(my_panels[2]);
+          temp-&gt;hide = TRUE;
+        }
+        else
+        { show_panel(my_panels[2]);
+          temp-&gt;hide = FALSE;
+        }
+        break;
+    }
+    update_panels();
+    doupdate();
+  }
+  endwin();
+  return 0;
+}
+
+/* Tüm pencereleri ekrana yazdır */
+void init_wins(WINDOW **wins, int n)
+{ int x, y, i;
+  char label[80];
+
+  y = 2;
+  x = 10;
+  for(i = 0; i &lt; n; ++i)
+  { wins[i] = newwin(NLINES, NCOLS, y, x);
+    sprintf(label, "Window Number %d", i + 1);
+    win_show(wins[i], label, i + 1);
+    y += 3;
+    x += 7;
+  }
+}
+
+/* Penceleri bir çerçeve ve isimle göster */
+void win_show(WINDOW *win, char *label, int label_color)
+{ int startx, starty, height, width;
+
+  getbegyx(win, starty, startx);
+  getmaxyx(win, height, width);
+
+  box(win, 0, 0);
+  mvwaddch(win, 2, 0, ACS_LTEE);
+  mvwhline(win, 2, 1, ACS_HLINE, width - 2);
+  mvwaddch(win, 2, width - 1, ACS_RTEE);
+
+  print_in_middle(win, 1, 0, width, label, COLOR_PAIR(label_color));
+}
+
+void print_in_middle(WINDOW *win, int starty, int startx, int width,
+     char *string, chtype color)
+{ int length, x, y;
+  float temp;
+
+  if(win == NULL)
+          win = stdscr;
+  getyx(win, y, x);
+  if(startx != 0)
+          x = startx;
+  if(starty != 0)
+          y = starty;
+  if(width == 0)
+          width = 80;
+
+  length = strlen(string);
+  temp = (width - length)/ 2;
+  x = startx + (int)temp;
+  wattron(win, color);
+  mvwprintw(win, y, x, "%s", string);
+  wattroff(win, color);
+  refresh();
+}
+</pre></div></div></dd></dl></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/ncurses-howto-panelmoveresize.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/ncurses-howto-panels.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/ncurses-howto-panelabove.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Panelleri Hareket Ettirmek ve Boyutlandırmak </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> panel_above() ve panel_below()</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

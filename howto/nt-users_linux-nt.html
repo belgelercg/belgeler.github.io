@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:49+03:00" /><title>Linux Makinasını Windows NT Ağına Tanıtmak</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/nt-users.html" title="Linux üzerinde Windows NT kullanıcıları" /><link rel="previous" href="../howto/nt-users_intro.html" title="Giriş" /><link rel="next" href="../howto/nt-users_winbind.html" title="Linux Makinasında Windows Kullanıcılarını Görmek - Winbind" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Linux Makinasını Windows NT Ağına Tanıtmak</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/nt-users_intro.html">Önceki</a> </td><th width="60%" align="center">Linux üzerinde Windows NT kullanıcıları</th><td width="20%" align="right"> <a accesskey="n" href="../howto/nt-users_winbind.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="nt-users_linux-nt" id="nt-users_linux-nt"></a>Linux Makinasını Windows NT Ağına Tanıtmak</div><dl><dd><div class="para">
+Orjinal Samba belgesi: <a class="ulink" href="http://us1.samba.org/samba/docs/man/domain-member.html#id2899503" target="_top">http://us1.samba.org/samba/docs/man/domain-member.html#id2899503</a>
+  </div>
+  <div class="informaltable"><table cellpadding="3" cellspacing="1" style=";background:#999999;" border="0"><colgroup><col /><col /></colgroup><tbody><tr style="background:#ffffee;"><td>NetBIOS adı</td><td>SERV1</td></tr><tr style="background:#ffffee;"><td>Windows 200x/NT alan adı</td><td>MIDEARTH</td></tr><tr style="background:#ffffee;"><td>Alan PDC'nin NetBIOS adı</td><td>DOMPDC</td></tr><tr style="background:#ffffee;"><td>Alan BDC NetBIOS adları</td><td>DOMBDC1 ve DOMBDC2</td></tr></tbody></table></div>
+  <div class="para">
+İlk önce <tt>smb.conf</tt> dosyanızı değiştirerek Samba'da alan güvenliği kullanılır hale getirmelisiniz. <tt>smb.conf</tt> dosyanızın <b><tt>[global]</tt></b> bölümünün içindeki güvenlik satırını aşağıdaki hale getirin:
+  </div><div class="para"><div align="right"><pre class="screen">security = domain</pre></div></div><div class="para">
+Bundan sonra yine <b><tt>[global]</tt></b> bölümünde yer alan grup bilgisini değiştirin:
+  </div><div class="para"><div align="right"><pre class="screen">workgroup = MIDEARTH</pre></div></div><div class="para">
+Bu isim, katılacağımız alanın adıdır. Kullanıcılarınızın NT PDC'den kimlik kontrolü yaptırabilmesi için parolaların şifreli olduğuna dair parametre de aşağıdaki şekilde belirtilmelidir. Bu parametrenin öntanımlı değeri "yes"/evet olduğundan dolayı ayrıca <tt>smb.conf</tt> içine yazmanız gerekli değildir. Fakat eğer <tt>smb.conf</tt> dosyanızda bu parametre yer alıyor ise, değeri "yes" olmalıdır:
+  </div><div class="para"><div align="right"><pre class="screen">encrypt passwords = yes</pre></div></div><div class="para">
+Son olarak <b><tt>[global]</tt></b> bölümünde parola sunucusu satırını değiştirin (veya ilave edin):
+  </div><div class="para"><div align="right"><pre class="screen">password server = DOMPDC DOMBDC1 DOMBDC2</pre></div></div><div class="para">
+Bu sunucular, Samba'nın kullanıcı yetkinleştirmek için başvuracağı birincil ve yedek alan sunucularının isimleridir. Samba bu sunucuları verilen sırayla arayacaktır, dolayısıyla yük paylaştırmak amacı ile burada vereceğiniz sıralamada değişiklik yapabilirsiniz.
+  </div><div class="para">
+Veya, <b><tt>smbd</tt></b>'nin Alan Sunucusu listesini otomatik olarak elde etmesini isterseniz, bu satırı aşağıdaki şekilde de uygulayabilirsiniz:
+  </div><div class="para"><div align="right"><pre class="screen">password server = *</pre></div></div><div class="para">
+Bu yöntem, Samba'nın tamamen NT'nin kullandığı mekanizmayı kullanmasını sağlar. Bu yöntemde ya broadcast (genel yayın) bazlı isim çözümlemesi yapılır ve bir WINS veritabanına bakılarak yetkinleştirme için başvurulacak Alan Sunucusu bulunur ya da DNS isim çözümlemesi kullanılarak Alan Sunucusu bulunur.
+  </div><div class="para">
+Alana üye olmak için bu komutu çalıştırın:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt>root# </tt><b><tt>net rpc join -S DOMPDC -U<i>yönetici%parola</i></tt></b>
+</pre></div></div><div class="para">
+Eğer <b><tt>-S DOMPDC</tt></b> argümanı verilmezse, alan adı, <tt>smb.conf</tt> ayarlarından bulunur.
+  </div><div class="para">
+Samba makinası, <tt>DOM</tt> adındaki alana üye oluyor ve bu alanın birincil alan sunucusu (PDC), <tt>DOMPDC</tt> adında bir makina, bu sebeple <b><tt>-S</tt></b> seçeneği kullanılıyor.
+  </div><div class="para">
+<i><tt>yönetici%parola</tt></i> ise <tt>DOMPDC</tt> üzerinde, alana makina eklemeye yetkisi olan bir hesabın adı ve parolası. Eğer bu komut başarılı olur ise, aşağıda gösterilen iletiyi alacaksınız. NT4 alan mimarisinin kullanıldığı durumlarda:
+  </div>
+<div class="para"><div align="right"><pre class="screen">Joined domain DOM.</pre></div></div>
+  <div class="para">
+Active Directory mimarisi kullanılıyor ise:
+  </div><div class="para"><div align="right"><pre class="screen">Joined SERV1 to realm MYREALM.</pre></div></div><div class="para">
+Daha fazla bilgi için <b><tt>net</tt></b> kılavuz sayfasına bakın.
+  </div><div class="para">
+Bu komut, Samba sunucusunu, alana, PDC üzerinde daha önceden bir makina hesabı açmak zorunda kalmaksızın üye yapar.
+  </div><div class="para">
+Komut, makina hesabı parola değiştirme protokolünü uygular ve oluşturduğu (rasgele) yeni makina hesap parolasını normalde <tt>smbpasswd</tt> dosyasının tutulduğu dizinde bir dosyaya kaydeder:
+  </div><div class="para">
+<tt>/usr/local/samba/private/secrets.tdb</tt> veya <tt>/etc/samba/secrets.tdb</tt>
+  </div><div class="para">
+Bu dosya <tt>root</tt>'a aittir ve başka bir kullanıcı tarafından okunamaz. Bu dosya sisteminiz için Alan seviyesinde güvenliğin anahtarıdır ve herhangi bir parola dosyası kadar dikkatle muhafaza edilmelidir.
+  </div><div class="para">
+Son olarak Samba sunucunuzu tekrar başlatın. Samba'yı yeniden başlatma şekli dağıtımınıza göre farklı olabilir fakat genelde aşağıdaki komut işinizi görecektir:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt>root# </tt><b><tt>/etc/init.d/samba restart</tt></b>
+</pre></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/nt-users_intro.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/nt-users.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/nt-users_winbind.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Giriş </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Linux Makinasında Windows Kullanıcılarını Görmek - Winbind</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

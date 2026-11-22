@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:17+03:00" /><title>Hazırlanma</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/vram-howto.html" title="VRAM Depo Aygıtı NASIL" /><link rel="previous" href="../howto/vram-mini-howto_req.html" title="Gerekenler" /><link rel="next" href="../howto/vram-mini-howto_mtd.html" title="MTD Ayarları" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Hazırlanma</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/vram-mini-howto_req.html">Önceki</a> </td><th width="60%" align="center">VRAM Depo Aygıtı NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/vram-mini-howto_mtd.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="vram-mini-howto_prep" id="vram-mini-howto_prep"></a>Hazırlanma</div><dl><dd><div class="para">
+      Bu belleği kullanmak için öncelikle GfX kartımızın PCI adres boşluğu ile
+      nerede olduğunu bulmamız gerekir. Bunu birçok yoldan yapabilirsiniz. Benim
+      ilk yaptığım ise Gfx kartının ve kaynaklarının genel bir kontrolü oldu:
+      </div><ol class="orderedlist" start="ignore" type="1"><li><div class="listitem"><div class="para">
+            <tt>lspci</tt> komutunu vererek (veya daha ayrıntılı olan
+            <tt>lspci -vvv</tt>)
+  "VGA compatible controller" a benzer bir yazı bulunan bölümü bulun.
+   Ekrana gelecek olan çıktıda en azından Gfx kartınız ve kaynaklarıyla
+   ilgili bir girdi bulunacaktır. Benimkisi şöyleydi:
+</div><div class="para"><div align="right"><pre class="screen">
+01:00.0 VGA compatible controller: nVidia Corporation Vanta [NV6] (rev15)
+¬ (prog-if 00 [VGA])
+    Flags: bus master, 66Mhz, medium devsel, latency 248, IRQ 10
+    Memory at d6000000 (32-bit, non-prefetchable) [size=16M]
+    Memory at d4000000 (32-bit, prefetchable) [size=32M]
+    Expansion ROM at &lt;unassigned&gt; [disabled] [size=64K]
+    Capabilities: [60] Power Management version 1
+    Capabilities: [44] AGP version 2.0
+</pre></div></div><div class="para">
+            Şu an iki adres olasılığı var. Belirtmeliyim ki bu değerler sadece
+            benim <tt>nvidia</tt> kartım için geçerli ve sizinkiler
+            bundan farklı olabilir.
+            <tt>Memory at</tt>'le başlayan ilk satırda <tt>MMIO</tt>
+            adres boşluğu ile ilgili bilgiler var.
+            Diğeri ise gfx ram. Bu bilgi yeterli değil. O zaman bazı ayrıntılar
+            için XFree86'a başvurmamız gerekecek.
+          </div></div></li><li><div class="listitem"><div class="para">
+            XFree86 bazı bilgilerin kayıtlarını tutar.
+            Bu kayıt dosyalarını <tt>/var/log</tt> dizininde
+            <tt>XFree86.log </tt> (veya benzeri bir isme sahip) dosyada
+            bulabilirsiniz.
+            Bu dosya içinde yapacağımız küçük bir arama ile bize gereken
+            GFX ram ile ilgili (buradaki ismiyle <tt>linear framebuffer</tt>)
+            bilgilerini edinebiliriz:
+</div><div class="para"><div align="right"><pre class="screen">
+$ cat /var/log/XFree86.0.log | grep framebuffer
+(**) NV(0): Depth 24, (--) framebuffer bpp 32
+(--) NV(0): Linear framebuffer at 0xD4000000
+</pre></div></div><div class="para">
+            Gördüğünüz gibi, benim GFX RAM'im <tt>0xd4000000</tt>
+            fiziksel adresinde başlıyor. Artık kartımızın ne kadar belleğe
+            sahip olduğunu ve nerede başladığını biliyoruz, hadi başlayalım artık!
+          </div></div></li></ol></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/vram-mini-howto_req.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/vram-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/vram-mini-howto_mtd.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Gerekenler </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> MTD Ayarları</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

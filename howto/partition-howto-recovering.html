@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:16+03:00" /><title>Silinmiş bir Disk Bölümünü Kurtarmak</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/partition-howto.html" title="Linux Disk Bölümleme NASIL" /><link rel="previous" href="../howto/partition-howto-formatting.html" title="Bir ext2/3 disk bölümünü biçimlendirmek" /><link rel="next" href="../howto/partition-howto-setting_up_swap.html" title="Takas Alanını Ayarlamak" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Silinmiş bir Disk Bölümünü Kurtarmak</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/partition-howto-formatting.html">Önceki</a> </td><th width="60%" align="center">Linux Disk Bölümleme NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/partition-howto-setting_up_swap.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="partition-howto-recovering" id="partition-howto-recovering"></a>Silinmiş bir Disk Bölümünü Kurtarmak</div><dl><dd><div class="para">
+Aşağıda silinmiş bir disk tablosunu el ile kurtarmanın adımları anlatılmıştır. <a class="ulink" href="http://www.stud.uni-hannover.de/user/76201/gpart" target="_top">gpart</a> veya <a class="ulink" href="http://www.cgsecurity.org/index.html?testdisk.html" target="_top">TestDisk</a> gibi bu işlemi oldukça kolay hale getiren uygulamalar vardır. Eğer bunu okuyor ve şansınız hiç kalmadıysa, yapacaklarınız:
+  </div><ol class="orderedlist" start="ignore" type="1"><li><div class="listitem"><div class="para">
+İlk disk bölümünüzün büyüklüğü kadar bir disk bölümü oluşturun. Bu kısmı asıl disk bölümünden daha büyük de yapabilirsiniz. Eğer daha küçük yaparsanız, çok hayıflanıp diş gıcırdatacaksınız.
+    </div>
+<div class="para"><div align="right"><pre class="programlisting">Command (m for help): <b><tt>n</tt></b>
+Command action
+   e   extended
+   p   primary partition (1-4)
+<b><tt>p</tt></b>
+Partition number (1-4): <b><tt>1</tt></b>
+First cylinder (1-23361, default 1): <b><tt>&lt;RETURN&gt;</tt></b>
+Using default value 1
+Last cylinder or +size or +sizeM or +sizeK (1-22800, default 22800): <b><tt>13032</tt></b>
+
+Command (m for help): <b><tt>w</tt></b>
+</pre></div></div>
+  </div></li><li><div class="listitem"><div class="para">
+<b><tt>dumpe2fs</tt></b>'i ilk disk bölümünde çalıştırarak blok sayısını bulun.
+  </div><div class="para">Örnek:</div>
+<div class="para"><div align="right"><pre class="programlisting">% <b><tt>dumpe2fs /dev/sda1 | grep "Block count:"</tt></b>
+Block count:              41270953
+</pre></div></div>
+    <div class="para">
+Eğer bu değerden emin değilseniz, 1. Adımı daha büyük bir disk boyutu için tekrarlayın. Eğer blok sayısı değiştiyse, asıl disk bölümü blok sayısını iyi tahmin edememişsiniz demektir. 1. Adımı kararlı bir blok sayı bulana kadar sürdürün.
+  </div></div></li><li><div class="listitem"><div class="para">
+Yeni oluşturduğunuz disk bölümünü silin.
+    </div>
+<div class="para"><div align="right"><pre class="programlisting">Command (m for help): <b><tt>d</tt></b>
+Partition number (1-4): <b><tt>1</tt></b>
+</pre></div></div>
+  </div></li><li><div class="listitem"><div class="para">
+Elde ettiğiniz blok sayısına bakarak yeni bir disk bölümü oluşturun. <b><tt>fdisk</tt></b>'e blok sayısı giremediğinizden, kaç tane silindir istendiğini hesaplamanız gerekmektedir. İşte formulü:
+    </div>
+<div class="para"><pre class="literallayout">
+(gerekli silindir sayısı) = (blok sayısı) / (blok büyüklüğü)
+
+(blok büyüklüğü) = (birim büyüklüğü) / 1024
+
+(birim büyüklüğü) = (kafa sayısı) * (sektör/silindir sayısı) * (bayt/sektör sayısı)
+</pre></div>
+  <div class="para">
+1, 2, 4 ve 8 silindirlik 4 birincil disk bölümüne ayrılmış aşağıdaki disk bölümleme örneğine bakınız.
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">disk /dev/sda: 16 heads, 63 sectors, 23361 cylinders
+Units = cylinders of 1008 * 512 bytes
+
+   Device Boot    Start       End    Blocks   Id  System
+/dev/sda1             1         2       976+  83  Linux
+/dev/sda2             3         5      1512   83  Linux
+/dev/sda3             6        10      2520   83  Linux
+/dev/sda4            11        19      4536   83  Linux
+</pre></div></div>
+  <div class="para">
+<b><tt>fdisk</tt></b> çıktı başlangıcında ihtiyacım olan ayar bilgisini de sunmaktadır.
+  </div>
+<div class="para"><pre class="literallayout">
+Birim büyüklüğü <b><tt>516096</tt></b>
+  = <b><tt>16</tt></b> disk kafası * <b><tt>63</tt></b> sektör/silindir * <b><tt>512</tt></b> bayt/sektör
+
+Blok büyüklüğü <b><tt>504</tt></b>
+  = <b><tt>516096 / 1024</tt></b>
+</pre></div>
+  <div class="para">
+Dolasiyle ikinci disk bölümü için gerekli silindir sayısı <b><tt>3</tt></b>'tür (<b><tt>1512</tt></b> blok <b><tt>/ 504</tt></b>).
+  </div><div class="para">
+Disk bölümleme tablosu da bunun gerçekten de böyle olduğunu söylüyor: ilk silindir <b><tt>3</tt></b>, ikincisi <b><tt>4</tt></b> ve en sonuncu da <b><tt>5</tt></b>, toplam 3 silindir.
+  </div><div class="para">
+Üçüncü disk bölümü için gerekli silindir sayısı da benzer şekilde hesaplanır: <b><tt>2520</tt></b> blok <b><tt>/ 504 = 5</tt></b>, bunlar da bloklara karşı gelecek şekilde <b><tt>6,7,8,9,10</tt></b>'dur. Bu hesaplamanın ilk disk bölümünde çalışmayacağına dikkat edin (<b><tt>1008</tt></b> yerine <b><tt>976</tt></b>). Artı işareti tüm blokların fdisk uygulamasına katıldıklarını gösterir. Hesaplamayı denediğiniz zaman (<b><tt>976 / 504 </tt></b>) <b><tt>1.937</tt></b> elde edersiniz. Silindir sayısının tamsayı olması gerektiğini bilerek bunu yuvarlayabilirsiniz.
+  </div></div></li><li><div class="listitem"><div class="para">
+<b><tt>e2fsck</tt></b>'i çalıştırarak yeni disk bölümününün okunup okunamayağına bakın.
+  </div></div></li><li><div class="listitem"><div class="para">
+1'den 5'e kadar adımları kalan diğer disk bölümleri için de tekrarlayın.
+  </div></div></li></ol><div class="para">
+Disk bölümünüzü tekrar bağlayın. Şaşırtıcı bir şekilde bilgilerinizi orada olduğunu göreceksiniz.
+  </div><ul type="disc" class="itemizedlist"><li><div class="para">
+jedi sistem yöneticisi ve MGH'nin en iyisi olan Mike Vevea'a, bu ipuçlarını verdiği için teşekkürler.
+  </div></li></ul></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/partition-howto-formatting.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/partition-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/partition-howto-setting_up_swap.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Bir ext2/3 disk bölümünü biçimlendirmek </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Takas Alanını Ayarlamak</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

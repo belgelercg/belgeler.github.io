@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:25+03:00" /><title>Sanal Adresleme (Virtual Hosting)</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/sanal-adresleme-nasil.html" title="Apache Web Sunucusunda Sanal Adresleme ve Dizin Erişiminin Kısıtlanması NASIL" /><link rel="previous" href="../howto/sanal-adresleme-nasil.html" title="Apache Web Sunucusunda Sanal Adresleme ve Dizin Erişiminin Kısıtlanması NASIL" /><link rel="next" href="../howto/sanal-adresleme-nasil_constraint.html" title="Dizin Erişimini Kısıtlama" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Sanal Adresleme (Virtual Hosting)</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/sanal-adresleme-nasil.html">Önceki</a> </td><th width="60%" align="center">Apache Web Sunucusunda Sanal Adresleme ve Dizin Erişiminin Kısıtlanması NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/sanal-adresleme-nasil_constraint.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="sanal-adresleme-nasil_vh" id="sanal-adresleme-nasil_vh"></a>Sanal Adresleme (Virtual Hosting)</div><dl><dd> <div class="head3"><a name="id1" id="id1"></a>Sanal Adresleme Nedir?</div><dl><dd><div class="para">
+        Apache web sunucusunda  Sanal Adresleme (Virtual Hosting), tek bir Apache web
+        sunucusu üzerinde birden fazla web alanı için hizmet vermek amacı ile
+        kullanılır. Bu belgede isme göre sanal adresleme yapılandırması anlatılacaktır.
+        Tüm web alanları için web sunucusunda tek bir IP adresi kullanılacaktır. IP'ye
+        göre de yapılandırma yapılır ama bunun için her web alanı için ayrı ayrı IP
+        adresi tanımlanmalıdır. Bu durumda isme göre yapılandırma yapmak daha mantıklıdır
+        (en azından ben öyle düşünüyorum :)) ).
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Sanal Adres Yapılandırması</div><dl><dd><div class="para">
+        İlk önce Apache web sunucusunu kurmuş olmanız gerekiyor!!
+      </div><div class="para">
+        Eğer apache yi kurmadıysanız <a class="ulink" href="http://apache.bilkent.edu.tr/" target="_top">http://apache.bilkent.edu.tr</a> adresinden apache'nin en son
+        sürümünü indiriniz (Şu anki son sürüm apache-1.3.12). Apache derlemek
+        için aşagıdaki komutları sıra ile veriniz:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# tar -zxvf apache_1.3.12.tar.gz
+# cd apache_1.3.12
+# mkdir /www
+# ./configure --prefix=/www  &amp;&amp; make &amp;&amp; make install
+</pre></div></div>
+<div class="para">
+<tt>--prefix=/www</tt> ifadesi apache ile ilgili tüm dosyaların
+        <tt>/www</tt> dizini altına atılmasını sağlayacaktır. Bu
+        parametreyi vermezseniz ön tanımlı olarak <tt>/usr/local/apache</tt>
+        dizini altına atılacaktır.
+      </div><div class="para">
+        Apache sunucusunu başlatmak için:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# /www/bin/apachectl start
+</pre></div></div>
+<div class="para">
+komutunu vermeniz yeterlidir.
+      </div><div class="para">
+        Daha sonra sevdiginiz bir metin düzenleyici ile <tt>httpd.conf</tt>
+        dosyasını açınız.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# vi /www/conf/httpd.conf
+</pre></div></div>
+      <div class="para">
+        Diyelimki <tt>www.linux.org.tr</tt>, <tt>www.rt.net.tr</tt>,
+        <tt>www.bsdlive.org</tt> için sanal adresleme yapacağız. İlk önce
+        tüm bu alanlar için dns kaydı yapılması lazım ve dns sunucuda bu alanların IP
+        adresi olarak apache web suncusunun IP adresi verilmelidir.
+      </div><div class="para">
+        Burada apache web sunucusun IP adresi olarak <tt>195.1.2.4</tt>
+        verilecektir.
+      </div><div class="para">
+        Sırası ile <tt>linux.org.tr</tt> ve <tt>www.bsdlive.org</tt>
+        için sanal adresleme bilgilerini yazalım:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+NameVirtualHost 195.1.2.4:80
+
+# www.linux.org.tr  12 Ekim 2000 de olusturuldu (yenigul)
+
+&lt;VirtualHost 195.1.2.4&gt;
+  ServerAdmin yenigul@rt.net.tr
+  DocumentRoot /www/htdocs/domains/linux
+  ServerName www.linux.org.tr
+  ErrorLog logs/error_linux.org.tr
+  TransferLog logs/access_log_linux.org.tr
+&lt;/VirtualHost&gt;
+
+# www.bsdlive web alanı 16 Ekim 2000 de olusturuldu (yenigul)
+
+&lt;VirtualHost 195.1.2.4&gt;
+  ServerAdmin yenigul@rt.net.tr
+  DocumentRoot /www/htdocs/domains/bsdlive
+  ServerName www.bsdlive.org
+  ErrorLog logs/error_bsdlive
+  TransferLog logs/access_log_bsdlive
+&lt;/VirtualHost&gt;
+</pre></div></div>Şimdi yukarıdaki ifadelerin ne demek olduğunu açıklayalım.
+      <div class="para">
+        <tt>NameVirtualHost  195.1.2.4:80</tt> İfadesindeki
+        <tt>195.1.2.4</tt> Apache web sunucusunun IP adresi (IP Gerçek değil,
+        öylesine bir IP verdim) ve <tt>80</tt> ile de httpd port'u
+        belirtilmiştir.
+      </div><div class="para">
+        <tt>#</tt> ile başlayan kısımlar sadece açıklama kısmıdır.
+        Olup olmaması yapılandırmayı etkilemez.
+      </div><div class="para">
+        <tt>&lt;VirtualHost 195.1.2.4&gt;</tt> ifadesindeki IP adresi
+        web sunucusunun IP adresi  olmalı.
+      </div><div class="para">
+        <tt>ServerAdmin yenigul@rt.net.tr</tt>
+        ifadesi ile  bu web alanının yetkili kişisinin eposta adresi belirtilir.
+      </div><div class="para">
+        <tt>DocumentRoot  /www/htdocs/domains/linux</tt> ifadesi ile
+        <tt>www.linux.org.tr</tt> adresinin dosyalarının bulunduğu
+        yeri belirttik.
+      </div><div class="para">
+        <tt>ServerName  www.linux.org.tr</tt> ifadesiyle adından da
+        anlaşılacağı gibi Web alanı adı belirtildi.
+      </div><div class="para">
+        <tt>ErrorLog logs/error_linux.org.tr</tt> ifadesi ile de bu web
+        alanında oluşacak hatalar (dosyaların bulunamaması, CGI hataları)
+        <tt>logs</tt> dizini altındaki (bizim kurulumda
+        <tt>/www/logs</tt>) <tt>error_rt.net.tr</tt>
+        dosyasına yazılır.
+      </div><div class="para">
+        <tt>TransferLog  logs/access_log_linux.org.tr</tt> ifadesi ile de
+        bu web alanına hangi IP'lerden erişildiği hangi dosyalara bakıldığı gibi
+        bilgiler <tt>logs</tt> dizini altindaki (bizim kurulumda
+        <tt>/www/logs</tt>) <tt>access_log.linux.org.tr</tt>
+        dosyasına yazılır.
+      </div><div class="para">
+        <tt>&lt;/VirtulHost&gt;</tt> ifadesi ile bu alan için gerekli
+        yapılandırmanın bittiğini belirttik.
+      </div><div class="para">
+        Evet sanal adreslememizin sonuna geldik sayılır ama bir sorun var!!!
+      </div><div class="para">
+        Bizim Apache Sunucumuzun IP adresi <tt>195.1.2.4</tt> idi.
+        Diyelimki bu IP <tt>www.rt.net.tr</tt> isimli makinaya ait
+        ve bu  adress <tt>RT.NET</tt> web sunucu.
+      </div><div class="para">
+        Şu anki yapılandırmada  <tt>http://www.rt.net.tr</tt>
+        adresine girmek isteyen birisi <tt>www.rt.net.tr</tt> yerine
+        <tt>httpd.conf</tt> dosyasında en üstte bulunan web alanına
+        gidecektir. Yani <tt>www.linux.org.tr</tt> adresine
+        erişecektir.
+      </div><div class="para">
+        Bu sorunu çözmek için <tt>www.rt.net.tr</tt> sunucunun adı
+        olmasına rağmen, bu alan içinde sanal adresleme kaydı yapılmalıdır.
+      </div><div class="para">
+        Aşağıdaki ifadeler yazılırsa bu sorun giderilmiş olur.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# www.rt.net.tr Web alanı kaydı
+
+&lt;VirtualHost 195.1.2.4&gt;
+  ServerAdmin yenigul@rt.net.tr
+  DocumentRoot /www/htdocs
+  ServerName www.rt.net.tr
+  ErrorLog logs/error_rt.net.tr
+  TransferLog logs/access_log_rt.net.tr
+&lt;/VirtualHost&gt;
+</pre></div></div>
+<div class="para">En son olarak</div>
+<div class="para"><div align="right"><pre class="screen">
+# /www/bin/apachectl restart
+</pre></div></div>
+<div class="para">
+        komutu ile değişiklikler etkin hale getirilir.
+      </div><div class="para">
+        Eğer daha onceden apache'yi kurmuşsanız  (Red Hat da)
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# /etc/rc.d/init.d/httpd restart
+</pre></div></div>
+<div class="para">
+        komutu ile  değişikliği  etkinleştirebilirsiniz.
+      </div><div class="para">
+        Bu komut <tt>httpd.conf</tt>'da yapılan her değişiklikten sonra
+        çalıştırılmalıdır yoksa yapılanlar etkin olmaz.!
+      </div><div class="para">
+        Ve apache web sunucusunun her açılışta çalışması için
+        <tt>/etc/rc.d/rc.local</tt> (Red Hat Linux için) dosyasının en sonuna
+</div>
+<div class="para"><div align="right"><pre class="screen">
+/www/bin/apachectl start
+</pre></div></div>
+<div class="para">
+        yazıyoruz.
+      </div><div class="para">Kolay gelsin artık sanal adresleme yapılıyor :)</div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/sanal-adresleme-nasil.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/sanal-adresleme-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/sanal-adresleme-nasil_constraint.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Apache Web Sunucusunda Sanal Adresleme ve Dizin Erişiminin Kısıtlanması NASIL </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Dizin Erişimini Kısıtlama</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

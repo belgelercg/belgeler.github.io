@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:11+03:00" /><title>Ne gerekir? Nasıl yapılır?</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/opengl-giris.html" title="30 Dakikada OpenGL'e Giriş" /><link rel="previous" href="../howto/opengl-giris_1.html" title="OpenGL Programlamaya Giriş" /><link rel="next" href="../howto/opengl-giris_islevler.html" title="Bazı OpenGL İşlevlerinin Tanıtımı" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Ne gerekir? Nasıl yapılır?</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/opengl-giris_1.html">Önceki</a> </td><th width="60%" align="center">30 Dakikada OpenGL'e Giriş</th><td width="20%" align="right"> <a accesskey="n" href="../howto/opengl-giris_islevler.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="opengl-giris_nenasil" id="opengl-giris_nenasil"></a>Ne gerekir? Nasıl yapılır?</div><dl><dd> <div class="head3"><a name="id1" id="id1"></a>OpenGL ile programlamaya başlamak: Mesa kurulumu</div><dl><dd><div class="para">
+Bu belgede OpenGL ile programlama konusunu anlatmak için C programlama
+dili ve Linux işletim sistemi seçilmiştir.
+      </div><div class="para">
+OpenGL programlarını çalıştırmanız için gereken kitaplık bilgisayarınızda
+yüklü olabilir fakat sadece bu kitaplıkların varlığı OpenGL kullanan
+programlar geliştirmenize yetmez. Programınızda kullanacağınız başlık
+dosyalarını ve geliştirme ortamınızın kullandığı iç bağlantıların ihtiyaç
+duyacağı OpenGL kitaplık dosyalarına da ihtiyacınız olacaktır.
+      </div><div class="para">
+OpenGL kitaplığındaki birçok işlevi kapsayan ve amacı OpenGL'i uyarlamak
+olmasa da OpenGL kullanan birçok programı çalıştırabilen "Açık Kod"
+lisansına sahip bir kitaplık mevcuttur; Mesa. Mesa'nın bu belge
+yazıldığı sırada son kararlı versiyonu 5.0 idi; bu kitaplığı
+<a class="ulink" href="http://www.mesa3d.org" target="_top">http://www.mesa3d.org</a> adresinden indirdikten ve kurduktan
+sonra OpenGL işlevlerini kullanmaya başlayabilirsiniz. Yeri gelmişken
+Mesa'nın, Windows'da derlenip kullanılabileceğini belirtelim. Mesa'yı
+Linux dağıtımınızaki RPM paketlerinden veya en son sürümünü Mesa'nın
+resmi sitesinden indirip derleyerek elde edebilirsiniz. Burada kaynak
+koddan derleme anlatılacaktır.
+      </div><div class="para">
+<a class="ulink" href="http://www.mesa3d.org" target="_top">http://www.mesa3d.org</a> sayfasından <tt>MesaLib</tt>
+ve <tt>MesaDemos</tt> dosyalarını indirin ve <tt>root</tt>
+olarak şu komutları verin (<tt>MesaLib.tar.gz</tt> ve
+<tt>MesaDemos.tar.gz</tt> dosyalarını indirdiğiniz varsayılmıştır):
+</div><div class="para"><div align="right"><pre class="screen">
+# tar xzfv MesaLib.tar.gz
+# tar xzfv MesaDemos.tar.gz
+# cd Mesa-5.0/
+# ./configure
+# make
+# make install
+</pre></div></div><div class="para">
+Bu komutları verdikten sonra sorun (ki bende çıkmamıştı ;-),
+çıkarsa Mesa'nın sitesindeki SSS/Eposta Listesi gibi yardım kaynaklarına
+başvurunuz) sisteminizde kurulu ve kullanıma hazır bir OpenGL kitaplığınız
+olacaktır.
+      </div><div class="para">
+<tt>make check</tt> komutunu da verirseniz Mesa ile gelen örnek
+programlar da derlenecektir. Daha sonra bu demoları inceleyip nasıl
+çalıştıklarını öğrenebilirsiniz.
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>İlk OpenGL Programınız</div><dl><dd><div class="para">
+Bir metin düzenleyici kullanarak glilk.c adında bir dosya oluşuralım ve
+içine şunları yazalım:
+</div><div class="para"><div align="right"><pre class="screen">
+#include &lt;GL/glut.h&gt;
+
+void myDisplay()
+{
+        glClear(GL_COLOR_BUFFER_BIT);
+        glBegin(GL_POLYGON);
+        glVertex2f(0.0, 0.0);
+        glVertex2f(0.2, 0.0);
+        glVertex2f(0.2, 0.5);
+        glEnd();
+
+        glFlush();
+}
+
+int main (int argc, char ** argv)
+{
+        glutInit (&amp;argc, argv);
+        glutCreateWindow("İşte ilk pencerem!");
+        glutDisplayFunc(myDisplay);
+        glutMainLoop();
+        return(0);
+}
+</pre></div></div><div class="para">
+Programı şu şekilde derleyebilirsiniz:
+</div><div class="para"><div align="right"><pre class="screen">
+gcc glilk.c -o glilk -lGL -lGLU -lglut
+</pre></div></div><div class="para">
+        Çalıştırmak için <tt>./glilk</tt> komutu kullanılabilir.
+      </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/opengl-giris_1.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/opengl-giris.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/opengl-giris_islevler.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">OpenGL Programlamaya Giriş </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Bazı OpenGL İşlevlerinin Tanıtımı</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

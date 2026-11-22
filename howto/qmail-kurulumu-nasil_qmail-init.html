@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2019-10-17T22:36:15+03:00" /><title>Qmail'in Başlatılması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/qmail-kurulumu-nasil.html" title="QMAIL Kurulumu NASIL" /><link rel="previous" href="../howto/qmail-kurulumu-nasil_qmail-rc.html" title="/var/qmail/rc Dosyası ve Maildir" /><link rel="next" href="../howto/qmail-kurulumu-nasil_qmail-files.html" title="Yapılandırma Dosyaları" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Qmail'in Başlatılması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/qmail-kurulumu-nasil_qmail-rc.html">Önceki</a> </td><th width="60%" align="center">QMAIL Kurulumu NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/qmail-kurulumu-nasil_qmail-files.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="qmail-kurulumu-nasil_qmail-init" id="qmail-kurulumu-nasil_qmail-init"></a>Qmail'in Başlatılması</div><dl><dd> <div class="head3"><a name="id1" id="id1"></a>Qmail'in Açılış Betiği (initscript) ile Başlatılması</div><dl><dd><div class="para">
+Eğer INETD kullanmak isterseniz bu kısmı hiç okumadan
+bir sonraki bölüme (<a href="../howto/qmail-kurulumu-nasil_qmail-init.html#qmail-kurulumu-nasil_qmail-inetd" class="xref" title="Qmail'in INETD ile Başlatılması">Qmail'in INETD ile Başlatılması</a>)
+geçiniz. Son olarak uyarıyorum INETD kullanmak çok sağlıklı bir yöntem
+değildir.
+      </div><div class="para">
+Qmail'i açılışta başlatmak için  ve qmail'i durdurup çalıştırmayı daha
+kolay hale getirmek için aşağıdaki betiği yazalım. (Bunları yazmakla
+vakit kaybetmeyin. Ya buradan bir metin düzenleyiciye kopyalayın ya da
+doğrudan <a class="ulink" href="http://www.enderunix.org/docs/qmail.sh" target="_top">http://www.enderunix.org/docs/qmail.sh</a> adresinden alın.
+      </div><div class="para">
+        <b>qmail.sh</b> Betiği:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+#!/bin/sh
+PATH=/var/qmail/bin:/usr/local/bin:/usr/bin:/bin
+export PATH
+case "$1" in
+
+start)
+ echo -n "Qmail başlatılıyor: svscan"
+ cd /var/qmail/supervise
+ env - PATH="$PATH" svscan &amp;
+ echo $! &gt; /var/run/svscan.pid
+ echo "."
+ ;;
+
+stop)
+ echo -n "Qmail durduruluyor: svscan"
+ kill `cat /var/run/svscan.pid`
+ echo -n " qmail"
+ svc -dx /var/qmail/supervise/*
+ echo -n " logging"
+ svc -dx /var/qmail/supervise/*/log
+ echo "."
+ ;;
+
+reload|hup)
+ echo "qmail-send'e HUP sinyali gönderiliyor."
+ svc -h /var/qmail/supervise/qmail-send
+ ;;
+
+pause)
+ echo "qmail-send bekletmeye alınıyor"
+ svc -p /var/qmail/supervise/qmail-send
+ echo "qmail-smtpd bekletmeye alınıyor"
+ svc -p /var/qmail/supervise/qmail-smtpd
+ ;;
+
+cont)
+ echo "qmail-send bekletmeden çıkıyor"
+ svc -c /var/qmail/supervise/qmail-send
+ echo "qmail-smtpd bekletmeden çıkıyor"
+ svc -c /var/qmail/supervise/qmail-smtpd
+ ;;
+
+
+restart)
+ echo Qmail yeniden başlatılıyor:"
+ echo "* qmail-smtpd durduruluyor."
+ svc -d /var/qmail/supervise/qmail-smtpd
+ echo "* qmail-send'e SIGTERM gönderiliyor ve yeniden başlatılıyor."
+ svc -t /var/qmail/supervise/qmail-send
+ echo "* qmail-smtpd başlatılıyor."
+ svc -u /var/qmail/supervise/qmail-smtpd
+ ;;
+
+cdb)
+
+tcprules /etc/tcp.smtp.cdb /etc/tcp.smtp.tmp &lt; /etc/tcp.smtp
+ chmod 644 /etc/tcp.smtp*
+ echo "/etc/tcp.smtp yeniden yüklendi."
+ ;;
+
+help)
+
+cat &lt;&lt;HELP
+
+stop    -- eposta hizmeti durdurulur.
+           (smtp bağlantıları reddedilir, dışarı birşey gönderilmez)
+start   -- eposta hizmeti başlatılır.
+           (smtp bağlantıları kabul edilir, postalar gönderilir)
+pause   -- eposta hizmeti geçici olarak durdurulur.
+           (bağlantılar kabul edilir, hiçbir şeye izin verilmez)
+cont    -- Geçici olarak durdurulan hizmet başlatılır.
+cdb     -- smtp için kullanılan tcpserver cdb dosyası yeniden kurgulanır.
+restart -- smtp durdurulur, qmail-send'e bir TERM sinyali gönderilerek
+           qmail-send ve ardından smtp yeniden başlatılır.
+reload  -- qmail-send HUP gönderilir, yerel ve sanal alanlar yeniden okunur.
+HELP
+ ;;
+
+*)
+
+echo "Kullanım: $0 {start|stop|restartreload|pause|cont|cdb|help}"
+ exit 1
+ ;;
+ esac
+ exit 0
+</pre></div></div>
+      <div class="para">
+Bu betiğin çalışması için bir kaç  dizin ve dosya oluşturmamız lazım.
+Sıra ile aşağıdaki komutları verelim:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# mkdir -p /var/qmail/supervise/qmail-send/log
+# mkdir -p /var/qmail/supervise/qmail-smtpd/log
+# chmod +t /var/qmail/supervise/qmail-send
+# chmod +t /var/qmail/supervise/qmail-smtpd
+# chown -R qmaill.wheel /var/log/qmail
+</pre></div></div>
+<div class="para">
+daha sonra <tt>/var/qmail/supervise/qmail-send/run</tt> diye
+bir dosya oluşturun ve içine aşağıdakieri yazın:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+#!/bin/sh
+exec /var/qmail/rc
+</pre></div></div>
+<div class="para">
+<tt>/var/qmail/supervise/qmail-send/log/run</tt> diye bir
+dosya oluşturun ve içine aşağıdakieri yazın:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+#!/bin/sh
+exec /usr/local/bin/setuidgid qmaill /usr/local/bin/multilog t /var/log/qmail
+</pre></div></div>
+<div class="para">
+yukarıdaki ifade ile <tt>qmail-send</tt> programının
+günlük kayıtlarının <tt>/var/log/qmail</tt> dizine atılmasını
+sağlıyoruz.
+      </div><div class="para">
+<tt>/var/qmail/supervise/qmail-smtpd/run</tt> diye bir
+dosya oluşturun ve içine aşağıdakileri yazın:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+#!/bin/sh
+qmailDUID=`id -u qmaild`
+NOFILESGID=`id -g qmaild`
+
+exec /usr/local/bin/softlimit -m 4000000 \
+/usr/local/bin/tcpserver -v -p -H -R -l 0 -x /etc/tcp.smtp.cdb -c 256\
+-u "$qmailDUID" -g "$NOFILESGID" 0 smtp /var/qmail/bin/qmail-smtpd 2&gt;&amp;1
+</pre></div></div>
+<div class="para">
+<tt>-l 0</tt> (küçük L ve sıfır) parametresi ile eposta
+sunucusunun makina ismini (hostname) bulurken DNS sorgulaması
+yapmaması sağlanir. Bu parametreyi koymazsanız, eposta sunucunuza
+bağlantı çok yavaş olacaktır.
+      </div><div class="para">
+<tt>-c</tt> parametresi ile eposta sunucusuna aynı anda kaç
+tane bağlantıya izin verileceği belirlenir (burada 256 tane).
+      </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/warning.png" /></td><th class="admon">Uyarı</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Yukarıdaki satırlarda <tt>\</tt> işaretinden sonra boş
+satır olmaması lazım, aksi takdirde qmail çalışmaz.
+        </div></td></tr></table></div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/caution.png" /></td><th class="admon">Dikkat</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+<b>Solaris</b> kullanıyorsanız,
+yukarıdaki dosyada
+</div>
+<div class="para"><div align="right"><pre class="screen">
+qmailDUID=`id -u qmaild`
+NOFILESGID=`id -g qmaild`
+</pre></div></div>
+<div class="para"> satırları yerine</div>
+<div class="para"><div align="right"><pre class="screen">
+qmailDUID=`/usr/xpg4/bin/id -u qmaild`
+NOFILESGID=`/usr/xpg4/bin/id -g qmaild`
+</pre></div></div> ifadelerini yazın.
+        </td></tr></table></div><div class="para">
+<tt>/var/qmail/supervise/qmail-smtpd/log/run</tt> diye bir
+dosya oluşturun ve içine aşağıdakileri yazın:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+#!/bin/sh
+exec /usr/local/bin/setuidgid qmaill /usr/local/bin/multilog t /var/log/qmail/smtpd
+</pre></div></div>
+<div class="para">
+yukarıdaki ifade ile <tt>qmail-smtp</tt> programının günlük
+kayıtlarının <tt>/var/log/qmail/smtpd</tt> dizine atılmasını
+sağlıyoruz.
+      </div><div class="para">
+Şimdi de dosyaların izinlerini değiştirelim.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# chmod 755 /var/qmail/supervise/qmail-send/run
+# chmod 755 /var/qmail/supervise/qmail-send/log/run
+# chmod 755 /var/qmail/supervise/qmail-smtpd/run
+# chmod 755 /var/qmail/supervise/qmail-smtpd/log/run
+# mkdir -p /var/log/qmail/smtpd
+# chown qmaill /var/log/qmail /var/log/qmail/smtpd
+</pre></div></div>Evet dizinleri ve dosyaları oluşturduk.
+      <div class="para">
+İstediğimiz makinalara (hosts) <tt>smtp relay</tt> izni vermek
+için  aşağıdaki komutu verelim:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+#echo '127.:allow,RELAYCLIENT=""' &gt;&gt;/etc/tcp.smtp
+</pre></div></div>
+<div class="para">
+Bu ifade ile makinanın kendi <tt>lo0</tt> arayüzüne (loopback)
+izin verilir.
+      </div><div class="para">
+Ve eposta sunucusunun IP'sine de relay izni verelim (IP'si 212.65.128.82
+olsun). <tt>RELAYCLIENT=""</tt> ifadesi ile
+<tt>RELAYCLIENT</tt> değişkenine boş bir değer atanmış olur,
+bu değişkene bir değer atandığı için <tt>qmail-smtpd</tt>
+bu IP'li istemciye RELAY iznini verir:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# echo '212.65.128.82:allow,RELAYCLIENT=""' &gt;&gt;/etc/tcp.smtp
+</pre></div></div>
+<div class="para">
+belli bir IP ailesine izin vermek için (örneğin 212.144.12.)
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# echo '212.144.12.:allow,RELAYCLIENT=""' &gt;&gt;/etc/tcp.smtp
+</pre></div></div>
+      
+Ve <tt>/etc/tcp.smtp</tt> dosyasının en sonuna
+<div class="para"><div align="right"><pre class="screen">:allow</pre></div></div>ifadesini ekleyin (manası şudur: tüm smtp
+bağlantılarına izin ver ama <tt>RELAYCLIENT</tt> değiskenini
+atama). SMTP erişim veritabanını oluşturmak için aşağıdaki komutu verin:
+
+<div class="para"><div align="right"><pre class="screen">
+# /usr/local/bin/tcprules /etc/tcp.smtp.cdb /etc/tcp.smtp.tmp &lt; /etc/tcp.smtp
+</pre></div></div>
+      <div class="para">
+<tt>/etc/tcp.smtp</tt> dosyasına kayıt ekleme/çıkarma yaptıktan
+sonra bu komutu tekrar çalıştırmanız gerekir. Ama qmail'i yeniden
+başlatmanıza (restart)  gerek yok!.
+      </div><div class="para">
+Qmail'in her açılışta otomatik olarak çalışması
+      </div><div class="variablelist"><dl><dt><span class="term">FreeBSD için:</span></dt><dd class="varlist"><div class="para">
+Yukarıda yazdığımız <tt>qmail.sh</tt> betiğini
+<tt>/usr/local/etc/rc.d/</tt> altına kopyalayın:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# cp qmail.sh /usr/local/etc/rc.d/
+# chmod 700  /usr/local/etc/rc.d/qmail.sh
+</pre></div></div>
+<div class="para">
+                Qmail'i çalıştırmak için
+</div>
+<div class="para"><div align="right"><pre class="screen">
+/usr/local/etc/rc.d/qmail.sh start
+</pre></div></div>
+              </dd><dt><span class="term">OpenBSD için:</span></dt><dd class="varlist"><div class="para">
+Yukarıda yazdığımız <tt>qmail.sh</tt> betiğini
+<tt>/usr/local/etc/</tt> altına kopyalayın:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# cp qmail.sh /usr/local/etc
+#chmod 755  /usr/local/etc/qmail.sh
+</pre></div></div>
+<div class="para">
+<tt>etc/rc.local</tt> dosyasına
+</div>
+<div class="para"><div align="right"><pre class="screen">
+/usr/local/etc/qmail.sh start
+</pre></div></div>
+<div class="para">satırını ekleyin.
+              </div></dd><dt><span class="term">Red Hat ve Mandrake için:</span></dt><dd class="varlist"><div class="para">
+Yukarıda yazdığımız <tt>qmail.sh</tt> betiğini
+<tt>/usr/local/etc/rc.d/init.d/</tt> altına kopyalayın:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# cp qmail.sh /etc/rc.d/init.d
+# chmod 700  /etc/rc.d/init.d/qmail.sh
+</pre></div></div>
+<div class="para">
+Qmail'in açılışta başlatılması için
+<tt>/etc/rc.d/rc.local</tt> dosyasına
+</div>
+<div class="para"><div align="right"><pre class="screen">
+/etc/rc.d/init.d/qmail.sh start
+</pre></div></div>
+<div class="para">yazmanız yeterlidir.
+              </div></dd><dt><span class="term">Solaris için:</span></dt><dd class="varlist">
+<div class="para"><div align="right"><pre class="screen">
+# cp qmail.sh /etc/init.d
+# chmod 700  /usr/local/etc/rc.d/qmail.sh
+# ln -s /etc/init.d/qmail.sh /etc/rc2.d/S90qmail
+# ln -s /etc/init.d/qmail.sh /etc/rc2.d/K90qmail
+</pre></div></div></dd></dl></div></dd></dl> <div class="head3"><a name="qmail-kurulumu-nasil_qmail-inetd" id="qmail-kurulumu-nasil_qmail-inetd"></a>Qmail'in INETD ile Başlatılması</div><dl><dd><div class="para">
+<tt>/etc/inetd.conf</tt> dosyasına aşağıdaki ifadeleri yazın:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+smtp stream tcp nowait qmaild /usr/local/bin/tcpd /var/qmail/bin/tcp-env ¬
+  /var/qmail/bin/qmail-smtpd
+</pre></div></div>
+<div class="para">ve şu komutu verin:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# kill -HUP inetd_pid
+</pre></div></div>
+      <div class="para">
+Ayrıca qmail'in <tt>/var/log/maillog</tt> veya
+<tt>/var/log/syslog</tt> dosyasında günlük kayıtlarını tutmasını
+istiyorsanız <tt>/var/qmail/rc</tt> dosyasına "splogger qmail"
+parametresini ekleyin. Örnek bir <tt>/var/qmail/rc</tt> dosyası
+şöyledir:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+#!/bin/sh
+exec env - PATH="/var/qmail/bin:$PATH" \
+qmail-start ./Maildir/ splogger qmail
+</pre></div></div>
+<div class="para">
+hepsi bu <tt>:))</tt>. Ama  <tt>inetd.conf</tt>'dan çalıştırmak kolay
+diye inetd'yi kullanmayın. Eğer eposta sunucunuz çok yoğun bir şekilde
+çalışıyorsa  inetd yüzünden performans düşüklüğü olabilir ve en önemlisi
+RELAY  yapamazsınız.
+      </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/qmail-kurulumu-nasil_qmail-rc.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/qmail-kurulumu-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/qmail-kurulumu-nasil_qmail-files.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">/var/qmail/rc Dosyası ve Maildir </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Yapılandırma Dosyaları</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

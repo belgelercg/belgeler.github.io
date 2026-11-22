@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:09+03:00" /><title>menu_driver: Menü sisteminin dolap beygiri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/ncurses-howto-menus.html" title="Menü Kütüphanesi" /><link rel="previous" href="../howto/ncurses-howto-compilemenus.html" title=" Menü Kütüphanesi ile derleme" /><link rel="next" href="../howto/ncurses-howto-menuwindows.html" title=" Menü Pencereleri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">menu_driver: Menü sisteminin dolap beygiri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/ncurses-howto-compilemenus.html">Önceki</a> </td><th width="60%" align="center">Menü Kütüphanesi</th><td width="20%" align="right"> <a accesskey="n" href="../howto/ncurses-howto-menuwindows.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="ncurses-howto-menudriver" id="ncurses-howto-menudriver"></a><tt>menu_driver</tt>: Menü sisteminin dolap beygiri</div><dl><dd><div class="para">
+Yukarıdaki örnekte gördüğünüz gibi <tt>menu_driver</tt> menüyü güncellemede önemli bir rol oynamaktadır. Aldığı çeşitli seçenekleri ve neler yaptığını anlamak oldukça önemlidir. Yukarıda açıklandığı üzere <tt>menu_driver()</tt>)'ın ikinci parametresi bir menü gezinti isteği, yazılabilir bir karakter veya <tt>KEY_MOUSE</tt> anahtarı olabilir. Değişik gezinti isteklerini parçalara ayırıp inceleyelim.
+</div><dl><dt><span class="glossterm"><tt>REQ_LEFT_ITEM</tt> ve <tt>REQ_RIGHT_ITEM</tt></span></dt><dd class="halfpara"><div class="para">
+Bir menü bir öğe için birden fazla sütun ile gösterilebilir. <b><tt>menu_format()</tt></b> işlevi kullanılarak bu gerçeklenebilir. Çok sütunlu bir menü gösterildiği zaman yukarıdaki istekler menü sürücüsünün o anki seçimin sağa ya da sola hareket etmesini sağlar.
+</div></dd><dt><span class="glossterm"><tt>REQ_UP_ITEM</tt> ve <tt>REQ_DOWN_ITEM</tt></span></dt><dd class="halfpara"><div class="para">
+Yukarıdaki örnekte bu seçenekleri görmüştünüz. Bu istekler verildiğinde <tt>menu_driver</tt>'ın o anki seçimi yukarı veya aşağı kaydırmasını sağlar.
+</div></dd><dt><span class="glossterm"><tt>REQ_SCR_*</tt> seçenekleri</span></dt><dd class="halfpara"><div class="para">
+<tt>REQ_SCR_ULINE, REQ_SCR_DLINE, REQ_SCR_DPAGE</tt> ve <tt>REQ_SCR_UPAGE</tt> seçenekleri kaydırma ile ilgili seçeneklerdir. Eğer menüdeki tüm öğeler alt pencere menüsünde gösterilemiyorsa o zaman menü kaydırılabilirdir. Bu istekler <tt>menu_driver</tt>'a verilerek sırasıyla kaydırmanın yukarı, aşağı, bir sayfa aşağı veya yukarı yapılması sağlanabilir.
+</div></dd><dt><span class="glossterm"><tt>REQ_FIRST_ITEM, REQ_LAST_ITEM, REQ_NEXT_ITEM</tt> ve <tt>REQ_PREV_ITEM</tt></span></dt><dd class="halfpara"><div class="para">
+Bu istekler kendilerini açıklar niteliktedir (Sırayla ilk, son, sonraki, önceki).
+</div></dd><dt><span class="glossterm"><tt>&gt;REQ_TOGGLE_ITEM</tt></span></dt><dd class="halfpara"><div class="para">
+Bu istek verildiğinde o anki seçim değiştirilir. Bu seçenek çok değerli menülerde kullanılmalıdır. Bu isteği kullanabilmek için <tt>O_ONEVALUE</tt> değeri etkisizleştirilmelidir. Bu seçenek <tt>set_menu_opts()</tt> ile etkin veya etkisiz yapılabilir.
+</div></dd><dt><span class="glossterm">Örüntü İstekleri</span></dt><dd class="halfpara"><div class="para">
+Her menünün kullanıcın girdiği karakterlere en yakın olan ascii karakter karşılığını bulmak için bir örüntü önbelleği bulunmaktadır. <tt>menu_driver</tt>'a ascii karakterler verildiği zaman örüntü önbelleğine alınır. Aynı zamanda listedeki örüntüye en yakın olan eşleşmeyi de bulmaya çalışır ve o anki seçimi o öğeye hareket ettirir. <tt>REQ_CLEAR_PATTERN</tt> isteği örüntü belleğini siler. <tt>REQ_BACK_PATTERN</tt> isteği örüntü belleğindeki bir önceki karakteri siler. Örüntünün birden fazla öğe ile eşlemesi halinde eşleşen öğeler <tt>REQ_NEXT_MATCH</tt> ve <tt>REQ_PREV_MATCH</tt> ile seçim üzerinden sonraki veya öncekine hareket sağlanabilir.
+</div></dd><dt><span class="glossterm">Fare İstekleri</span></dt><dd class="halfpara"><div class="para">
+<tt>KEY_MOUSE</tt> istekleri durumunda farenin konumuna göre bir davranış sergilenir. Gösterilecek davranış kılavuz sayfalarında açıklanmıştır:
+</div><div class="para"><pre class="literallayout">
+    Eğer  ikinci  parametre  KEY_MOUSE  özel  karakteri  ise bununla
+    ilişkili fare  olayı,  yukarıda  önceden  tanımlanmış  isteklere
+    çevrilir.  Sadece  kullanıcı  penceresindeki  (örn. menü görüntü
+    alanı  veya  dekor  penceresi)   tıklamalar   işlenir.   Menünün
+    görüntülenebilir alanı üzerine tıklanırsa REQ_SCR_ULINE üretilir,
+    eğer  çift  tıklarsanız  REQ_SCR_UPAGE  üretilir ve eğer üç kere
+    tıklarsanız  REQ_FIRST_ITEM  üretilir.  Eğer  menü   görüntüleme
+    alanı aşağısına tıklanırsa REQ_SCR_DLINE üretilir, eğer iki kere
+    tıklanırsa  REQ_SCR_DPAGE  üretilir  ve  eğer üç kere tıklanırsa
+    REQ_LAST_ITEM   üretilir.   Eğer   menü   görüntüleme   alanının
+    içerisinde bir öğeye tıklanırsa  menü imleci bu öğeye konumlanır.
+</pre></div></dd></dl>
+<div class="para">
+Yukarıdaki isteklerin her biri takip eden satırlarda değişik örneklerle gerekli oldukça açıklanacaktır.
+</div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/ncurses-howto-compilemenus.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/ncurses-howto-menus.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/ncurses-howto-menuwindows.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top"> Menü Kütüphanesi ile derleme </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top">  Menü Pencereleri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

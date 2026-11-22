@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2019-10-17T22:36:15+03:00" /><title>Qmail'in Özelleştirilmesi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/qmail-kurulumu-nasil.html" title="QMAIL Kurulumu NASIL" /><link rel="previous" href="../howto/qmail-kurulumu-nasil_antivirus.html" title="Antivirus Kurulumu" /><link rel="next" href="../howto/qmail-kurulumu-nasil_yazardan.html" title="Yazarın Notu" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Qmail'in Özelleştirilmesi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/qmail-kurulumu-nasil_antivirus.html">Önceki</a> </td><th width="60%" align="center">QMAIL Kurulumu NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/qmail-kurulumu-nasil_yazardan.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="qmail-kurulumu-nasil_ozellestirilir" id="qmail-kurulumu-nasil_ozellestirilir"></a>Qmail'in Özelleştirilmesi</div><dl><dd><div class="para">
+Bu bölümde qmail'e uygulanabilecek bir kaç yamadan bahsedeceğim:
+    </div><div class="variablelist"><dl><dt><span class="term">
+<a class="ulink" href="https://github.com/bruceg/qmail-patches/blob/master/big-concurrency.patch" target="_top"> Concurrency Greater Yaması</a>
+          </span></dt><dd class="varlist"><div class="para">
+Qmail normalde aynı anda en fazla 240 eposta işleyebilir. Bu yama
+sayesinde bu değer 509'a kadar çıkmaktadır. Bu yamayı qmail'i kurarken
+uygulamanız lazım. Eğer daha önce kurulu bir qmail var ise baştan
+kurulması lazımdır.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# cd qmail-1.03
+# patch &lt; /yama-dizini/big-concurrency.patch
+</pre></div></div>
+<div class="para">
+<tt>/yama-dizini/</tt> ifadesinin yerine yamanın bulunduğu dizinin yolunu yazınız.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+#make clean
+</pre></div></div>
+           <div class="para">
+<tt>conf-spawn</tt> dosyasındaki 1000 değerini 500 yapın.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+#make setup check
+#./config
+</pre></div></div>
+<div class="para">
+sonra normal qmail yapılandırması yapın ve
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# echo 500 &gt;/var/qmail/control/concurrencylocal
+# echo 500 &gt;/var/qmail/control/concurrencyremote
+</pre></div></div>
+<div class="para">
+qmail çalıştığında ya da yeniden başlatıldığında değişiklikler
+              etkin olacaktır.
+            </div></dd><dt><span class="term">
+<a class="ulink" href="http://www.fehcom.de/qmail/spamcontrol.html" target="_top">SPAMCONTROL Yaması</a>
+          </span></dt><dd class="varlist"><div class="para">
+Bu yama sayesinde qmail'e spam'i engelleme ile ilgili bir sürü özellik
+eklenmektedir.
+            </div><div class="para">
+Aşağıdaki dosyalar <tt>/var/qmail/control</tt> dizininde
+bulunmaktadır.
+            </div><div class="variablelist"><dl><dt><span class="term">badrcptto</span></dt><dd class="varlist"><div class="para">
+<tt>badmailfrom</tt> dosyasının biçemindedir ve bu
+dosyaya yazdığınız eposta adreslerine sunucunuzdan eposta
+gitmesini engelleyebilirsiniz (her satırda bir eposta adresi
+olmak zorundadır.</div></dd><dt><span class="term">badmailpatterns</span></dt><dd class="varlist"><div class="para">
+Bu dosyada bulunan genel arama karakteri (wildcards) ile
+eşleşen adreslerden gelen epostalar sunucu tarafından
+reddedilir. Örneğin, bu dosyada <tt>*spamci*</tt>
+yazıyorsa içinde <tt>spamci</tt> geçen eposta
+adreslerinden gelen epostaları sunucu kabul etmez.
+                    </div><div class="para">
+Örnek bir <tt>badmailpatterns</tt> dosyası
+</div>
+<div class="para"><div align="right"><pre class="screen">
+*list.emailbucks.*
+*mailer1.asseenontw.*
+*@ed.ac.uk
+*@porn-4-*
+</pre></div></div>
+                    </dd><dt><span class="term">badrcptpatterns</span></dt><dd class="varlist"><div class="para">
+<tt>badmailpatterns</tt> dosyasının yaptığı işi yapar
+ama bu sefer sunucu üzerinden eposta gönderecek kişiler üzerinde
+kısıtlama yapar. IP bazlı kısıtlama da yapılabilir. Örneğin:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+badmailfrom @12.34.56.78
+badrcptto @12.34.56.78
+badmailpatterns *12.34.56.78*
+badrcptpatterns *12.34.56.78*
+badmailpatterns *78.56.34.12.in-addr.arpa*
+badrcptpatterns *78.56.34.12.in-addr.arpa*
+</pre></div></div>
+                    </dd></dl></div><div class="para">
+Ve daha bir sürü özellik ve dosya, geniş bilgi için
+<a class="ulink" href="https://github.com/bruceg/qmail-patches" target="_top">siteyi</a>
+ziyaret ediniz. Bu yamayı uygulamanızı kesinlikle tavsiye ederim.
+            </div></dd></dl></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/qmail-kurulumu-nasil_antivirus.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/qmail-kurulumu-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/qmail-kurulumu-nasil_yazardan.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Antivirus Kurulumu </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Yazarın Notu</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:26+03:00" /><title>MRTG Web Sayfasının Güvenliği</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/mrtg.html" title="MRTG Kurulumu" /><link rel="previous" href="../howto/mrtg-web.html" title="MRTG Web Sayfasının Görünümü" /><link rel="next" href="../howto/mrtg-links.html" title="İnternet Web Adresleri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">MRTG Web Sayfasının Güvenliği</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/mrtg-web.html">Önceki</a> </td><th width="60%" align="center">MRTG Kurulumu</th><td width="20%" align="right"> <a accesskey="n" href="../howto/mrtg-links.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="mrtg-guvenlik" id="mrtg-guvenlik"></a>MRTG Web Sayfasının Güvenliği</div><dl><dd><div class="para">
+Uygulayıcının ihtiyaçları doğrultusunda, MRTG istatistikleri sadece ilgili kişilerin
+görebileceği şekilde güvenlik altına alınabilir. Bu konuda Red Hat Linux işletim sistemi
+üzerinde standart olarak kullanılan Apache Web sunucusundan faydalanabiliriz.
+  </div><div class="para">
+Akla gelen ilk şey, <tt>httpd.conf</tt> içinde gerekli (AuthConf) değişiklikleri yapmak. Bundan sonra <tt>/var/www/security</tt> dizini oluşturulmalı ve bu konumda bir parola dosyası oluşturulmalıdır:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>[root@camel /var/www/security]#</tt> <b><tt>htpasswd –c mrtg.passwd celak</tt></b>
+</pre></div></div>
+  <div class="para">
+Parola dosyası hazırlandıktan sonra <tt>/var/www/html/mrtg</tt> dizini altında <tt>.htaccess</tt> dosyası oluşturulmalıdır. Bu dosyada yapılan tanımlamalara göre, yalnızca bir kullanıcı adı ve parolası olanlar bu dizinin içeriğini web üzerinden görebilecektir:
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+AuthType Basic
+     AuthName "Ağ Bağlantı İstatistikleri"
+     AuthUserFile /var/www/security/mrtg.passwd
+     require valid-user
+</pre></div></div>
+  </dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/mrtg-web.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/mrtg.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/mrtg-links.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">MRTG Web Sayfasının Görünümü </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> İnternet Web Adresleri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

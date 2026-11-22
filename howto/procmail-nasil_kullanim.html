@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:55+03:00" /><title>Kullanım</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/procmail-nasil.html" title="Procmail ile Eposta Filtreleme NASIL" /><link rel="previous" href="../howto/procmail-nasil_kurulum.html" title="Kurulum" /><link rel="next" href="../howto/procmail-nasil_sss.html" title="Sıkça Sorulan Sorular" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Kullanım</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/procmail-nasil_kurulum.html">Önceki</a> </td><th width="60%" align="center">Procmail ile Eposta Filtreleme NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/procmail-nasil_sss.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="procmail-nasil_kullanim" id="procmail-nasil_kullanim"></a>Kullanım</div><dl><dd> <div class="head3"><a name="id1" id="id1"></a>Sistem genelinde iletileri süzme</div><dl><dd><div class="para"><div align="right"><pre class="screen"># touch  /etc/procmailrc</pre></div></div><div class="para">
+<tt>/etc</tt> dizininin altında <tt>procmailrc</tt>
+adında dosyamızı oluşturduk. Bu dosyanın içine aşağıdaki satırları yazın:
+</div><div class="para"><div align="right"><pre class="screen">
+# Hata ayıklaması yapacağınız zaman 'yes' yazın.
+VERBOSE=no
+
+
+# Hata ayıklaması yapacağınız zaman ## karakterlerini silin;
+# olay kayıtları fazla gelirse 'no' yazın.
+## LOGABSTRACT=all
+
+# Kendi dizininizi kullanmak isterseniz $HOME/Msgs yazın
+# Mutt ve elm $HOME/Mail kullanır
+# Pine $HOME/mail kullanır
+# Netscape Messenger $HOME/nsmail kullanır
+# Bazı NNTP istemcileri, örneğin slrn ve nn, $HOME/News kullanır
+# maildir biçemindekiler çoğunlukla $HOME/Maildir kullanır
+MAILDIR=$HOME/mail       # Bu dizin mutlaka mevcut olmalı!
+
+# procmail ile ilgili dosyaların saklanacağı dizin
+##PMDIR=$HOME/Procmail
+PMDIR=/etc/Procmail
+# Olay kayıtlarının tutulmamasını istiyorsanız
+# LOGFILE satırının başına ## koyunuz (önerilmez)
+LOGFILE=$PMDIR/log
+INCLUDERC=$PMDIR/Rc/subject.rc
+INCLUDERC=$PMDIR/Rc/spamlist.rc
+INCLUDERC=$PMDIR/Rc/body.rc
+INCLUDERC=$PMDIR/Rc/trailer.rc
+</pre></div></div><div class="para">
+Yukarıdaki <tt>MAILDIR=$HOME/mail</tt> ifadesini ev dizininizde
+bulunan posta kutunuzun biçemine göre değiştirin.Örneğin bende
+<tt>/home/genco</tt> dizininde <tt>mail</tt> adında bir
+dizin bulunduğu için bu ifade olduğu gibi kalıyor.
+    </div><div class="para">
+<tt>PMDIR</tt> değişkenini, procmail'in kullanacağı dosyaların
+bulunduğu dizin adına atayalım. Yukarıda bizim tanımımız
+<tt>PMDIR=/etc/Procmail</tt> şeklinde.
+    </div><div class="para">
+<tt>INCLUDERC</tt> değişkeni, <tt>/etc/Procmail/Rc</tt>
+dizini içindeki süzme işlemini gerçekleştirecek dosyalarımızı gösteriyor.
+Her bir kural için ayrı bir dosya oluşturarak sistemimize modüler bir yapı
+kazandırıyoruz. Böylece ileride bir kuralı çıkarmak istediğinizde
+<tt>procmailrc</tt> dosyasından bu satırı silmeniz yeterli
+olacaktır.
+    </div><div class="para">
+Dizinlerimizi ve dosyalarımızı oluşturalım.
+</div><div class="para"><div align="right"><pre class="screen">
+# mkdir /etc/Procmail
+# touch /etc/Procmail/log
+# mkdir /etc/Procmail/Rc
+# touch /etc/Procmail/Rc/subject.rc
+# touch /etc/Procmail/Rc/spamlist.rc
+# touch /etc/Procmail/Rc/body.rc
+# touch /etc/Procmail/Rc/trailer.rc
+# mkdir etc/Procmail/Filtered
+</pre></div></div><div class="variablelist"><dl><dt><span class="term">/etc/Procmail/Rc/subject.rc</span></dt><dd class="varlist">
+<div class="para"><div align="right"><pre class="screen">
+:0:
+  * ^Subject:.*\&lt;I love you\&gt;
+
+/etc/Procmail/Filtered/subject
+</pre></div></div>
+          <div class="para">
+<tt>subject.rc</tt> dosyasının içine yukarıda satırları
+yazalım. Bu dosya yardımıyla procmail, sisteminize gelen epostaların
+başlığındaki <tt>subject</tt> satırını tarayarak, içinde
+"<i>I love you</i>" olan iletileri
+<tt>/etc/Procmail/Filtered/subject</tt> adındaki dosyaya
+gönderir.
+          </div><div class="para">
+Örnekler üzerinden gidilip birkaç örnek sonra bu dosyalardaki
+sözdizimi ile ilgili açıklama yapılacak.
+          </div></dd><dt><span class="term">/etc/Procmail/Rc/spamlist.rc</span></dt><dd class="varlist">
+<div class="para"><div align="right"><pre class="screen">
+FROM_=`formail -rt -xTo: \
+  | expand | sed -e 's/^[ ]*//g' -e 's/[ ]*$//g'`
+
+
+
+:0
+
+*  $ ? echo ${FROM_} | grep ${FROM_} '/etc/Procmail/black.list'
+
+
+
+/etc/Procmail/Filtered/spam
+</pre></div></div>
+          <div class="para">
+<tt>spamlist.rc</tt> dosyasına da yukarıdaki satırları
+yazalım. Bu satırlar ne anlatıyor?
+          </div><div class="para">
+Gelen iletiden <tt>from</tt> bilgisi <tt>formail</tt>
+programı ile alınıyor. (Bende formail programı var mı diye şüphe
+içerisindeyseniz, düşünmeyin. Procmail programını kurarken aynı zamanda
+onu da yüklediniz.) Daha sonra <tt>/etc/Procmail/black.list</tt>
+dosyasında bu <tt>from</tt> bilgisi var mı yok mu aranıyor.
+Eğer bulunursa bu ileti, <tt>inbox</tt> yerine
+<tt>/etc/Procmail/Filtered/spam</tt> dosyasına yazılıyor.
+          </div><div class="para">
+Bu eposta adresinin <tt>spam</tt> olduğuna kesin eminseniz
+<tt>spam</tt> dosyası yerine <tt>/dev/null</tt>'ın
+engin derinliğinede gönderebilirsiniz.
+          </div><div class="para">
+<tt>/etc/Procmail/black.list</tt> dosyasını oluşturup bu dosyanın
+içine sisteminizi rahatsız eden eposta adreslerini kayıt edebilirsiniz.
+Bu sayede kendi spam listenizi oluşturabilirsiniz.
+          </div></dd><dt><span class="term">/etc/Procmail/Rc/body.rc</span></dt><dd class="varlist">
+<div class="para"><div align="right"><pre class="screen">
+:0 B:
+
+* I send you this file in order to have your advice
+/etc/Procmail/Filtered/dustbin
+</pre></div></div>
+          <div class="para">
+<tt>body.rc</tt> dosyasının içine yazacağınız yukarıdaki satırlar,
+gelen iletilerin gövdesini tarayarak içinde "<i>I send you this file
+in order to have your advice</i>" yazan satırı bulursa
+iletiyi <tt>/etc/Procmail/Filtered/dustbin</tt> adlı dosyaya atacaktır.
+Bu satır bildiğiniz gibi geçenlerde birçok kimseyi rahatsız eden virusun
+gövdesinde yazıyordu.
+          </div><div class="para">
+Benim <tt>dustbin</tt> dosyamın boyutu aradabir artıyor :))
+          </div></dd><dt><span class="term">/etc/Procmail/Rc/trailer.rc</span></dt><dd class="varlist">
+<div class="para"><div align="right"><pre class="screen">
+:0 fb
+* ? test -r /etc/trailer.txt
+| cat - ; \
+  sed   -e "s/\$//g" \
+      &lt;/etc/trailer.txt
+</pre></div></div>
+          <div class="para">
+<tt>trailer.rc</tt> dosyasının içeriğide yukarıdaki gibi.
+Peki bu dosya ne yapar? Aslında pek bir şey yapmaz. Gelen her iletinin
+en alt kısmına sizin belirlemiş oldugunuz satırları ekler.
+Giden iletilere ekleyebilseydi daha iyi olurdu.:)
+          </div><div class="para">
+Bunun çalışması için <tt>/etc/trailer.txt</tt> dosyasını
+oluşturalım ve içine her iletiye eklemek istediğimiz satırları yazalım.
+          </div></dd></dl></div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Bir kullanıcıya gelen iletileri süzme</div><dl><dd><div class="para">
+Süzme işlemini sadece bir kullanıcı için yapacaksak kullanıcının ev dizininde
+<tt>.procmailrc</tt> adında bir dosya oluşturmamız yeterli olur.
+      </div><div class="para">
+Bu dosyanın içine yukarıdaki <tt>*.rc</tt> uzantılı dosyaların
+içeriklerini yazmamız süzme işini başlatır. Bunun haricinde başka bir şey
+yapmamıza gerek yok.
+      </div><div class="para">
+Bu belgede bulunan  RC dosyalarındaki kuralların haricinde örnekler görmek
+isterseniz, <a class="ulink" href="http://www.uwasa.fi/~ts/info/proctips.html" target="_top">http://www.uwasa.fi/~ts/info/proctips.html</a> adresinde
+40 adet örnek bulunmaktadır.
+      </div></dd></dl> <div class="head3"><a name="id3" id="id3"></a>Procmail .rc dosya biçemi hakkında</div><dl><dd><div class="para"><pre class="literallayout">
+Sözdizimi                        Anlam
+----------------------------------------------------------------------------
+:0                               Kuralı başlatır.
+
+:                                rc dosyasının bulunduğu yerde lock dosyası
+                                 oluşturur.
+
+*                                koşul ifademize başlamamızı sağlar.
+
+^Subject:                        başlıkta subject ile başlayan satırı arar.
+                                 ^TO_ yazarsanız to satırını arar.
+
+/etc/Procmail/Filtered/subject   işlem gören iletinin hangi dosyaya gideceğini
+                                 belirtir.
+</pre></div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/procmail-nasil_kurulum.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/procmail-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/procmail-nasil_sss.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Kurulum </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Sıkça Sorulan Sorular</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

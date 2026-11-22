@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:51+03:00" /><title>Ağa Bağlanan Linux Terminali</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/windows-ve-linux__terminal.html" title="X Terminal Sisteminin Yapılması" /><link rel="previous" href="../howto/windows-ve-linux_temel-sistem.html" title="Tek Başına (basit) Linux" /><link rel="next" href="../howto/windows-ve-linux_x-terminali.html" title="X Terminalinin Oluşturulması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Ağa Bağlanan Linux Terminali</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/windows-ve-linux_temel-sistem.html">Önceki</a> </td><th width="60%" align="center">X Terminal Sisteminin Yapılması</th><td width="20%" align="right"> <a accesskey="n" href="../howto/windows-ve-linux_x-terminali.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="windows-ve-linux_baglan" id="windows-ve-linux_baglan"></a>Ağa Bağlanan Linux Terminali</div><dl><dd><div class="para">
+Bu adımda, Linux terminalimizin DHCP sunucusundan IP adresi almasını, yani sunucu makinaya bağlanmasını sağlayacağız. Bunu yapmadan önce, istemci makina üzerinde bulunan ağ kartı için hangi çekirdek modülünün gerektiğini öğrenmemiz lazım. Bunu yapmışken, X yapılandırması ile ilgili dosyaları da alacağız. Nasıl mı? Hani belgenin başında elinizin altında bir Knoppix CD'si olsun demiştim. Şimdi onu kullanacağız. Knoppix, tamamen CD'den başlatılıp, sabit diske kurulmadan doğrudan CD'den çalışan bir Linux dağıtımıdır. Eğer bir ağ bulur ve bu ağda da bir DHCP sunucusu algılarsa kendine bir IP adresi alıp ağa bağlanır. Biz bu özelliğinden yararlanarak, onun çalışmak için oluşturduğu yapılanmayla ilgili dosyaları bu ağ bağlantısı üzerinden sunucumuza aktarabiliriz. Bunu yapabilmek için önce sunucu makina üzerinde SSH sunucusunu başlatmamız lazım. SSH bağlantısı kuracağız, çünkü <b><tt>telnet</tt></b> öntanımlı ayarlarıyla <tt>root</tt> kullanıcısının sisteme bağlanmasına izin vermez. SSH için böyle bir sorun yok. Sunucu makina üzerinde şu komutları girin:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>/sbin/chkconfig sshd on</tt></b>
+# <b><tt>/sbin/service sshd start</tt></b>
+</pre></div></div>
+    <div class="para">
+Böylece sshd'nin her sistem açılışında çalışmasını da sağlamış olduk. İstemci makinanın CD sürücüsündeki Knoppix CD'sinden açılmasını sağlayın. İstemci makina benimki gibi yavaş bir makinaysa (P133) Knoppix'in açılması biraz zahmetli olacaktır. Böylece neden bir Knoppix CD'si alıp kullanın demediğimi daha iyi anlayacaksınız. Bizim oluşturacağımız sistem Knoppix'e göre sürat rekoru kıracak.
+    </div><div class="para">
+Knoppix'in masaüstü açıldığında <b><tt>CTRL-ALT-F1</tt></b> tuşu ile konsola düşün. Bu konsol bizim konsol gibi, yani parola filan sormuyor ve sistem root yetkileri ile kullanılıyor. <b><tt>mc</tt></b> var, isterseniz çalıştırın. Şu komutu girin:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>scp /proc/modules root@10.10.10.1:/a3/ramdisk/</tt></b>
+</pre></div></div>
+    <div class="para">
+Bu komuttan sonra <b><tt>scp</tt></b> size parola soracak. Sunucu makinadaki <tt>root</tt> kullanıcısı için kullandığınız parolayı girin. <tt>/proc/modules</tt> dosyası sunucu makina üzerindeki <tt>/a3/ramdisk</tt> dizinine kopyalanacak. <tt>XF86Config</tt> dosyası ile <tt>XFree86.0.log</tt> dosyasını da alalım:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>scp /etc/X11/XF86Config root@10.10.10.1:/a3/ramdisk/</tt></b>
+# <b><tt>scp /var/log/XFree86.0.log root@10.10.10.1:/a3/ramdisk/</tt></b>
+</pre></div></div>
+    <div class="para">
+Bu komutları girmeden önce <tt>/etc/X11</tt> ve <tt>/var/log</tt> dizinlerine bakmayı ihmal etmeyin. Dosyaların isimleri biraz farklı olabilir, bu takdirde komutlardaki dosya isimlerini değiştirmelisiniz. Bu işlemden sonra Knoppix ile işimiz bitti. Bize gerekli bilgileri topladık. Sunucu makinaya geçip, yeni sistemi hazırlayabiliriz.
+    </div><div class="para">
+Knoppix'den kopyaladığımız <tt>modules</tt> dosyası, istemci makinadaki donanım için gerekli çekirdek modüllerini içerir. Bunlardan biri de ağ kartını sisteme tanıtan modüldür. <tt>modules</tt> dosyasındaki modül isimlerini makinanızdaki ağ kartları ile ilgili modül dosyalarının (<tt>/lib/modules/2.4.22-x/kernel/drivers/net</tt> dizinindeki modüller) isimleriyle karşılaştırın. En az bir eşleşme bulacaksınız, bazı modüller bir ek modüle daha ihtiyaç duyar, örneğin <tt>8139too.o</tt> modülü <tt>mii.o</tt> modülüne ihtiyaç duyar ve <tt>modules</tt> dosyasında bir modül bir başka modüle bağımlıysa bu bilgi dosyada vardır. Bunu göz önüne alarak <tt>modules</tt> dosyasını önce bir inceleyin. Ağ kartı ilk algılanan donanımlardan biri olduğundan onunla ilgili modül ya da modüller <tt>modules</tt> dosyasının son satırlarındadır. Dosyayı sondan başa tararsanız işiniz çabuk biter.
+    </div><div class="para">
+Bu modül benim istemci makinam için <tt>dmfe.o</tt> ve ek bir modül gerektirmiyor. <tt>/lib/modules/2.4.22-x/kernel/drivers/net/dmfe.o</tt> dosyasını <tt>/a3/ramdisk/initrd/lib/modules/2.4.22-x/kernel/drivers/net/</tt> dizinine kopyalıyorum, siz de kendi modül ya da modülleriniz için aynı işlemi yapın:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cp /lib/modules/2.4.22-x/kernel/drivers/net/dmfe.o</tt></b> \
+&gt; <b><tt>/a3/ramdisk/initrd/lib/modules/2.4.22-x/kernel/drivers/net/</tt></b>
+</pre></div></div>
+    <div class="para">
+Ağ kartının çekirdeğe tanıtılmasını sağlayacak modülü sistemimize yerleştirdiğimize göre sistemi ağa bağlayacak işlemlere başlayabiliriz. <tt>/etc/init.d/baslat</tt> dosyasını aşağıdaki biçime getirin:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+#!/bin/sh
+# Bu betik sistemi ilklendirir
+
+PATH="/bin"
+
+umask 022
+
+# Biraz yer acalim
+rmdir /lost+found
+
+# modulleri yoklarken cekirdek birsey basmasin
+echo "0" &gt; /proc/sys/kernel/printk
+depmod -a
+modprobe -a -q *
+
+# Saatimiz dogru kalsin
+hwclock -s
+
+echo "lo arayuzu etkinlestiriliyor"
+ip link set lo up
+ip addr add 127.0.0.1 dev lo
+ip route add 127.0.0.0/8 dev lo
+
+echo "eth0 arayuzu etkinlestiriliyor"
+udhcpc -i eth0 -s /etc/init.d/dhcpc.sh
+
+exit 0
+</pre></div></div>
+    <div class="para">
+Önceki <b><tt>baslat</tt></b> betiğiyle karşılaştırıldığında hangi satırların eklendiğini gördünüz. <b><tt>depmod</tt></b> komutuyla modül bağımlılıkları tespit ediliyor ve hemen altındaki <b><tt>modprobe</tt></b> komutuyla gerekli modüller çekirdeğe ekleniyor. <b><tt>depmod</tt></b> ve <b><tt>modprobe</tt></b> komutlarını <b><tt>bin</tt></b> dizinimize eklemeliyiz. Ayrıca bir <tt>/etc/modules.conf</tt> dosyası oluşturup ağ kartı için gereken modülü bu dosyada belirtmeliyiz.
+    </div><div class="para">
+Dosyanın sonundaki <b><tt>udhcpc</tt></b> komutu ise <b><tt>busybox</tt></b> içindeki yerleşik komutlardan biri. DHCP sunucusundan ağ kartımız için IP adresinin alınmasını bu komut gerçekleştiriyor. Komut parametrelerinde <tt>-i</tt> seçeneği ile ağ arayüzünün ismini, <tt>-s</tt> seçeneği ile de komutun dönemsel olarak çalıştıracağı betiğin yerini belirtiyoruz. Bu betiği de biz yazacağız.
+    </div><div class="para">
+Şimdi bu işlemleri sırayla yapalım. <b><tt>depmod</tt></b> ve <b><tt>modprobe</tt></b> komutlarını sistemde bulunduğu yeri <b><tt>whereis</tt></b> ile tespit ettikten sonra bu dizine girip bu komutların dosyalarını buluyoruz. <b><tt>modprobe</tt></b> genelde <b><tt>insmod</tt></b> dosyasına bir sembolik bağdır. <b><tt>insmod</tt></b> dosyasına sembolik bağ olarak çalışan başka komutlar da var. Hepsini <tt>initrd/bin</tt> dizinine kopyalıyoruz:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cd /a3/ramdisk/initrd/bin</tt></b>
+# <b><tt>cp /sbin/depmod ./</tt></b>
+# <b><tt>cp /sbin/insmod ./</tt></b>
+# <b><tt>cp -d /sbin/kallsyms ./</tt></b>
+# <b><tt>cp -d /sbin/ksyms ./</tt></b>
+# <b><tt>cp -d /sbin/lsmod ./</tt></b>
+# <b><tt>cp -d /sbin/modprobe ./</tt></b>
+</pre></div></div>
+    <div class="para">
+Sembolik bağları kopyalarken <tt>-d</tt> seçeneğini kullandığımıza dikkat edin. Bu seçeneği kullanmazsanız bağ dosyası değil, bağın hedefindeki dosya kopyalanır ki, bu bizim istemediğimiz bir durum.
+    </div><div class="para">
+<b><tt>depmod</tt></b> ve <b><tt>insmod</tt></b> komutlarının bağımlı olduğu kütüphanelerin neler olduğuna da bakmamız lazım:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>ldd ./insmod</tt></b>
+        libc.so.6 =&gt; /lib/i686/libc.so.6 (0x40030000)
+        /lib/ld-linux.so.2 =&gt; /lib/ld-linux.so.2 (0x40000000)
+# <b><tt>ldd ./depmod</tt></b>
+        libc.so.6 =&gt; /lib/i686/libc.so.6 (0x40030000)
+        /lib/ld-linux.so.2 =&gt; /lib/ld-linux.so.2 (0x40000000)
+</pre></div></div>
+    <div class="para">
+Bu dosyaları <b><tt>busybox</tt></b> için sistemimize dahi etmiştik. Farklı bir kütüphaneye ihtiyaç duymadıklarından birşey yapmamıza gerek yok.
+    </div><div class="para">
+Şimdi <tt>etc</tt> dizinine geçip oradaki işlemleri yapalım. Önce <tt>etc</tt> dizininde <tt>modules.conf</tt> dosyasını oluşturun ve içine aşağıdaki satırı sizin ağ kartınızın modül ismini <tt>.o</tt> uzantısız olarak içerecek şekilde yazın (benimki <tt>dmfe</tt>):
+    </div>
+<div class="para"><div align="right"><pre class="screen">alias eth0 dmfe</pre></div></div>
+    <div class="para">
+<tt>init.d</tt> dizinine geçip <tt>dhcpc.sh</tt> dosyasını oluşturacağız ve dosyayı çalıştırılabilir yapacağız:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>touch dhcpc.sh</tt></b>
+# <b><tt>chmod +x dhcpc.sh</tt></b>
+</pre></div></div>
+    <div class="para">
+Dosyanın içine aşağıdaki satırları kopyalayın:
+    </div>
+<div class="para"><div align="right"><pre class="screen">#!/bin/sh
+
+RESOLV_CONF="/etc/resolv.conf"
+[ -n "$broadcast" ] &amp;&amp; BROADCAST="broadcast $broadcast"
+[ -n "$subnet" ] &amp;&amp; NETMASK="netmask $subnet"
+
+case "$1" in
+    deconfig)
+      ifconfig $interface 0.0.0.0
+      ;;
+
+    renew|bound)
+      ifconfig $interface $ip $BROADCAST $NETMASK
+
+      if [ -n "$router" ] ; then
+          while ip route del default scope global nexthop dev $interface ; do
+            :
+          done 2&gt;/dev/null
+
+          for i in $router ; do
+                  ip route add default via $i dev $interface
+          done
+      fi
+
+      echo -n &gt; $RESOLV_CONF
+      [ -n "$domain" ] &amp;&amp; echo search $domain &gt;&gt; $RESOLV_CONF
+
+      for i in $dns ; do
+        echo nameserver $i &gt;&gt; $RESOLV_CONF
+      done
+      ;;
+esac
+
+exit 0
+</pre></div></div>
+    <div class="para">
+Bu betik tek başına çalışmaz, betiği <b><tt>udhcpc</tt></b> komutu bazı parametreler aktararak çalıştırır. Bu konu hakkında daha fazla bilgi almak için <b><tt>busybox</tt></b> paketindeki <tt>networking/udhcp</tt> dizinindeki README dosyalarındaki açıklamalara bakabilirsiniz.
+    </div><div class="para">
+<b><tt>initrdyap</tt></b> betiğini çalıştırıp <tt>initrd.img</tt> dosyasını oluşturduktan sonra istemci makinaya geçip, <tt>netlogon</tt> dizinindeki betiği çalıştırıp dosyaları windows'a aktarın ve <tt>LINUX OL</tt> simgesine tıklayıp yaptıklarınızı deneyin.
+    </div><div class="para">
+İstemci makinadaki Linux sistemi açıldığında <b><tt>ifconfig</tt></b> komutunu vererek <tt>eth0</tt> yapılandırmasını görebilir. Sunucu makinaya <b><tt>ping</tt></b> atabilir (<b><tt>ping 10.10.10.1</tt></b>), böylece ağ bağlantınızı sınayabilirsiniz.
+    </div><div class="para">
+İstemci makinanın Linux ile ağa bağlanmasını gerçekleştirdiğimize göre son adıma geçebilir, X terminalimizi oluşturmaya başlayabiliriz.
+    </div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/windows-ve-linux_temel-sistem.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/windows-ve-linux__terminal.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/windows-ve-linux_x-terminali.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Tek Başına (basit) Linux </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> X Terminalinin Oluşturulması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

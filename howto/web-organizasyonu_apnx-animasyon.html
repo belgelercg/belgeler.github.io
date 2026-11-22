@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:13+03:00" /><title>A. Bir animasyonun kaynak kodu</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/web-organizasyonu.html" title="Web Sitesi Düzenlemesi ve Tasarımı" /><link rel="previous" href="../howto/web-organizasyonu_kaynak.html" title="Bağlantılar" /><link rel="next" href="../howto/web-organizasyonu_apnx-stress.html" title="B. Stres" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">A. Bir animasyonun kaynak kodu</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/web-organizasyonu_kaynak.html">Önceki</a> </td><th width="60%" align="center">Web Sitesi Düzenlemesi ve Tasarımı</th><td width="20%" align="right"> <a accesskey="n" href="../howto/web-organizasyonu_apnx-stress.html">Sonraki</a></td></tr></table></td></tr></table><div class="appendix"> <div class="titlepage"><div><div class="head2" style="clear: both;"><a name="web-organizasyonu_apnx-animasyon" id="web-organizasyonu_apnx-animasyon"></a>A. Bir animasyonun kaynak kodu</div></div></div><dl><dd><div class="para"><div align="right"><pre class="screen">
+&lt;SCRIPT LANGUAGE="JavaScript"&gt;
+function MM_timelinePlay(tmLnName, myID) { //v1.2
+//Copyright 1997 Macromedia, Inc. All rights reserved.
+var i,j,tmLn,props,keyFrm,sprite,numKeyFr,firstKeyFr,propNum,theObj,firstTime=false;
+if (document.MM_Time == null) MM_initTimelines(); //if *very* 1st time
+tmLn = document.MM_Time[tmLnName];
+if (myID == null) { myID = ++tmLn.ID; firstTime=true;}//if new call, incr ID
+if (myID == tmLn.ID) { //if Im newest
+setTimeout('MM_timelinePlay("'+tmLnName+'",'+myID+')',tmLn.delay);
+fNew = ++tmLn.curFrame;
+for (i=0; i&lt;tmLn.length; i++) {
+sprite = tmLn[i];
+if (sprite.charAt(0) == 's') {
+if (sprite.obj) {
+numKeyFr = sprite.keyFrames.length; firstKeyFr = sprite.keyFrames[0];
+if (fNew &gt;= firstKeyFr &amp;&amp; fNew &lt;= sprite.keyFrames[numKeyFr-1]) {//in range
+keyFrm=1;
+for (j=0; j&lt;sprite.values.length; j++) {
+props = sprite.values[j];
+if (numKeyFr != props.length) {
+if (props.prop2 == null) sprite.obj[props.prop] = props[fNew-firstKeyFr];
+else sprite.obj[props.prop2][props.prop] = props[fNew-firstKeyFr];
+} else {
+while (keyFrm&lt;numKeyFr &amp;&amp; fNew&gt;=sprite.keyFrames[keyFrm]) keyFrm++;
+if (firstTime || fNew==sprite.keyFrames[keyFrm-1]) {
+if (props.prop2 == null) sprite.obj[props.prop] = props[keyFrm-1];
+else sprite.obj[props.prop2][props.prop] = props[keyFrm-1];
+} } } } }
+} else if (sprite.charAt(0)=='b' &amp;&amp; fNew == sprite.frame) eval(sprite.value);
+if (fNew &gt; tmLn.lastFrame) tmLn.ID = 0;
+} }
+} function MM_initTimelines() {
+//MM_initTimelines() Copyright 1997 Macromedia, Inc. All rights reserved.
+var ns = navigator.appName == "Netscape";
+document.MM_Time = new Array(1);
+document.MM_Time[0] = new Array(1);
+document.MM_Time["Timeline1"] = document.MM_Time[0];
+document.MM_Time[0].MM_Name = "Timeline1";
+document.MM_Time[0].fps = 15;
+document.MM_Time[0][0] = new String("sprite");
+document.MM_Time[0][0].slot = 1;
+if (ns)
+document.MM_Time[0][0].obj = document["Layer1"];
+else
+document.MM_Time[0][0].obj = document.all ? document.all["Layer1"] : null;
+document.MM_Time[0][0].keyFrames = new Array(1, 8, 18, 28, 32, 38, 43, 47, 51, 53, 55);
+document.MM_Time[0][0].values = new Array(4);
+document.MM_Time[0][0].values[0] = new Array(25,32,38,45,52,60,69,80,89,99,109,120,132,144,156,169,183,197,212,228,244,260,276,291,306,320,333,346,369,387,402,413,419,422,424,425,423,419,409,395,380,365,350,333,316,301,286,273,263,255,248,242,244,256,271);
+document.MM_Time[0][0].values[0].prop = "left";
+document.MM_Time[0][0].values[1] = new Array(11,24,37,51,64,77,91,105,116,127,139,151,163,175,186,196,206,214,221,226,229,232,235,236,237,238,237,237,233,226,215,201,189,176,162,148,134,121,107,95,85,77,70,66,65,66,71,80,91,103,114,134,152,164,172);
+document.MM_Time[0][0].values[1].prop = "top";
+if (!ns) {
+document.MM_Time[0][0].values[0].prop2 = "style";
+document.MM_Time[0][0].values[1].prop2 = "style";
+}
+document.MM_Time[0][0].values[2] = new Array(150,157,164,171,178,185,192,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200,200);
+document.MM_Time[0][0].values[2].prop = "width";
+if (!ns)
+document.MM_Time[0][0].values[2].prop2 = "style";
+document.MM_Time[0][0].values[3] = new Array(50,59,68,77,87,96,105,115,115,115,115,115,115,115,115,115,115,115,115,115,115,115,115,115,115,115,115,115,115,115,115,115,115,115,115,115,115,115,115,115,115,115,115,115,115,115,115,115,115,115,115,115,115,115,115);
+document.MM_Time[0][0].values[3].prop = "height";
+if (!ns)
+document.MM_Time[0][0].values[3].prop2 = "style";
+document.MM_Time[0].lastFrame = 55;
+for (i=0; i&lt;document.MM_Time.length; i++) {
+document.MM_Time[i].ID = null;
+document.MM_Time[i].curFrame = 0;
+document.MM_Time[i].delay = 1000/document.MM_Time[i].fps;
+}
+}
+&lt;/SCRIPT&gt;
+</pre></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/web-organizasyonu_kaynak.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/web-organizasyonu.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/web-organizasyonu_apnx-stress.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Bağlantılar </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> B. Stres</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2019-10-17T22:36:15+03:00" /><title>Gerekli Paketlerin Kurulumu</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/qmail-kurulumu-nasil.html" title="QMAIL Kurulumu NASIL" /><link rel="previous" href="../howto/qmail-kurulumu-nasil_qmailkur.html" title="Qmail Kurulumu" /><link rel="next" href="../howto/qmail-kurulumu-nasil_qmail-rc.html" title="/var/qmail/rc Dosyası ve Maildir" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Gerekli Paketlerin Kurulumu</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/qmail-kurulumu-nasil_qmailkur.html">Önceki</a> </td><th width="60%" align="center">QMAIL Kurulumu NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/qmail-kurulumu-nasil_qmail-rc.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="qmail-kurulumu-nasil_ekkur" id="qmail-kurulumu-nasil_ekkur"></a>Gerekli Paketlerin Kurulumu</div><dl><dd><div class="variablelist"><dl><dt><span class="term">ucspi-tcp</span></dt><dd class="varlist"><div class="para">
+Qmail'i çalıştırmak için gerekli program,
+<tt>/etc/inetd.conf</tt>'a alternatif:
+<a class="ulink" href="http://cr.yp.to/ucspi-tcp/ucspi-tcp-0.88.tar.gz" target="_top">http://cr.yp.to/ucspi-tcp/ucspi-tcp-0.88.tar.gz</a>
+</div><div class="para">
+İki kurulum içinde gerekli, ama qmail'i <tt>inetd</tt>'den
+çalıştırmak isterseniz kurmayın. Ama <tt>inetd</tt> tavsiye
+edilmiyor.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# tar -zxvf ucspi-tcp-0.88.tar.gz
+# cd ucspi-tcp-0.88
+# make setup check
+</pre></div></div>
+          </dd><dt><span class="term">daemontool</span></dt><dd class="varlist"><div class="para">
+Bazı servisleri çalıştırmak ve günlük kayıtlarını tutmak için gerekli:
+<a class="ulink" href="http://cr.yp.to/daemontools/daemontools-0.76.tar.gz" target="_top">http://cr.yp.to/daemontools/daemontools-0.76.tar.gz</a>
+          </div><div class="para">
+İki kurulum içinde gerekli qmail'i <tt>inetd</tt>'den
+çalıştırmak isterseniz kurmayın.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# mkdir /package
+# chmod 1755 /package
+# cd /package
+# tar zxvf /path/to/daemontools-0.76.tar.gz
+# cd admin/daemontools-0.76
+# ./package/install
+</pre></div></div>
+          </dd><dt><span class="term">fastforward</span></dt><dd class="varlist"><div class="para">
+Sendmail <tt>/etc/aliasses</tt> dosyasını kullanmak için:
+<a class="ulink" href="http://cr.yp.to/software/fastforward-0.51.tar.gz" target="_top">http://cr.yp.to/software/fastforward-0.51.tar.gz</a>
+          </div><div class="para">
+Fastforward programı eğer qmail kurmadan önce sendmail kullanıyor
+idiyseniz <tt>/etc/mail/aliases</tt> veya
+<tt>/etc/aliases</tt> dosyasındaki takma adların qmail ile
+çalışmasını sağlar.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# tar -zxvf fastforward-0.51.tar.gz
+# cd fastforward-0.51
+# make setup check
+</pre></div></div>
+          <div class="para">
+Fastforward'i kullanmak için  qmail'i kurduktan sonra
+<tt>/var/qmail/alias/.qmail-default</tt> dosyasına
+</div>
+<div class="para"><div align="right"><pre class="screen">
+|fastforward -d /etc/aliases.cdb
+</pre></div></div>
+<div class="para">yazın ve daha sonra
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# /var/qmail/bin/newaliases
+</pre></div></div>
+<div class="para">komutunu verin.
+          </div></dd><dt><span class="term">dot-forward</span></dt><dd class="varlist"><div class="para">
+Sendmail'deki <tt>.forward</tt> dosyasını kullanabilmek için:
+<a class="ulink" href="http://cr.yp.to/software/dot-forward-0.71.tar.gz" target="_top">http://cr.yp.to/software/dot-forward-0.71.tar.gz</a>
+           </div><div class="para">
+(İki kurulum icinde gerekli.) dot-forward paketi sendmail epostalarını
+başka bir adrese yönlendirmede kullanılan <tt>.forward</tt>
+dosyasının qmail'de de kullanılmasını sağlar. Ama çok büyük bir
+<tt>/etc/aliases</tt> dosyası yoksa kullanmanıza gerek yok.
+Qmail'in kendi yönlendirme sistemini kullanın.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# tar -zxvf dot-forward-0.71.tar.gz
+# cd dot-forward-0.71
+# make setup check
+</pre></div></div>
+           </dd><dt><span class="term"><a name="qmail-kurulumu-nasil_chkpaswd" id="qmail-kurulumu-nasil_chkpaswd"></a>checkpassword</span></dt><dd class="varlist"><div class="para">
+<tt>/etc/passwd</tt> dosyasına göre pop3 kimlik kanıtlaması
+için kullanılır: <a class="ulink" href="http://cr.yp.to/checkpwd/checkpassword-0.90.tar.gz" target="_top">http://cr.yp.to/checkpwd/checkpassword-0.90.tar.gz</a>
+          </div><div class="para">
+Eğer 1. tür kurulumu seçtiyseniz, pop3 kimlik kanıtlaması için
+checkpassword paketini kurmalıyız.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# tar -zxvf checkpassword-0.81.tar.gz
+# cd checkpassword-0.81
+#make setup check
+</pre></div></div>
+          </dd></dl></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/qmail-kurulumu-nasil_qmailkur.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/qmail-kurulumu-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/qmail-kurulumu-nasil_qmail-rc.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Qmail Kurulumu </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> /var/qmail/rc Dosyası ve Maildir</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

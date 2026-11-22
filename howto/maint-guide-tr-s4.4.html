@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:03+03:00" /><title>rules dosyası</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/maint-guide-tr-s4.html" title="debian/ altında gerekli olanlar" /><link rel="previous" href="../howto/maint-guide-tr-s4.3.html" title="changelog dosyası" /><link rel="next" href="../howto/maint-guide-tr-s5.html" title="debian/ altındaki diğer dosyalar" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">rules dosyası</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/maint-guide-tr-s4.3.html">Önceki</a> </td><th width="60%" align="center">debian/ altında gerekli olanlar</th><td width="20%" align="right"> <a accesskey="n" href="../howto/maint-guide-tr-s5.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="maint-guide-tr-s4.4" id="maint-guide-tr-s4.4"></a><tt>rules</tt> dosyası</div><dl><dd><div class="para">
+Artık şimdi <b><tt>dpkg-buildpackage(1)</tt></b>'in asıl paketi oluşturmak için kullanacağı gerçek kurallara bakmalıyız. Bu dosya aslında bir diğer Makefile dosyasıdır, fakat üst düzey kaynaktaki(ler)den farklıdır. <tt>debian/</tt> içindeki diğer dosyalardan farklı olarak, bu çalıştırılabilir olarak imlenmiştir.
+    </div><div class="para">
+Her <tt>rules</tt> dosyası, diğer Makefile dosyaları gibi, kaynağın nasıl işleneceği ile ilgili çeşitli kurallar içerir. Her kural gerçeklenmesi gereken hedeflerden, dosya adlarından veya eylem adlarından (örn. <tt>build:</tt> veya <tt>install:</tt>) oluşur. Çalıştırmak istediğiniz kurallar komut satırı argümanları olarak çağrılır (<b><tt>./debian/rules build</tt></b> veya <b><tt>make -f rules install</tt></b> gibi). Hedef isminden sonra, bağımlılığı, kuralın bağlı olduğu program veya dosyanın ismini kullanabilirsiniz. Bundan sonra, sekme ile ayrılmış herhangi bir sayıda komut gelebilir. Yeni bir kural ilk sütunda yeni bir hedef bildirimi ile başlar. Boş satırlar ve `#' (diyez) ile başlayan satırlar yorum satırı olarak algılanır ve göz ardı edilir.
+    </div><div class="para">
+Muhtemelen biraz kafanız karıştı, fakat <b><tt>dh_make</tt></b>'in oluşturduğu öntanımlı <tt>rules</tt> dosyasını incelerken hepsi netleşecektir. Ayrıca,  `<b><tt>info make</tt></b>'i daha fazla bilgi için okuyabilirsiniz.
+    </div><div class="para">
+<b><tt>dh_make</tt></b>'in oluşturduğu <tt>rules</tt> dosyası için bilinmesi gereken, onun sadece bir öneri oluşudur. Basit paketler için çalışacak fakat karmaşık olanlar için çalışmayacaktır, ihtiyaçlarınıza uygun hale gelmesi için bu dosyadan çıkarma ve bu dosyaya ekleme yapmaktan korkmayın. Değiştirmemeniz gereken tek şey kurallardır, çünkü tüm araçlar <a class="ulink" href="http://www.debian.org/doc/debian-policy/" target="_top">Debian Politika Kılavuzu</a>nda belirtildiği gibi bu isimleri kullanmaktadır.
+    </div><div class="para">
+<b><tt>dh_make</tt></b>'in bizim için oluşturduğu (yaklaşık) bir <tt>rules</tt> dosyası:
+    </div>
+<div class="para"><div align="right"><table width="95%" cellpadding="0" cellspacing="1" style="border:1px dotted #999999" summary="Konsol Görüntüsü"><tr><td width="12pt" valign="top"><pre class="screennumbers">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+</pre> </td><td width="*" valign="top"><pre class="screenlines">
+#!/usr/bin/make -f
+# Sample debian/rules that uses debhelper.
+# GNU copyright 1997 to 1999 by Joey Hess.
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+# This is the debhelper compatibility version to use.
+export DH_COMPAT=4
+
+CFLAGS = -g
+ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+CFLAGS += -O0
+else
+CFLAGS += -O2
+endif
+
+build: build-stamp
+build-stamp:
+       dh_testdir
+
+       # Add here commands to compile the package.
+       $(MAKE)
+       #docbook-to-man debian/gentoo.sgml &gt; gentoo.1
+
+       touch build-stamp
+
+clean:
+       dh_testdir
+       dh_testroot
+       rm -f build-stamp
+
+       # Add here commands to clean up after the build process.
+       -$(MAKE) clean
+
+       dh_clean
+
+install: build
+       dh_testdir
+       dh_testroot
+       dh_clean -k
+       dh_installdirs
+
+       # Add here commands to install the package into debian/gentoo.
+       $(MAKE) install DESTDIR=$(CURDIR)/debian/gentoo
+
+# Build architecture-independent files here.
+binary-indep: build install
+# We have nothing to do by default.
+
+# Build architecture-dependent files here.
+binary-arch: build install
+       dh_testdir
+       dh_testroot
+#      dh_installdebconf
+       dh_installdocs
+       dh_installexamples
+       dh_installmenu
+#      dh_installlogrotate
+#      dh_installemacsen
+#      dh_installpam
+#      dh_installmime
+#      dh_installinit
+       dh_installcron
+       dh_installman
+       dh_installinfo
+#      dh_undocumented
+       dh_installchangelogs ChangeLog
+       dh_link
+       dh_strip
+       dh_compress
+       dh_fixperms
+#      dh_makeshlibs
+       dh_installdeb
+#      dh_perl
+       dh_shlibdeps
+       dh_gencontrol
+       dh_md5sums
+       dh_builddeb
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install
+</pre> </td></tr></table></div></div>
+    <div class="para">
+Gerçek <tt>debian/rules</tt> dosyasında, satırbaşlarındaki boşluklar sekme karakterleridir.
+    </div><div class="para">
+1. satırdakine benzer satırlara muhtemelen daha önce kabuk veya Perl betiklerinizden aşınasınızdır. Bu, işletim sistemine bu dosyanın <tt>/usr/bin/make</tt> ile yorumlanacağını söyler.
+    </div><div class="para">
+6 ve 9. satırlardaki DH_* değişkenlerinin anlamları kısa açıklamalardan anlaşılıyor olmalı. <tt>DH_COMPAT</tt> ile ilgili ayrıntılı bilgi için, <b><tt>debhelper(1)</tt></b> kılavuz sayfasının "Debhelper uyumluluk seviyeleri" ("Debhelper compatibility levels") bölümünü okuyunuz.
+    </div><div class="para">
+11'den 16'ya kadar olan satırlar <tt>DEB_BUILD_OPTIONS</tt> parametreleri için destek iskeleti görevi görür, <a class="ulink" href="http://www.debian.org/doc/debian-policy/" target="_top">Debian Politika Kılavuzu</a>nun 11.1 "İkilikler" ("Binaries") bölümünde anlatılmıştır. Temelde, bu şeyler ikilik paketin hata ayıklama sembolleriyle beraber mi oluşturulacağını ve kurulum sırasında bunların ayıklanıp ayıklanmayacağını kontrol eder. Yine, bu sadece bir iskelettir, yapmanız gerekenler için bir ipucudur. Üst düzey derleme sisteminin (upstream build system) hata ayıklama sembollerini nasıl dahil ettiğini, kurulumda bunları nasıl ayırdığını ve bunu sizin nasıl gerçekleyeceğinizi incelemelisiniz.
+    </div><div class="para">
+Genellikle <tt>CFLAGS</tt> değişkenini kullanarak <b><tt>gcc</tt></b>'ye <tt>-g</tt> seçeneğiyle derlemesini söyleyebilirsiniz - eğer bu sizin paketiniz için uygunsa; <tt>build</tt> kuralı içerisindeki <tt>$(MAKE)</tt> çağrısının sonuna <tt>CFLAGS="$(CFLAGS)"</tt> ekleyerek değişkeni türetiniz (aşağıya bakınız). Alternatif olarak, eğer paketiniz bir autoconf <tt>configure</tt> betiğini kullanıyorsa, yukarıdaki dizgeyi <tt>build</tt> kuralındaki <tt>./configure</tt>'nin öncesine ekleyebilirsiniz.
+    </div><div class="para">
+Hata ayıklama sembollerin ayıklama konusuna gelirsek, programlar genelde ayıklanmamış olarak kurulacak şekilde yapılandırılmışlardır ve çoğunlukla bunu değiştirecek bir seçenek yoktur. Ne büyük şans ki, <tt>DEB_BUILD_OPTIONS=nostrip</tt> bayrağını tespit edip sessizce çıkacak olan <b><tt>dh_strip(1)</tt></b> aracına sahipsiniz.
+    </div><div class="para">
+18'den 26'ya kadar olan satırlar <tt>build</tt> kuralını (ve onun çocuğu olan <tt>build-stamp</tt>) açıklar. Bu kural, <b><tt>make</tt></b>'i bu programı derlemek için kullanılacak olan kendi Makefile dosyası ile çalıştırır. Eğer programınız ikilikleri derlemek için GNU yapılandırma araçlarını kullanıyorsa, kesinlikle <tt>/usr/share/doc/autotools-dev/README.Debian.gz</tt> dosyasını okuyunuz. Docbook'tan kılavuz sayfası üretme örneğine ileride <a href="../howto/maint-guide-tr-s5.8.html" class="xref" title="manpage.1.ex, manpage.sgml.ex">manpage.1.ex, manpage.sgml.ex</a> bölümünde değineceğiz.
+    </div><div class="para">
+28-36 arası satırlarda belirtildiği gibi <tt>clean</tt> kuralı ile ilgili; paketin derlenmesi sonucu üretilen ve artık ihtiyaç duyulmayan öğeleri temizler. Bu kural her zaman çalışır olmalıdır (hatta kaynak ağacı temizlenmiş olsa bile!), dolayısiyle lütfen zorlayıcı parametreleri kullanın (örn. <b><tt>rm</tt></b> için bu <tt>-f</tt>'dir) veya make'in geri dönüş değerlerini (hataları) ihmal etmesini komut isminden önce bir `-' kullanarak sağlayın.
+    </div><div class="para">
+Kurulum işlemi, 38. satırdaki <tt>install</tt> kuralı başlar. Temel olarak programın Makefile dosyasındaki <tt>install</tt> kuralını çalıştırır, fakat kurulumu <tt>$(CURDIR)/debian/gentoo</tt> dizinine yapar - gentoo'nun Makefile dosyasında kurulumun kök dizini olarak <tt>$(DESTDIR)</tt> kullanmamızın sebebi budur.
+    </div><div class="para">
+Açıklama satırındada belirtildiği gibi, 48. satırdaki <tt>binary-indep</tt> kuralı, mimariden bağımsız paketleri derlemekte kullanılır. Böyle birşeye sahip olmadığımızdan burada hiçbir şey yapmayacağız.
+    </div><div class="para">
+Bir sonraki kuralda, 52 den 79'a kadar olan satırlardaki <tt>binary-arch</tt> kuralı, paketin <a class="ulink" href="http://www.debian.org/doc/debian-policy/" target="_top">Debian Politika Kılavuzu</a>na uyumluluğunu sağlamak için paket dosyalarınıza çeşitli işlemler uygulayan bazı <b><tt>debhelper</tt></b> yardımcı uygulamalarını çağırır.
+    </div><div class="para">
+Eğer paketiniz `Architecture: all' (Tüm mimarilerde derlenir) türü bir paketse, <tt>binary-arch</tt> kuralını boş bırakıp, paketinizi derlemek için gerekli tüm komutları <tt>binary-indep</tt> kuralına eklemeniz gerekmektedir.
+    </div><div class="para">
+<b><tt>debhelper</tt></b> araçlarının isimleri <tt>dh_</tt> ile başlar ve devamı aracın ne yaptığının açıklamasıdır. İsimleri yeterince açıklayıcı olmasına rağmen bir miktar daha açıklama yapabiliriz:
+    </div><ul type="disc" class="itemizedlist"><li><b><tt>dh_testdir(1)</tt></b> doğru dizinde olup olmadığınızı kontrol eder (örn. kaynak ağacının kökü).
+    </li><li><b><tt>dh_testroot(1)</tt></b><tt>binary-arch</tt>, <tt>binary-indep</tt> ve <tt>clean</tt> kuralları için gerekli root izinlerine sahip olup olmadığınızı kontrol eder.
+    </li><li><b><tt>dh_installman(1)</tt></b> kılavuz sayfalarını hedef dizindeki doğru yere yükleyecektir, sadece ona kaynak paketinin kök dizinine göre kılavuz sayfalarının yerlerini belirtmelisiniz.
+    </li><li><b><tt>dh_strip(1)</tt></b> daha küçük hale getirmek için çalıştırılabilir dosyalar ve kütüphanelerden hata ayıklama başlıklarını temizler.
+    </li><li><b><tt>dh_compress(1)</tt></b> 4 kB'tan büyük belgeleri ve kılavuz sayfalarını <a class="link" href="../man/man1/man1-gzip.html" title="gzip"><b><tt>gzip(1)</tt></b></a> ile sıkıştırır.
+    </li><li><b><tt>dh_installdeb(1)</tt></b> paketle ilgili dosyaları (örn. bakımcı betiklerini) <tt>debian/gentoo/DEBIAN</tt> dizinine kopyalar.
+    </li><li><b><tt>dh_shlibdeps(1)</tt></b> kütüphanelerin ve çalışan dosyaların paylaşımlı kütüphane bağımlılıklarını hesaplar.
+    </li><li><b><tt>dh_gencontrol(1)</tt></b><tt>control</tt> dosyasının düzgün ayarlanmış bir sürümünü <tt>debian/gentoo/DEBIAN</tt> altına yükler.
+    </li><li><b><tt>dh_md5sums(1)</tt></b> paketteki tüm dosyalar için MD5 sağlama toplamları üretir.
+    </li></ul>
+    <div class="para">
+Tüm bu <tt>dh_*</tt> betiklerinin ne yaptıkları ve seçeneklerinin neler olduğu ile ilgili bilgi almak için kendi kılavuz sayfalarını okuyunuz. Başka (muhtemelen çok faydalı) ve burada bahsedilememiş <tt>dh_*</tt> betikleri de var. Eğer onlara ihtiyaç durarsanız, <b><tt>debhelper(7)</tt></b> kılavuz sayfasını okuyunuz.
+    </div><div class="para">
+<tt>binary-arch</tt> kısmı gerçekten de ihtiyacınız olmayan özellikleri içeren satırları çıkarmanız gereken kısımdır. gentoo için, cron, init, man, info ve örneklerle ilgili satırları iptal edeceğim, çünkü gentoo bunlara ihtiyaç duymuyor. Ayrıca 68. satırda, <tt>FIXES</tt>'i üstdüzey changelog dosyasının adı olan <tt>ChangeLog</tt> ile değiştireceğim.
+    </div><div class="para">
+Son iki satır (ve burada bahsedilmeyen diğer satırlarla beraber) bazı az veya çok gerekli şeylerdir, ki bunları <b><tt>make(1)</tt></b> kılavuz sayfasında ve <a class="ulink" href="http://www.debian.org/doc/debian-policy/" target="_top">Debian Politika Kılavuzu</a>nda okuyabilirsiniz. Şu an için, bilmek o kadar da önemli değil.
+      </div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/maint-guide-tr-s4.3.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/maint-guide-tr-s4.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/maint-guide-tr-s5.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">changelog dosyası </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> debian/ altındaki diğer dosyalar</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

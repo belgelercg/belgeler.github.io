@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:48+03:00" /><title>Web Vekili (Squid)</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/proxy-fw.html" title="Internet'e Bağlanırken Gerekenler: Firewall ve Proxy" /><link rel="previous" href="../howto/proxy-fw_choice.html" title="Güvenlik Duvarı - Satın Almak, Kendiniz Yapmak?" /><link rel="next" href="../howto/proxy-fw_dns.html" title="DNS Sunucusu" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Web Vekili (Squid)</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/proxy-fw_choice.html">Önceki</a> </td><th width="60%" align="center">Internet'e Bağlanırken Gerekenler: Firewall ve Proxy</th><td width="20%" align="right"> <a accesskey="n" href="../howto/proxy-fw_dns.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="proxy-fw_squid" id="proxy-fw_squid"></a>Web Vekili (Squid)</div><dl><dd><div class="para">
+Eğer bir vekil kullanmayacak olsak, güvenlik duvarımız kullanmaya hazır
+idi. Fakat vekil sunucular, özellikle http için performans kazandırıcı
+bir unsurdur.
+    </div><div class="para">
+Özellikle Web (Internet'te sörf) kullanımında, her bir sayfa, her bir
+tarayıcı istemi için tekrar tekrar ana sunucudan getirilmektedir.
+    </div><div class="figure"><div class="formaltitle"><b>Şekil 13.4. Vekilsiz Internet kullanımı</b></div><span class="inlinemediaobject"><img src="images/proxyfw/proxysiz.jpg" class="imagedata" align="middle" alt="" /></span></div><div class="para">
+Ağ üzerinde yüz istemcinin Hürriyet gazetesini okumak istemesi, aynı
+sayfanın tam 100 defa ağa getirilmesi demektir. Araya vekil konduğu
+zaman ise, ilgili sayfa yalnızca bir defa getirilir ve daha sonra
+isteyen bütün istemcilere vekilin kendi deposundan sunulur. Dolayısıyla
+Internet trafiği azaltıldığı gibi, ilk istemden sonraki bütün istemcilere
+yerel ağdan sunum yapıldığı için kullanıcılar sayfaya çok daha hızlı
+(yerel ağ hızlarında) erişirler. Ülkemizde Internet bağlantılarının
+pahalılığı ve yavaşlığı göze alınırsa, şirketlerin hiç bir izin
+mekanizması uygulamak niyetleri olmasa dahi, salt performans arttırmak
+için vekil uygulamaları tavsiye edilir.
+    </div><div class="figure"><div class="formaltitle"><b>Şekil 13.5. Vekille Internet kullanımı - Performans</b></div><span class="inlinemediaobject"><img src="images/proxyfw/proxyli.jpg" class="imagedata" align="middle" alt="" /></span></div><div class="para">
+Vekilde izin mekanizması uygulamak ve dolayısı ile çeşitli hizmetleri
+herkese yasaklamak, çeşitli kullanıcılara bazı hizmetleri yasaklamak
+gibi izinlendirme politikaları uygulamak mümkündür.
+    </div><div class="figure"><div class="formaltitle"><b>Şekil 13.6. Vekille Internet kullanımı - İzinlendirme</b></div><span class="inlinemediaobject"><img src="images/proxyfw/proxyizin.jpg" class="imagedata" align="middle" alt="" /></span></div><div class="para">
+Burada Linux üzerinde <a class="ulink" href="http://www.squid-cache.org/" target="_top">squid</a>
+ve <a class="ulink" href="http://www.squidguard.org/" target="_top">squidGuard</a> vasıtası ile:
+    </div><ul type="disc" class="itemizedlist"><li>Performans kazandırıcı [depolama (caching)]</li><li>Şeffaf (transparent) -- kullanmak için kullanıcı tarafında
+bir ayar gerektirmeyen</li><li>Web sitesi bazında izin mekanizmalı</li></ul><div class="para">
+bir web vekil uygulaması konu alınmıştır.
+    </div> <div class="head3"><a name="id1" id="id1"></a>Squid Kurulumu</div><dl><dd><div class="para">
+Redhat 7.2 güncelleme paketi <tt>squid-2.4.STABLE1-6.i386.rpm</tt>
+indirilmiş ve
+</div><div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>rpm -Uvh squid-2.4.STABLE1-6.i386.rpm</tt></b>
+</pre></div></div><div class="para">
+komutu ile kurulmuştur. Sistem açılışında <b><tt>squid</tt></b>
+servisinin başlatılması için
+</div><div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>mv /etc/rc.d/rc3.d/K25squid /etc/rc.d/rc3.d/S25squid</tt></b>
+</pre></div></div><div class="para">
+komutu uygulanmıştır.
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Ayarlar</div><dl><dd><ul type="disc" class="itemizedlist"><li>
+Squid'in Internet web deposu (cache) için 1 GB yer ayrılmıştır.
+          </li><li>
+İzinlendirme <b><tt>squidGuard</tt></b> paketi ile yapılmaktadır.
+          </li><li>
+Yasaklanan siteler: Kimi sitelere erişim engellenmektedir. Bu
+siteler <b><tt>squidGuard</tt></b>'un yayınladığı Internet
+karalistesi kullanılarak belirlenmektedir.
+          </li></ul><div class="para">
+<b><tt>Ayar dosyası</tt></b>
+      </div><div class="para">
+<tt>/etc/squid/squid.conf</tt> dosyası bir hayli uzun
+olduğundan yalnızca değiştirilen ayarlar buraya alınmıştır. Dosyanın
+tamamını <a class="ulink" href="../indirin/proxy-fw-files.tar.bz2" target="_top">proxy-fw-files.tar.bz2</a> paketinde bulabilirsiniz.
+      </div><div class="para"><div align="right"><pre class="screen">
+#VEKIL
+#Öntanımlı portun yanısıra 8080 üzerinden de proxy servisi veriyoruz
+<b><tt>http_port 3128 8080</tt></b>
+
+#VEKIL
+#Başka squid'lerle bilgi paylaşmıyoruz
+<b><tt>icp_port 0</tt></b>
+
+#VEKIL
+#Yerel ağımızı burada tanımlıyoruz
+<b><tt>acl intranet src 10.0.0.0/255.0.0.0</tt></b>
+
+#VEKIL
+#erişim engellemesi squidGuard tarafından yapılacağı için
+#burada yer almıyor
+<b><tt>http_access allow intranet</tt></b>
+
+#VEKIL
+#Eger proxy yolu ile ftp yaparsak, anonymous isteklerde bu adresi
+#verecek
+<b><tt>ftp_user Squid@bizimfirma.com.tr</tt></b>
+
+#VEKIL
+#1 Gig'lik (1000) büyüklüğünde bir cache dizini kullanıyoruz.
+#Ayrıca diske bloksuz yazma yöntemini kullanıyoruz
+<b><tt>cache_dir aufs /var/spool/squid 1000 16 256</tt></b>
+
+#VEKIL
+#squidGuard kullanıyoruz
+<b><tt>redirect_program /usr/local/squidGuard/bin/squidGuard</tt></b>
+
+#VEKIL
+#20 adet squidGuard başlatıyoruz. Çok fazla sayıda olursa kaynak israfı
+#çok az sayıda olursa beklemeye yol açabilir.
+<b><tt>redirect_children 20</tt></b>
+
+
+#VEKIL
+#ICP sorgularına izin vermiyoruz
+<b><tt>icp_access deny all</tt></b>
+
+
+#VEKIL
+#Hata iletilerimizi Türkçe verelim
+<b><tt>error_directory /usr/lib/squid/errors/Turkish</tt></b>
+
+#VEKIL
+#Squid'i şeffaf (yani kullanıcıların herhangi bir ayar yapmasına gerek
+#kalmaksızın şeffaf olarak kullanmak için bu ayarlara ihtiyacımız var.
+<b><tt>httpd_accel_host virtual</tt></b>
+<b><tt>httpd_accel_port 80</tt></b>
+<b><tt>httpd_accel_with_proxy on</tt></b>
+<b><tt>httpd_accel_uses_host_header on</tt></b>
+<b><tt>httpd_accel_single_host off</tt></b>
+</pre></div></div></dd></dl> <div class="head3"><a name="id3" id="id3"></a>Squid Kurulumunda ikinci adım: SquidGuard</div><dl><dd><div class="variablelist"><dl><dt><span class="term">Neden SquidGuard?</span></dt><dd class="varlist"><div class="para">
+<a class="ulink" href="http://www.squidguard.org/" target="_top">SquidGuard</a>, <b><tt>squid</tt></b> ile
+birlikte çalışan ve erişim izinlerini belirleyen bir yazılımdır.
+<b><tt>squid</tt></b>'in kendisi de erişim izinlerini
+belirleyebildiğine göre <b><tt>SquidGuard</tt></b>'a
+ihtiyaç olmadığı düşünülebilir. Fakat,
+<b><tt>SquidGuard</tt></b> kullanımının bazı avantajları
+vardır:
+              </div><ul type="disc" class="itemizedlist"><li><div class="para">
+Erişim izinlerini <a class="ulink" href="../indirin/proxy-fw-files.tar.bz2" target="_top"><tt>squid.conf</tt></a>'un
+içine yazmak yerine, diskte ayrı dosyalar halinde
+tutabilirsiniz. Dolayısıyla bir ek izin/kısıtlama
+ilave ederken yanlışlıkla <b><tt>squid</tt></b>
+ayarlarını bozma ihtimaliniz ortadan kalkar.
+                    </div></li><li><div class="para">
+<b><tt>SquidGuard</tt></b>, Internet'te bir arama
+yazılımı yardımı ile çeşitli kriterlerde karalisteler
+hazırlamakta ve bunları düzenli olarak güncellemektedir.
+<b><tt>SquidGuard</tt></b> kullanmazsanız, buna
+alternatifiniz trafiğinizi kontrol etmek ve
+kullanıcıların gittiği siteleri gözden geçirip kendi
+karalistenizi oluşturmaktır. Bunun yerine
+<b><tt>SquidGuard</tt></b>'un karalistesini
+kullanabilirsiniz.
+                    </div></li></ul></dd><dt><span class="term">SquidGuard Kurulumu</span></dt><dd class="varlist"><div class="para">
+<a class="ulink" href="http://www.squidguard.org/" target="_top">SquidGuard</a> web
+sitesinden <tt>squidguard-1.2.0.tar.gz</tt> ve
+<tt>blacklists.tar.gz</tt> paketleri indirildi ve
+<tt>/usr/local/src</tt> dizinine kaydedildi.
+              </div><div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>tar -xzvf squidguard-1.2.0.tar.gz</tt></b>
+<tt>#</tt>
+</pre></div></div><div class="para">
+komutu ile paket açıldı.
+              </div><div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>cd /usr/local/src/squidGuard-1.2.0</tt></b>
+<tt>#</tt>
+</pre></div></div><div class="para">
+Paketin ayarları için <tt>configure.squidGuard</tt>
+betiği:
+              </div><div class="para"><div align="right"><pre class="screen">
+./configure --prefix=/usr/local/squidGuard \
+            --with-db-lib=/usr/lib \
+            --with-db-inc=/usr/include/db2 \
+            --with-sg-config=/usr/local/squidGuard/configs/filter.conf \
+            --with-sg-logdir=/usr/local/squidGuard/logs \
+            --with-sg-dbhome=/usr/local/squidGuard/db
+</pre></div></div><div class="para">
+aynı dizine kaydedildi:
+              </div><div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>cp configure.squidGuard /usr/local/src/squidGuard-1.2.0</tt></b>
+<tt>#</tt> <b><tt>cd /usr/local/src/squidGuard-1.2.0</tt></b>
+<tt>#</tt> <b><tt>chmod 755 configure.squidGuard</tt></b>
+<tt>#</tt> <b><tt>./configure.squidGuard</tt></b>
+<tt>#</tt> <b><tt>make</tt></b>
+<tt>#</tt> <b><tt>make install</tt></b>
+<tt>#</tt>
+</pre></div></div><div class="para">
+komutları ile paket sisteme kuruldu.
+              </div></dd><dt><span class="term">Karalistenin Oluşturulması</span></dt><dd class="varlist"><div class="para">
+İndirilmiş olan <tt>blacklists.tar.gz</tt> paketi
+<tt>/usr/local/squidGuard/db/blacklists</tt> altına
+açıldı. <tt><a class="ulink" href="../indirin/proxy-fw-files.tar.bz2" target="_top">/usr/local/squidGuard/configs/filter.conf</a></tt>
+dosyasında erişim izinleri belirlendi. Esas olarak kara listedeki
+tüm adresler engellendi. Karaliste <b><tt>SquidGuard</tt></b>
+tarafından haftada 3 kez güncelleniyor. Biz de, zaman zaman bu
+güncellemeyi yapacağız.
+              </div></dd><dt><span class="term">Hata İletisi</span></dt><dd class="varlist"><div class="para">
+<b><tt>SquidGuard</tt></b>'ın bir kötü tarafı kendi içerisinde
+bir hata iletisi oluşturmayıp, bir web sunucusuna gereksinim
+duyması. Sırf bu sebeple güvenlik duvarı üzerinde bir
+<b><tt>apache</tt></b> web sunucusu kurmak zorunda kaldık.
+Aslında bunun için içeride herhangi bir web sunucusu da
+kullanılabilir, fakat mümkün olduğunca güvenlik duvarını kendi
+başına çalışabilecek halde kurmak istedik.
+              </div></dd></dl></div><div class="para">
+<b><tt>SquidGuard</tt></b> paketinin içinden çıkan
+<tt>squidGuard.cgi</tt> betiğine Türkçe dilini ilave ettik
+ve dışarıdan bir siteye verdiği gif bağını kaldırıp yerel bir bağ haline
+getirdik. Betik öntanımlı olarak tarayıcıdaki dil seçeneğine göre dil
+seçimini yapmakta idi, fakat biz salt Türkçe olmasını istedik.
+Değiştirilmiş <a class="ulink" href="../indirin/proxy-fw-files.tar.bz2" target="_top"><tt>squidGuard.cgi</tt>
+buradan temin edilebilir</a>. Bu betiği <tt>cgi-bin</tt>
+dizinine kaydettik:
+</div><div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>cp squidGuard.cgi /var/www/cgi-bin</tt></b>
+<tt>#</tt>
+</pre></div></div><div class="para">
+Erişim izinlerinin doğru olduğundan emin olduk:
+      </div><div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>cd /var/www/cgi-bin</tt></b>
+<tt>#</tt> <b><tt>chown nobody.nobody squidGuard.cgi</tt></b>
+<tt>#</tt> <b><tt>chmod 755 squidGuard.cgi</tt></b>
+<tt>#</tt>
+</pre></div></div><div class="para">
+Yasak işareti veren <a class="ulink" href="../indirin/proxy-fw-files.tar.bz2" target="_top"><tt>forbidden.gif</tt></a> dosyasını
+ilgili dizine kaydettik:
+      </div><div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>cp forbidden.gif /var/www/html</tt></b>
+<tt>#</tt>
+</pre></div></div><div class="para">
+En sonunda web sunucusunun sistem açıldığı zaman açılmasını sağladık:
+      </div><div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>mv /etc/rc.d/rc3.d/*httpd /etc/rc.d/rc3.d/S15httpd</tt></b>
+<tt>#</tt>
+</pre></div></div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/proxy-fw_choice.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/proxy-fw.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/proxy-fw_dns.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Güvenlik Duvarı - Satın Almak, Kendiniz Yapmak? </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> DNS Sunucusu</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

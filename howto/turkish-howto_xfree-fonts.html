@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:11+03:00" /><title>X Window Türkçe yazı tiplerinin yüklenmesi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/turkish-howto.html" title="Türkçe NASIL" /><link rel="previous" href="../howto/turkish-howto_console.html" title="Konsolda Türkçe desteği" /><link rel="next" href="../howto/turkish-howto_xfree-ttf.html" title="True Type yazı tiplerinin kullanımı" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">X Window Türkçe yazı tiplerinin yüklenmesi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/turkish-howto_console.html">Önceki</a> </td><th width="60%" align="center">Türkçe NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/turkish-howto_xfree-ttf.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="turkish-howto_xfree-fonts" id="turkish-howto_xfree-fonts"></a>X Window Türkçe yazı tiplerinin yüklenmesi</div><dl><dd> <div class="head3"><a name="turkish-howto_xfree-fonts-rh" id="turkish-howto_xfree-fonts-rh"></a>Red Hat</div><dl><dd><div class="para">
+Sisteminizde Türkçe klavye desteği sağlamayı düşünmüyorsanız bile en azından web tarayıcınız ile Türkçe karakter içeren bir sayfayı okumak için buradaki ayarları yapmalısınız.
+  </div><div class="para">
+Öncelikle yapmamız gereken, Türkçe yazı tiplerinin X Window'a tanıtılmasıdır. X Window açılırken, hangi yazı tiplerini yükleyeceğini belirlemek amacıyla bazı öntanımlı dizinlere bakar.  Bu dizinler, genelde <tt>/usr/X11R6/lib/X11/XF86Config</tt> dosyasında belirtilir. Red Hat Linux <tt>7.2</tt> sürümünde bu dizinler <tt>/etc/X11/fs/config</tt> dosyasında belirtilmektedir.
+  </div><div class="para">
+RPM paketlerini kurabileceğiniz bir dağıtım kullanmanız halinde, Türkçe yazı tiplerini yüklemişseniz, işiniz çok kolay. Bu dosyaları yükleyip yüklemediğinizi bilmiyorsanız aşağıdaki komutu çalıştırın.
+  </div>
+<div class="para"><div align="right"><pre class="screen"><tt>#</tt> <b><tt># rpm -qa | grep ISO8859-9</tt></b>
+XFree86-ISO8859-9-100dpi-fonts-4.1.0-3
+XFree86-ISO8859-9-75dpi-fonts-4.1.0-3
+</pre></div></div>
+  <div class="para">
+Yukarıdaki satırlara benzer bir çıktı almış olmanız gerekiyor (sürüm numaraları farklı olabilir). Eğer almadıysanız Türkçe yazı tiplerini kurmamışsınız demektir. Eğer Red Hat Linux kullanıyorsanız, CD'yi sürücüye yerleştirip sırayla şu işlemleri yapın:
+  </div>
+<div class="para"><div align="right"><pre class="screen"><tt>#</tt> <b><tt>mount /dev/cdrom</tt></b>
+<tt>#</tt> <b><tt>cd /mnt/cdrom/RedHat/RPMS/</tt></b>
+<tt>#</tt> <b><tt>rpm -ihv XFree86-ISO8859-9-*</tt></b>
+</pre></div></div>
+  <div class="para">
+Yazıtiplerini sisteminize kurduktan sonra bir sonraki adıma geçin.
+  </div><div class="para">
+Şimdi, daha önce yarım bıraktığımız noktaya geri dönelim. X Window'un yükleyeceği yazı tiplerinin bulunduğu dizinler <tt>/usr/X11R6/lib/X11/XF86Config </tt> ve <tt>/etc/X11/fs/config</tt> dosyasında belirtiliyordu.
+  </div><div class="para">
+Bu dosya içinde, aşağıdakine
+  </div>
+<div class="para"><div align="right"><pre class="screen">FontPath   "/usr/X11R6/lib/X11/fonts/misc/"
+FontPath   "/usr/X11R6/lib/X11/fonts/75dpi/:unscaled"
+FontPath   "/usr/X11R6/lib/X11/fonts/100dpi/:unscaled"
+FontPath   "/usr/X11R6/lib/X11/fonts/Type1/"
+FontPath   "/usr/X11R6/lib/X11/fonts/Speedo/"
+</pre></div></div>
+  <div class="para">ya da buna</div>
+<div class="para"><div align="right"><pre class="screen">FontPath    unix/-1</pre></div></div>
+  <div class="para">
+benzer satırlar göreceksiniz.
+  </div><div class="para">
+Bu satırların en başına, kurduğumuz Türkçe yazı tipleri neredeyse o dizinin adını yazıyoruz. Red Hat Linux 6.0'dan itibaren Türkçe yazı tipleri <tt>/usr/share/fonts/ISO8859-9</tt> dizinine kuruluyor. Bu dizin patikasını XF86Config dosyasının en üstüne ekleyelim. Tüm Türkçe yazı tipleri kurulmuşsa <tt>/usr/share/fonts/ISO8859-9</tt> dizini altında aşağıdaki dosyaları görebilirsiniz:
+  </div>
+<div class="para"><div align="right"><pre class="screen"><tt>#</tt> <b><tt>ls -al /usr/share/fonts/ISO8859-9/</tt></b>
+total 17
+drwxr-xr-x   5 root     root         1024 Feb 13 19:04 .
+drwxr-xr-x  11 root     root         1024 Feb 15 18:46 ..
+drwxr-xr-x   2 root     root         6144 Feb 13 19:04 100dpi
+drwxr-xr-x   2 root     root         6144 Feb 13 19:04 75dpi
+drwxr-xr-x   2 root     root         1024 Feb 13 19:04 misc
+</pre></div></div>
+  <div class="para">
+Şimdi ISO8859-9 dizininde Türkçe yazı tiplerimizin bulunduğunu <tt>/usr/X11/lib/X11/XF86Config</tt> ve <tt>/etc/X11/fs/config</tt> dosyasında belirtelim.
+  </div>
+<div class="para"><div align="right"><pre class="screen">FontPath   "/usr/share/fonts/ISO8859-9/misc"     &lt;---------
+FontPath   "/usr/share/fonts/ISO8859-9/75dpi"    &lt;---------
+FontPath   "/usr/share/fonts/ISO8859-9/100dpi"   &lt;---------
+FontPath   "/usr/X11R6/lib/X11/fonts/misc/"
+FontPath   "/usr/X11R6/lib/X11/fonts/75dpi/:unscaled"
+FontPath   "/usr/X11R6/lib/X11/fonts/100dpi/:unscaled"
+FontPath   "/usr/X11R6/lib/X11/fonts/Type1/"
+FontPath   "/usr/X11R6/lib/X11/fonts/Speedo/"
+</pre></div></div>
+  <div class="para">
+Tabi, bu dosyada "FontPath  unix/:-1" satırı varsa, ekleme yapacağınız üç satırı da "FontPath   unix/:-1" satırının başına koymanız gerekiyor.
+  </div><div class="para">
+Şu anda yazı tiplerimizi sisteme tanıtmış durumdayız. X Window'un bu yazıtiplerini kullanabilmesi için X yazı tipi sunucusunu (xfs) yeniden başlatmayı unutmayın:
+  </div>
+<div class="para"><div align="right"><pre class="screen"><tt>#</tt> <b><tt>service xfs restart</tt></b>
+</pre></div></div>
+  <div class="para">
+Şimdi X Window'a girin. Mozilla ile herhangi bir Türkçe dosyayı görüntüleyebilirsiniz.
+  </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Debian</div><dl><dd> <div class="head4"><a name="id12" id="id12"></a>Biteşlemli Yazıtipleri</div><dl><dd><div class="para">
+Debian'da biteşlemli yazıtiplerinin organizasyonu diğer dağıtımlardan farklıdır. Redhat tabanlı dağıtımlarda ISO-8859-9 serisi yazıtipleri ayrı bir RPM paketi halinde gelir ve yapılandırma dosyalarında tanımlı yazıtipi patikalarının -doğru sırada- değiştirilmesiyle türkçeleme gerçekleştirilir. (Detaylar <a class="link" href="../howto/turkish-howto_xfree-fonts.html#turkish-howto_xfree-fonts-rh" title="Red Hat">yukarıda</a>)
+      </div><div class="para">
+Debian'da öntanımlı olarak kurulan X yazıtipleri UTF-8 olarak kodlanmıştır (ISO-10646-1) ve sadece Türkçe yazıtiplerine hasredilmiş bir paket mevcut değildir. Türkçe açısından hâlâ geleceğin teknolojisi kıvamında olan bu UTF-8 yazıtiplerini bir miktar ihtiyatla karşılayarak klâsik ISO-8859-9 olarak kodlanmış yazıtiplerini aradığımızda karşımıza şu 3 paket çıkacaktır:
+      </div>
+<div class="para"><pre class="literallayout">
+    xfonts-100dpi-transcoded
+    xfonts-75dpi-transcoded
+    xfonts-base-transcoded
+</pre></div>
+      <div class="para">
+`<tt>*-transcoded</tt>' serisi yazıtipleri sistemde ISO-10646-1 yazıtiplerinin standart ISO-8859-1..9 serisine tekrar kodlanmış halidir. Şimdi bu paketleri kuralım:
+      </div>
+<div class="para"><div align="right"><pre class="screen"><tt>#</tt> <b><tt>apt-get install xfonts-100dpi-transcoded</tt></b>
+                  <b><tt>xfonts-75dpi-transcoded</tt></b>
+                  <b><tt>xfonts-base-transcoded</tt></b>
+</pre></div></div>
+      <div class="para">
+Standart kurulum sırasında UTF-8 yazıtipleri zaten kurulu olduğundan Unicode kullanımının olgunlaşması bu adımı gereksiz kılacaktır. Woody'de UTF-8 desteğinin yetersiz veya mevcut olmadığı (GNOME 1.4 gibi) çok sayıda program bulunduğundan sisteminizi sadece UTF-8 kipinde kullanmanızı önermiyoruz. Öncelikle ISO kipinde çalışmayı  hedefleyen bu bölümde UTF-8 kipi yapılandırma adımları da izah edilecektir.
+      </div><div class="para">
+8859-9 serisi yazıtipleri artık kurulu olduğuna göre konsolda Türkçe yazıtiplerinin görüntülenebilmesi için X kaynaklarında (<tt>Xresources</tt>) ayar yapmamız yeterli olacaktır. Bu amaçla ev dizininize koyacağınız bir <tt>.Xresources</tt> dosyasında:
+      </div>
+<div class="para"><div align="right"><pre class="screen">XTerm*Font:  -misc-fixed-medium-r-normal--15-*-*-*-*-*-iso8859-9
+XTerm*Font1: -misc-fixed-medium-r-normal--13-*-*-*-*-*-iso8859-9
+...
+</pre></div></div>
+      <div class="para">
+satırlarını bulundurmanız gerekecektir. Ayarların sistem genelinde etkili olmasını temin edecek bir yöntem aradığımızda X paketleriyle gelen belgeler bize <tt>/etc/X11/Xresources</tt> dizinini gösterecektir. Red Hat tabanlı dağıtımlarda global X ayarlarını içeren <tt>/etc/X11/Xresources</tt> bir dizin değil dosyadır ve yukarıda belirtilen ayarların bu dosyaya işlenmesi gerekir. Debian'da ise muhtelif ayarları dosya grupları halinde yaratarak bu dizine yerleştirmemiz halinde X'in ilklendirilmesi sırasında <tt>Xresources</tt> dizini altındaki bütün dosyalar işleme konur.
+      </div><div class="para">
+Ekteki <a class="ulink" href="../indirin/tr.tar.bz2" target="_top">pakette</a> verilen <tt>user-tr</tt> dosyasında <b><tt>uxterm</tt></b> de dahil belli başlı bütün X uçbirimlerinde Türkçe karakterlerin doğru görüntülenmesini sağlayan düzenlemeler mevcuttur. Kurulum şöyle yapılıyor:
+      </div>
+<div class="para"><div align="right"><pre class="screen"><tt>#</tt> <b><tt>cp ~/tr/user-tr /etc/X11/Xresources</tt></b>
+</pre></div></div>
+      <div class="para">
+17 inç monitörler gözönüne alınarak hazırlanmış bu dosyada 14 veya 15 inç monitör sahipleri değişiklik yapma ihtiyacı duyabilirler. (Bu denemeler sırasında gerekecek yazıtipi tanım satırlarından biraz sonra bahsedeceğim.)
+     </div><div class="para">
+Denemeye geçmeden önce bir ayar daha yapacağız. Kurbanımız <tt>/etc/X11/fonts/misc/</tt> dizinindeki <tt>xfonts-base.alias</tt> dosyası.  <tt>:-) Xresources</tt> ayarlarını umursamadan kafasına göre davranan her türlü kod parçasını aldatmak için dosyada <tt>iso8859-1</tt> ile biten bütün satırları <tt>iso8859-9</tt> olarak değiştireceğiz. İşinizi kolaylaştırayım:
+      </div>
+<div class="para"><div align="right"><pre class="screen"><tt>#</tt> <b><tt>vi /etc/X11/fonts/misc/xfonts-base.alias</tt></b>
+</pre></div></div>
+       <div class="para">Ve şimdi <b><tt>vi</tt></b> komut satırında:
+       </div>
+<div class="para"><div align="right"><pre class="screen">:%s/8859-1$/8859-9/
+</pre></div></div>
+      <div class="para">
+yaparsak tamamdır. Bir de ilk satırlarda gözünüze çarpacak olan <tt>fixed</tt> yazıtipi var. X'in bütününde leblebi gibi kullanılan bu yazıtipini de hazır geldik, uygun bir öntanımlı değere atayalım.
+      </div>
+<div class="para"><div align="right"><pre class="screen">fixed -misc-fixed-medium-r-semicondensed--13-120-75-75-c-60-iso8859-9
+</pre></div></div>
+      <div class="para">
+satırını şöyle biraz daha iri bir yazıtipiyle değiştirelim:
+      </div>
+<div class="para"><div align="right"><pre class="screen">fixed -misc-fixed-medium-r-normal--14-130-75-75-c-70-iso8859-9
+</pre></div></div>
+      <div class="para">
+Yukarıda <tt>Xresource</tt>'a konulacak yazıtipi tanımları probleminden bahsetmiştik. Yazıtipi tanımlarına bu dosyayı inceleyerek ulaşabiliriz.
+      </div><div class="para">
+Kaydetip, çıkalım. (Hımm, yoksa bilmiyor musunuz? <b><tt>:wq</tt></b>) Son olarak <tt>alias</tt>'ları güncelleyeceğiz:
+      </div>
+<div class="para"><div align="right"><pre class="screen"><tt>#</tt> update-fonts-alias misc
+</pre></div></div>
+      <div class="variablelist"><dl><dt><span class="term">UTF-8</span></dt><dd class="varlist"><div class="para">
+Debian'da kurulu biteşlemli X yazıtipleri öntanımlı olarak UTF-8 ile kodlandığından X Window altında UTF-8 kullanımı diğer dağıtımlara nazaran daha kolaydır. Bu amaçla kullandığınız X uçbiriminin herşeyden önce UTF-8 duyarlı olması gerekiyor. Standart X dağıtımıyla gelen emektar <b><tt>xterm</tt></b> (emektarlık deyimini boşa çıkarırcasına) en geniş UTF-8 desteğine sahip uçbirimidir. <b><tt>xterm</tt></b>'e komut satırı seçeneği olarak UTF-8 kipinde çalışılacağı bildirilebilir. Fakat UTF-8 kipinde çalışmak için bu yöntem yerine "<tt>UXTerm</tt>" ismiyle kendi X kaynak sınıfını oluşturan ve gerçekte <b><tt>xterm</tt></b>'i UTF-8 komut satırı seçeneğiyle çağıran bir betikten ibaret olan <b><tt>uxterm</tt></b> kullanılmalıdır. Basitliğinin yanısıra bu yöntem, "<tt>XTerm</tt>" sınıfı altında 8859-9 Türkçe X konsol yazıtiplerinin tanıtıldığı <tt>user-tr</tt> dosyasında "<tt>UXTerm</tt>" sınıfıyla "10646-1" UTF-8 yazıtiplerinin tanımlanmasına da olanak sağlar. Böylelikle klâsik <b><tt>xterm</tt></b>'ü ISO kipi için, <b><tt>uxterm</tt></b>'ü ise UTF-8 için kullanma şansımız doğacaktır. Sonuç olarak, ekte verilen <tt>user-tr</tt> dosyasını sisteminize kurmuş iseniz:
+      </div>
+<div class="para"><div align="right"><pre class="screen"><tt>$</tt> uxterm
+</pre></div></div>
+      <div class="para">
+komutuyla UTF-8 kipinde çalışabilirsiniz. Tabii bu komuttan önce sistem yerelini ilgili kısımda anlatıldığı gibi <tt>LANG=tr_TR.UTF-8</tt> olarak yapılandırmayı unutmayın. <b><tt>xterm</tt></b> dışındaki diğer uçbirimleri yetersiz UTF-8 desteğinden dolayı tavsiye etmiyoruz.
+      </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/tip.png" /></td><th class="admon">İpucu</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Sisteminizi ISO kipinde kullanırken elinize geçen UTF-8 kodlu bir belgeyi düzenlemek gibi durumlarda UTF-8 kipine geçiş ihtiyacı ortaya çıkabilir (okuğunuz belgeyi düzenlerken bizim başımıza geldiği gibi :-). Bu tip ihtiyaçlara en az yapılandırma prensibiyle cevap veren bir yöntem UTF-8 destekli bir metin düzenleyici kullanmaktır. <b><tt>gvim</tt></b> buna güzel bir örnektir. <b><tt>gvim</tt></b> ile UTF-8 kipinde düzenleme yapmak amacıyla programın komut satırında şu ayarlar yapılmalıdır:
+      </div>
+<div class="para"><div align="right"><pre class="screen">:set guifont=*</pre></div></div>
+      <div class="para">
+Karşınıza gelen yazıtipi seçim penceresinden <tt>iso10646-1</tt> kod sayfalı bir yazıtipini seçin.
+      </div>
+<div class="para"><div align="right"><pre class="screen">:set encoding=utf8</pre></div></div>
+      <div class="para">
+komutu ile UTF-8 kipine geçiş yapın.
+      </div></td></tr></table></div><div class="para">Test:</div><div class="para">
+Bütün ayarlar doğru ise X'i tekrar başlatıp, <b><tt>xterm</tt></b>'ü çalıştırarak Türkçe karakterleri doğru şekilde görüntüleyebiliriz. UTF-8 için benzer test <b><tt>LANG=tr_TR.UTF-8 uxterm</tt></b> komutuyla uygulanabilir.
+      </div></dd></dl></div></dd></dl> <div class="head4"><a name="id22" id="id22"></a>Type1 (Postscript) Yazıtipleri</div><dl><dd><div class="para">
+GTK tabanlı programlar biteşlemli ve Type1 (yani postscipt) yazıtiplerini birlikte kullanmaktadır. Şu aşamada herhangi bir GTK programında meselâ <b><tt>gnumeric</tt></b>'de baskı önizlemeyi denersek Türkçe karakterlerde sorun olduğunu gözleyebiliriz. Sorunu gidermek için Type1 yazıtipi listeleriyle (ölçekler ve alias eşlemeleri) uğraşacağız.  Debian'da her türlü yazıtipinin organizasyonu <b><tt>defoma</tt></b> yani "Debian Font Manager" araçları ile yürütülüyor. Özellikle TT yazıtiplerinin kurulumuna nispetle yapılandırması çok daha zor olan Type1 yazıtipleri için bu araç seti geniş imkânlar sağlıyor.  <b><tt>defoma</tt></b> çoğunlukla sisteme yeni yazıtipi kuran paketler tarafından kullanılır. Bu araç ile yapılacak düzenlemeler işin bir miktar erbabı olmanızı gerektirdiğinden, Type1 yazıtipleriyle ilgili sorunları daha basit bir yöntemle çözmeye çalışacağız.
+    </div><div class="para">
+Hedef <tt>/etc/X11/fonts/Type1/gsfonts-x11.scale</tt> ve yine aynı dizindeki <tt>/etc/X11/fonts/Type1/gsfonts-x11.alias</tt> dosyaları.  Bu dosyaları açarak <tt>iso8859-9</tt> satırları ekleyeceğiz.  Ekleme yapmak yerine dosyada zaten bulunan ve işimize yaramayan <tt>iso8859-2</tt>'li satırları değiştirmek daha pratik olacaktır. O halde yine <b><tt>vi</tt></b>'a başvuralım:
+      </div>
+<div class="para"><div align="right"><pre class="screen"><tt>#</tt> <b><tt>cd /etc/X11/fonts/Type1</tt></b>
+<tt>#</tt> <b><tt>cp gsfonts-x11.scale gsfonts-x11.scale.orig</tt></b>
+<tt>#</tt> <b><tt>vi gsfonts-x11.scale</tt></b>
+
+<tt>#</tt> <b><tt>cp gsfonts-x11.alias gsfonts-x11.alias.orig</tt></b>
+<tt>#</tt> <b><tt>vi gsfonts-x11.alias</tt></b>
+</pre></div></div>
+      <div class="para">
+<b><tt>vi</tt></b> komut satırında her iki dosya için şöyle yapıyoruz:
+      </div>
+<div class="para"><div align="right"><pre class="screen">:%s/8859-2/8859-9/g</pre></div></div>
+      <div class="para">
+Ölçekleri düzenlemek yetmez, <tt>fonts.dir</tt>'da benzer şekilde olmalı. Aşağıda verilen güncellemelerle zaten bu gerçekleşecektir: (Önce <b><tt>update-fonts-scale</tt></b> çalıştırılmalı!)
+      </div>
+<div class="para"><div align="right"><pre class="screen"><tt>#</tt> <b><tt>update-fonts-scale Type1</tt></b>
+<tt>#</tt> <b><tt>update-fonts-alias Type1</tt></b>
+<tt>#</tt> <b><tt>update-fonts-dir Type1</tt></b>
+</pre></div></div>
+      <div class="para">Test:</div><div class="para">
+X'i yeniden başlatalım. <b><tt>gnumeric</tt></b> baskı önizlemede Türkçe karakterleri sorunsuz şekilde görüyor olmamız lâzım.
+      </div></dd></dl></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/turkish-howto_console.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/turkish-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/turkish-howto_xfree-ttf.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Konsolda Türkçe desteği </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> True Type yazı tiplerinin kullanımı</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

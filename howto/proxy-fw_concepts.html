@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:47+03:00" /><title>Güvenlik Duvarı Kavramları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/proxy-fw.html" title="Internet'e Bağlanırken Gerekenler: Firewall ve Proxy" /><link rel="previous" href="../howto/proxy-fw_intro.html" title="Giriş" /><link rel="next" href="../howto/proxy-fw_choice.html" title="Güvenlik Duvarı - Satın Almak, Kendiniz Yapmak?" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Güvenlik Duvarı Kavramları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/proxy-fw_intro.html">Önceki</a> </td><th width="60%" align="center">Internet'e Bağlanırken Gerekenler: Firewall ve Proxy</th><td width="20%" align="right"> <a accesskey="n" href="../howto/proxy-fw_choice.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="proxy-fw_concepts" id="proxy-fw_concepts"></a>Güvenlik Duvarı Kavramları</div><dl><dd> <div class="head3"><a name="proxy-fw_bastion" id="proxy-fw_bastion"></a>Tabya (Bastion Host)</div><dl><dd><div class="para">
+İdealde, ağınızdaki güvenlik, ağ seviyesinde ve ağdaki her bir makinada
+uygulanır. Pratikte ise, bu ya yapılamamakta ya da ihtiyaç duyulan kimi
+protokollerin güvenlikten yoksun olduğu bilinse dahi kullanılmaktadır.
+Böyle durumlarda güvenlik duvarı, içeride birbirlerine güvenen, az
+korumalı makinaların olduğu bir ağla, dış dünya arasına yerleştirilir ve
+aradaki fiziksel bağlantı yalnızca güvenlik duvarı tarafından sağlanır.
+Dolayısıyla içerideki ağa girmek isteyen her kötü niyetli dış saldırı,
+önce özel olarak korumalı tasarlanmış güvenlik duvarı makinasını
+bertaraf etmek zorundadır. Bu makinaya "kale", "nöbetçi kale" anlamına gelen
+<span class="wordasword"><i>tabya</i></span><sup>[<a name="id52" href="#ftn.id52" id="id52">52</a>]</sup> (bastion host)
+da denir. Tabyamız, fiziksel olarak iki farklı
+ağa bağlıdır: iç ağ (Intranet) ve dış ağ (Internet).
+Tabya iki özelliğe sahiptir:
+      </div><ul type="disc" class="itemizedlist"><li>
+Yüksek güvenliğe sahip olmalıdır -- yani bu makinaya izinsiz erişim
+son derece zor hale getirilmelidir.
+          </li><li>
+İki (bazen üç) fiziksel ağ bağlantısına sahip olmalı ve bu farklı
+ağlar arasındaki iletişimin nasıl yapılacağına dair karar
+verebilmelidir.
+          </li></ul><div class="figure"><div class="formaltitle"><b>Şekil 13.1. İç ağ ile dış ağ arasında güvenlik duvarı</b></div><span class="inlinemediaobject"><img src="images/proxyfw/bastion.jpg" class="imagedata" align="middle" alt="" /></span></div><ul type="disc" class="itemizedlist"><li>
+Yüksek güvenliğe sahip olmalıdır -- yani bu makinaya izinsiz erişim
+son derece zor hale getirilmelidir.
+          </li><li>
+İki (bazen üç) fiziksel ağ bağlantısına sahip olmalı ve bu farklı
+ağlar arasındaki iletişimin nasıl yapılacağına dair karar
+verebilmelidir.
+          </li></ul><div class="figure"><div class="formaltitle"><b>Şekil 13.2. İç ağ ile dış ağ arasında güvenlik duvarı</b></div><span class="inlinemediaobject"><img src="images/proxyfw/bastion.jpg" class="imagedata" align="middle" alt="" /></span></div></dd></dl> <div class="head3"><a name="proxy-fw_nat" id="proxy-fw_nat"></a>Ağ Adres Çevrimi (NAT), Maskeleme</div><dl><dd><div class="para">
+Günümüzde iç ağların hemen hepsi tahsisli olmayan IP numaraları
+(<tt>10.0.0.0, 192.168.0.0</tt> vs.) kullanmaktadır. Bu IP
+numaraları Internet üzerindeki yönlendiriciler (router) tarafından
+bilinmez. Dolayısıyla bu ağlardan Internet'deki herhangi bir makinaya
+bir erişim olduğu zaman Internet'deki makina bu ağa nasıl geri
+döneceğini bilmez ve pratikte iletişim yapılamaz. Güvenlik duvarı ise,
+dinamik veya statik olarak Internet'de bilinen ve kendisine yönlendirme
+yapılabilen bir IP numarasına sahiptir. İç ağdaki makinalara erişim
+sağlayabilmek için güvenlik duvarı, kendisine iç ağdan gelen her
+paketin kaynak adresini kendi adresi olarak değiştirir. Kendisine
+Internet'den gelen paketlerin de hedef adresini iç ağdaki ilgili
+makinanın adresi olarak değiştirir ve bu yolla iç ağdaki makinaların
+Internet üzerindeki makinalarla haberleşmesini sağlar. Bu işleme IP
+<span class="wordasword"><i>IP Maskelemesi</i></span> (Masquerade) veya <span class="wordasword"><i>Ağ
+Adres Çevrimi</i></span> (NAT - Network Address Translation) denir.
+      </div><div class="para">
+NAT yapıldığı zaman, oluşan trafiğin Internet'den görüldüğü hali,
+Internet'de bulunan tek bir makinanın (tabyamız) bazı Internet
+alışverişleri yaptığıdır. Internet'e, bu makinanın arkasındaki ağın
+büyüklüğü, bu ağdaki makinaların cinsi, sayısı, ağın yapısı vs. hakkında
+herhangi bir bilgi gitmez. Dolayısıyla NAT, yalnızca tahsissiz ağlardan
+Internet'e erişimi sağlamakla kalmaz, ağınızdaki makinalar hakkında
+bilgi edinilmesini (ve dolayısıyla size karşı yapılabilecek saldırıları)
+zorlaştırır.
+      </div></dd></dl> <div class="head3"><a name="proxy-fw_packet-filter" id="proxy-fw_packet-filter"></a>Paket Filtreleme</div><dl><dd><div class="para">
+Yukarıda bahsedilen önlemler (güvenlik duvarının tek fiziksel bağlantı
+olması, NAT uygulanması) ağınıza belli bir miktar güvenlik sağlar, fakat
+esas güvenlik, paket filtreleme yöntemlerinden gelir. Bu yöntemler,
+güvenlik duvarından geçen her IP paketine bakılması ve ancak belli
+şartlara uyarsa geçişine izin verilmesi şeklinde uygulanır.
+      </div><div class="para">Örneğin:</div><ul type="disc" class="itemizedlist"><li>
+İç ağınızdan kimsenin Internet'de ICQ kullanmasını istemiyorsunuz.
+          </li><li>
+Dışarıdan içeriye hiç kimsenin telnet yapabilmesini istemiyorsunuz.
+          </li></ul><div class="para">
+Bu hedefleri gerçekleştirmek için <span><i>paket filtreleme</i></span>
+yöntemleri kullanacaksınız. <span><i>Paket filtreleme</i></span>,
+güvenlik duvarının her fiziksel bağlantısı üzerinde ayrı ayrı ve yöne
+bağlı (dışarıya çıkışa izin ver, fakat içeriye girişe izin verme)
+olarak uygulanabilir.
+      </div><div class="para">
+Paket filtrelemede özellikle yapmanız gereken minimum, dışarıdan gelip de
+kaynağını içerisi gibi gösteren (IP spoofing - IP aldatmacası) paketleri
+ve devam etmekte olan bir trafiğin parçası imiş gibi gelen paketleri
+(IP fragments) filtrelemek ve bunların geçişine izin vermemektir.
+Çoğu saldırı, bu şekilde başlar.
+      </div><div class="para">
+Bu minimumu sağladıktan sonra, dışarıdan içeriye yapılmasına izin
+verdiğiniz erişimleri (telnet yapsınlar mı?, ping yapabilsinler mi?)
+ve içeriden dışarıya yapılmasına izin verdiğiniz erişimleri (kullanıcılarınız
+dışarıya telnet yapabilsin mi? Web'e erişsinler mi? ICQ yapabilsinler mi?)
+belirlemeniz ve güvenlik duvarı üzerindeki filtre protokollerinizi buna
+göre oluşturmanız gerekir.
+      </div></dd></dl> <div class="head3"><a name="id4" id="id4"></a>Dinamik (Stateful) Filtreleme</div><dl><dd><div class="para">
+Eskiden filtreleme yöntemleri ağırlıklı olarak statikti -- yani genel
+olarak ağınıza ICQ paketlerinin girmesine izin verip vermeme kararı
+söz konusu idi. 2.4 Çekirdeği ve bizim aşağıda örneğini verdiğimiz
+<a class="link" href="../howto/iptables-usage.html" title="Iptables'ın Basit Kullanımı"><b><tt>iptables</tt></b>
+uygulaması</a> ile birlikte <span><i>dinamik filtreleme</i></span>
+Linux üzerinde kullanılabilir hale geldi. Aradaki fark, paketin sırf
+protokolüne bakarak karar vermek yerine, güvenlik duvarının bir
+bağlantıyı hangi tarafın başlattığını takip etmesi ve çift yönlü
+paket geçişlerine buna göre karar vermesidir. Yani bir telnet
+bağlantısında her iki taraftan da paketler gelir ve gider. Fakat
+<span><i>dinamik filtreleme</i></span> ile, bir telnet bağlantısı iç
+ağınızdan başlatılmışsa izin verir, başlangıç istemi dış ağdan gelmişse
+reddedebilirsiniz. <span><i>Dinamik filtreleme</i></span>
+özelliği olmayan güvenlik duvarlarını kullanmanızı önermiyoruz. 2.4
+çekirdeği ve <b><tt>iptables</tt></b> uygulaması olan her Linux
+üzerinde <span><i>dinamik filtreleme</i></span> yapabilirsiniz.
+<b><tt>iptables</tt></b> kullanımı hakkında daha ayrıntılı bilgiyi
+<a class="link" href="../howto/iptables-usage.html" title="Iptables'ın Basit Kullanımı">Iptables'ın Basit Kullanımı</a>
+belgesinde bulabilirsiniz.
+      </div> <div class="head4"><a name="id14" id="id14"></a>Bazı Internet Servislerinin İç Ağdan Verilmesi</div><dl><dd><div class="para">
+Ağınızda Internet'den erişimi olması gereken web, posta gibi
+sunucular bulunabilir. Bu sunuculara erişimi iki yoldan vermeniz
+mümkündür:
+        </div><ul type="disc" class="itemizedlist"><li>
+Silahsızlandırılmış bölge uygulaması (DMZ - Demilitarized Zone)
+            </li><li>
+İç ağınızda bu servislere doğrudan filtreleme yaparak.
+            </li></ul><div class="variablelist"><dl><dt><span class="term">Silahsızlandırılmış bölge (DMZ - DeMilitarized Zone)</span></dt><dd class="varlist"><div class="para">
+DMZ, güvenlik duvarı tarafından daha az korunan, daha fazla
+erişime izin verilen bir bölgedir. Güvenlik duvarına üçüncü
+bir ağ çıkışı eklenmesi ve Internet'e servis verecek olan
+makinaların buraya konulması ile oluşturulur. Örneğin DMZ'deki
+makinalara NAT uygulanmayabilir, tahsisli IP numaralarına
+sahip olabilirler. Güvenlik duvarı, telnet, ssh gibi kimi
+protokollerin buraya erişimini filtreleyerek DMZ bölgesindeki
+makinalara güvenlik sağlar. Dikkat edilecek nokta, DMZ'de
+bulunan makinaların daha fazla erişime (ve dolayısıyla saldırıya)
+açık olmasıdır. Buradaki makinalar dikkatli kurulmalı,
+güvenliğe aykırı protokoller vs. burada yer almamalıdır.
+                </div>
+                  <div class="figure"><div class="formaltitle"><b>Şekil 13.3. Silahsızlandırılmış bölge (DMZ)</b></div><span class="inlinemediaobject"><img src="images/proxyfw/dmz.jpg" class="imagedata" align="middle" alt="" /></span></div>
+                </dd><dt><span class="term">Doğrudan Filtreleme</span></dt><dd class="varlist"><div class="para">
+DMZ oluşturmak için ek ekipman ve IP numarası gerekir. Güvenlik
+duvarında üçüncü bir ağ birimi, ayrı bir switch, daha fazla
+adette tahsisli IP numarası ve iç ağınızda başka herhangi bir
+görev görmeyecek olan sunucu makinalar gerekir. Eldeki imkanlar
+buna yetişmeyebilir. Böyle durumlarda, güvenlik duvarınızdaki
+filtreleme politikasını değiştirerek iç ağınızdaki kimi
+makinalara dışarıdan sınırlı erişim imkanı verebilirsiniz.
+Örneğin güvenlik duvarınız ağınızın genelinde dışarıdan gelen
+SMTP (posta) protokolünü filtrelerken, sadece posta sunucunuza
+dışarıdan SMTP protokolü erişimini verebilir. NAT ile
+birleştirileceğinden, bu dışarıdan bakıldığı zaman sanki güvenlik
+duvarınız posta sunuculuğu yapıyormuş izlenimini verir.
+                </div></dd></dl></div></dd></dl></dd></dl> <div class="head3"><a name="proxy-fw_proxy" id="proxy-fw_proxy"></a>Vekil (Proxy)</div><dl><dd><div class="para">
+Proxy'nin kelime anlamı vekil'dir. Yukarıdaki yöntemlerin hepsi, belli
+kurallara bağlı olarak Internet'deki bir makina ile iç ağdaki bir makina
+arasında doğrudan alışverişe izin verir. Vekil uygulamaları ise, bu
+doğrudan alışverişin arasına girer. Dolayısıyla protokol bazlı herhangi
+bir saldırı, vekil sunucuya yönelik gerçekleşir, iç ağdaki makinayı
+etkilemez. Örneğin bir http (web) vekili, iç ağdan dışarıya giden bütün
+web isteklerini toplar. Bu istekleri kendisi yapar, gelen sonuçları iç
+ağa dağıtır. Örneğin eğer web protokolü yolu ile istemci makinanın bazı
+bilgilerinin alınması veya bir saldırı yapılması söz konusu olur ise,
+bundan etkilenen sadece web vekili makina olur, iç ağda web erişiminde
+bulunan her makina değil.
+      </div><div class="para">
+Güvenlik amacı ile proxy kullanımı, <span><i>uygulama temelli güvenlik
+duvarı</i></span> (application level firewall) olarak adlandırılır.
+      </div> <div class="head4"><a name="id15" id="id15"></a>Vekillerin Başka Kullanımları</div><dl><dd><ul type="disc" class="itemizedlist"><li><b><tt>Güvenlik amaçlı</tt></b> - yukarıda bahsedilmiştir.
+            </li><li><b><tt>İzin amaçlı</tt></b> - İç ağınızdan bazı servislere
+kimin erişebileceğini belirlemekte, izin politikası uygulamakta
+kullanılırlar.
+            </li><li><b><tt>Performans amaçlı</tt></b> - Pek çok istemci aynı
+istekte bulunuyorsa, bunların bir defaya indirgenmesini
+sağlayarak hem sunucu makinanın üzerindeki yükü, hem de
+kullanılan bağlantı yükünü hafifletirler.
+            </li></ul><div class="para">
+Vekil sunucular, en fazla kullanılan örneği olan <a href="../howto/proxy-fw_squid.html" class="xref" title="Web Vekili (Squid)">Web Vekili (Squid)</a> üzerinde daha ayrıntılı olarak
+aşağıda anlatılmıştır.
+        </div></dd></dl></dd></dl><div class="footnotes"><br /><hr width="100" align="left" /><div class="footnote"><div class="para"><sup>[<a name="ftn.id52" href="#id52" id="ftn.id52">52</a>] </sup>Tabya, sözlük anlamı olarak, "ayrı olarak yapılmış ve silahlarla
+güçlendirilmiş istihkam"dır. Güvenlik duvarının kurulacağı makina için
+bu terimin uygun olacağını düşündüm. Bu tabya şüphesiz, caydırıcı
+silahlarla teçhiz edilmiş olacak :-)</div></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/proxy-fw_intro.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/proxy-fw.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/proxy-fw_choice.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Giriş </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Güvenlik Duvarı - Satın Almak, Kendiniz Yapmak?</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

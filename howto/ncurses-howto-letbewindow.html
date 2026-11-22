@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:07+03:00" /><title>Bana bir Pencere göster !!!</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/ncurses-howto-windows.html" title="Pencereler" /><link rel="previous" href="../howto/ncurses-howto-windowbasics.html" title="Temel bilgiler" /><link rel="next" href="../howto/ncurses-howto-borderexexpl.html" title="Örneğin açıklaması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Bana bir Pencere göster !!!</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/ncurses-howto-windowbasics.html">Önceki</a> </td><th width="60%" align="center">Pencereler</th><td width="20%" align="right"> <a accesskey="n" href="../howto/ncurses-howto-borderexexpl.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="ncurses-howto-letbewindow" id="ncurses-howto-letbewindow"></a>Bana bir Pencere göster !!!</div><dl><dd><div class="para">
+Eğer bir pencere oluşturuldu ve biz de göremiyorsak bu komik bir durumdur. Eğlenceli kısım pencereyi göstermekle başlar. <b><tt>box()</tt></b> işlevi pencere etrafına bir çerçeve çizmek için kullanılır. Bu işlevleri aşağıdaki örnekte daha ayrıntılı inceleyelim.
+</div><dl class="example"><dt class="example"><a class="example" name="idxmp81" id="idxmp81"></a><b>Örnek 12.7. Pencere Çerçevesi örneği</b></dt><dd class="example">
+<div class="para"><div align="right"><pre class="programlisting">
+#include &lt;ncurses.h&gt;
+
+WINDOW *create_newwin(int height, int width, int starty, int startx);
+void destroy_win(WINDOW *local_win);
+
+int main(int argc, char *argv[])
+{ WINDOW *my_win;
+  int startx, starty, width, height;
+  int ch;
+
+  initscr();                      /* Curses kipini ilklendirme    */
+  cbreak();                       /* Satır önbelleği etkisiz,     *
+                                   * herşeyi bana gönder          */
+  keypad(stdscr, TRUE);           /* Şu şeker F1'e ihtiyacım var  */
+
+  height = 3;
+  width = 10;
+  starty = (LINES - height) / 2;  /* Pencerenin ortasına yazmak için */
+  startx = (COLS - width) / 2;    /* hesaplama yapılıyor             */
+  printw("Press F1 to exit");
+  refresh();
+  my_win = create_newwin(height, width, starty, startx);
+
+  while((ch = getch()) != KEY_F(1))
+  { switch(ch)
+    { case KEY_LEFT:
+        destroy_win(my_win);
+        my_win = create_newwin(height, width, starty,--startx);
+        break;
+      case KEY_RIGHT:
+        destroy_win(my_win);
+        my_win = create_newwin(height, width, starty,++startx);
+        break;
+      case KEY_UP:
+        destroy_win(my_win);
+        my_win = create_newwin(height, width, --starty,startx);
+        break;
+      case KEY_DOWN:
+        destroy_win(my_win);
+        my_win = create_newwin(height, width, ++starty,startx);
+        break;
+    }
+  }
+
+  endwin();                       /* Curses kipi sonu */
+  return 0;
+}
+
+WINDOW *create_newwin(int height, int width, int starty, int startx)
+{ WINDOW *local_win;
+
+  local_win = newwin(height, width, starty, startx);
+  box(local_win, 0 , 0);          /* 0, 0 yatay ve düşey çizgiler    *
+                                   * için öntanımlı karakteri verir  */
+  wrefresh(local_win);            /* Kutuyu gösterir                 */
+
+  return local_win;
+}
+
+void destroy_win(WINDOW *local_win)
+{
+  /* box(local_win, ' ', ' '); : Bu istenen pencere silme sonucunu
+    * vermeyecektir. Pencerenin dört köşesi ve
+    * çirkin küçük bir kısmı kalacaktır.
+    */
+  wborder(local_win, ' ', ' ', ' ',' ',' ',' ',' ',' ');
+  /* Alınan parametreler şu şekildedir
+    * 1. win: üzerinde çalışılacak pencere
+    * 2. ls: pencerenin sol kenarı için kullanılacak karakter
+    * 3. rs: pencerenin sağ kenarı için kullanılacak karakter
+    * 4. ts: pencerenin üst kenarı için kullanılacak karakter
+    * 5. bs: pencerenin alt kenarı için kullanılacak karakter
+    * 6. tl: pencerenin sol üst köşesi için kullanılacak karakter
+    * 7. tr: pencerenin sağ üst köşesi için kullanılacak karakter
+    * 8. bl: pencerenin sol alt köşesi için kullanılacak karakter
+    * 9. br: pencerenin sağ alt köşesi için kullanılacak karakter
+    */
+  wrefresh(local_win);
+  delwin(local_win);
+}
+</pre></div></div></dd></dl></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/ncurses-howto-windowbasics.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/ncurses-howto-windows.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/ncurses-howto-borderexexpl.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Temel bilgiler </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Örneğin açıklaması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

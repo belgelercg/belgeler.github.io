@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:24+03:00" /><title>İleti Özümleme Algoritmaları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/md.html" title="İleti Özeti NASIL" /><link rel="previous" href="../howto/md-nedir.html" title="MD Nedir?" /><link rel="next" href="../howto/md-uygulamalar.html" title="Uygulamalar" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">İleti Özümleme Algoritmaları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/md-nedir.html">Önceki</a> </td><th width="60%" align="center">İleti Özeti NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/md-uygulamalar.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="md-algoritmalar" id="md-algoritmalar"></a>İleti Özümleme Algoritmaları</div><dl><dd><div class="para">
+Bugüne kadar MD işlevi için bir çok algoritma tasarlanmıştır, fakat bunlardan sadece bir kısmı yukarıda sıralanan özellikleri birarada barındırdığından genel kabul görmüşlerdir. Bu algoritmaların başta gelenleri md5 (message digest 5) ve sha'dır (secure hash algorithm).
+</div> <div class="head3"><a name="id1" id="id1"></a>MD5 (Message Digest 5)</div><dl><dd><div class="para">
+MD5, Ron Rivest tarafıdan 1992 yılında tasarlanmış bir MD algoritmasıdır. Ron Rivest, yine kendi tasarladığı MD4 algoritmasındaki bir takım zayıflıkları gidermiş ve günümüzde sıkça kuallanılan MD5 algoritması ortaya çıkmıştır. MD5, sonsuz uzunlukta veriyi girdi olarak kabul edebilir ve sonuçta 128 bit uzunluğunda bir çıktı üretir. Kısaca algoritmanın nasıl işlediğine bakacak olursak:
+</div>
+<ul type="disc" class="itemizedlist"><li><div class="para">
+MD5, veriyi 512 bitlik bloklara ayırır ve her bir blok üzerinde aynı işlem uygulanır.
+</div></li><li><div class="para">
+Üzerinde işlem yapılacak verinin 512 bitin katları olması gerekmektedir, fakat gerçek verimiz bu özelliği sağlamayabilir. Bu sorunu çözmek için ekleme (padding) işlemi uygulanır (gerçek verimiz 512 in katı olsa dahi ekleme yapılır!).
+</div><div class="para">
+Ekleme işleminde şu kural gözetilir: Verinin uzunluğu 512 bitin en yakın katından 64 eksik olacak şekilde, verinin sonuna bir adet <b><tt>1</tt></b> ve geri kalanlar için ise <b><tt>0</tt></b> eklenir. Bu 64 bitlik fark verinin uzunluğunu belirtmekte kullanılır.
+</div><div class="para">
+Bir örnekle açıklayacak olursak; diyelim verimiz 300 bit uzunlukta olsun. Bunu 448 bite (512-64) tamamlamız gerekmektedir. Dolayısı ile 301. bit olarak <b><tt>1</tt></b> ve geri kalan 147 tane bit için ise <b><tt>0</tt></b> ataması yaparız. Elimizde şu anda 448 bit var. Gerçek verimizin uzunluğu 300 bit idi ve bunuda ikilik tabanda  64 bit ile ifade edip 448 bitlik verimize ekleriz. Böylece 512-bitlik yeni oluşturduğumuz veri üzerinde MD5 algoritmasını uygulayabiliriz.
+</div></li><li><div class="para">
+Ekleme işleminden sonra, MD5 veriyi işlemeye başlar. Ana döngü <a href="../howto/md-algoritmalar.html#md-mainloop" class="xref" title="Şekil 10.1. MD5 Ana Döngüsü">Şekil 10.1</a>'de görülmektedir.
+</div>
+<div class="figure"><div class="formaltitle"><b><a name="md-mainloop" id="md-mainloop"></a>Şekil 10.1. MD5 Ana Döngüsü</b></div><div class="mediaobject"><img src="images/md/mainloop.jpg" class="imagedata" alt="" /></div></div><div class="para">
+Döngünün başlangıcında 32 bitlik dört tane (A,B,C,D) değişken bulunur. Başlangıçta bunların değeri sabittir ve her 512 bitlik bloğu işleme soktukça bu değişkenlerin değerleri değişir ve en sondaki bloğuda işledikten sonra elde ettiğimiz A,B,C ve D değişkenlerinin değerlerini yanyana dizdiğimizde (A-B-C-D) 128 bitlik MD sonucumuzu elde etmiş oluruz.
+</div><div class="para">
+Burada 4 adım (F-G-H-I) göze çarpmaktadır. Her adımın önceden tanımlı ve kendisine özgü birer işlevi bulunmaktadır ve bu işlevler her adımda 16 kez çağırılarak elde edilen sonuç bir sonraki adıma iletilir. Yani her bir 512 bitlik blok için MD5 algoritması 4 adım * 16 işlem = 64 adet işlem yapmaktadır. Bu kadar fazla adımın amacı simetrikliği engelleyip farklı girdiler için farklı sonuçlar üretebilme özelliğini sağlayabimektir. Aşağıda her adımda kullanılan işlevler gösterilmiştir.
+</div>
+<div class="para"><pre class="literallayout">
+Her adımda 16 kez FF işlevi hesaplanır:
+from (j = 0 to 15)
+        FF (a, b, c, d, Mj, s, ti)
+Burada:
+i: adım numarası
+FF (a, b, c, d, Mj, s, ti) =&gt; a = b + ((a + F(b, c, d) + Mj + ti) &lt;&lt;&lt; s)
+1. adım için  F(X, Y, Z) = (X and Y) or ((not X) and Z)
+2. adım için  F(X, Y, Z) = (X and Z) or (Y and (not Z))
+3. adım için  F(X, Y, Z) = X xor Y xor Z
+3. adım için  F(X, Y, Z) = Y xor (X or (not Z))
+</pre></div>
+</li></ul></dd></dl> <div class="head3"><a name="id2" id="id2"></a>SHA (Secure Hash Algorithm)</div><dl><dd><div class="para">
+NİST (National Institute of Standards and Technology) ve NSA (National Security Agency) kuruluşlarının ortak çalışmaları sonucunda 1994 yılında Sayısal İmza Standardında (DSA-Digital Signature Standard) kullanılmak üzere tasarlanmış bir algoritmadır. MD5'le benzerlik göstermektedir. MD5 ile karşılaştıracak olursak;
+</div> <div class="head4"><a name="id12" id="id12"></a>MD5 - SHA Karşılaştırması</div><dl><dd>
+<ul type="disc" class="itemizedlist"><li>
+MD5'in çıktısı 128 bit iken, SHA'nın çıktısı 160 bittir. Yani MD5'te 4 adet 32 bitlik değişken kullanılırken, SHA'da 5 adet 32 bitlik değişken kullanılır.
+</li><li>
+Her ikiside 512 bitlik bloklar üzerinde işlem yaparlar.
+</li><li>
+SHA'da ekleme (padding) işlemi, MD5'teki ile aynı şekilde yapılır.
+</li><li>
+SHA'da da her 512 bitlik blok için 4 adımda işlemler yapılır, fakat bir farkla: MD5'de her adımda önceden tanımlı işlevlerin kullanımı 16 kez tekrarlanırken, bu sayı SHA'da 20 kezdir.
+</li><li>
+SHA girdi olarak maksimum 2<sup><tt>64-1</tt></sup> uzunluğunda veriyi kabul eder. Bunu yanında MD5 için böyle bir kısıtlama yoktur.
+</li><li>
+SHA ürettiği 160 bitlik sonuç ile brute-force (bütün olası sonuçların denenmesi ile gerçekleştirilir) ataklara karşı daha dayanıklıdır.
+</li></ul></dd></dl> <div class="head4"><a name="id22" id="id22"></a>Diğerleri</div><dl><dd><div class="para">
+MD5 ve SHA'nın yanında daha birçok MD algoritması tasarlanmıştır. Bunlardan bazıları MD2, MD4, Haval, Ripe-MD, Snefru, N-Hash'dır.
+</div></dd></dl></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/md-nedir.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/md.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/md-uygulamalar.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">MD Nedir? </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Uygulamalar</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

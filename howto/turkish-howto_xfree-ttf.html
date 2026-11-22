@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:11+03:00" /><title>True Type yazı tiplerinin kullanımı</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/turkish-howto.html" title="Türkçe NASIL" /><link rel="previous" href="../howto/turkish-howto_xfree-fonts.html" title="X Window Türkçe yazı tiplerinin yüklenmesi" /><link rel="next" href="../howto/turkish-howto_xfree-xkb.html" title="X Window Türkçe klavye desteği" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">True Type yazı tiplerinin kullanımı</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/turkish-howto_xfree-fonts.html">Önceki</a> </td><th width="60%" align="center">Türkçe NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/turkish-howto_xfree-xkb.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="turkish-howto_xfree-ttf" id="turkish-howto_xfree-ttf"></a>True Type yazı tiplerinin kullanımı</div><dl><dd> <div class="head3"><a name="id1" id="id1"></a>Red Hat</div><dl><dd><div class="para">
+TrueType yazı tipi dosyaları işletim sisteminden bağımsızdır. Herhangi bir işletim sisteminde hoşunuza giden TrueType yazı tipini başka bir işletim sisteminde kullanabilirsiniz.
+  </div><div class="para">
+X Window'un görüntüsü True Type yazıtipleri (TTF) ile oldukça güzel ve okunaklı oluyor ama, GPL'li Türkçe karakter içeren TTF olmadığından şu adresteki ya da dağıtımınızla gelen şu paketi kullanabilirsiniz diyemiyorum. Ancak bir çoklarının yaptığı gibi, bu yazı tiplerini makinanızda eğer bir başka işletim sistemi kuruluysa, onun yazıtipleri dizinini içeren sabit disk bölümünü Linux dosya sistemine bağlayıp (bkz. <tt>man mount</tt>) ya da bu dizine bir sembolik bağ (bkz. <tt>man ln</tt>) yapıp bu yazıtiplerini kullanabilirsiniz. Burada bir gün bizim de GPL'li TT yazı tiplerimiz olacağı varsayımıyla bu yazıtiplerini <tt>/usr/share/fonts/ttf/</tt> dizinine yüklediğinizi farzediyorum. Şimdi X Window ile bu dizin içindeki yazıtiplerini nasıl kullanacağınıza bakalım.
+  </div><div class="para">
+Önce aşağıdaki komutları kullanarak yazı tiplerimizin bulunduğu <tt>/usr/share/fonts/ttf/</tt> dizinine giriyoruz ve bu dizindeki yazı tiplerini X Window'un tanıyabilmesi için gerekli dosyaları oluşturuyoruz:
+  </div>
+<div class="para"><div align="right"><pre class="screen"><tt>#</tt> <b><tt>cd /usr/share/fonts/ttf</tt></b>
+<tt>#</tt> <b><tt>ttmkfdir -o fonts.scale</tt></b>
+<tt>#</tt> <b><tt>mkfontdir</tt></b>
+</pre></div></div>
+  <div class="para">
+Bu komutlarla dizinde <tt>fonts.scale</tt> ve <tt>fonts.dir</tt> dosyaları oluşacak.
+  </div><div class="para">
+Şimdi <tt>/usr/share/fonts/ttf/</tt> dizininde Türkçe yazı tiplerimizin bulunduğunu <tt>/usr/X11/lib/X11/XF86Config</tt> ve <tt>/etc/X11/fs/config</tt> dosyasında belirtelim.
+  </div>
+<div class="para"><div align="right"><pre class="screen">FontPath   "/usr/share/fonts/ISO8859-9/misc"
+FontPath   "/usr/share/fonts/ISO8859-9/75dpi"
+FontPath   "/usr/share/fonts/ISO8859-9/100dpi"
+FontPath   "/usr/share/fonts/ttf"              &lt;---------
+FontPath   "/usr/X11R6/lib/X11/fonts/misc/"
+FontPath   "/usr/X11R6/lib/X11/fonts/75dpi/:unscaled"
+FontPath   "/usr/X11R6/lib/X11/fonts/100dpi/:unscaled"
+FontPath   "/usr/X11R6/lib/X11/fonts/Type1/"
+FontPath   "/usr/X11R6/lib/X11/fonts/Speedo/"
+</pre></div></div>
+  <div class="para">
+Bu işlemleri X Window altında yaptıysanız, X'i öldürüp
+  </div>
+<div class="para"><div align="right"><pre class="screen"><tt>#</tt> <b><tt>service xfs restart</tt></b></pre></div></div>
+  <div class="para">
+ile X yazı tipi sunucusunun yeni yazı tiplerimizi bulmasını sağladıktan sonra X Window'u yeniden başlatabilirsiniz.
+  </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Debian</div><dl><dd><div class="para">
+Ölçekli yazıtiplerinin X sunucusunda kullanılabilmesi için bazı X modüllerinin aktif hale getirilmesi gerekmektedir.  Sıradan bir kurulumda aksi bir gelişmeyi düşünmüyorum ama yine de TrueType ve Type1 yazıtiplerinin kullanılabilmesi için gereken modüller olan: <tt>freetype</tt> ve <tt>type1</tt>'in X sunucusunda hazır bulunup bulunmadığını da kontrol edelim. <tt>/etc/X11/XF86Config-4</tt> şöyle bir şeyler görmeniz lâzım:
+    </div>
+<div class="para"><div align="right"><pre class="screen">Section "Module"
+  ...
+  Load "freetype"
+  Load "type1"
+  ...
+EndSection
+</pre></div></div>
+    <div class="para">
+Debian da dahil olmak üzere çoğu dağıtım yazıtiplerinin idaresi için öntanımlı olarak bir yazıtipi sunucusu (<b><tt>xfs</tt></b>) ile kurulu gelir. Bununla birlikte X 4.x serisinden itibaren bu iş için ayrı bir yazıtipi sunucusu kullanmak şart değildir. Yazıtipi sunucusu, yazıtiplerinin merkezî bir sunucuda toplandığı ağ ortamları için uygun düşmektedir. Kişisel kullanıma ayrılmış bilgisayarlar için doğrudan X sunucusu içindeki yazıtipi yönetimi olanaklarını da değerlendirebilirsiniz. Bu amaçla
+ <tt>/etc/X11/XF86Config-4</tt> dosyasında yazıtipi sunucusunun çağrıldığı:
+    </div>
+<div class="para"><div align="right"><pre class="screen">FontPath "unix/:7100"</pre></div></div>
+      <div class="para">
+satırını çıkarmak (veya önüne # koyarak açıklama haline getirmek) ve -artık ihtiyaç olmadığından- <b><tt>xfs</tt></b>'i pasif hale getirmek yeterli olacaktır. (Bu sonuncu işlem için <b><tt>rcconf</tt></b> paketini kullanabilirsiniz.) Yazıtipi yönetimi için mevcut hali korumak isteyeceklerin açıklamalarda belirtilen yazıtipi patikalarını <tt>/etc/X11/XF86Config-4</tt> dosyası yerine <b><tt>xfs</tt></b>'in kullandığı <tt>/etc/X11/fs/config</tt> dosyasında düzenlemeleri gerekiyor.
+      </div><div class="para">
+Kurulumdan önce doğal olarak TT yazıtiplerini temin etmeniz lâzım. Maalesef <a class="ulink" href="http://www.debian.org/social_contract.tr.html" target="_top">Debian Sosyal Sözleşmesi</a>'ne uygun serbestiyette ve kaliteli TT yazıtipi bulmak mümkün değil. Bazı ticarî işletim sistemleri dağıtımı yasak, fakat kullanılması serbest TT yazıtipleriyle birlikte gelmektedir. Bilgisayarınızda bu özellikte bir işletim sistemi varsa tek yapılması gereken önce bu ticarî yazıtiplerini erişilebilir bir dizinde tutmak ve daha sonra `<tt>ttf-commercial</tt>' paketini kurmaktır. Erişilebilirlik şartını sağlamak için söz konusu işletim sisteminin kurulu olduğu disk bölümünü (<tt>hdaN</tt>) dosya sistemimize bağlıyoruz:
+    </div>
+<div class="para"><div align="right"><pre class="screen"><tt>#</tt> <b><tt>mount -t dosya_sistemi /dev/hdaN /mnt/ticari</tt></b>
+</pre></div></div>
+<div class="para">
+`<tt>ttf-commercial</tt>' paketini kuruyoruz: (yapılandırmayı kurulum sırasında gerçekleştireceğiz)
+    </div>
+<div class="para"><div align="right"><pre class="screen"><tt>#</tt> <b><tt>apt-get install ttf-commercial</tt></b>
+</pre></div></div>
+<div class="para">
+`<tt>ttf-commercial</tt>' önceden hazır halde tuttuğu geniş bir ticarî yazıtipi listesiyle iş görüyor.  Programa (daha doğrusu betik) TT yazıtiplerini bulacağı yeri gösterdiğimizde (<tt>/mnt/ticari</tt>) o konumda mevcut yazıtiplerini kendi listesiyle karşılaştıracak ve geçerli gördüklerini kuracaktır. `<tt>ttf-commercial</tt>' "Yazıtiplerini kopyalayayım mı, sembolik bağlama mı yapayım?" sorusunu yönelttiğinde "kopyalama" yönteminin seçilmesini öneriyoruz. "Yazıtipi sunucusu istiyor musunuz?" sorusuna, daha önceden izah ettiğimiz sebeplerle buna ihtiyaç olmadığından "Hayır" diyeceğiz. Son safhada yazıtipi dizinlerini <tt>XF86Config-4</tt>'e ekleyebileceğini belirtecek. Biz de eklemesini söyleyeceğiz.
+    </div><div class="para">
+El değmemiş bir <tt>XF86Config-4</tt> dosyasındaki yazıtipi patikalarını incelediğimizde şunu görürüz: 100dpi biteşlemli yazıtipleri, 75dpi'ın önündedir ve bunun sonucu da göze hoş gelmeyen iri harfli menülerdir :-). Bunu önlemek için 75dpi yazıtiplerini 100dpi'ın üstüne alıyoruz.  Kritik işlemler olmamakla beraber gereksiz yazıtipi satırlarını siliyor ve <tt>ttf-commercial</tt>'ın eklediği dizini de daha mantıksal bir yere alıyoruz. Bütün bu işlemler neticesinde <tt>XF86Config-4</tt> dosyasında aşağıdakine benzer bir görüntü oluşacaktır:
+    </div><div class="para"><tt>/etc/X11/XF86Config-4</tt>:
+    </div>
+<div class="para"><div align="right"><pre class="screen">Section "Files"
+  FontPath "/usr/lib/X11/fonts/misc"
+  FontPath "/usr/lib/X11/fonts/75dpi/:unscaled"
+  FontPath "/usr/lib/X11/fonts/100dpi/:unscaled"
+  FontPath "/usr/lib/X11/fonts/Type1"
+  FontPath "/usr/lib/X11/fonts/TrueType"
+  FontPath "/usr/lib/X11/fonts/Speedo"
+  FontPath "/usr/lib/X11/fonts/75dpi"
+  FontPath "/usr/lib/X11/fonts/100dpi"
+EndSection
+</pre></div></div>
+    <div class="para">Test:</div><div class="para">
+Kısa bir test prosedürü bizi bekliyor. Önce X sunucusunu al baştan yapalım.  X sunucusunda hazır durumda bulunan yazıtiplerini listelemek için şu komutu kullanıyoruz:
+    </div>
+<div class="para"><div align="right"><pre class="screen"><tt>#</tt> <b><tt>xlsfonts</tt></b>
+</pre></div></div>
+<div class="para">
+Gerekirse bu komutun çıktısını <b><tt>grep</tt></b> komutuna yönlendirerek kurulmuş olan TT yazıtiplerini daha kolay gözleyebiliriz. Bu doğrulamadan sonra TT destekli bir programı meselâ Mozilla'yı çalıştıralım. Herşey yolunda gitmiş ise TT yazıtiplerinin keyfini çıkarabilirsiniz.
+    </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/turkish-howto_xfree-fonts.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/turkish-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/turkish-howto_xfree-xkb.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">X Window Türkçe yazı tiplerinin yüklenmesi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> X Window Türkçe klavye desteği</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

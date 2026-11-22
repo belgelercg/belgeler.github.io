@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:11+03:00" /><title>Örnek Yazılım</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/ncurses.html" title="Ncurses'a Giriş" /><link rel="previous" href="../howto/ncurses-islev-tuslari.html" title="İşlev Tuşları" /><link rel="next" href="../howto/ncurses-son.html" title="Sonuç" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Örnek Yazılım</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/ncurses-islev-tuslari.html">Önceki</a> </td><th width="60%" align="center">Ncurses'a Giriş</th><td width="20%" align="right"> <a accesskey="n" href="../howto/ncurses-son.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="ncurses-ornek" id="ncurses-ornek"></a>Örnek Yazılım</div><dl><dd><div class="para">
+Burada inceleyeceğimiz örnek yazılım basit ama öğretici bir yazılımdır. Bu yazılımda <b><tt>ncurses</tt></b> kullanılarak menüler oluşturulmuş ve menüdeki seçeneklerden bir tanesinin seçilmesi basit bir biçimde uygulanmıştır. Bu yazılımda önemli olan <b><tt>ncurses</tt></b>'in pencere bileşenlerini menü etkisi yaratabilecek şekilde kullanmaktır. Yazılımın ekran görüntüsünü aşağıda görüyorsunuz:
+  </div>
+    <div class="mediaobject"><img src="images/ncurses/example.jpg" class="imagedata" align="middle" alt="" /></div>
+  <div class="para">
+Yazılımda her zaman olduğu gibi önce kullanılan kütüphanelerin başlık dosyaları yazılır. Bir de yazılım içerisinde kullanacağımız <tt>&lt;enter&gt;</tt> ve <tt>&lt;escape&gt;</tt> tuşlarının ASCII karşılıkları yerine kullanılacak sabitler tanımlanır.
+  </div>
+ <div class="para"><div align="right"><pre class="screen">
+#include &lt;curses.h&gt;
+#include &lt;stdlib.h&gt;
+
+#define ENTER 10
+#define ESCAPE 27
+</pre></div></div>
+  <div class="para">
+Aşağıdaki <tt>init_curses</tt> işlevi yazılımın ilk çalıştığı zaman çağırdığı işlevdir. Önce <b><tt>initscr</tt></b> çağrısı yaparak <b><tt>ncurses</tt></b> çalıştırılır, daha sonra <b><tt>start_color</tt></b> ile renkler kullanılır hale getirilir ve ardından da yazılım boyunca kullanılacak renk çiftleri tanımlanır. <b><tt>curs_set(0)</tt></b> çağrısı fiziksel imlecin ekran üzerinde görünmemesini sağlarken, <b><tt>noecho</tt></b> çağrısı da kullanıcının klavyeden girdiği karakterlerin ekrana yazılmasını engeller. <b><tt>noecho</tt></b> işlevini girdileri kontrol ederek almak ve sadece kabul edilen karakterleri ekrana aktarmak gibi bir amaç için de kullanabilirsiniz. <b><tt>noecho</tt></b> işlevinin etkisini kaldırmak için gerektiği zaman <b><tt>echo</tt></b> çağrısı yapılır. Aşağıdaki işlev son olarak <b><tt>keypad</tt></b> çağrısı yaparak <tt>stdscr</tt>'den alınacak girdilerde işlev tuşlarının da kullanılabilmesini sağlar. F1 ve F2 ile ok tuşlarını kullabilmek için bu çağrı gereklidir.
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+void init_curses()
+{
+  initscr();
+
+  start_color();
+  init_pair(1, COLOR_WHITE, COLOR_BLUE);
+  init_pair(2, COLOR_BLUE, COLOR_WHITE);
+  init_pair(3, COLOR_RED, COLOR_WHITE);
+
+  curs_set(0);
+  noecho();
+  keypad(stdscr, TRUE);
+}
+</pre></div></div>
+  <div class="para">
+Bundan sonraki işlev üzerinde menü isimleri bulunan satırı yazan işlevdir. Biraz aşağılara inerek yazılımda yalnızca bir satır olarak görülen menü çubuğunun, <tt>main</tt> işlevi içerisinde <tt>stdscr</tt>'nin alt penceresi olarak tanımlanmış tek satırlık bir pencere olduğunu görebilirsiniz. İşte aşağıdaki işlev o pencereyi parametre olarak alıp önce artalan rengini değiştirir, sonra da menü isimlerini yazar. Menü isimlerini burada <b><tt>waddstr</tt></b> ile yazıyoruz. Bu tercihin belirli bir sebebi yok, istenilen işlev kullanılabilirdi. İlk satırdaki <b><tt>wbkgd</tt></b> çağrısı ile pencerenin renk çifti olarak tanımlanan 2 numaralı çiftin dışında bir renk çifti (3) ile yazmak istediğimizde <b><tt>wattron</tt></b> işlevini kullandığımıza dikkat edin. Yeniden 2 numaralı çift ile yazmak için ise <b><tt>wattroff</tt></b> kullanıyoruz.
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+void draw_menubar(WINDOW *menubar)
+{
+  wbkgd(menubar, COLOR_PAIR(2));
+  waddstr(menubar, "Menu1");
+
+  wattron(menubar, COLOR_PAIR(3));
+  waddstr(menubar, "(F1)");
+  wattroff(menubar, COLOR_PAIR(3));
+
+  wmove(menubar, 0, 20);
+  waddstr(menubar, "Menu2");
+
+  wattron(menubar, COLOR_PAIR(3));
+  waddstr(menubar, "(F2)");
+  wattroff(menubar, COLOR_PAIR(3));
+}
+</pre></div></div>
+  <div class="para">
+Sıradaki işlev F1 ya da F2 tuşlarına basıldığı zaman menülerin açılmasını sağlayan işlevdir. Menü açılma etkisi oluşturmak için artalanı oluşturan pencere (mavi renkli) üzerine menü çubuğu ile aynı renkte (beyaz) yeni bir pencere açılmaktadır. Ancak bu yeni pencere açıldığı zaman altta kalan pencerede yazılmış olan yazıların silinmesini istemiyoruz. Menü kapandığı zaman bu yazıların yeniden görünmesini istiyoruz. Bu sebeple yeni oluşturulan pencerenin <tt>stdscr</tt>'nin bir alt penceresi olarak oluşturulması doğru değildir. Aşağıda da görüldüğü gibi <i><tt>items[0]</tt></i> adlı pencere <b><tt>newwin</tt></b> işleviyle oluşturulmuştur. Diğer 8 tane <i><tt>items</tt></i> penceresi ise <i><tt>items[0]</tt></i>'ın alt pencereleri olarak oluşturulmuştur. Burada <i><tt>items[0]</tt></i> menüyü sınırlayan çerçeveyi çizmek için kullanılırken diğer pencereler ise hem çerçeveyi oluşturan karakterlerin üzerine yazmamak hem de menüde seçili olan elemanı göstermek için kullanılacaktır. Seçili olan elemanı göstermek için karşılık gelen <i><tt>items</tt></i> penceresinin artalan rengini diğerlerinden farklı yapmak yeterlidir. Sondan iki önceki satırda da bu yapılmaktadır ve menü ilk açıldığında birinci sıradaki eleman seçili olarak görünmektedir.
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+WINDOW **draw_menu(int start_col)
+{
+  int i;
+  WINDOW **items;
+
+  items = (WINDOW **) malloc(9 * sizeof(WINDOW *));
+  items[0] = newwin(10,19,1,start_col);
+  wbkgd(items[0], COLOR_PAIR(2));
+  box(items[0], ACS_VLINE, ACS_HLINE);
+  items[1] = subwin(items[0], 1, 17, 2, start_col + 1);
+  items[2] = subwin(items[0], 1, 17, 3, start_col + 1);
+  items[3] = subwin(items[0], 1, 17, 4, start_col + 1);
+  items[4] = subwin(items[0], 1, 17, 5, start_col + 1);
+  items[5] = subwin(items[0], 1, 17, 6, start_col + 1);
+  items[6] = subwin(items[0], 1, 17, 7, start_col + 1);
+  items[7] = subwin(items[0], 1, 17, 8, start_col + 1);
+  items[8] = subwin(items[0], 1, 17, 9, start_col + 1);
+
+  for (i = 1; i &lt; 9; i++)
+    wprintw(items[i], "Item%d", i);
+
+  wbkgd(items[1], COLOR_PAIR(1));
+  wrefresh(items[0]);
+
+  return items;
+}
+</pre></div></div>
+  <div class="para">
+Sıradaki işlev yukarıdaki işlev tarafından oluşturulan menü pencerelerini yokeden işlevdir. Bunun için önce pencereler tek tek <b><tt>delwin</tt></b> ile yokedilip daha sonra da <i><tt>items</tt></i> akım göstericisi için alınan bellek geri verilmektedir.
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+void delete_menu(WINDOW **items, int count)
+{
+  int i;
+
+  for (i = 0; i &lt; count; i++)
+    delwin(items[i]);
+
+  free(items);
+}
+</pre></div></div>
+  <div class="para">
+<tt>scroll_menu</tt> işlevi menüler arasında ve menü içinde gezmeyi sağlayan işlevdir. Sonsuz bir döngü içinde <b><tt>getch</tt></b> işlevi ile klavyeden girilen tuşları okumaktadır. Kullanıcı aşağı yukarı ok tuşlarına basarsa menüde aşağıdaki ya da yukarıdaki eleman seçili olarak gösterilmektedir. Bu, yukarıda da bahsettiğim gibi, seçili olan elemanın bulunduğu pencerenin artalan rengini diğerlerinden farklı yaparak sağlanmaktadır. Kullanıcı eğer sağ ve sol ok tuşlarına basarsa içinde bulunulan menü kapatılmakta ve diğer menü açılmaktadır. Kullanıcı &lt;Enter&gt; tuşuna basarsa seçilmiş olan elemanın değeri geri döndürülür. &lt;Escape&gt; tuşu ise herhangi bir elemanı seçmeden menüleri kapatmaya yarar. İşlev diğer tuşları dikkate almamaktadır. Bu işlevde <b><tt>getch</tt></b> ile klavyeden ok tuşlarının okunabilmesi için iki hatırlatma yapmakta fayda var. Öncelikle en baştaki <b><tt>init_curses</tt></b> işlevinde <tt>keypad(stdscr, TRUE)</tt> çağrısı yapılarak <tt>stdscr</tt>'den işlev tuşlarının okunabilmesi sağlanmıştı. Buna ek olarak bir de <b><tt>getch</tt></b> ile okunan değer <b><tt>int</tt></b> türünde bir değişkende saklanmaktadır, çünkü ok tuşları ve diğer işlev tuşlarının sayısal değerleri <b><tt>char</tt></b> türünde bir değişkenin tutabileceğinden büyüktür.
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+int scroll_menu(WINDOW **items, int count, int menu_start_col)
+{
+  int key;
+  int selected=0;
+
+  while(1)
+  {
+    key = getch();
+    if (key == KEY_DOWN || key == KEY_UP)
+    {
+      wbkgd(items[selected + 1], COLOR_PAIR(2));
+      wnoutrefresh(items[selected + 1]);
+
+      if (key == KEY_DOWN)
+        selected = (selected + 1) % count;
+      else
+        selected = (selected + count - 1) % count;
+
+      wbkgd(items[selected + 1], COLOR_PAIR(1));
+      wnoutrefresh(items[selected + 1]);
+      doupdate();
+    }
+    else if (key == KEY_LEFT || key == KEY_RIGHT)
+    {
+      delete_menu(items, count + 1);
+      touchwin(stdscr);
+      refresh();
+      items = draw_menu(20 - menu_start_col);
+      return scroll_menu(items, 8, 20 - menu_start_col);
+    }
+    else if (key == ESCAPE)
+      return -1;
+    else if (key == ENTER)
+      return selected;
+  }
+}
+</pre></div></div>
+  <div class="para">
+Son olarak sırada <tt>main</tt> işlevi var. <tt>main</tt> işlevi yukarıda anlatılan işlevleri kullanarak yazılımın çalışmasını sağlamaktadır. Bu işlev de <b><tt>getch</tt></b> ile basılan tuş değerleri okumakta ve eğer F1 ya da F2 tuşlarına basılmışsa <tt>draw_menu</tt> ile karşılık gelen menüyü çizdirmektedir. Menü çizildikten sonra <tt>scroll_menu</tt> işlevi ile menülerden bir eleman seçilmesi sağlanmaktadır. <tt>scroll_menu</tt> işlevi geri döndükten sonra da önce menü pencereleri silinmekte ve ardından seçilen eleman <i><tt>messagebar</tt></i> penceresine yazdırılmaktadır.
+  </div><div class="para">
+Burada <b><tt>touchwin</tt></b> işlevine değinmekte fayda var. Menüler kapandıktan sonra <b><tt>touchwin</tt></b> çağrılmadan <b><tt>refresh</tt></b> yapılsaydı en son açılan menü ekranda durmaya devam ederdi. Bunun sebebi menüler oluşturulduğu zaman <tt>stdscr</tt> üzerinde hiçbir değişiklik yapılmaması ve <b><tt>refresh</tt></b> çağrıldığı zaman <tt>stdscr</tt> hiç değişmemiş olarak görüldüğü için yeniden yazılmamasıdır. <b><tt>touchwin</tt></b> işlevi parametre olarak aldığı pencerenin tüm satırlarındaki satırın değiştiğini belirten bayrakları doğrulayarak bir sonraki <b><tt>refresh</tt></b>'te pencerenin, hiç değişmemiş olsa bile, en baştan çizilmesini sağlar. Menüler oluşturulduğu zaman <tt>stdscr</tt>'ye hiç dokunulmamış olması sayesinde, menüler kapandığı zaman <tt>stdscr</tt>'de yazan bilgi kaybolmamıştır.
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+int main()
+{
+  int key;
+  WINDOW *menubar, *messagebar;
+
+  init_curses();
+
+  bkgd(COLOR_PAIR(1));
+  menubar = subwin(stdscr, 1, 80, 0, 0);
+  messagebar = subwin(stdscr, 1, 79, 23, 1);
+  draw_menubar(menubar);
+  move(2, 1);
+  printw("Press F1 or F2 to open the menus. ");
+  printw("ESC quits.");
+  refresh();
+
+  do {
+    int selected_item;
+    WINDOW **menu_items;
+
+    key = getch();
+    werase(messagebar);
+    wrefresh(messagebar);
+
+    if (key == KEY_F(1)) {
+      menu_items = draw_menu(0);
+      selected_item = scroll_menu(menu_items, 8, 0);
+      delete_menu(menu_items, 9);
+
+      if (selected_item &lt; 0)
+        wprintw(messagebar, "You haven't selected any item.");
+      else
+        wprintw(messagebar, "You have selected menu item %d.", selected_item + 1);
+
+      touchwin(stdscr);
+      refresh();
+    } else if (key == KEY_F(2)) {
+      menu_items = draw_menu(20);
+      selected_item = scroll_menu(menu_items, 8, 20);
+      delete_menu(menu_items, 9);
+      wprintw(messagebar, "You have selected menu item %d.", selected_item + 1);
+
+      if (selected_item &lt; 0)
+        wprintw(messagebar, "You haven't selected any item.");
+      else
+        wprintw(messagebar, "You have selected menu item %d.", selected_item + 1);
+
+      touchwin(stdscr);
+      refresh();
+    }
+  } while (key != ESCAPE);
+
+  delwin(menubar);
+  delwin(messagebar);
+  endwin();
+
+  return 0;
+}
+</pre></div></div>
+  <div class="para">
+Aralara yazdığım açıklamaları çıkarıp kaynak kodunu <tt>example.c</tt> adlı dosyaya kaydettiğinizi varsayarak,
+  </div>
+<div class="para"><div align="right"><pre class="screen">gcc example.c -o example -lcurses</pre></div></div>
+  <div class="para">
+komutu ile kodu derleyebilir ve yazılımı test edebilirsiniz.
+  </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/ncurses-islev-tuslari.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/ncurses.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/ncurses-son.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">İşlev Tuşları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Sonuç</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

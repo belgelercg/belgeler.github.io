@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:48+03:00" /><title>Samba'nın PDC Olarak Ayarlanması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/pdc-2-samba-nasil.html" title="WindowsPDC 2 SAMBA" /><link rel="previous" href="../howto/pdc-2-samba-nasil_giris.html" title="Samba Hakkında" /><link rel="next" href="../howto/pdc-2-samba-nasil_acl.html" title="ACL Desteği" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Samba'nın PDC Olarak Ayarlanması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/pdc-2-samba-nasil_giris.html">Önceki</a> </td><th width="60%" align="center">WindowsPDC 2 SAMBA</th><td width="20%" align="right"> <a accesskey="n" href="../howto/pdc-2-samba-nasil_acl.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="pdc-2-samba-nasil_pdc" id="pdc-2-samba-nasil_pdc"></a>Samba'nın PDC Olarak Ayarlanması</div><dl><dd><div class="para">
+      <tt>smb.conf</tt> dosyası aşağıdaki gibi olmalıdır.
+</div><div class="para"><div align="right"><pre class="screen">
+# Global parametreler
+[global]
+
+# Çalışacağınız workgroup ismini belirtir
+  workgroup = TEST
+
+# Makinanın workgroup'ta görünecek olan ismi
+  netbios name = LINUXPDC
+
+# PDC için gerekli. Daha fazla ayrıntı için www.samba.org.
+# Zaten bu satırı yazmasanızda öntanımlı vardır.
+  security = user
+
+# Makinanın birden çok isminin olmasını sağlar ki, tavsiye
+# ettiğim birşey değildir. Bunun yerine wins'e eklemek en mantıklısı.
+  netbios aliases = linuxpdc zeus anamakina
+
+# Windows'dan bakıldığında comment kısmında görünecek olan açıklama
+  server string = XXX Sirketler Grubu Linux PDC Server
+
+# Samba sunucusunun üzerinden hizmet vereceği arabirim
+  interfaces = 192.168.1.200/255.255.255.0
+
+# Bütün windows'ların kimlik kanıtlaması için gerek duyduğu
+# parola şifrelemesi özelliği. Bunu mutlaka kullanmalısınız!
+  encrypt passwords = Yes
+
+# En az verebileceğiniz parola uzunluğu. Değeri "0" da olabilir.
+# Bu da "null password = yes" paremetresi demektir.
+  min passwd length = 2
+
+# Diğer Unix'lerinde kimlki kanıtlamasında birlikte çalışabilmesi için gerekli
+  unix password sync = true
+
+# Windows altından parola değiştirmek için gerekli.
+# Bu satır yerine "passwd chat = " da kullanabilirsiniz. İkiside aynı şey!
+  passwd program = /usr/bin/passwd %U
+
+# Bu bölümü aşağıda anlattım. "password program" satırıyla aynı anlamdadır.
+# Birini terchih etmeniz gerekli.
+  add user script = /usr/sbin/useradd -d /dev/null -g 555 -s /bin/false -M %u
+
+# Samba sunucusunun tutacağı günlük kaydı seviyesi
+  log level = 5
+
+# Her makina başına günlük kayıt dizini ve dosya ismi.
+# Günlük kayıtları  virusserver.log tarzında adlandırılacaktır.
+# %M yerie %U kullanılırsa her kullanıcı için ayrı günlük dosyası tutulur.
+  log file = /var/log/samba/%M
+
+# Sambanın  zaman sunucusu olarak çalışmasını sağlar.
+  time server = Yes
+
+# Domainlere makinalari eklemek için gereklidir.
+# Bunun yerine "admin users = root " satırıda ekleyebilirsiniz.
+# Unutmayın bir makinayı domaine ancak root(id=0) ekleyebilir
+# veya aşağıda belirttiğiniz kullanıcılar
+  domain admin group = root  @root  ebal
+
+# Bu kullanıcılar admin haklarına sahiptirler. Unutmayın, Admin users
+# paremetresi belirtilirse o kullanıcının oluşturacağı her dosya ve
+# dizinin sahibi otomatikman root olacaktır.!
+  admin users = root ebal
+
+# Permormans için. Ayrıntılı bilgiyi www.samba.org'dan bulabilirsiniz.
+  socket options = SO_KEEPALIVE IPTOS_LOWDELAY TCP_NODELAY
+
+# Eğer çekirdekte modül olarak yüklenmişse Türkçe karakter desteği de ekler.
+  character set = ISO8859-9
+
+# smbpassword dosyasının yerini belirtir. Ötanımlı bir satırdır.
+# Öntanımlı dediğim de Samba derlenirken seçilen dizindir.
+  smb passwd file = /etc/samba/smbpasswd
+
+# 192.168.1.x ağı samba'yı kullanabilir. "hosts deny" paremetresi olmadan
+# bir işe yaramaz.
+  hosts allow = 192.168.1.0/255.255.255.0
+
+# 192.168.1.x dışında hiçbir istemciye yanıt vermeyeceğini belirtir.
+# "hosts allow" kullanmadan doğal olarak tek başına çalışmaz/uygulanmaz.
+  hosts deny = 0.0.0.0/0.0.0.0
+
+# user alias için gereklidir. Örneğin "root = admin administrator" satırı
+# w2k'dan administrator olarak login olduğunuzda aslında root kullanıcısıyla
+  login olduğunuz anlamına getirilir.
+  username map = /etc/samba/smbusers
+
+# her kullanıcı için {loginname}.bat
+  logon script = %U.bat
+
+# Bu bölümü de aşağıda anlattım.
+  logon path =
+
+# Kullanıcıların makinalarını açtığında eşleştirilecekleri ev dizinleri
+  logon home = \\%L\%U
+
+# Kullanıcıların w2k'dan parolalarını değiştirebilmeleri için.
+# Eğer bu "=" den sonra boş bırakırsanız kullanıcılar parolalarını
+# değiştiremezler. Bu satır öntanımlıdır.
+  passwd chat = *new*password* %n\n *new*password* %n\n *changed*
+
+# windowsların domaine logon olabilmeleri için
+  domain logons = Yes
+
+# Tavsiye ettigim rakam. Ayrıntılı bilgi: www.samba.org
+  os level = 64
+
+# PDC olabilmesi icin gerekli."preffered master" paremetresi öntanımlı
+# olarak "yes"dir...
+  domain master = True
+
+# Mutlaka olması gerekli bence. İlerde anlatacağım bazı sorunlar çıkabiliyor,
+# bu satır olmadığı takdirde.
+  wins support = Yes
+
+# Bazı virüsler için ufak bir önlem
+  veto files = /*.eml/*.nws/riched20.dll/*.{*}/
+
+[netlogon]
+         comment = Network Logon Service
+            path = /var/lib/samba/netlogon
+
+[homes]
+         comment = Home Directories
+       read only = No
+     create mask = 0640
+  directory mask = 0750
+      browseable = No
+
+[cdrom]
+         comment = Linux CD-ROM
+            path = /media/cdrom
+         locking = No
+
+[Apps]
+
+         comment = Programlar
+            path = /Apps
+     create mask = 0755
+  directory mask = 0755
+</pre></div></div><div class="para">
+<tt>smb.conf</tt> dosyası çok ayrıntılıdır. Size önerebileceğim
+en iyi yöntem swat'in help'inden yararlanmaktir. <tt>smb.conf</tt>'ta
+bir yanlışlık olup olmadığına bakmak için hemen <tt>testparm</tt>
+komutunu çalıştırın.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/pdc-2-samba-nasil_giris.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/pdc-2-samba-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/pdc-2-samba-nasil_acl.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Samba Hakkında </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> ACL Desteği</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

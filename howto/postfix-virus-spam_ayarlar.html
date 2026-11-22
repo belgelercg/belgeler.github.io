@@ -1,0 +1,531 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:33+03:00" /><title>Ayarlar</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/postfix-virus-spam.html" title="Postfix, RAVAntivirüs ve SpamAssassin ile Virüs ve Spam Filtrelemesi" /><link rel="previous" href="../howto/postfix-virus-spam_hazirlik.html" title="Paketler ve Hazırlık Süreci" /><link rel="next" href="../howto/postfix-virus-spam_yasal.html" title="Yasal Açıklamalar" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Ayarlar</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/postfix-virus-spam_hazirlik.html">Önceki</a> </td><th width="60%" align="center">Postfix, RAVAntivirüs ve SpamAssassin ile Virüs ve Spam Filtrelemesi</th><td width="20%" align="right"> <a accesskey="n" href="../howto/postfix-virus-spam_yasal.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="postfix-virus-spam_ayarlar" id="postfix-virus-spam_ayarlar"></a>Ayarlar</div><dl><dd> <div class="head3"><a name="id1" id="id1"></a>RAV Antivirüs - POSTFIX Ayarları</div><dl><dd><div class="para">
+RAV'ın çalışma mantığında, <b><tt>postfix</tt></b>'in kuyruk sürecine
+müdahale etmek var. <b><tt>postfix</tt></b> ayar dosyalarında çeşitli
+değerleri değiştirerek, sistemin kullanıcıdan postayı alıp ilk bazı ufak
+tefek (gönderen, alan vb) kontrolleri yaptıktan sonra RAV'a göndermesi ve
+daha sonra RAV'ın tekrar <b><tt>postfix</tt></b> kuyruğuna postayı
+enjekte etmesi usulüne göre çalışıyor.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>cd /etc/postfix</tt></b>
+</pre></div></div>
+      <div class="para">
+<tt>master.cf</tt> sonunda:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+#rav-begin: RAV AntiVirus Configuration
+127.0.0.1:10026 inet n - n - 100 smtpd
+                        -o content_filter= -o myhostname=dummy.domain.name
+#rav-end
+</pre></div></div>
+      <div class="para">
+satırlarını göreceksiniz. Burası, RAV'ın <b><tt>postfix</tt></b>
+kuyruğundan çekip kontrol ettikten sonra <b><tt>postfix</tt></b>
+kuyruğuna postayı enjekte ettiği komut.
+      </div><div class="para">
+<tt>-o content_filter=</tt>  seçeneği, postanın sürekli olarak
+RAV'a gönderilmesini engelliyor. Bir kez geçtikten sonra, artık filtre
+uygulama, doğrudan işle demek.  Bu değişmeyecek.
+      </div><div class="para">
+Burada şu anda mevcut olan kendi <b><tt>postfix</tt></b> ayarlarınızı
+taşımak önem kazanıyor. Bizim <tt>main.cf</tt> dosyamızdan
+ayarlar:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+alias_maps= hash:/etc/postfix/aliases, ldap:ldapAlias
+</pre></div></div>
+      <div class="para">
+<tt>alias_maps</tt> ayarımızı taşımak zorundayız. Yoksa bir
+takma isme gönderilmiş olan postayı <b><tt>postfix</tt></b> reddeder.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+-o alias_maps= hash:/etc/postfix/aliases, ldap:ldapAlias
+</pre></div></div>
+      <div class="para">
+<tt>myhostname</tt>  düzenlenmemiş, dolayısıyla sistemin kendi
+adını  (<tt>istasyon.bizimfirma.com.tr</tt>) vereceğiz.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+-o myhostname=istasyon.bizimfirma.com.tr
+</pre></div></div>
+      <div class="para">
+<tt>smtpd_recipient_restrictions</tt> kullanılıyor. Değeri:
+      </div>
+<div class="para"><pre class="literallayout">
+check_sender_access ldap:ldapInternalUser,  ¬
+check_sender_access ldap:ldapExternalMail, reject_unauth_destination
+</pre></div>
+      <div class="para">
+Yani gönderene göre bazı izinlendirme yaptıktan (ve bu izni olmayanları
+hemen reddettikten) sonra kalanları yerine gönderiyoruz.
+      </div><div class="para">
+Bu seçeneği tekrar oluşturacağız. Bu noktada artık gönderenlerin izinleri
+kontrol edilmiş ve reddedilecekse reddedilmiştir. Burayı
+      </div>
+<div class="para"><pre class="literallayout">
+permit_mynetworks, reject_unauth_destination
+</pre></div>
+      <div class="para">
+yapıyoruz.  Yani güvendiğimiz ağlardan gelenleri istediği yere
+gönderiyoruz, geri kalanını ancak bizim sunucumuza yöneltilmişse kabul
+ediyoruz. Normal işleyişte buraya tek gelen RAV'ın yönlendirdiği postalar
+olacak. Sonuncu komut, dışarıdan bir şekilde bu porta ulaşırlar ise diye.
+      </div>
+<div class="para"><pre class="literallayout">
+-o smtpd_recipient_restrictions=permit_mynetworks, reject_unauth_destination
+</pre></div>
+      <div class="para">
+<tt>smtpd_sender_login_maps</tt> kullanılıyor. Değeri:
+      </div>
+<div class="para"><pre class="literallayout">ldap:ldapAlias</pre></div>
+      <div class="para">
+Bu salt <tt>SMTP-AUTH</tt> ile sisteme girenlerin bu kimlik
+sınamasında verdikleri kimlik ile gönderdikleri postadaki gönderen
+kimliğinin aynı olduğunu kontrol ediyor.
+      </div><div class="para">
+Bu noktada artık geçerliği kalmış değil. Kuyruğa enjeksiyon yapan süreç
+<tt>SMTP-AUTH</tt> ile gelmemiş. Bunu boşaltacağız.
+      </div>
+<div class="para"><pre class="literallayout">-o smtpd_sender_login_maps=</pre></div>
+       <div class="para">
+Yeni <tt>master.cf</tt> RAV komutu:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+#rav-begin: RAV AntiVirus Configuration
+ 127.0.0.1:10026 inet n - n - 100 smtpd
+    -o content_filter=
+    -o myhostname=istasyon.bizimfirma.com.tr
+    -o alias_maps=hash:/etc/postfix/aliases,ldap:ldapAlias
+    -o smtpd_recipient_restrictions=permit_mynetworks,reject_unauth_destination
+    -o smtpd_sender_login_maps=
+#rav-end
+</pre></div></div>
+      </dd></dl> <div class="head3"><a name="id2" id="id2"></a>RAV Antivirüs - Kendi Ayarları</div><dl><dd><div class="para">
+<tt>/etc/opt/rav/ravmd.conf</tt> dosyasında virüs uyarılarını
+Türkçe yapmasını istiyoruz.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+_include /etc/opt/rav/languages/turkish-iso-8859-9
+</pre></div></div>
+      <div class="para">
+satırının başındaki <tt>#</tt> işaretini kaldırın. (Az
+yukarıdaki <tt>english</tt> satırını olduğu gibi bırakmak
+zorundasınız. Yoksa hata oluşuyor.)
+      </div><div class="para">
+<tt>/etc/opt/rav/groups/global</tt> dosyasında RAV'ın her
+virüsü bir de RAV'a haber verme özelliğini kaldıralım:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+#admin_addr = ravmails@stats.ravantivirus.com
+</pre></div></div>
+      <div class="para">
+ve Türkçe desteği için aşağıdaki satırın başındaki <tt>#</tt>
+işaretini kaldıralım.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+_include /etc/opt/rav/languages/turkish-iso-8859-9.equiv
+</pre></div></div>
+      <div class="para">
+Bu satırın yukarısında yer alan İngilizce satırının (<tt>english.equiv</tt>)
+başına bir <tt>#</tt> koyalım.
+      </div><div class="para">
+Virüs uyarılarını sistem yöneticisi de alsın istiyoruz:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+admin_addr = postmaster@bizimfirma.com.tr
+</pre></div></div>
+      <div class="para">
+<b><tt>postfix</tt></b>'in <tt>always_bcc</tt> seçeneği ile
+sistemden geçen bütün postaların bir kopyasını alıyoruz. Virüslü dosyalarda
+bu adrese de posta gönderilmesini veya bu adrese gittiğinin gönderene
+haber verilmesini istemiyoruz.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# E-mail address that will not be notified.
+<b><tt>do_not_warn = archive@bizimfirma.com.tr</tt></b>
+# E-mail address that will be hidden in all e-mail notifications.
+<b><tt>do_not_show = archive@bizimfirma.com.tr</tt></b>
+</pre></div></div>
+      <div class="para">
+Bütün spam kontrollerimizi <b><tt>spamassassin</tt></b> ile yapacağız.
+RAV kendi içinde de bazı spam filtreleri taşıyor. Bunları devre dışı
+bırakıyoruz (<tt>antispam_configuration</tt> ile başlayan
+satırların başına <tt>#</tt> koyun):
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+#antispam_configuration = bulk_high_precision, bulk_very_high_precision
+</pre></div></div>
+      </dd></dl> <div class="head3"><a name="id3" id="id3"></a>SpamAssassin, Procmail ve POSTFIX</div><dl><dd><div class="para">
+<tt>/etc/postfix</tt> içerisindeki <tt>main.cf</tt>
+ve <tt>master.cf</tt> POSTFIX ayar dosyalarında bazı değişiklikler
+yaparak <b><tt>postfix</tt></b>'in yerele teslim sürecine giren postaları
+<b><tt>procmail</tt></b>'e yönlendirmesini, <b><tt>procmail</tt></b>'de
+<b><tt>spamassassin</tt></b>'den geçirilen postaların <b><tt>cyrus</tt></b> sunucusuna
+teslimini sağlayacağız.
+      </div>Bu usulün bir kaç ek özelliği mevcut:
+         <ol class="orderedlist" start="ignore" type="1"><li><div class="listitem">
+Spam kontrolünü hem içeriye hem dışarıya giden postalara değil, yalnızca içeriye giden postalarda yaparak zamandan tasarruf ediyoruz. Tabii, bu, bizim dışarıya gönderdiğimiz postaların spam olmadığını varsayıyor!
+</div></li><li><div class="listitem">
+Bütün yerele teslim edilen (size gelen)  postalarda yapmak istediğiniz ek filtrelemeyi/kısıtlamayı <b><tt>procmail</tt></b> içerisinde yapabilirsiniz. Örneğin biz, posta teslim bilgilendirmesini (Return Receipt) devre dışı bırakmak istedik. Bunu çok basit bir şekilde, zaten bütün postaların geçtiği <b><tt>procmail</tt></b> sürecinde yapabiliyoruz.
+</div></li><li><div class="listitem"><b><tt>Cyrus</tt></b> sunucusunun önemli bir özelliği, birden fazla kişiye gelen postaların tek bir kopya olarak diskte tutabilmesi. Bu özellik, hele hele şirket IMAP sunucusu gibi, pek çok postanın aynı sunucuda hesabı olan çok kişiye gönderildiği ortamlarda önemli bir disk tasarrufu sağlıyor. Bu özelliği, ancak <b><tt>cyrus</tt></b>'un <b><tt>LMTP</tt></b> arayüzünü kullanarak ve birden fazla kişiye gönderilen postaları <b><tt>cyrus</tt></b>'a kişi başına birer defa değil, bir seferde göndererek kullanabiliyorsunuz. Halbuki <b><tt>postfix</tt></b>'in öntanımlı posta teslim metodu, birden fazla kişiye gönderilen postayı, <b><tt>cyrus</tt></b>'a bir seferde değil, kullanıcı başına birer defa, teker teker bağlanarak gönderiyor. Bizim kurulumumuz çok kişiye giden tek postayı bir seferde <b><tt>cyrus</tt></b>'a teslim etmeye özen gösteriyor.
+</div></li><li><div class="listitem">
+Çok kişiye giden tek postayı bir seferde teslim etmenin bir faydasını da spam kontrolünde görüyoruz. Posta, kaç kişiye teslim edilecekse edilsin, yalnızca bir sefer spam kontrolünden geçiyor ve zaman tasarrufu sağlıyor.
+</div></li></ol>
+        <div class="para">
+Yapacağımız ilk iş, <b><tt>postfix</tt></b>'e <b><tt>procmail</tt></b>'i bir servis olarak tanıtmak. <tt>/etc/postfix/master.cf</tt> dosyasının  şu satırı ilave edin (tek satır haline getirin):
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+procmail  unix  -  n  n  -  -  pipe
+  flags=R user=cyrus argv=/usr/bin/procmail
+ -p -t -m  /home/postfixfilter/procmailrc $sender $recipient
+</pre></div></div>
+      <div class="para">
+Şimdi, <b><tt>postfix</tt></b>'in bu servisi ne şekilde kullanacağını
+tanımlayacağız. <tt>/etc/postfix/main.cf</tt> dosyasına şunları yazın:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+local_transport = procmail
+procmail_destination_concurrency_limit = 10
+procmail_destination_recipient_limit = 300
+</pre></div></div>
+      <div class="para">
+Yukarıdaki tanımla, <b><tt>postfix</tt></b>'in, gelen postaları
+teslim sürecinde kendisinin bir iş yapmak yerine <b><tt>procmail</tt></b>'i
+çağırmasını sağladık. Fakat, <b><tt>postfix</tt></b>'de takma isimler (alias)
+<b><tt>postfix</tt></b>'in kendi yerel teslim aracında çözümleniyor. Bunu bertaraf etmenin yolu,
+<tt>main.cf</tt> içerisinde <b><tt>alias_maps</tt></b> değerimizi bulmak. Bizimki:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+alias_maps = hash:/etc/postfix/aliases, ldap:ldapAlias
+</pre></div></div>
+      <div class="para">
+Bu değeri <b><tt>virtual_alias_maps</tt></b> değerine de kopyalamalıyız. Yani:
+      </div>
+<div class="para"><div align="right"><pre class="screen">virtual_alias_maps = hash:/etc/postfix/aliases, ldap:ldapAlias</pre></div></div>
+      <div class="para">
+eklemeliyiz. Bu çözümleme yerel teslim aracına gelmeden yapıldığından dolayı
+takma isimlerimiz doğru şekilde çözümlenerek <b><tt>procmail</tt></b>'e gönderilecektir.
+    </div></dd></dl> <div class="head3"><a name="id4" id="id4"></a>SpamAssassin'i Çağıran PROCMAIL ayarları</div><dl><dd><div class="para">
+<tt>/home/postfixfilter/procmailrc</tt> dosyasını şu içerikle
+oluşturun (<tt>cyrus</tt> kullanıcısı dosyayı
+okuyabilmeli). Eğer <b><tt>spamassassin</tt></b> filtrelemesi sonucu
+oluşan hareketleri değiştirmek isterseniz müdahale edeceğiniz yer burası.
+Örneğin içinde <tt>X-Spam-Flag: YES</tt> yazan paragrafı
+çıkararak filtreden geçirilen postaların işlendikten sonra herhangi bir
+ayıklamaya tabi tutulmadan son kullanıcılara aynen gönderilmesini
+sağlayabilirsiniz. Biz, eğer bir posta spam olarak işaretlenmiş ise,
+gönderilenleri başka bir başlığa kaydedip postayı
+<tt>spam@bizimfirma.com.tr</tt> adresine yönlendiriyoruz.
+<tt>/home/postfixfilter/procmailrc</tt>:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+ SHELL=/bin/sh
+VERBOSE=no
+# Bu, bizim Cyrus tesliminde kullandığımız LMTP istemcisi.
+LMTPDELIVER=/home/postfixfilter/lmtpmultideliver.py
+SENDER = "$1"
+SHIFT = 1
+
+# postayı spam kontrolden geçirir.
+:0 fw
+ | /usr/bin/spamc
+
+ # Eğer spam olarak nitelendirilmiş ise, gönderileceği yeri değiştirir.
+:0 fhw
+ * ^X-Spam-Flag: YES
+ | (formail -R "To:" "X-Originally-To:") \
+ | (formail -R "Cc:" "X-Originally-Cc:") \
+ | (formail -i "To: spam@bizimfirma.com.tr")
+
+ # Ek filtre. Kimse farketmeden teslim bilgisi göndermesin istiyoruz,
+ # dolayısıyla Return-Receipt isteklerini devre dışı bırakıyoruz.
+
+:0 fhw
+| (formail -f -R "Return-Receipt-To:" "X-Return-Receipt-To:") \
+| (formail -f -R "Disposition-Notification-To:" "X-Disposition-Notification-To:")\
+| (formail -f -R "Disposition-Notification-Options:"
+  "X-Disposition-Notification-Options:")
+
+ # Eğer posta spam ise, spam posta kutusuna gönderir.
+ :0 * ^X-Spam-Flag: YES
+| $LMTPDELIVER -s $SENDER -l unix:/var/lib/imap/socket/lmtp spam@bizimfirma.com.tr
+
+# Eğer posta spam değil ise, gideceği posta kutularına gönderir.
+:0
+| $LMTPDELIVER -s $SENDER  -l unix:/var/lib/imap/socket/lmtp "$@"
+
+</pre></div></div>
+      </dd></dl> <div class="head3"><a name="id5" id="id5"></a>LMTP İstemcisi</div><dl><dd><div class="para"><b><tt>Cyrus</tt></b>'un tek kopya saklama özelliğini kullanmak için
+<b><tt>LMTP</tt></b> arayüzü ile teslim yapmamız ve ne kadar kullanıcıya gidecek
+ise bir seferde göndermemiz gerekli idi. Bunu yapacak bir program bulamadık. Sonuçta,
+<b><tt>spamassassin-tools</tt></b> paketinin içerisinde gelen <b><tt>spamcheck.py</tt></b>
+yazılımında ufak değişiklikler yaparak istediğimiz özellikleri ekledik.</div>
+<div class="para"><div align="right"><pre class="screen">
+#!/usr/bin/env python
+
+# lmtpmultideliver.py command line utility for multiple deliveries
+# into Cyrus.
+# Can be used out of procmail.
+#
+# Modified by: Deniz Akkus, December 2003
+# Modified from:
+# spamcheck.py: spam tagging support for Postfix/Cyrus
+# spamcheck.py Copyright (C) 2002, 2003 James Henstridge
+#
+# Modified from spamcheck.py by taking out the spam check (we do it through
+# procmail) and modified to take multiple recipients (to take advantage
+# of Cyrus single message store).
+#
+# Used by hooking procmail as local_transport into Postfix (to force
+# multiple recipients) which then uses lmtpmultideliver.py to deliver
+# into Cyrus.
+#
+# in Postfix main.cf:
+#              local_transport = procmail
+#              procmail_destination_concurrency_limit = 10
+#              procmail_destination_recipient_limit = 300
+# and also setting
+#              virtual_alias_maps
+# to be the same exact value as
+#              alias_maps
+# to get around alias expansions only being done in the default Postfix local
+# transport.
+#
+# in Postfix master.cf:
+# procmail unix - n n - - pipe flags=R user=cyrus argv=/usr/bin/procmail ¬
+-p -t -m procmail.lmtp $sender $recipient
+#
+# where procmail.lmtp, at minimum does:
+#
+# LMTPDELIVER=lmtpmultideliver.py
+# SENDER = "$1"
+# SHIFT = 1
+# :0 fw
+# | /usr/bin/spamc
+# :0
+# | $LMTPDELIVER -s $SENDER  -l unix:/var/lib/imap/socket/lmtp "$@"
+
+#
+# Modified from:
+# spamcheck.py: spam tagging support for Postfix/Cyrus
+#
+#
+# Copyright (C) 2002, 2003 James Henstridge
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
+# Spam Assassin filter to fit in between postfix (or other MTA) and
+# Cyrus IMAP (or other MDA).  To hook it up, simply copy the
+# spamcheck.py and spamd.py files to postfix's libexec directory and
+# add a line like the following to postfix's master.cf:
+#
+# spamcheck     unix    -       n       n       -       -       pipe
+#   flags=R user=cyrus
+#   argv=/usr/libexec/postfix/spamcheck.py -s ${sender} -r ${user} -l unix:/...
+#
+# then in main.cf, set the mailbox_transport to spamcheck.  A copy of
+# spamcheck will be started for each incomming message.  The spamcheck
+# script will contact the IMAP server's LMTP socket to check whether
+# the user exists, get spamd to process the message and then pass the
+# message to the IMAP server.
+
+import sys
+import re, getopt
+import smtplib, socket
+#import spamd
+
+# exit statuses taken from &lt;sysexits.h&gt;
+EX_OK       = 0
+EX_USAGE    = 64
+EX_DATAERR  = 65
+EX_NOUSER   = 67
+EX_TEMPFAIL = 75
+
+# this class hacks smtplib's SMTP class into a shape where it will
+# successfully pass a message off to Cyrus's LMTP daemon.
+# Also adds support for connecting to a unix domain socket.
+class LMTP(smtplib.SMTP):
+    lhlo_resp = None
+    def __init__(self, host=''):
+        self.lmtp_features  = {}
+        self.esmtp_features = self.lmtp_features
+
+        if host:
+            (code, msg) = self.connect(host)
+            if code != 220:
+                raise smtplib.SMTPConnectError(code, msg)
+
+    def connect(self, host='localhost'):
+        """Connect to a host on a given port.
+
+        If the hostname starts with `unix:', the remainder of the string
+        is assumed to be a unix domain socket.
+        """
+
+        if host[:5] == 'unix:':
+            host = host[5:]
+            self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            if self.debuglevel &gt; 0: print 'connect:', host
+            self.sock.connect(host)
+        else:
+            port = LMTP_PORT
+            if ':' in host:
+                hose, port = host.split(':', 1)
+                port = int(port)
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            if self.debuglevel &gt; 0: print 'connect:', (host, port)
+            self.sock.connect((host, port))
+        (code, msg) = self.getreply()
+        if self.debuglevel &gt; 0: print 'connect:', msg
+        return (code, msg)
+
+    def lhlo(self, name='localhost'):
+        """ LMTP 'lhlo' command.
+        Hostname to send for this command defaults to localhost.
+        """
+        self.putcmd("lhlo",name)
+        (code, msg) = self.getreply()
+        if code == -1 and len(msg) == 0:
+            raise smtplib.SMTPServerDisconnected("Server not connected")
+        self.lhlo_resp = msg
+        self.ehlo_resp = msg
+        if code != 250:
+            return (code, msg)
+        self.does_esmtp = 1
+        # parse the lhlo response
+        resp = self.lhlo_resp.split('\n')
+        del resp[0]
+        for each in resp:
+            m = re.match(r'(?P&lt;feature&gt;[A-Za-z0-9][A-Za-z0-9\-]*)',each)
+            if m:
+                feature = m.group("feature").lower()
+                params = m.string[m.end("feature"):].strip()
+                self.lmtp_features[feature] = params
+        return (code, msg)
+
+    # make sure bits of code that tries to EHLO actually LHLO instead
+    ehlo = lhlo
+
+def process_message(spamd_host, lmtp_host, sender, recipient):
+    try:
+        lmtp = LMTP(lmtp_host)
+    except:
+        sys.exit(EX_TEMPFAIL)
+#    lmtp.set_debuglevel(2)
+    lmtp.set_debuglevel(0)
+    code, msg = lmtp.lhlo()
+    if code != 250: sys.exit(EX_TEMPFAIL)
+
+    # connect to the LMTP server
+    code, msg = lmtp.mail(sender)
+    if code != 250: sys.exit(1)
+    for rec in recipient:
+        code, msg = lmtp.rcpt(rec)
+        if code == 550: sys.exit(EX_NOUSER)
+        if code != 250: sys.exit(EX_TEMPFAIL)
+
+    # read in the first chunk of the message
+    CHUNKSIZE = 256 * 1024
+    data = sys.stdin.read(CHUNKSIZE)
+
+    # if data is less than chunk size, check it
+#    if len(data) &lt; CHUNKSIZE:
+#        connection = spamd.SpamdConnection(spamd_host)
+#        connection.addheader('User', recipient)
+#        try:
+#            connection.check(spamd.PROCESS, data)
+#            data = connection.response_message
+#        except spamd.error, e:
+#            sys.stderr.write('spamcheck: %s' % str(e))
+
+    # send the data in chunks
+    lmtp.putcmd("data")
+    code, msg = lmtp.getreply()
+    if code != 354: sys.exit(EX_TEMPFAIL)
+    lmtp.send(smtplib.quotedata(data))
+
+    data = sys.stdin.read(CHUNKSIZE)
+    while data != '':
+        lmtp.send(smtplib.quotedata(data))
+        data = sys.stdin.read(CHUNKSIZE)
+    lmtp.send('\r\n.\r\n')
+
+    code, msg = lmtp.getreply()
+    if code != 250: sys.exit(EX_TEMPFAIL)
+
+
+def main(argv):
+    spamd_host = ''
+    lmtp_host = None
+    sender = None
+    recipient = None
+    try:
+        opts, args = getopt.getopt(argv[1:], 's:l:')
+    except getopt.error, err:
+        sys.stderr.write('%s: %s\n' % (argv[0], err))
+        sys.exit(EX_USAGE)
+    for opt, arg in opts:
+        if opt == '-s': sender = arg
+#        elif opt == '-r': recipient = arg.lower()
+        elif opt == '-l': lmtp_host = arg
+        else:
+            sys.stderr.write('unexpected argument\n')
+            sys.exit(EX_USAGE)
+    if args:
+        recips = args
+#        sys.stderr.write('unexpected argument\n')
+#        sys.exit(EX_USAGE)
+    if not lmtp_host or not sender or not recips:
+        sys.stderr.write('required argument missing\n')
+        sys.exit(EX_USAGE)
+
+    try:
+        process_message(spamd_host, lmtp_host, sender, recips)
+    except SystemExit:
+        raise # let SystemExit through ...
+    except:
+        sys.stderr.write('%s: %s\n' % sys.exc_info()[:2])
+        sys.exit(1)
+
+if __name__ == '__main__':
+    main(sys.argv)
+</pre></div></div></dd></dl> <div class="head3"><a name="id6" id="id6"></a>SpamAssassin'in Kendi Ayarları</div><dl><dd><div class="para">
+        <tt>/etc/mail/spamassassin/local.cf</tt>:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+ required_hits 5
+ rewrite_subject 0
+ report_safe 0
+ whitelist_from *@bizimfirma.com.tr
+ pyzor_path /usr/bin/pyzor
+ pyzor_max 2
+ pyzor_add_header 1
+ dns_available yes
+ report_header 1
+ use_terse_report 1
+ score PYZOR_CHECK 5.00
+</pre></div></div>
+      </dd></dl> <div class="head3"><a name="id7" id="id7"></a>Bitirme İşlemleri</div><dl><dd>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>/etc/rc.d/init.d/ravmail restart</tt></b>
+    ...
+<tt>#</tt> <b><tt>/etc/rc.d/init.d/spamassassin restart</tt></b>
+    ...
+<tt>#</tt> <b><tt>/etc/rc.d/init.d/postfix reload</tt></b>
+</pre></div></div>
+      </dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/postfix-virus-spam_hazirlik.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/postfix-virus-spam.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/postfix-virus-spam_yasal.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Paketler ve Hazırlık Süreci </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Yasal Açıklamalar</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

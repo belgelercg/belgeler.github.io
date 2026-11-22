@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:17+03:00" /><title>Conexant Çipsetli USB ADSL Modem Kurulumu</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/usb-adsl.html" title="USB ADSL Modem Kurulumu" /><link rel="previous" href="../howto/usb-adsl.html" title="USB ADSL Modem Kurulumu" /><link rel="next" href="../howto/skystar2.html" title="Linux Uydu Yayınları NASIL" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Conexant Çipsetli USB ADSL Modem Kurulumu</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/usb-adsl.html">Önceki</a> </td><th width="60%" align="center">USB ADSL Modem Kurulumu</th><td width="20%" align="right"> <a accesskey="n" href="../howto/skystar2.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="usb-adsl-connexant" id="usb-adsl-connexant"></a>Conexant Çipsetli USB ADSL Modem Kurulumu</div><dl><dd> <div class="head3"><a name="id1" id="id1"></a>Giriş</div><dl><dd><div class="para">
+ADSL'nin Türkiye'de yaygınlaşması ve fiyatların daha ekonomik olmasından sonra ADSL kullanımı hızlı bir şekilde yaygınlaştı. Bir çok Linux kullanıcısı da bu bağlantı çeşidini tercih ederken acaba Linux'a hangi modemi rahat tanıtabilirim soruları soruldu ve genel olarak Ethernet bağdaştırıcısı üzerinden bilgisayara bağlanan modemler tercih edildi ancak bir de işin ekonomi boyutu var. Bu da USB modemlerin Ethernet üzerinden bağlanana nazaran çok daha ucuz olmasıydı.
+      </div><div class="para">
+Ben ADSL modemi alırken internette yaptığım bir araştırmada USB üzerinden bağlanan ADSL modemlerin Linux için sürücüsü olduğunu ve hatta bunun GPL lisansı ile dağıtıldığını görerek USB modem tercih ettim, ancak sorun sürücü tanıtımında değil sürücünün yapılandırılması esnasında oluştu. Çünkü Türkiye'de kullanılan RFC-2516 için bir kurulum dosyası bulamadım ve Windows işletim sistemi üzerindeki bağlantı şekli de benim oldukça kafamı karıştırdı... Sürücü kurulumunu ve yapılandırmasını anlatmadan önce Linux'ta bu modemin nasıl kullanıldığını anlayalım.
+      </div><div class="para">
+İlk olarak yukarıda da söylediğim gibi ADSL bağlantısı Windows'tan çok daha farklı bir şekilde kuruluyor. Modem sürücüsü bir hizmet olarak çalışıyor ve bağlantı, Linux açılırken size herhangi birşey sorulmaksızın kuruluyor. Yani çevirmeli ağ bağlantısı gibi bir araç kullanılmıyor.
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Gerekli Yazılımlar</div><dl><dd><div class="para">
+İlk olarak elbetteki modemimizin sürücüsü gerekmekte, bunun için <a class="ulink" href="http://sourceforge.net/projects/accessrunner/" target="_top">http://sourceforge.net/projects/accessrunner/</a> adresinden sürücüyü indirmemiz gerekiyor. Ancak, sanırım projeyi oluşturan kişi ile Sourceforge arasındaki bir anlaşmazlık sebebi ile sürücüler kaldırılmış durumda ancak <a class="ulink" href="http://rpm.pbone.net/index.php3?stat=3&amp;search=cxacru&amp;srodzaj=3" target="_top">http://rpm.pbone.net/index.php3?stat=3&amp;search=cxacru&amp;srodzaj=3</a>  adresinden diğer sürümler için bu sürücüyü indirebilirsiniz. Burada önemli olan nokta, sürücünün 2.4 çekirdekler için yazılmış olması, 2.6 çekirdekler için bir yama kurulması gerekiyor. Bu yamayı henüz denemedim, ancak deneyip çalıştırdığımda, bunu ayrıca anlatabilirim.
+      </div><div class="para">
+Buraya kadar anlattıklarımdan anlayabileceğiniz gibi tercihim hazır paket ile sürücüyü kurmak oldu. Çünkü paket derlemek oldukça dertli.
+      </div><div class="para">
+İkinci gerekli olan yazılım ise <b><tt>rp-pppoe</tt></b> aracı. Bu araç, <tt>pppoe</tt> protokolü kullanan bağlantılar için bağlantı aracıdır. Diğer
+<tt>pppoe</tt> araçlarından farkı veya gerekli olmasının nedeni ise yukarıda da
+anlatmaya çalıştığım gibi Türk Telekom'un RFC-2516'ya uygun bağlantı protokolü kullanması ve Linux'taki <tt>pppoe</tt> araçları arasında bu protokolü sadece <b><tt>rp-pppoe</tt></b>'nin destekliyor olmasıdır.
+      </div><div class="para">
+Bu araç aslında bir çok yeni dağıtımın içerisinde gelebiliyor. Buna örnek Mandrake 10, Fedora Core 3 gibi dağıtımları sayabiliriz. Ancak daha eski bir sürüm linux kullanıyorsanız bu paketi indirmeniz gerekebilir. Bunun için de <a class="ulink" href="http://www.roaringpenguin.com/penguin/open_source_rp-pppoe.php" target="_top">http://www.roaringpenguin.com/penguin/open_source_rp-pppoe.php</a> veya <a class="ulink" href="http://rpm.pbone.net/" target="_top">http://rpm.pbone.net/</a> gibi adreslerden <tt>pppoe</tt> diye aratarak <b><tt>rp-pppoe</tt></b>'yi bulabilirsiniz.
+      </div><div class="para">
+Bu 2 paketi de sistemimize kurduktan sonra 2 ayrı dosyada bir metin düzenleyici yardımı ile küçük değişiklikler yapmamız gerekmekte (<tt>/etc</tt> dizini içinde çalışacağınızdan root olmalısınız).
+      </div><div class="para">
+Bunlardan ilki <tt>/etc</tt> dizini içerisindeki <tt>cxacru</tt> adlı dosya, bu dosyayı bir metin düzenleyici ile açıp oradaki ayarları şu şekilde değiştirin:
+      </div>
+<div class="para"><div align="right"><pre class="screen">#
+# Config file for Conexant AccessRunner
+#
+
+# Driver mode
+DRIVER_MODE=1
+# 1 = normal, 2 = debug, 3 = normal+max speed (without ask ADSL status),
+$ 4 = debug+max speed (without ask ADSL status)
+
+# Protocol
+<b><tt>PROTOCOL_MODE=4</tt></b>
+# 1* = RFC1483/2684 routed, 2 = PPP over ATM (pppoa),
+# 3 = RFC1483/2684 bridged, 4 = PPP over Ethernet (pppoe)
+
+# Paths
+BINARY_PATH="/usr/sbin"
+ATM_PATH=""
+
+# ADSL
+# if OPEN_MODE is blank then cxload uses default mode acoording VID &amp; PID
+# Values for OPEN_MODE are:
+# 0 = auto selection, G.Handshake
+# 1 = auto selection, T1.413
+# 2 = G.Handshake
+# 3 = ANSI T1.413
+# 4 = ITU-T G.992.1 (G.DMT)
+# 5 = ITU-T G.992.2 (G.LITE)
+OPEN_MODE=
+
+<b><tt># ATM</tt></b>
+<b><tt>VPI=8</tt></b>
+<b><tt>VCI=35</tt></b>
+
+# Specific for RFC1483/2684 routed/bridged
+# if IP_ADDRESS is blank in bridged mode then it uses DHCP to get IP
+IP_ADDRESS=
+NETMASK=255.255.255.0
+GATEWAY=
+</pre></div></div>
+      <div class="para">
+Kalın yazılı yerler değişiklik yapılması gereken yerleri gösteriyor. Sizin dosyanızda farklılık gördüğünüz satırlar olursa onları da değiştirmeyi ihmal etmeyin.
+      </div><div class="para">
+Metin düzenleyici ile işimiz bitti. Şimdi bir kabukta şu komutu yazın:
+      </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>usr/sbin/ADSL-setup</tt></b></pre></div></div>
+      <div class="para">
+Burada sizden <tt>pppoe</tt> için bağlantı bilgileri istenecektir.
+      </div><ul type="disc" class="itemizedlist"><li><tt>interface</tt> için sorulan kısma <b><tt>nas0</tt></b> yazın.
+</li><li>DNS sorusu için <b><tt>server</tt></b> yazın.
+</li><li>Kullanıcı adı ve parolanızı Türk Telekom'dan aldığınız şekilde girin.
+</li><li>Diğer sorular için birşey girmeyeceksiniz, yani &lt;Enter&gt; ile geçin.
+</li></ul><div class="para">
+Bu işlem bitince ADSL modeminiz çalışmaya hazır demektir çalıştırmak için ya makinanızı kapatıp açın ya da
+      </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>/usr/sbin/cxstart.sh</tt></b></pre></div></div>
+      <div class="para">
+komutunu verin. Eğer bir terslik yoksa internete girdiniz demektir.
+      </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/usb-adsl.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/usb-adsl.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/skystar2.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">USB ADSL Modem Kurulumu </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Linux Uydu Yayınları NASIL</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

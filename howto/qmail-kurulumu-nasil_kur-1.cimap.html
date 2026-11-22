@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2019-10-17T22:36:15+03:00" /><title>Courier-IMAP Kurulumu</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/qmail-kurulumu-nasil_kur-1.html" title="A. Birinci Tür Kurulum" /><link rel="previous" href="../howto/qmail-kurulumu-nasil_kur-1.resp.html" title="Autoresponder Kurulumu" /><link rel="next" href="../howto/qmail-kurulumu-nasil_kur-1.sqweb.html" title="Sqwebmail Kurulumu" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Courier-IMAP Kurulumu</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/qmail-kurulumu-nasil_kur-1.resp.html">Önceki</a> </td><th width="60%" align="center">A. Birinci Tür Kurulum</th><td width="20%" align="right"> <a accesskey="n" href="../howto/qmail-kurulumu-nasil_kur-1.sqweb.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="qmail-kurulumu-nasil_kur-1.cimap" id="qmail-kurulumu-nasil_kur-1.cimap"></a>Courier-IMAP Kurulumu</div><dl><dd><div class="para">
+        <tt>Courier-IMAP</tt> qmail ile çalışan bir IMAP programıdır.
+        <a class="ulink" href="http://www.courier-mta.org/download.php#imap" target="_top">http://www.courier-mta.org/download.php#imap</a> adresinden en son
+        sürümünü indiriniz. Biz <tt>courier-imap-1.5.3</tt> sürümünü
+        kullanacağız.
+      </div><div class="para">
+        Buraya kadar tüm işleri <tt>root</tt> olarak yapmıştık. Ama
+        bu Courier-IMAP belasını derlemek için ben size artık root olarak yapın
+        diyene kadar derleme işlemlerini (make install demedim :) ) root olmayan
+        bir kullanıcı ile yapın..
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# su - ismail
+</pre></div></div>
+<div class="para">Courier-IMAP'ı <tt>make install</tt>
+        yapana kadar tüm işleri bu root hakkı olmayan kullanıcı ile yapacağız.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+$ tar -zxvf courier-imap-1.5.3.tar.gz
+$ cd courier-imap-1.5.3
+</pre></div></div>
+<div class="para">(hala root değilim!)
+      </div><div class="para">
+        Bazı parametrelerin ne manaya geldiğini açıklayayım.
+      </div><div class="variablelist"><dl><dt><span class="term">--enable-workarounds-for-imap-client-bugs</span></dt><dd class="varlist"><div class="para">
+              Netscape, IMAP ile bağlandıktan sonra yeni bir eposta geldiği zaman
+              sapıtmakta ve hata vermektedir. Bu hatayı gidermek için bu parametreyi
+              kullanmak şarttır.</div></dd><dt><span class="term">--with--authpwd</span></dt><dd class="varlist"><div class="para">
+              <tt>/etc/password</tt> dosyasından kimlik kanıtlama
+              desteği için.</div></dd><dt><span class="term">--with-authpam</span></dt><dd class="varlist"><div class="para">
+              <tt>PAM</tt>'den kimlik kanıtlama desteği için.</div></dd><dt><span class="term">--with-authshadow</span></dt><dd class="varlist"><div class="para">
+              <tt>/etc/shadow</tt> dosyasından kimlik kanıtlama
+              desteği için.</div></dd><dt><span class="term">--with-authmysql</span></dt><dd class="varlist"><div class="para">
+              MySQL tablosundan kimlik kanıtlama desteği için.</div></dd><dt><span class="term">--with-authvchkpw</span></dt><dd class="varlist"><div class="para">
+              <tt>vpopmail</tt>'den kimlik kanıtlama desteği için.</div></dd></dl></div><div class="para">
+        Bir de bu tüm <tt>--with</tt>'le başlayan ifadelerin
+        <tt>--without</tt>'la başlayanları da vardır. Anlaşılacağı gibi
+        öntanımlı bazı destekleri vermemek için kullanılırlar.
+      </div><div class="variablelist"><dl><dt><span class="term">--without-authldap</span></dt><dd class="varlist"><div class="para">
+              <tt>ldap</tt> desteği vermemek için. Eğer hantal Solaris
+              belası  üzerinde courier-IMAP kurmaya çalışıyorsanız kullanın.</div></dd><dt><span class="term">--with-waitfunc=wait3</span></dt><dd class="varlist"><div class="para">
+              Parametresini de tüm kurulumlara mutlaka ekleyiniz. Solaris kullanıyorsanız
+              Solaris'i yamayın (daha fazla bilgi için: Courier-IMAP FAQ).</div></dd></dl></div>
+<div class="para"><div align="right"><pre class="screen">
+$ ./configure --enable-workarounds-for-imap-client-bugs \
+--with-authpwd --with-authpam --with-authshadow --without-authmysql \
+--without-authldap --without-authvchkpw --enable-unicode
+
+$ make          (<i>root degilsiniz</i> !)
+$ make check    (<i>hata verirse sorun değil</i>)
+$ su root       (<i>şimdi root olma zamanı</i> ! )
+# make install  (<i>veya # make install-strip</i>)
+</pre></div></div>
+      <div class="para">
+        Eğer FreeBSD kullanıyorsanız ve pam'den kimlik kanıtlaması yapmak
+        istiyorsanız, <tt>/etc/pam.conf</tt> dosyasında imap ile ilgili
+        kısmı aşağıdaki gibi olacak şekilde değiştirin:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+imap auth required pam_unix.so try_first_pass
+imap account required pam_unix.so
+imap session required pam_permit.so
+</pre></div></div>
+<div class="para">öntanımlı olarak courier-imap <tt>/usr/lib/courier-imap</tt>
+        dizinine kurulur. Hangi modülün desteğinin bulunduğunu anlamak için
+        <tt>/usr/lib/courier-imap/etc/imapd.conf</tt> dosyasından
+        <tt>AUTHMODULES</tt> satırına bakmanız yeterlidir. Örnek bir
+        <tt>AUTHMODULES</tt> şöyledir:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+AUTHMODULES="authcustom authuserdb authpwd authvchkpw"
+</pre></div></div>
+      <div class="para">
+        Courier-IMAP'ı çalıştırmak için
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# /usr/lib/courier-imap/libexec/imapd.rc start
+</pre></div></div>
+<div class="para">
+        komutunu vermeniz yeterlidir.
+      </div><div class="para">
+        Courier-IMAP'ı her açılışta çalıştırmak için kullandığınız işletim sistemine
+        göre açılışta programların çalıştırıldığı dosyaya
+        <tt>/usr/lib/courier-imap/libexec/imapd.rc start</tt> ifadesini ekleyiniz.
+      </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/qmail-kurulumu-nasil_kur-1.resp.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/qmail-kurulumu-nasil_kur-1.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/qmail-kurulumu-nasil_kur-1.sqweb.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Autoresponder Kurulumu </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Sqwebmail Kurulumu</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

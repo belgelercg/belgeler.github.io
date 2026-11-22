@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:30+03:00" /><title>Erişim Denetim Listeleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/spam-filtering-exim-configfile.html" title="Exim Yapılandırma Dosyası" /><link rel="previous" href="../howto/spam-filtering-exim-configfile.html" title="Exim Yapılandırma Dosyası" /><link rel="next" href="../howto/spam-filtering-exim-expansions.html" title="Yerleşikler" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Erişim Denetim Listeleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/spam-filtering-exim-configfile.html">Önceki</a> </td><th width="60%" align="center">Exim Yapılandırma Dosyası</th><td width="20%" align="right"> <a accesskey="n" href="../howto/spam-filtering-exim-expansions.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="spam-filtering-exim-acl" id="spam-filtering-exim-acl"></a>Erişim Denetim Listeleri</div><dl><dd><div class="para">(ACL - Access Control Lists)</div><div class="para">
+4.xx sürümünden itibaren Exim, SMTP sırasındaki filtrelemeler için <i>Erişim Denetim Listeleri</i> (ACL'ler) adı verilen oldukça karmaşık ve esnek bir mekanizma kullanmaktadır.
+      </div><div class="para">
+Bir ACL, SMTP aktarımı sırasında gelen iletinin red mi yoksa kabul mü edileceğine karar verebilmek için, uzak konak ilk bağlantıyı kurduğunda veya <b><tt>HELO/EHLO</tt></b>, <b><tt>MAIL FROM:</tt></b>, <b><tt>RCPT TO:</tt></b> gibi aktarımın çeşitli aşamalarından birinde değerlendirmeler yapabilmek amacıyla kullanılabilir. Örneğin, karşıdan gelen her <b><tt>RCPT TO:</tt></b> komutunda değerlendirmeler yapmak için <tt>acl_rcpt_to</tt> isimli ACL'yi kullanabilirsiniz.
+      </div><div class="para">
+Bir ACL, <i>deyimler</i>den (veya <i>kurallar</i>dan) oluşur. Her deyim eylem belirten <tt>accept</tt> (kabul et), <tt>warn</tt> (uyar), <tt>require</tt> (gerekir),  <tt>defer</tt> (ertele) veya <tt>deny</tt> (reddet) gibi bir emir ile başlar ve bunu koşullar, seçenekler ve diğer ayarlamalardan oluşan bir liste izler. Her deyim, tanımlayıcı bir eyleme rastlanıncaya kadar (<tt>warn</tt> hariç) sırayla değerlendirilir. Her ACL'nin sonunda örtük bir <tt>deny</tt> vardır.
+      </div><div class="para">
+<tt>acl_rcpt_to</tt> ACL'sinden örnek bir deyim:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+  deny
+    message  = relay not permitted
+    !hosts   = +relay_from_hosts
+    !domains = +local_domains : +relay_to_domains
+    delay    = 1m
+</pre></div></div>
+      <div class="para">
+Bu deyim, <b><tt>RCPT TO:</tt></b> komutu <tt>+relay_from_hosts</tt> (röleleme yapmasına izin verilen konaklar) listesindeki konaklardan birinden alınmamışsa ve alıcı konak “+local_domains” (yerel alanlar) veya “+relay_to_domains” (röleleme yapılacak alanlar) listelerindeki konaklardan biri değilse, postayı reddedecektir. Bu arada, “550” yanıtını vererek reddetmeden önce karşı sunucuyu bir dakika bekletecektir.
+      </div><div class="para">
+SMTP aktarımının belli bir aşamasında bir ACL'nin değerlendirmeye alınabilmesi için Exim'in <i>kural denetimleri</i>nde bu ACL'yi belirtmek gerekir. Örneğin, önceki örnekteki <tt>acl_rcpt_to</tt> ACL'sinin <b><tt>RCPT TO:</tt></b> komutunda değerlendirmeye alınabilmesi için Exim yapılandırma dosyasının ana bölümüne (<tt>begin</tt> ile başlayan ilk satırdan önceki bölüm) şöyle bir satır eklemek gerekir:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+acl_smtp_rcpt = acl_rcpt_to
+</pre></div></div>
+      <div class="para">
+Bu tür <i>kural denetimleri</i>nin tam listesini <a class="ulink" href="http://www.exim.org/exim-html-4.60/doc/html/spec.html/ch14.html#id2571138" target="_top">Exim belirtiminin 14.11 bölümünde</a> bulabilirsiniz.
+      </div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/spam-filtering-exim-configfile.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/spam-filtering-exim-configfile.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/spam-filtering-exim-expansions.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Exim Yapılandırma Dosyası </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Yerleşikler</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

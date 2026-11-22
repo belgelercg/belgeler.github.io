@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:00+03:00" /><title>Autoconf ve Automake Kullanımı</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/makefile-nasil.html" title="GNU Paket Yapılandırma Sistemi" /><link rel="previous" href="../howto/makefile-nasil-kullanimi.html" title="Makefile Kullanımı" /><link rel="next" href="../howto/makefile-nasil-kaynakca.html" title="Yararlı Belgeler" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Autoconf ve Automake Kullanımı</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/makefile-nasil-kullanimi.html">Önceki</a> </td><th width="60%" align="center">GNU Paket Yapılandırma Sistemi</th><td width="20%" align="right"> <a accesskey="n" href="../howto/makefile-nasil-kaynakca.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="makefile-nasil-autoconf_automake" id="makefile-nasil-autoconf_automake"></a>Autoconf ve Automake Kullanımı</div><dl><dd><div class="para">
+GNU Paket Kurgulama Sistemi iki temel amacın gerçekleştirilebilmesi için geliştirilmiştir: Programları platformlar arası daha rahat taşınabilir hale getirmek ve kaynak koddan program kurulumlarını mümkün olduğu kadar basite indirgeyebilmek.
+  </div><div class="para">
+Taşınabilir kod yazmak gerçekten oldukça zahmetli bir iştir. Hedef mimarinin ayrıntılı olarak özelliklerinin bilinmesi çoğu zaman mümkün değildir. Bir önceki bölümde örnek olarak yazdığımız <tt>Makefile</tt> dosyasında <b><tt>mkdir -p /usr/local/bin/test</tt></b> komutunu kullanmıştık. Oysa <b><tt>mkdir</tt></b> komutunun <tt>-p</tt> seçeneği tüm Unix sistemlerde aynı şekilde çalışmaz. Bu ve bunun gibi pek çok farklılık yüzünden her Unix sisteminde çalışabilecek bir <tt>Makefile</tt> yazmak çok zor iştir. Kullanılan kütüphanelerin sistemler arasındaki farklılıkları ise apayrı bir konudur. İşte GNU Paket Kurgulama Sistemi tüm bu zorlukların üstesinden gelebilmek için oluşturulmuştur. Kdevelop gibi programlar yeni proje oluşturduğunuzda b sistemi de otomatik olarak oluşturmaktadırlar. Ancak oluşan dosyalar fazlasıyla karışık olduğundan bu bölümde çok daha basit örneklerle yapıyı anlatmaya çalışacağım. Buradaki temel bilgilerden yararlandıktan sonra Kdevelop gibi programların ürettiği veya örütbağdan indirmiş olduğunuz herhangi bir uygulamanın kaynak kodu içerisinde gezinerek farklı kullanımları inceleyebilirsiniz.
+  </div> <div class="head3"><a name="makefile-nasil-araclar" id="makefile-nasil-araclar"></a>Gerekli Araçlar</div><dl><dd><div class="para">
+GNU Paket Kurgulama Sistemi için gerekli araçlar ve kullanım alanları aşağıdaki gibidir:
+  </div><ol class="orderedlist" start="ignore" type="1"><li><div class="listitem"><div class="para">
+<b><tt>autoconf</tt></b> yapılandırma için kullanılacak <tt>configure</tt> betiğini üretir. Kodun taşınabilir olmasını etkileyecek özellikleri, üzerinde çalıştığı platform için denetler. Elde ettiği değerleri, daha önceden belirtilmiş şablonlara uygun şekilde birleştirerek özelleştirilmiş <tt>Makefile</tt>, başlık dosyaları vb. oluşturur. Bu sayede programı derleyecek kullanıcı tek tek elle bu değişiklikleri yapmak zahmetinden kurtulur.
+    </div></div></li><li><div class="listitem"><div class="para">
+<b><tt>automake</tt></b>, <b><tt>autoconf</tt></b> için kullanılacak <tt>Makefile</tt> şablonlarını (<tt>Makefile.in</tt>) temel alarak <tt>Makefile.am</tt> dosyalarını  üretir. <b><tt>automake</tt></b> tarafından üretilen <tt>Makefile</tt> dosyaları GNU makefile standartlarına uygun olup, kullanıcıyı elle <tt>Makefile</tt> dosyası oluşturma zahmetinden kurtarır. <b><tt>autoconf</tt></b>'un çalışabilmesi için öncelikle <b><tt>automake</tt></b>'in düzgün olarak çalışması gereklidir.
+    </div></div></li><li><div class="listitem"><div class="para">
+<b><tt>libtool</tt></b> özellikle paylaşımlı kütüphanelerin taşınabilir bir yapıda oluşturulabilmesi için gereken pek çok ayrıntıyı kullanıcıdan soyutlar. Kullanımı için <b><tt>autoconf</tt></b> veya <b><tt>automake</tt></b> gerekli değildir, tek başına da kullanılabilir. <b><tt>automake</tt></b> ise <b><tt>libtool</tt></b>'u  destekler ve onunla birlikte çalışabilir.
+    </div></div></li><li><div class="listitem"><div class="para">
+<b><tt>Autotools</tt></b> GNU kodlama standartlarına uygun, taşınabilir kod üretmede yardımcı olur.
+    </div></div></li></ol><div class="para">
+GNU Paket Kurgulama Sistemi tarafından gerçekleştirilen temel görevler şunlardır:
+  </div><ol class="orderedlist" start="ignore" type="1"><li><div class="listitem"><div class="para">
+Çok sayıda alt dizin içeren kaynak kodlardan uygulamaları üretebilir. Her bir dizin için ayrıca <b><tt>make</tt></b> komutunu çağırmak zahmetinden geliştiriciyi kurtarır. Bu sayede tüm kaynak kodları aynı dizinde bulundurmak yerine aşamaları daha belirgin bir dizin yapısı kullanabilirsiniz.
+    </div></div></li><li><div class="listitem"><div class="para">
+Yapılandırma işlemini otomatik olarak yapar. Kullanıcıların <tt>Makefile</tt> dosyalarını düzenlemelerine gerek kalmaz.
+    </div></div></li><li><div class="listitem"><div class="para">
+<tt>Makefile</tt> dosyalarını otomatik olarak üretir. <tt>Makefile</tt> yazımı büyük projelerde sürekli tekrar gerektirir ve aynı zamanda hata yapmaya elverişli bir yapıdır. GNU Paket Kurgulama Sistemi için sadece <tt>Makefile.am</tt> şablonunun yazımı yeterlidir. Bu sayede hata yapma olasılığı azalır ve yönetimi kolay hale gelir.
+    </div></div></li><li><div class="listitem"><div class="para">
+Hedef platform için özel testler yapabilme imkanı sunar. <tt>Makefile.am</tt> dosyasına eklenecek bir kaç satırla hedef platformda programın derlenebilesi için aranan özelliklerin var olup olmadığı kontrol edilebilir.
+    </div></div></li><li><div class="listitem"><div class="para">
+Paylaşımlı kütüphanelerin oluşturulması statik kütüphanelerin oluşturulması kadar kolay hale gelir.
+    </div></div></li></ol><div class="para">
+GNU Paket Kurgulama Sistemi için gerekli olan bu araçların sadece geliştirmenin yapıldığı sistemde kurulu olması yeterlidir. Bu programlar çalıştıktan sonra her platformda çalışabilecek betik programları üretirler. Bu sayede uygulamanızın kaynak kodunu indirip kurmak isteyen biri, <b><tt>autoconf</tt></b>, <b><tt>automake</tt></b> gibi araçları da sistemine kurmak zorunda kalmaz.
+  </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Basit Bir Autoconf, Automake Örneği</div><dl><dd><div class="para">
+Şimdi aşağıdaki test programımız için GNU Paket Kurgulama Sistemini nasıl kullanacağımızı öğrenelim.
+  </div><div class="para"><div align="right"><pre class="programlisting">
+#include &lt;stdio.h&gt;
+
+int main()
+{
+  printf("Çalışıyor\n");
+  return 0;
+</pre></div></div><div class="para">
+Programımızı <tt>test.c</tt> olarak kaydedelim. Şimdi programın derlenmesi işlemlerini <b><tt>autoconf</tt></b> ve <b><tt>automake</tt></b> ile yapmaya başlayalım. Bunun için öncelikle aşağıdaki <tt>Makefile.am</tt> dosyasını oluşturalım:
+  </div><div class="para"><div align="right"><pre class="screen">
+in_PROGRAMS = test
+test_SOURCES = test.c
+</pre></div></div><div class="para">
+  Ardından aşağıdaki gibi bir <tt>configure.in</tt> dosyası oluşturalım:
+  </div><div class="para"><div align="right"><pre class="screen">
+AC_INIT(test.c)
+AM_INIT_AUTOMAKE(test,0.1)
+AC_PROG_CC
+AC_PROG_INSTALL
+AC_OUTPUT(Makefile)
+</pre></div></div><div class="para">
+Dosyaları oluşturup kaydettikten sonra şimdi aşağıdaki komutları çalıştıralım:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt>$ </tt><b><tt>aclocal</tt></b>
+<tt>$ </tt><b><tt>autoconf</tt></b>
+<tt>$ </tt><b><tt>ls -l</tt></b>
+total 88
+-rw-r--r--    1 demirten demirten    16626 Haz 22 17:32 aclocal.m4
+-rwxr-xr-x    1 demirten demirten    50233 Haz 22 17:32 configure
+-rw-r--r--    1 demirten demirten       90 Haz 22 17:31 configure.in
+-rw-r--r--    1 demirten demirten       43 Haz 22 17:29 Makefile.am
+-rw-r--r--    1 demirten demirten       71 Haz 22 17:28 test.c
+</pre></div></div><div class="para">
+Gördüğünüz gibi <b><tt>aclocal</tt></b> ve <b><tt>autoconf</tt></b> uygulamaları çalıştıktan sonra <tt>aclocal.m4</tt> ve <tt>configure</tt> dosyaları üretildi. Şimdi ise  <b><tt>automake</tt></b> programını çalıştıracağız:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt>$ </tt><b><tt>automake -a</tt></b>
+automake: configure.in: installing `./install-sh'
+automake: configure.in: installing `./mkinstalldirs'
+automake: configure.in: installing `./missing'
+automake: Makefile.am: installing `./INSTALL'
+automake: Makefile.am: required file `./NEWS' not found
+automake: Makefile.am: required file `./README' not found
+automake: Makefile.am: installing `./COPYING'
+automake: Makefile.am: required file `./AUTHORS' not found
+automake: Makefile.am: required file `./ChangeLog' not found
+automake: configure.in: installing `./depcomp'
+</pre></div></div><div class="para">
+<b><tt>automake</tt></b> ilk çalıştırıldığında öncelikle <tt>install-sh</tt>, <tt>mkinstalldirs</tt> ve <tt>missing</tt> dosyalarının daha önceden oluşturulup oluşturulmadığını kontrol eder. Eğer yoksa bu dosyaları oluşturur (Bendeki sistemde dosyaları oluşturmak yerine <tt>/usr/share/automake</tt> dizini altındaki asıllarına bağ veriyor). Bu dosyalar <b><tt>automake</tt></b> tarafından üretilen <tt>Makefile</tt> dosyaları için gereklidir. Ayrıca GNU kodlama standartlarına göre <tt>INSTALL</tt>, <tt>NEWS</tt>, <tt>COPYING</tt>, <tt>README</tt>, <tt>AUTHORS</tt> ve <tt>ChangeLog</tt> dosyalarının da bu dizinde bulunması gereklidir. Bu dosyalar olmadığı için <b><tt>automake</tt></b>  uyarı vermektedir. <b><tt>make distcheck</tt></b> komutunun hata vermemesi için bu dosyaları oluşturalım, sonra içlerini nasıl olsa doldururuz. Bendeki sistemde <b><tt>automake</tt></b> ilk çalıştırıldığında <tt>INSTALL</tt> ve <tt>COPYING</tt> dosyalarını da bağ olarak oluşturduğu için önce onları siliyorum:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt>$ </tt><b><tt>rm INSTALL COPYING</tt></b>
+<tt>$ </tt><b><tt>touch NEWS INSTALL README COPYING AUTHORS ChangeLog</tt></b>
+</pre></div></div><div class="para">
+<b><tt>automake</tt></b> programını bu dosyalardan varlığından haberdar edelim:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt>$ </tt><b><tt>automake -a</tt></b>
+<tt>$ </tt><b><tt>ls</tt></b>
+aclocal.m4  configure     depcomp     Makefile.am  mkinstalldirs  test.c
+AUTHORS     configure.in  install-sh  Makefile.in  NEWS
+ChangeLog   COPYING       INSTALL     missing      README
+</pre></div></div><div class="para">
+Bu dizin yapısı size tanıdık gelmiş olmalı. Kaynak paketimiz bu haliyle artık son kullanıcının karşısına çıkmaya hazır, hemen paketleyip dağıtabiliriz. Şimdi kendimizi bu programi Genel Ağ'dan indirip bilgisayarına kurmak isteyen birinin yerine koyalım. Yapmamız gerekenler aşağıdaki gibidir:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt>$ </tt><b><tt>./configure</tt></b>
+creating cache ./config.cache
+checking for a BSD compatible install... /usr/bin/install -c
+checking whether build environment is sane... yes
+checking for mawk... mawk
+checking whether make sets ${MAKE}... yes
+checking for gcc... gcc
+checking whether the C compiler (gcc  ) works... yes
+checking whether the C compiler (gcc  ) is a cross-compiler... no
+checking whether we are using GNU C... yes
+checking whether gcc accepts -g... yes
+checking for style of include used by make... GNU
+checking dependency style of gcc... gcc
+checking for a BSD compatible install... /usr/bin/install -c
+updating cache ./config.cache
+creating ./config.status
+creating Makefile
+<tt>$ </tt><b><tt>make</tt></b>
+source='test.c' nesnect='test.o' libtool=no \
+depfile='.deps/test.Po' tmpdepfile='.deps/test.TPo' \
+depmode=gcc /bin/sh ./depcomp \
+gcc -DPACKAGE=\"test\" -DVERSION=\"0.1\"  -I. -I. -g -O2 -c `test -f test.c
+¬ || echo './'`test.c
+gcc  -g -O2   -o test  test.o
+<tt>$ </tt><b><tt>./test</tt></b>
+Çalışıyor
+</pre></div></div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/warning.png" /></td><th class="admon">Uyarı</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Aşağıda programı nasıl sisteminize kuracağınız anlatılmaktadır. Öntanımlı olarak <b><tt>test</tt></b> uygulaması <tt>/usr/local/bin</tt> dizini altına kopyalanır. Ancak bu dizinde test adında bir uygulamanız zaten varsa ve bunu kaybetmek istemiyorsanız veya yanlışlıkla <i>prefix</i> vererek uygulamayı varolan <tt>/usr/bin/test</tt> üzerine kopyalamamak için dikkatli olunuz.
+  </div></td></tr></table></div><div class="para">
+Bu noktada dilerseniz uygulamayı sisteme kurabilirsiniz. Bunun için <tt>root</tt> kullanıcı haklarına sahip olmalısınız.
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt>$ </tt><b><tt>make install</tt></b>
+make[1]: Entering directory `/tmp/test'
+/bin/sh ./mkinstalldirs /usr/local/bin
+  /usr/bin/install -c test /usr/local/bin/test
+make[1]: Nothing to be done for `install-data-am'.
+make[1]: Leaving directory `/tmp/test'
+</pre></div></div><div class="para">
+Uygulamayı kaldırmak içinse <b><tt>make uninstall</tt></b> komutunu kullanabilirsiniz:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt>$ </tt><b><tt>make uninstall</tt></b>
+rm -f /usr/local/bin/test
+</pre></div></div><div class="para">
+Uygulamanızın artık hazır olduğuna inandığınızda <b><tt>make distcheck</tt></b> komutu ile onu paket haline getirebilirsiniz (Ekran çıktısı biraz uzun olduğundan burada listelenmemiştir). Bu komut işini tamamladığında bulunduğunuz dizinde <tt>test-0.1.tar.gz</tt> adında bir dosya oluşacaktır. Artık bu dosya ile programınızın dağıtımını yapabilirsiniz.
+  </div><div class="para">
+Şimdi biraz da yaptığımız bu örneği biraz daha açıklayalım. <tt>Makefile.am</tt> içerisinde mantıksal bir dil kullandık. Yazdığımız hiç bir satır çalıştırılmadı. Diğer yandan <tt> configure.in</tt> içerisinde kullandığımız dil prosedüreldir, yazdığımız her satır çalıştırılacak  bir komutu göstermektedir. <tt>Makefile.am</tt> dosyası içerisindeki ilk satır programın ismini belirtirken ikinci satır programı oluşturan kaynak kodları belirtmektedir. Şimdi daha karışık olan <tt>configure.in</tt> içerisindeki komutlara sırasıyla bakalım:
+  </div><ul type="disc" class="itemizedlist"><li><div class="para">
+<b><tt>AC_INIT</tt></b> komutu <tt>configure</tt> betiği
+ için ilklendirmeleri yapar. Parametre olarak kaynak dosyaların adlarını alır.
+ </div></li><li><div class="para">
+<b><tt>AM_INIT_AUTOMAKE</tt></b> komutu, <b><tt>automake</tt></b> kullanacağımızı gösterir. Parametre olarak programın ismini ve sürümünü alır. Eğer <tt>Makefile.in</tt> dosyalarını elle hazırlayacak olsaydık bu komutu kullanmamıza da gerek olmayacaktı.
+    </div></li><li><div class="para">
+<b><tt>AC_PROG_CC</tt></b> komutu kullanılan C derleyicisinin ne olduğunu belirler.
+		</div></li><li><div class="para">
+<b><tt>AC_PROG_INSTALL</tt></b> komutu BSD uyumlu <tt>install</tt> uygulamasına sahip olup olmadığımızı denetler. Eğer yoksa bu işlem için <tt>install-sh</tt>'ı kullanır.
+    </div></li><li><div class="para">
+<b><tt>AC_OUTPUT</tt></b> komutu <tt>configure</tt> betik programının <tt>Makefile</tt> dosyalarını <tt>Makefile.in</tt> dosyalarından üretmesi gerektiğini belirtir.
+    </div></li></ul><div class="para">
+Örneğimizdeki <tt>configure.in</tt> dosyası içerisinde yer almayan ama sıklıkla kullanacağımız bazı komutlar da şunlardır:
+  </div><ul type="disc" class="itemizedlist"><li><div class="para">
+<b><tt>AC_PROG_RANLIB</tt></b> komutuyla bir kütüphane geliştiriyorsak <b><tt>ranlib</tt></b>'in sistemde nasıl kullanılacağını öğrenebiliriz.
+    </div></li><li><div class="para">
+<b><tt>AC_PROG_CXX</tt></b> komutuyla sistemdeki C++ derleyicisinin ne olduğunu öğrenebiliriz.
+		</div></li><li><div class="para">
+<b><tt>AC_PROG_YACC</tt></b> ve <b><tt>AC_PROG_LEX</tt></b> komutlarıyla kaynak kodlarımız <tt>lex</tt> veya <tt>yacc</tt> dosyaları içeriyorsa bu uygulamaların sistemde varlığını denetleyebiliriz.
+    </div></li><li><div class="para">
+Eğer alt dizinlerde başka <tt>Makefile</tt> dosyalarımız da olacaksa bunu
+    </div><div class="para"><div align="right"><pre class="screen">
+AC_OUTPUT(Makefile         \
+          dizin1/Makefile  \
+          dizin2/Makefile  \
+          )
+</pre></div></div><div class="para">
+komutlarıyla belirtebiliriz.
+    </div></li></ul><div class="para">
+Dosyaların içeriğinden bahsettikten sonra şimdi de biraz önce yaptığımız örnekte çalıştırdığımız komutlardan sonra neler olduğuna tekrar bakalım.
+  </div><ul type="disc" class="itemizedlist"><li><div class="para">
+<b><tt>aclocal</tt></b> komutu çalıştıktan sonra <tt>aclocal.m4</tt> dosyası üretilir. Bu dosya içerisinde <b><tt>autoconf</tt></b> tarafından kullanılacak olan makrolar yer almaktadır (kendi özel makrolarımızı nasıl hazırlayacağımıza ileride değinilecektir).
+    </div></li><li><div class="para">
+<b><tt>autoconf</tt></b> komutuyla <tt>aclocal.m4</tt> ve <tt> configure.in</tt> dosyaları işlenerek <tt>configure</tt> betik programı oluşturulur.
+    </div></li><li><div class="para">
+<b><tt>automake</tt></b> komutu <tt>Makefile.am</tt> dosyasını temel alan bir <tt>Makefile.in</tt> oluşturur. Ayrıca GNU kodlama standartlarına göre eksik olan dosyalar için örnek birer kopya üretir.
+    </div></li><li><div class="para">
+<b><tt>./configure</tt></b> komutuyla çalıştırılan betik programı daha önceden belirtilen özellikler için sistemimizi test eder ve <tt>Makefile.in</tt> dosyasını örnek alarak <tt>Makefile</tt> dosyalarını oluşturur. <b><tt>AC_OUTPUT()</tt></b> ile belirtilen tüm dosyalardaki <b><tt>@FOO@</tt></b> şeklindeki kayıtları <tt>FOO</tt> için elde edilen değerlerle değiştirir (örneğin C derleyicisinin ne olduğu gibi).
+    </div></li></ul></dd></dl> <div class="head3"><a name="makefile-nasil-baslik-dosyalari" id="makefile-nasil-baslik-dosyalari"></a>Yapılandırma Başlık Dosyalarının Kullanımı</div><dl><dd><div class="para">
+Çoğu zaman derleme anında bazı makrolar tanımlamak isteriz. <b><tt>-D</tt></b> seçeneği ile derleyiciye bildirilen bu değerleri programımız içerisinden kullanarak ilgili kod parçacığının çalışma şeklini değiştirebiliriz. <b><tt>autoconf</tt></b> kullandığımız bir uygulama için böylesi seçenekleri kullanmanın yolu yapılandırma başlık dosyası, <tt>config.h</tt> kullanmaktan geçmektedir.
+  </div><div class="para">
+<tt>config.h</tt> mantığını kullanabilmemiz için <tt>test.c</tt> programımızın en başına aşağıdaki üç satırı eklemeliyiz:
+  </div><div class="para"><div align="right"><pre class="programlisting">
+#ifdef HAVE_CONFIG_H
+#include &lt;config.h&gt;
+#endif
+</pre></div></div><div class="para">
+Burada unutulmaması gereken önemli bir nokta, <tt>config.h</tt> dosyasının mutlaka ilk olarak <i>include</i> edilmesidir.
+  </div><div class="para">
+Program kaynak kodunu bu şekilde değiştirdikten sonra <tt>configure.in</tt> dosyasını da aşağıdaki duruma getirmeliyiz:
+  </div><div class="para"><div align="right"><pre class="screen">
+AC_INIT(test.c)
+AM_CONFIG_HEADER(config.h)
+AM_INIT_AUTOMAKE(test,0.1)
+AC_PROG_CC
+AC_PROG_INSTALL
+AC_OUTPUT(Makefile)
+</pre></div></div><div class="para">
+Ve çalıştırdığımız komutlara bir yenisini aşağıdaki sırada ekleyelim:
+  </div><div class="para"><div align="right"><pre class="screen">
+<tt>$ </tt><b><tt>aclocal</tt></b>
+<tt>$ </tt><b><tt>autoconf</tt></b>
+<tt>$ </tt><b><tt>touch NEWS README AUTHORS ChangeLog</tt></b>
+<tt>$ </tt><b><tt>autoheader</tt></b>
+<tt>$ </tt><b><tt>automake -a</tt></b>
+</pre></div></div><div class="para">
+Burada yaptıklarımızın bir önceki örneğimizden farkı <b><tt>autoheader</tt></b> programını da çalıştırmaktan ibarettir. <b><tt>autoheader</tt></b>, <tt>configure.in</tt> dosyasını tarayarak bir <tt>config.h.in</tt> şablon dosyası oluşturur. Bu dosyanın içerisine <tt>configure.in</tt> dosyasından öğrendiği, tanımlanabilecek değerleri ve açıklamalarını yerleştirir. Aynı zamanda kaynak kodumuzdan <tt>config.h</tt> dosyasının <i>include</i> edilebilmesi için gerekli <tt>-I</tt> seçeneklerini de derleyiciye geçirir. <b><tt>./configure</tt></b> komutundan sonra ise gerçek <tt>config.h</tt> dosyası oluşur. Şimdi örneğimizde oluşan <tt>config.h</tt> dosyasına bir bakalım.
+  </div><div class="para"><div align="right"><pre class="screen">
+/* config.h.  Generated automatically by configure.  */
+/* config.h.in. Generated automatically from configure.in by autoheader 2.13. */
+
+/* Name of package */
+#define PACKAGE "test"
+
+/* Version number of package */
+#define VERSION "0.1"
+</pre></div></div></dd></dl> <div class="head3"><a name="makefile-nasil-automake" id="makefile-nasil-automake"></a>Automake ile ilgili ayrıntılar</div><dl><dd><div class="para">
+Projemiz büyüdükçe kaynak kodların bulunduğu yerler gittikçe karışmaya başlar. Bunları düzenleyebilmek amacıyla daha hiyerarşik dizin yapıları kurarız. Ancak bu defa da her bir dizin için uygun <tt>Makefile</tt> dosyalarını üretmemiz gerekecektir. Bunun için bu bölümde <tt>Makefile.am</tt> dosyalarından daha ayrıntılı bir şekilde bahsedeceğiz.
+  </div><div class="para">
+<tt>Makefile.am</tt> dosyalarının genel biçimi <tt> değişken = değer</tt> şeklindedir. Ancak aynı zamanda, geleneksel <tt>Makefile</tt> mantığındaki gibi hedef ve soyut kural tanımlamalarını da destekler. Şimdi <tt>Makefile.am</tt> dosyalarında sıklıkla kullanacağımız satırlara bir bakalım.
+  </div><dl><dt><span class="glossterm"><b><tt>INCLUDES = -I/usr/local/include -I/usr/custom/include ...</tt></b></span></dt><dd class="halfpara"><div class="para">
+Nesne kodlarını oluştururken derleyiciye <i>include</i> edilen dosyaları hangi dizinlerde araması gerektiğini belirtir. Ayrıca proje kaynak kod yapısı içerisindeki bir dizin seçenek olarak verildi ise alt dizinlerde yer alan kaynak programların hepsinin bu dosyalara erişebilmelerini sağlamak amacıyla tanımlama <b><tt>INCLUDES = -I$(top_srcdir)/src/libxxx</tt></b> şeklinde yapılmalıdır. Buradaki <tt>$top_srcdir</tt> değişkeni kaynak kod yapısı içerisindeki en üst dizini tutar.
+  </div></dd><dt><span class="glossterm"><b><tt>LDFLAGS = -L/usr/local/lib ...</tt></b></span></dt><dd class="halfpara"><div class="para">
+Derleyici çalıştırılabilir dosyaları üretirken ihtiyaç duyduğu kütüphaneleri hangi dizinlerde
+  araması gerektiğini bu tanımla öğrenecektir.
+  </div></dd><dt><span class="glossterm"><b><tt>LDADD = test.o ... $(top_builddir)/lib/libfoo.a ... -lfoo ...</tt></b></span></dt><dd class="halfpara"><div class="para">
+Tüm oluşacak çalıştırılabilir dosyalara sembolik bağlamak istediğiniz sisteme kurulu olan ve olmayan nesne dosyaları burada listelenir. Eğer listelenen nesne dosyası sistemde kurulu değilse dosyanı tam adresi verilmelidir (<tt>$top_builddir/lib/libfoo.a</tt> örneğindeki gibi).
+  </div></dd><dt><span class="glossterm"><b><tt>EXTRA_DIST = dosya1 dosya2 ...</tt></b></span></dt><dd class="halfpara"><div class="para">
+Kaynak kod paketinizde bulunmasınıistediğiniz her türlü dosyayı burada listeleyebilirsiniz.
+  </div></dd><dt><span class="glossterm"><b><tt>SUBDIRS = dizin1 dizin2 ...</tt></b></span></dt><dd class="halfpara"><div class="para">
+Bulunulan dizin için işlem yapmadan önce kuralların çalıştırılması gereken dizinlerdir. <b><tt>make</tt></b> uygulaması bulunulan dizinde işleme başlamadan önce, burada belirtilen dizinlerdeki <tt>Makefile</tt> kurallarını çalıştırır ve listelenen tüm dizinler için işlemleri bitirdikten sonra bu dizine geri döner.
+  </div></dd><dt><span class="glossterm"><b><tt>bin_PROGRAMS = test test2 ...</tt></b></span></dt><dd class="halfpara"><div class="para">
+<b><tt>make</tt></b> komutu çalıştıktan sonra üretilecek ve <b><tt>make install</tt></b> komutuyla belirli bir dizin altına kopyalanacak program adları burada listelenir.
+  </div></dd><dt><span class="glossterm"><b><tt>lib_LIBRARIES = libfoo1.a libfoo2.a ...</tt></b></span></dt><dd class="halfpara"><div class="para">
+<b><tt>make</tt></b> komutu çalıştıktan sonra üretilecek ve <b><tt>make install</tt></b> komutuyla belirli bir dizin altına kopyalanacak kütüphane dosyalarının adları burada listelenir.
+  </div></dd><dt><span class="glossterm"><b><tt>check_PROGRAMS = program1 program2 ...</tt></b></span></dt><dd class="halfpara"><div class="para">
+<b><tt>make</tt></b> komutunun çalışması esnasında üretilmeyip, sadece <b><tt>make check</tt></b> komutuyla üretilecek, programınızın tümünü veya bir kısmını test edecek uygulamaların çalıştırılabilir dosya adları listelenir.
+  </div></dd><dt><span class="glossterm"><b><tt>TESTS = program1 program2 ...</tt></b></span></dt><dd class="halfpara"><div class="para">
+<b><tt>make check</tt></b> komutu sonrasında test amaçlı çalıştırılacak dosya adlarını listeler. Çoğu durumda <tt> TEST = $(check_PROGRAMS)</tt> şeklinde bir tanımlama yapabilirsiniz.
+  </div></dd><dt><span class="glossterm"><b><tt>include_HEADERS = foo1.h foo2.h ...</tt></b></span></dt><dd class="halfpara"><div class="para">
+<tt>/prefix/include</tt> dizini altına kurulmasını istediğiniz başlık dosyalarını burada listelemelisiniz.
+  </div></dd><dt><span class="glossterm"><b><tt>bin_PROGRAMS</tt></b></span></dt><dd class="halfpara"><div class="para">
+Bu değişkende listelediğiniz her bir program için aşağıdaki tanımlamaları da yapmalısınız (<i><tt>program</tt></i> kelimesi yerine programın adını yazmalısınız):
+  </div><dl><dt><span class="glossterm"><i><tt>program</tt></i><b><tt>_SOURCES = test.c test1.c test2.c test.h test1.h test2.h ...</tt></b></span></dt><dd class="halfpara"><div class="para">
+<b><tt>automake</tt></b> programı burada belirtmiş olduğunuz dosya adları için, C, C++ ve Fortran dillerine özgün soyut <tt>Makefile</tt> kurallarını oluşturur. Eğer başka bir dil kullanılıyorsa gerekli kuralları siz vermelisiniz.
+  </div></dd><dt><span class="glossterm"><i><tt>program</tt></i><b><tt>_LDADD = $(top_builddir)/lib/libfoo.a -lnsl ...</tt></b></span></dt><dd class="halfpara"><div class="para">
+Burada programınızla ilintilenmesi gereken kütüphaneleri listelemelisiniz.
+  </div></dd><dt><span class="glossterm"><i><tt>program</tt></i><b><tt>_LDFLAGS = -L/dizin1 ...</tt></b></span></dt><dd class="halfpara"><div class="para">
+<tt>program_LDADD</tt> ile belirttiğiniz kütüphanelerin hangi dizinlerde aranması gerektiği burada listelenir.
+  </div></dd><dt><span class="glossterm"><i><tt>program</tt></i><b><tt>_DEPENDENCIES = dep1 dep2 ...</tt></b></span></dt><dd class="halfpara"><div class="para">
+Programınızın derlenebilmesi için bağımlı olduğu diğer hedefleri burada listelemelisiniz.
+  </div></dd></dl>
+  </dd></dl></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/makefile-nasil-kullanimi.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/makefile-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/makefile-nasil-kaynakca.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Makefile Kullanımı </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Yararlı Belgeler</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

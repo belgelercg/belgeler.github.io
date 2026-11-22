@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:11+03:00" /><title>X Window Türkçe klavye desteği</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/turkish-howto.html" title="Türkçe NASIL" /><link rel="previous" href="../howto/turkish-howto_xfree-ttf.html" title="True Type yazı tiplerinin kullanımı" /><link rel="next" href="../howto/turkish-howto_xfree-desktop.html" title="X Masaüstü Yöneticileri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">X Window Türkçe klavye desteği</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/turkish-howto_xfree-ttf.html">Önceki</a> </td><th width="60%" align="center">Türkçe NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/turkish-howto_xfree-desktop.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="turkish-howto_xfree-xkb" id="turkish-howto_xfree-xkb"></a>X Window Türkçe klavye desteği</div><dl><dd> <div class="head3"><a name="turkish-howto_xfree-xkb-rh" id="turkish-howto_xfree-xkb-rh"></a>Red Hat</div><dl><dd><div class="para">
+X Window'un 4.x sürümlerinden birini kullanıyorsanız artık eski <tt>xmodmap</tt> klavye dosyalarını kullanmak zorunda değilsiniz. <tt>4.x</tt> sürümlerinde ISO-8859-9 tanındığı için <tt>xmodmap</tt> ile <tt>xkb</tt>'yi (x-keyboard) dolaylı kullanmak yerine doğrudan doğruya <tt>xkb</tt> için bir <tt>tr</tt> klavye dosyası kullanabiliyoruz. <tt>x-4.2</tt> den önceki bir sürümü kullanıyorsanız, XFree86 kurulumunda çıkan <tt>tr</tt> dosyası ile Türkçe desteği tam sağlanmamaktadır. Bu HOWTO'nun önceki sürümündeki ayarlamalarla kullanılabilir olsa da artık X Window ve masaüstü yöneticilerinin arka planda UTF-8 kullanmaya başladığı günümüzde bu klavye dosyası ile Türkçe karakterlerimizi elde etmek mümkün olamamaktadır.
+  </div><div class="para">
+<tt>x-4.2.0</tt> ile dağıtılmış olan <tt>tr</tt>
+ klavye dosyası ile Türkçe karakterlerimizi yazmak mümkün olsa da
+ &lt;<b>CapsLock</b>&gt; ve &lt;<b>CapsLock</b>&gt;+&lt;<b>Shift</b>&gt;
+ tuşları ile elde edilen <b><tt>ğ, ş, ı</tt></b> ve <b><tt>i</tt></b>
+ karakterleri yanlış dönüşümler yapmaktadır. Bu sorunu halletmek
+ üzere XFree86 yazarları ile yazışarak gerekli kod değişikliklerini yaptırmak
+ mümkün olmuştur. Bu sorunu halletmek üzere  <tt>caps</tt>
+ adıyla yeni bir dosya ve bu dosya ile çalışacak şekilde <tt>tr</tt>
+ klavye dosyası hazırlanmıştır.
+  </div><div class="para">
+<tt>x-4.3.0</tt> ile bilinen tüm sorunları çözümlenmiş bir
+ <tt>tr</tt> klavye dosyası dağıtımla birlikte gelmiştir.
+ Ancak, yine de boş durmamış, <tt>x-4.3.0</tt> dağıtıldıktan
+ sonra yazılımcıları ve 101 tuşlu Q klavye kullanıcılarını da düşünerek
+ <tt>tr</tt> klavye dosyasına bir klavye eşlemi daha, tr_alt
+ klavye eşlemi eklenmiştir. <a class="link" href="../howto/turkish-howto_appendix.html" title="A. Ekler">Ekler</a>deki <a class="link" href="../howto/turkish-howto_xkb-tr-43.html" title="XFree86 4.3.0 sürümünün klavye dosyası">tr</a>
+ dosyası dağıtılmış olan <tt>x-4.3.0</tt> sürümü için olup
+ XFree86 CVS'sindeki tr klavye dosyasından biraz farklıdır. XFree86 CVS'sindeki
+ <tt>tr</tt> klavye dosyası CVS'deki kod ile çalışmak üzere
+ düzenlenmiştir.
+  </div> <div class="head4"><a name="turkish-howto_xfree-4x" id="turkish-howto_xfree-4x"></a><tt>x-4.2.0</tt> öncesi</div><dl><dd><div class="para">
+X Window'un <tt>x-4.2.0</tt> sürümünden önceki sürümlerinde
+ libc yerelleriyle bir uyumsuzluk söz konusudur. Bu sorun 4.2.0 sürümünde
+ düzeltilmiştir. <tt>x-4.2.0</tt>'dan eski sürümleri
+ kullananlar bu sorunu XFree86'nın yaptığı gibi değil; çünkü o bir kod
+ değişikliği idi; libc yerellerinde bir küçük düzeltme ile bu sorunu
+ giderebilirler. Bunun için <tt>/usr/lib/locale/</tt> dizininde
+ aşağıdaki işlemi yapacaklardır:
+   </div>
+<div class="para"><div align="right"><pre class="screen"><tt>#</tt> <b><tt>ln -s tr_TR tr_TR.ISO-8859-9</tt></b>
+<tt>#</tt> <b><tt>ln -s tr_TR.utf8 tr_TR.UTF8</tt></b>
+</pre></div></div>
+   <div class="para">
+Bu işlemden sonra <a class="link" href="../howto/turkish-howto_appendix.html" title="A. Ekler">Ekler</a>de verilen
+ <a class="link" href="../howto/turkish-howto_xkb-41.html" title="XFree86 4.1 sürümünün klavye dosyası">tr</a> dosyasını sisteminizde
+ <tt>/etc/X11/xkb/symbols/</tt> dizinine
+ <a class="link" href="../howto/turkish-howto_xkb-41.html" title="XFree86 4.1 sürümünün klavye dosyası">tr</a> ismiyle kaydedin. Mevcut dosyanızı
+ saklamak isterseniz ismini <tt>tr.eski</tt> olarak değiştirmeniz
+ yeterli olacaktır. Dosya hem Q klavye hem de F klavye yerleşimlerine
+ yanıt verecek şekilde düzenlenmiştir. <tt>xkb</tt> Türkçe
+ klavyesini X Window'a tanıtmak için <tt>XF86Config-4</tt>
+ dosyasında değişiklik yapmak gerekiyor.
+   </div><div class="para">
+X Window için farklı yapılandırma dosyaları kullanılabilmektedir.
+ Hangi yapılandırma dosyasının kullanıldığı
+ <tt>/var/log/XFree86.0.log</tt> dosyasının içinde yazar.
+ Dosya içinde şuna benzer bir satır arayacaksınız:
+   </div>
+<div class="para"><div align="right"><pre class="screen">
+  (==) Using config file: "/etc/X11/XF86Config-4"
+</pre></div></div>
+    <div class="para">
+Aşağıdaki değişiklikleri burada belirtilen dosyada yaparsanız işinizi
+ şansa bırakmamış olursunuz:
+    </div><div class="para">
+Önce dosyayı bir metin düzenleyici ile açıp değişiklik yapacağımız
+ yeri bulun. <i><tt>Section "InputDevice"</tt></i> satırı ile başlayan
+ bölümde aşağıdaki satırlara benzer satırları bulun.
+    </div><div class="para">
+Q klavye kullanmak istiyorsanız:
+    </div>
+<div class="para"><div align="right"><pre class="screen">Option "XkbRules"   "xfree86"
+Option "XkbModel"   "pc105"
+Option "XkbLayout"  "tr"
+Option "XkbOptions" "grp_led:caps"
+</pre></div></div>
+    <div class="para">
+F Klavye kullanmak istiyorsanız:
+    </div>
+<div class="para"><div align="right"><pre class="screen">Option "XkbRules"   "xfree86"
+Option "XkbModel"   "pc105"
+Option "XkbLayout"  "tr"
+Option "XkbVariant"  "tr_f"
+Option "XkbOptions" "grp_led:caps"
+</pre></div></div>
+    <div class="para">
+satırlarını dosyaya yazın ve kaydedip X Window oturumunuzu yeniden
+ başlatın. Hemen bir <b><tt>xterm</tt></b> açın ve Türkçe karakterleri
+ yazmaya başlayın. Bu kadar basit.
+    </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/tip.png" /></td><th class="admon"><a name="turkish-howto_ipucu" id="turkish-howto_ipucu"></a>İpucu</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Kullanmakta olduğunuz Q klavyenizin başına onparmak bilen ve F klavye
+ kullanan bir arkadaşınız geçmek isterse ne yapmak gerektiğini
+ biliyor musunuz?
+      </div><div class="para">
+Hemen bir <b><tt>xterm</tt></b> açıyorsunuz ve aşağıdaki komutu giriyorsunuz:
+      </div>
+<div class="para"><div align="right"><pre class="screen"><tt>#</tt> <b><tt>setxkbmap tr -variant tr_f</tt></b>
+</pre></div></div>
+      <div class="para">
+Tekrar Q klavyenize kavuşmak için de:
+      </div>
+<div class="para"><div align="right"><pre class="screen"><tt>#</tt> <b><tt>setxkbmap tr -variant basic</tt></b>
+</pre></div></div>
+      </td></tr></table></div></dd></dl> <div class="head4"><a name="turkish-howto_xfree-420" id="turkish-howto_xfree-420"></a><tt>x-4.2.0</tt> için</div><dl><dd><div class="para">
+Önceki bölümde anlatılan çözüm <tt>x-4.2.0</tt> sürümünde
+ de çalışmakla birlikte bu sürümde ve sonrakilerde Türkçe'nin gerektirdiği
+ bazı özellikler koda eklenmiş olduğundan hem klavye dosyası basitleşmiş
+ hem de libc uyumluluğu için gereken sembolik bağın yapılması gereksiz
+ hale gelmiştir.
+    </div><div class="para">
+Önce <a class="link" href="../howto/turkish-howto_appendix.html" title="A. Ekler">Ekler</a>de verilen
+ <a class="link" href="../howto/turkish-howto_xkb-tr-42.html" title="XFree86 4.2 sürümünün klavye dosyası ve caps dosyası">tr</a> dosyasını sisteminizde
+ <tt>/etc/X11/xkb/symbols/</tt> dizinine
+ <a class="link" href="../howto/turkish-howto_xkb-tr-42.html" title="XFree86 4.2 sürümünün klavye dosyası ve caps dosyası">tr</a> ismiyle kaydedin. Mevcut dosyanızı
+ saklamak isterseniz ismini <tt>tr.eski</tt> olarak değiştirmeniz
+ yeterli olacaktır. Dosya hem Q klavye hem de F klavye yerleşimlerine yanıt
+ verecek şekilde düzenlenmiştir. <tt>caps</tt> dosyasını da dosya
+ sisteminizde <tt>/etc/X11/xkb/types/</tt> dizinine
+ <tt>caps</tt> ismiyle kaydedin.
+ <tt>x-4.2.0</tt> sürümünden sonraki sürümlerde <tt>caps</tt>
+ dosyası eğer yine unutulmazsa, dağıtımın içinde yer alacaktır.
+    </div><div class="para">
+Bir <a class="link" href="../howto/turkish-howto_xfree-xkb.html#turkish-howto_xfree-4x" title="x-4.2.0 öncesi">önceki</a> bölümde X Window'un hangi
+ yapılandırma dosyasını kullandığının nasıl bulunacağı ve bu dosyada
+ değişiklik yapılacak yerin neresi olduğunu belirtmiştim. Önceki bölümü
+ okumadan bu bölüme geldiyseniz önce <a class="link" href="../howto/turkish-howto_xfree-xkb.html#turkish-howto_xfree-4x" title="x-4.2.0 öncesi">orayı</a>
+ okumanızı öneririm.
+    </div><div class="para">
+Q klavye kullanmak istiyorsanız:
+    </div>
+<div class="para"><div align="right"><pre class="screen">Option "XkbRules"   "xfree86"
+Option "XkbModel"   "pc105"
+Option "XkbLayout"  "tr"
+Option "XkbOptions" "caps:shift"
+</pre></div></div>
+    <div class="para">
+F Klavye kullanmak istiyorsanız:
+    </div>
+<div class="para"><div align="right"><pre class="screen">Option "XkbRules"   "xfree86"
+Option "XkbModel"   "pc105"
+Option "XkbLayout"  "tr"
+Option "XkbVariant"  "tr_f"
+Option "XkbOptions" "caps:shift"
+</pre></div></div>
+    <div class="para">
+satırlarını dosyaya yazın ve kaydedip X Window oturumunuzu yeniden başlatın. Hemen bir <b><tt>xterm</tt></b> açın ve Türkçe karakterleri yazmaya başlayın.
+   </div><div class="para">
+Bir önceki bölümde verilen <a class="link" href="../howto/turkish-howto_xfree-xkb.html#turkish-howto_ipucu">ipucu</a> X Window'un <tt>4.2.0</tt> ve sonraki sürümünü kullananlar için de yaralıdır.
+   </div></dd></dl> <div class="head4"><a name="turkish-howto_xfree-430" id="turkish-howto_xfree-430"></a><tt>x-4.3.0</tt> ve sonrası</div><dl><dd><div class="para">
+X Pencere Yöneticisinin bu sürümünde Türkçe klavye ile ilgili tüm sorunlar çözülmüştür. x-4.3.0 dağıtıma girdikten sonra yazılımcılar için ve  101 tuşlu Q  klavye kullanıcıları için Türkçe Alt-Q klavye eşlemi de tr dosyasına eklenmiştir. <a class="link" href="../howto/turkish-howto_xkb-tr-43.html" title="XFree86 4.3.0 sürümünün klavye dosyası">tr</a> dosyasının son halini <a class="link" href="../howto/turkish-howto_appendix.html" title="A. Ekler">Ekler</a>de bulabilirsiniz.
+    </div><div class="para">
+<a href="../howto/turkish-howto_xfree-xkb.html#turkish-howto_xfree-4x" class="xref" title="x-4.2.0 öncesi">x-4.2.0 öncesi</a> bölümünde XFree86'nın hangi yapılandırma dosyasını kullandığının nasıl bulunacağı ve bu dosyada değişiklik yapılacak yerin neresi olduğunu belirtmiştim. Önceki bölümü okumadan bu bölüme geldiyseniz önce <a class="link" href="../howto/turkish-howto_xfree-xkb.html#turkish-howto_xfree-4x" title="x-4.2.0 öncesi">orayı okumanızı</a> öneririm.
+    </div><div class="para">
+Q klavye kullanmak istiyorsanız:
+    </div>
+<div class="para"><div align="right"><pre class="screen">Option "XkbRules"   "xfree86"
+Option "XkbModel"   "pc105"
+Option "XkbLayout"  "tr"
+Option "XkbOptions" "caps:shift"
+</pre></div></div>
+    <div class="para">
+F Klavye kullanmak istiyorsanız:
+    </div>
+<div class="para"><div align="right"><pre class="screen">Option "XkbRules"   "xfree86"
+Option "XkbModel"   "pc105"
+Option "XkbLayout"  "tr"
+Option "XkbVariant" "tr_f"
+Option "XkbOptions" "caps:shift"
+</pre></div></div>
+    <div class="para">
+Alt-Q Klavye kullanmak istiyorsanız:
+    </div>
+<div class="para"><div align="right"><pre class="screen">Option "XkbRules"   "xfree86"
+Option "XkbModel"   "pc101"
+Option "XkbLayout"  "tr"
+Option "XkbVariant" "tr_alt"
+</pre></div></div>
+    <div class="para">
+satırlarını dosyaya yazın ve kaydedip X Window oturumunuzu yeniden başlatın. Hemen bir <b><tt>xterm</tt></b> açın ve Türkçe karakterleri yazmaya başlayın.
+   </div></dd></dl></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Debian</div><dl><dd><div class="para">
+Debian için X klavye ayarları ile <a class="link" href="../howto/turkish-howto_xfree-xkb.html#turkish-howto_xfree-xkb-rh" title="Red Hat"> Red Hat klavye ayarları</a> arasında fark yoktur. Dikkat edilmesi gerekli husus kullandığınız Debian sürümünde kurulu X'in sürümüdür. Aşağıda verilen komutlar X klavye dosyalarının sisteme kopyalanması işlemlerini her sürüm için açık şekilde göstermektedir.
+      </div><div class="para">
+<tt>x-4.1</tt> kullanıyorsanız ("Woody"):
+      </div>
+<div class="para"><div align="right"><pre class="screen"><tt>#</tt> <b><tt>cp --suffix='.eski' ~/tr/tr-4.1 /etc/X11/xkb/symbols/tr</tt></b>
+</pre></div></div>
+      <div class="para">
+<tt>x-4.2</tt> kullanıyorsanız:
+      </div>
+<div class="para"><div align="right"><pre class="screen"><tt>#</tt> <b><tt>cp --suffix='.eski' ~/tr/tr-4.2 /etc/X11/xkb/symbols/tr</tt></b>
+</pre></div></div>
+      <div class="para">
+<tt>x-4.3</tt> kullanıyorsanız: (<tt>tr_alt</tt> klavye kullanmayacaksınız <tt>x-4.3.0</tt> ve sonrasında X dağıtımıyla hazır gelen sembol dosyası da kullanılabilir.  Ekteki <tt>tr-4.3</tt> dosyasında <tt>tr_alt</tt> yerleşimi de tanımlıdır.)
+      </div>
+<div class="para"><div align="right"><pre class="screen"><tt>#</tt> <b><tt>cp --suffix='.eski' ~/tr/tr-4.3 /etc/X11/xkb/symbols/tr</tt></b>
+</pre></div></div>
+      </dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/turkish-howto_xfree-ttf.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/turkish-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/turkish-howto_xfree-desktop.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">True Type yazı tiplerinin kullanımı </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> X Masaüstü Yöneticileri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

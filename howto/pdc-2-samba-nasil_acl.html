@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:48+03:00" /><title>ACL Desteği</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/pdc-2-samba-nasil.html" title="WindowsPDC 2 SAMBA" /><link rel="previous" href="../howto/pdc-2-samba-nasil_pdc.html" title="Samba'nın PDC Olarak Ayarlanması" /><link rel="next" href="../howto/pdc-2-samba-nasil_ta.html" title="Trust Account (nt/w2k)" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">ACL Desteği</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/pdc-2-samba-nasil_pdc.html">Önceki</a> </td><th width="60%" align="center">WindowsPDC 2 SAMBA</th><td width="20%" align="right"> <a accesskey="n" href="../howto/pdc-2-samba-nasil_ta.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="pdc-2-samba-nasil_acl" id="pdc-2-samba-nasil_acl"></a>ACL Desteği</div><dl><dd><div class="para">
+Bildiğiniz gibi w2k pdc veya w2k'lar arasında dosya yetkilendirme işlemleri
+yapabiliyoruz. Bunu samba üzerinde de yapmamız olasi. ACL desteği ile bu
+mümkün olabiliyor. Bunun için kurmamız gereken paketler ve yamamız gereken
+bir çekirdek var (2.4 ve 2.2 için). Ve tabii ki, buna göre Samba'yı yeniden
+derlemek. 2.5.x çekirdekte bu destek eklenmiş durumda. Şu an için ext2,
+ext3 ve xfs(mandrake) ile çalışıyor ama ben size ext2'yi öneririm.
+Problemsiz çalıştığı bir dosya sistemi. En azından ben ext3 üzerinde denemeler
+yaptım fakat problemlerle karşılaştım. ACL için resmi site:
+<a class="ulink" href="http://acl.bestbits.at" target="_top">acl.bestbits.at</a>. Burada yapmanız
+gerekenler ayrıntılı bir şekilde anlatılıyor. Kullandığınız Linux dağıtımına
+göre bilgi alabilirsiniz.
+    </div><div class="para">
+Buna ek olarak Samba'yı derlerken ekleyeceğiniz satır ise;
+</div><div class="para"><div align="right"><pre class="screen">
+./configure --with-quotas --with-acl-support
+</pre></div></div><div class="para">
+<tt>smb.conf</tt> dosyasında;
+</div><div class="para"><div align="right"><pre class="screen">force user = root</pre></div></div><div class="para">
+Böylelikle yapılan ACL
+değişikliklerinde root olarak davranılmış olacaktır.
+</div><div class="para"><div align="right"><pre class="screen">nt acl support = Yes</pre></div></div><div class="para">
+ACL desteğinin
+kullanılacağını anlatır. Bu satır eğer samba derlenirken
+<tt>--with-acl-support</tt> kullanılmışsa öntanımlı olarak
+<tt>smb.conf</tt> içinde bulunur. Ayrıca bu paremetreyi ister.
+[global] kısmında ya da isterseniz [share] kısımlarında kullanabilirsiniz.
+    </div><div class="para">
+Doğru olarak çalıştırabildiğinizde w2k üzerinde dosya güvenliğini
+sağlayabilirsiniz. Eğer <i>access denied</i> diye bir mesaj
+alırsanız 2 hata yapmış olma olasılığınız vardır. Ya ACL doğru olarak
+kurulamamıştır veya eksiklikler vardır. Ya da kullanıcı izinleri yetersizdir.
+<tt>Force user = root user1</tt> gibi bir satır eklemeyi deneyin
+ve smb günlük kayıtlarını çok iyi inceleyin.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/pdc-2-samba-nasil_pdc.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/pdc-2-samba-nasil.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/pdc-2-samba-nasil_ta.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Samba'nın PDC Olarak Ayarlanması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Trust Account (nt/w2k)</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

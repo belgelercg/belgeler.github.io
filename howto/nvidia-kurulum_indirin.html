@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:55+03:00" /><title>Önhazırlık ve Paketlerin İndirilmesi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/nvidia-kurulum.html" title="NVIDIA 1.0-4191 Kurulumu" /><link rel="previous" href="../howto/nvidia-kurulum_kartlar.html" title="Desteklenen Kartlar" /><link rel="next" href="../howto/nvidia-kurulum_kurun.html" title="Paketlerin Kurulumu ve Ayarlar" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Önhazırlık ve Paketlerin İndirilmesi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/nvidia-kurulum_kartlar.html">Önceki</a> </td><th width="60%" align="center">NVIDIA 1.0-4191 Kurulumu</th><td width="20%" align="right"> <a accesskey="n" href="../howto/nvidia-kurulum_kurun.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="nvidia-kurulum_indirin" id="nvidia-kurulum_indirin"></a>Önhazırlık ve Paketlerin İndirilmesi</div><dl><dd><div class="para">İlkönce X sunucusunun kullandığı ayar dosyasını tespit edelim:</div><div class="para"><div align="right"><pre class="screen">
+# echo $DISPLAY
+:0.0
+
+# cat /var/log/XFree86.0.log | grep "Using config file:" | cut -d":" -f2
+"/etc/X11/XF86Config-4"
+</pre></div></div><div class="para">Ayar dosyamız demekki; <tt>/etc/X11/XF86Config-4</tt></div><div class="para">Daha sonra çekirdek kaynak paketinin olup olmadığını kontrol
+      ediyoruz. Çekirdek kaynak paketinin sistemizinde kurulu olması
+      gereklidir:</div>
+<div class="para"><div align="right"><pre class="screen">
+# rpm -qa  |  grep kernel
+kernel-2.4.18-10
+kernel-source-2.4.18-10
+</pre></div></div><div class="para">Eğer <tt>src.rpm</tt> olarak kurmak istiyorsanız,
+    <tt>rpm-build</tt> paketinin
+    sisteminizde kurulu olması gerekmekdedir:</div>
+<div class="para"><div align="right"><pre class="screen">
+# rpm -qa  |  grep rpm-build
+rpm-build-4.0.4-7x.18
+</pre></div></div><div class="para">Bundan sonra nasıl kuracağımıza karar vermemiz gerekli. Biz burda
+    sadece <tt>src.rpm</tt> olarak nasıl
+    kuracağımızı anlatacağız.</div> <div class="head3"><a name="id1" id="id1"></a><tt>src.rpm</tt> olarak kurulum</div><dl><dd><div class="para"><tt>src.rpm</tt> olarak kurmak için önce gerekli olan
+      2 paketi indirmemiz gerekli.</div>
+        <ol class="orderedlist" start="ignore" type="1"><li><div class="listitem">
+            Modül paketi: <a class="ulink" href="http://download.nvidia.com/XFree86_40/1.0-4191/NVIDIA_kernel-1.0-4191.src.rpm" target="_top">http://download.nvidia.com/XFree86_40/1.0-4191/NVIDIA_kernel-1.0-4191.src.rpm</a></div></li><li><div class="listitem">
+            GLX paketi: <a class="ulink" href="http://download.nvidia.com/XFree86_40/1.0-4191/NVIDIA_GLX-1.0-4191.src.rpm" target="_top">http://download.nvidia.com/XFree86_40/1.0-4191/NVIDIA_GLX-1.0-4191.src.rpm</a></div></li></ol>
+      <div class="para">Şimdi gerekli olan RPM paketlerini oluşturuyoruz: (ilk önce
+      modül paketi)</div>
+<div class="para"><div align="right"><pre class="screen">
+# rpm --rebuild NVIDIA_kernel-1.0-4191.src.rpm
+</pre></div></div><div class="para">İşlem bittikten sonra nereye kaydolduğunu açıklayan satırlara
+        dikkat ediyoruz:
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+Requires(pre): /bin/sh
+Requires(post): /bin/sh
+Requires(preun): /bin/sh
+Requires: kernel &gt;= 2.2.0 rpm &gt;= 3.0.4
+<b><tt>Wrote: /usr/src/redhat/RPMS/i386/NVIDIA_kernel-1.0-4191.i586.rpm</tt></b>
+Executing(%clean): /bin/sh -e /root/redhat/tmp/rpm-tmp.9714
++ umask 022
++ cd /root/redhat/BUILD
++ cd NVIDIA_kernel-1.0-4191
++ '[' -n /root/redhat/tmp/NVIDIA_kernel-1.0
+¬ -a /root/redhat/tmp/NVIDIA_kernel-1.0 '!=' / ']'
++ rm -rf /root/redhat/tmp/NVIDIA_kernel-1.0
++ exit 0
+</pre></div></div><div class="para">Daha sonra GLX paketi için RPM paketi hazırlıyoruz:</div><div class="para"><div align="right"><pre class="screen">
+rpm --rebuild NVIDIA_GLX-1.0-4191.src.rpm
+......
+......
+......
+Requires: XFree86 &gt;= 4.0.1 NVIDIA_kernel kernel &gt; 2.2.0 ld-linux.so.2
+¬ libc.so.6 libdl.so.2
+libGLcore.so.1 libm.so.6 libX11.so.6 libXext.so.6 libc.so.6(GLIBC_2.0)
+libdl.so.2(GLIBC_2.0) libdl.so.2(GLIBC_2.1)
+<b><tt>Wrote: /usr/src/redhat/RPMS/i386/NVIDIA_GLX-1.0-4191.i586.rpm</tt></b>
+Executing(%clean): /bin/sh -e /root/redhat/tmp/rpm-tmp.28702
++ umask 022
++ cd /root/redhat/BUILD
++ cd NVIDIA_GLX-1.0-4191
++ '[' -n /root/redhat/tmp/NVIDIA_GLX-1.0 -a /root/redhat/tmp/NVIDIA_GLX-1.0
+¬ '!=' / ']'
++ rm -rf /root/redhat/tmp/NVIDIA_GLX-1.0
++ exit 0
+.........
+</pre></div></div><div class="para">Bu işlemlerden sonra bize lazım olan paketler hazırlandı. Bu
+      paketler:</div><div class="para"><pre class="literallayout">
+/usr/src/redhat/RPMS/i386/NVIDIA_GLX-1.0-4191.i586.rpm
+/usr/src/redhat/RPMS/i386/NVIDIA_kernel-1.0-4191.i586.rpm
+
+</pre></div><div class="para">Bu paketleri kurmadan önce grafik ortamı ile olan ilişkimizi
+      kesmemiz lazım. Bunun için root olarak aşağıdaki komutu verdiğimizde
+      otomatikman runlevel 3'e geçeceğiz ve bundan sonraki
+      işlemlerimizi bir süre oradan devam ettireceğiz:</div><div class="para"><div align="right"><pre class="screen"># init 3</pre></div></div><div class="para">Şimdi burdan tekrar root olarak sisteme giriş yapıyoruz.</div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/nvidia-kurulum_kartlar.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/nvidia-kurulum.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/nvidia-kurulum_kurun.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Desteklenen Kartlar </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Paketlerin Kurulumu ve Ayarlar</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

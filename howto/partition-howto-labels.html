@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:16+03:00" /><title>Etiketler</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/partition-howto.html" title="Linux Disk Bölümleme NASIL" /><link rel="previous" href="../howto/partition-howto-fdisk.html" title="fdisk ile diski bölümleme" /><link rel="next" href="../howto/partition-howto-formatting.html" title="Bir ext2/3 disk bölümünü biçimlendirmek" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Etiketler</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/partition-howto-fdisk.html">Önceki</a> </td><th width="60%" align="center">Linux Disk Bölümleme NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/partition-howto-formatting.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="partition-howto-labels" id="partition-howto-labels"></a>Etiketler</div><dl><dd><div class="para">
+Linux kullanımında disk sürücüleri aygıtlar olarak düşünülür, bu aygıtlar da <tt>/dev</tt> altındaki sanal dosyalardır. Örneğin, en düşük numaralı SCSI sürücüsünün ilk disk bölümü <tt>/dev/sdb1</tt> olarak gösterilir. <tt>/dev/sda</tt> olarak işaret edilen sürücü sistemden kaldırılırsa <tt>/dev/sda1</tt> disk bölümünden sonraki bölüm bir sonraki sistem açılışında otomatik olarak yeniden isimlendirilecektir.
+        </div> <div class="head3"><a name="partition-howto-volumelabels" id="partition-howto-volumelabels"></a>Aygıt Etiketleri</div><dl><dd><div class="para">
+Aygıt etiketleri nereye ve başka nelerin bağlı olduğuna bakmaksızın disk bölümleri için isimlendirilme yapılmasını sağlar. Bir linux aygıtı için etiketler zorunlu değildir. Her biri en fazla 16 karakter uzunluğunda olabilir.
+        </div><div class="para">
+Aygıt etiketleri oluşturmak için kullanılan  üç araç vardır: mke2fs, tune2fs ve e2label.
+        </div> <div class="head4"><a name="partition-howto-labelinvocation" id="partition-howto-labelinvocation"></a>Basit Çalıştırma</div><dl><dd>
+<div class="para"><pre class="literallayout">
+<b><tt>e2label</tt></b>      /dev/hdb1 pubsw
+
+<b><tt>tune2fs</tt></b> -L   pubsw /dev/hdb1
+</pre></div>
+          <div class="para">
+Bu komutların her ikisi de ikinci sürücünün ilk disk bölümünü "pubsw" olarak isimlendirir. Bu isim sürücü başka bir kontrol birimine takılsa veya başka bir bilgisayar taşınsa bile değişmeden kalır.
+          </div>
+<div class="para"><pre class="literallayout">
+<b><tt>mke2fs</tt></b>       pubsw /dev/hdb1
+
+<b><tt>mke2fs</tt></b> -L    pubsw /dev/hdb1
+</pre></div>
+          <div class="para">
+Bu iki komut bu işi dosya sistemi oluşturduktan sonra yapması dışında yukarıdaki iki komutla aynı işi yapar. Bu aynı zamanda var olan disk bölümlerinin de sileceğini belirtir.
+          </div></dd></dl> <div class="head4"><a name="howtousevolumelabels" id="howtousevolumelabels"></a>Kullanım</div><dl><dd><div class="para">
+Aşağıda bir <tt>fstab</tt> içeriği görüntülenmiştir. Bu dosya, sistem kurulumu sırarında /etc altında oluşturulur. Hangi disk bölümlerinin nasıl bağlanacağı bilgisini içerir. Yeni aygıtlar eklenip çıkarıldığında çeşitli uygulamalar tarafından veya sizin tarafınızdan değiştirilebilir.
+          </div>
+<div class="para"><div align="right"><pre class="programlisting">
+LABEL=/        /                    ext3    defaults        1 1
+LABEL=/boot    /boot                ext2    defaults        1 2
+none           /dev/pts             devpts  gid=5,mode=620  0 0
+none           /dev/shm             tmpfs   defaults        0 0
+LABEL=HOME     /home                ext3    defaults        1 2
+none           /proc                proc    defaults        0 0
+none           /sys                 sysfs   defaults        0 0
+LABEL=/usr     /usr                 ext3    defaults        1 2
+/dev/hdc1      /k-space             ext3    defaults        1 2
+/dev/hda6      swap                 swap    defaults        0 0
+/dev/hdd       /media/cdrecorder    auto    pamconsole,ro,exec,noauto,managed 0 0
+/dev/fd0       /media/floppy        auto    pamconsole,exec,noauto,managed 0 0
+</pre></div></div>
+          <div class="para">
+En sol sütün aygıtları hemem onun karşısındaki sütunsa bağlanacakları noktaları gösterir. Bu örnek etiket ve bağlama noktalarını karma içeren bir örnektir. İkinci disk kontrolündeki ana sürücü daima <tt>/k-space</tt> dizinine bağlanır. "HOME" etiketli disk sürücüsü ise hangi sürücü olduğuna ya da disk bölümü numarasına bakmaksızın <tt>/home</tt> dizinine bağlanır. Bağlama noktaları da, "/usr" gibi,  etiket olarak kullanılabilir.
+          </div></dd></dl></dd></dl> <div class="head3"><a name="devicelabels" id="devicelabels"></a>Aygıt Etiketleri</div><dl><dd><div class="para">
+<b><tt>devlabel</tt></b> aygıtlara sembolik bağlar oluşturmak için kullanılan bir betiktir. Örneğin,
+          </div>
+<div class="para"><pre class="literallayout">
+<b><tt>devlabel</tt></b> -d /dev/hdb1 -s /dev/home
+</pre></div>
+          <div class="para">
+<tt>/dev/hdb1</tt>'den <tt>/home</tt> dizinine bir bağ oluşturur. <tt>/dev/hdb1</tt> üzerindeki tekil bir belirteci de belirtilen bağ ile birlikte /etc/sysconfig/devlabel dosyasında da saklar. Eğer donanım <tt>/dev/hdc1</tt> olarak taşınırsa ona ait olan tekil belirteç (/usr/bin/partition_uuid kullanılarak) /etc/sysconfig/devlabel dosyasındaki karşılığına bakılarak <tt>/dev/home</tt>'u işaret edecek şekilde ayarlanır.
+          </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/partition-howto-fdisk.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/partition-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/partition-howto-formatting.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">fdisk ile diski bölümleme </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Bir ext2/3 disk bölümünü biçimlendirmek</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

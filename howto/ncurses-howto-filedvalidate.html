@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:10+03:00" /><title>Alan Doğrulama</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/ncurses-howto-forms.html" title="Form Kütüphanesi" /><link rel="previous" href="../howto/ncurses-howto-formwindows.html" title="Form Pencereleri" /><link rel="next" href="../howto/ncurses-howto-formdriver.html" title="form_driver: Form sisteminin dolap beygiri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Alan Doğrulama</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/ncurses-howto-formwindows.html">Önceki</a> </td><th width="60%" align="center">Form Kütüphanesi</th><td width="20%" align="right"> <a accesskey="n" href="../howto/ncurses-howto-formdriver.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="ncurses-howto-filedvalidate" id="ncurses-howto-filedvalidate"></a>Alan Doğrulama</div><dl><dd><div class="para">
+Varsayılan olarak bir alan kullanıcıdan herhangi bir girdiyi kabul eder. Alana bir doğrulama özelliği ilintilemek mümkündür. Böylece kullanıcının alanı terk ederken alan içerisindeki veriler onaylanması gereken şekille eşleşmezse o zaman işlem sekteye uğrayacaktır. Bazı doğrulama türleri karakter seviyesinde alana her bir karakter girilirken gerçeklenmektedir.
+</div><div class="para">
+Alana doğrulama özelliği aşağıdaki işlevlerle ilintilenebilir.
+</div>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>set_field_type</tt></b></tt></td><td valign="top"><table cellpadding="0" cellspacing="0" border="0" class="funcinline">
+<tr>
+  <td valign="top" class="paramdef"><pre class="paramdef">(FIELD   *<i>alan</i>,</pre></td>
+  <td valign="top" class="paramdef"><pre class="paramdef">/* değiştirilecek alan */</pre></td>
+</tr><tr>
+  <td valign="top" class="paramdef"><pre class="paramdef">FIELDTYPE *<i>alanozelligi</i>,</pre></td>
+  <td valign="top" class="paramdef"><pre class="paramdef">/* ilintilenecek özellik */</pre></td>
+</tr><tr>
+  <td valign="top" class="paramdef"><pre class="paramdef">...);</pre></td>
+  <td valign="top" class="paramdef"><pre class="paramdef">/* ilave parametreler */</pre></td>
+</tr></table></td></tr></table></div><div class="sagsutun">işlev</div></div></div><div style="padding:5px"></div>
+<div class="para">
+Bir kere ayarlandıktan sonra bir alan için doğrulama türü şu şekilde sorgulanabilir:
+</div>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>FIELDTYPE *<b><tt>field_type</tt></b></tt></td><td valign="top"><table cellpadding="0" cellspacing="0" border="0" class="funcinline">
+<tr>
+  <td valign="top" class="paramdef"><pre class="paramdef">(FIELD *<i>alan</i>);</pre></td>
+  <td valign="top" class="paramdef"><pre class="paramdef">/* sorgulanacak alan */</pre></td>
+</tr></table></td></tr></table></div><div class="sagsutun">işlev</div></div></div><div style="padding:5px"></div>
+<div class="para">
+Form sürücüsü bir alan içerisindeki veriyi sadece son kullanıcı tarafından girildiğinde doğrular.
+</div>
+<ul type="disc" class="itemizedlist"><li><div class="para">
+Uygulama programının kendisi <tt>set_field_buffer</tt> çağırarak alan değerini değiştirdiğinde ise doğrulama gerçeklenmez.
+</div></li><li><div class="para">
+Birbirine bağlı alanlar dolaylı şekilde değiştirilir: Bağlı oldukları alanın değeri değiştirilir.
+</div></li></ul>
+<div class="para">
+Aşağıdakiler önceden tanımlanmış doğrulama türleridir. Kendiniz de yorucu ve biraz ustalık isteyen bir iş olmasına rağmen doğrulama türü tanımlayabilirsiniz.
+</div><div class="head4"><a name="id15" id="id15"></a>TYPE_ALPHA</div><div class="para">
+Bu alan türü alfabetik verileri kabul eder; boşluk, sayı, özel karakter olmayan (karakter girişi tarafından bu kontrol edilir). Şu şekilde ayarlanır:
+</div>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>set_field_type</tt></b></tt></td><td valign="top"><table cellpadding="0" cellspacing="0" border="0" class="funcinline">
+<tr>
+  <td valign="top" class="paramdef"><pre class="paramdef">(FIELD *<i>alan</i>,</pre></td>
+  <td valign="top" class="paramdef"><pre class="paramdef">/* değiştirilecek alan */</pre></td>
+</tr><tr>
+  <td valign="top" class="paramdef"><pre class="paramdef"><tt>TYPE_ALPHA</tt>,</pre></td>
+  <td valign="top" class="paramdef"><pre class="paramdef">/* ilişiklendirilecek tür */</pre></td>
+</tr><tr>
+  <td valign="top" class="paramdef"><pre class="paramdef">int     <i>genişlik</i>);</pre></td>
+  <td valign="top" class="paramdef"><pre class="paramdef">/* alanın en fazla genişliği */</pre></td>
+</tr></table></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<i><tt>genişlik</tt></i> parametreleri veri için an az genişlik değerini ayarlar. Kullanıcının alandan veri girişini terk edebilmesi için en az bu ayarlanan değer genişliğinde veri girmesi gerekir. Tipik olarak bunu alan genişliği ile aynı ayarlamak isteyeceksiniz; eğer alan genişliğinden daha büyük olursa alan doğrulama sekteye uğrayacaktır. Değer olarak sıfır girilmesi ise alanın tamamlanmasını isteğe bağlı yapar.
+</div></dd></dl><div style="padding:5px"></div>
+<div class="head4"><a name="id25" id="id25"></a>TYPE_ALNUM</div><div class="para">
+Bu alan türü alfabetik veriler ve sayılar kabul eder; boşluk ve özel karakterler (karakter girişi sırasında kontrol edilir) olmaz. Şu şekilde ayarlanır:
+</div>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>set_field_type</tt></b></tt></td><td valign="top"><table cellpadding="0" cellspacing="0" border="0" class="funcinline">
+<tr>
+  <td valign="top" class="paramdef"><pre class="paramdef">(FIELD *<i>alan</i>,</pre></td>
+  <td valign="top" class="paramdef"><pre class="paramdef">/* değiştirilecek alan */</pre></td>
+</tr><tr>
+  <td valign="top" class="paramdef"><pre class="paramdef"><tt>TYPE_ALNUM</tt>,</pre></td>
+  <td valign="top" class="paramdef"><pre class="paramdef">/* ilişiklendirilecek tür */</pre></td>
+</tr><tr>
+  <td valign="top" class="paramdef"><pre class="paramdef">int     <i>genişlik</i>);</pre></td>
+  <td valign="top" class="paramdef"><pre class="paramdef">/* alanın en fazla genişliği */</pre></td>
+</tr></table></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<i><tt>genişlik</tt></i> parametreleri verinin en az genişliğini ayarlar. <tt>TYPE_ALPHA</tt> ile bunu alanın genişliği ile aynı yapmak isteyeceksiniz; eğer alanın genişliğinden daha büyük olursa doğrulama sekteye uğrar. Değeri sıfır olarak ayarlanırsa alanın tamamlanması isteğe bağlı hale gelir.
+</div></dd></dl><div style="padding:5px"></div>
+<div class="head4"><a name="id35" id="id35"></a>TYPE_ENUM</div><div class="para">
+Bu tür bir ayarlama alan değerlerinin belli dizgelerden biri (örneğin, iki harfli posta kodu) olmasını zorunlu kılar. Şu şekilde ayarlanır:
+</div>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>set_field_type</tt></b></tt></td><td valign="top"><table cellpadding="0" cellspacing="0" border="0" class="funcinline">
+<tr>
+  <td valign="top" class="paramdef"><pre class="paramdef">(FIELD *<i>alan</i>,</pre></td>
+  <td valign="top" class="paramdef"><pre class="paramdef">/* değiştirilecek alan */</pre></td>
+</tr><tr>
+  <td valign="top" class="paramdef"><pre class="paramdef"><tt>TYPE_ENUM</tt>,</pre></td>
+  <td valign="top" class="paramdef"><pre class="paramdef">/* ilişiklendirilecek tür */</pre></td>
+</tr><tr>
+  <td valign="top" class="paramdef"><pre class="paramdef">char  **<i>değerlistesi</i>,</pre></td>
+  <td valign="top" class="paramdef"><pre class="paramdef">/* olası değerlerin listesi */</pre></td>
+</tr><tr>
+  <td valign="top" class="paramdef"><pre class="paramdef">int     <i>buyukluk</i>,</pre></td>
+  <td valign="top" class="paramdef"><pre class="paramdef">/* büyük küçük harf duyarlı mı? */</pre></td>
+</tr><tr>
+  <td valign="top" class="paramdef"><pre class="paramdef">int     <i>tekillik</i>);</pre></td>
+  <td valign="top" class="paramdef"><pre class="paramdef">/* tekil olarak belirtilmeli mi? */</pre></td>
+</tr></table></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+<i><tt>değerlistesi</tt></i> parametreleri NULL ile sonlanmış geçerli dizgeler listesini işaret etmelidir. <i><tt>buyukluk</tt></i> değişkeni dizge ile karşılaştırmayı büyük küçük harfe duyarlı hale getirir.
+</div><div class="para">
+Kullanıcı <tt>TYPE_ENUM</tt> alanını terk ettiğinde, doğrulama işlemi önbellekteki veriyi geçerli bir girişe tamamlamaya çalışır. Tam bir dizge seçeneği girildiyse, elbette ki geçerlidir. Fakat aynı zamanda bir dizgenin öneklerini girmek te mümkündür, bu durumda kalanı tamamlanacaktır.
+</div><div class="para">
+Öntanımlı olarak eğer böylesi bir önek girer ve bununla eşleşen birden fazla dizge listesi bulunursa, ilk eşlenen değere tamamlanır. Fakat eğer <i><tt>tekillik</tt></i> değeri mantıksal doğru ise, bu eşlenenin tekil olması zorunluluğunu getirir.
+</div><div class="para">
+<tt>REQ_NEXT_CHOICE</tt> ve <tt>REQ_PREV_CHOICE</tt> girdi istekleri bu alanlar ile faydalı şekilde kullanılabilir.
+</div></dd></dl><div style="padding:5px"></div>
+<div class="head4"><a name="id45" id="id45"></a>TYPE_INTEGER</div><div class="para">
+Bu alan türü bir tamsayı kabul eder. Şu şekilde ayarlanır:
+</div>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>set_field_type</tt></b></tt></td><td valign="top"><table cellpadding="0" cellspacing="0" border="0" class="funcinline">
+<tr>
+  <td valign="top" class="paramdef"><pre class="paramdef">(FIELD *<i>alan</i>,</pre></td>
+  <td valign="top" class="paramdef"><pre class="paramdef">/* değiştirilecek alan */</pre></td>
+</tr><tr>
+  <td valign="top" class="paramdef"><pre class="paramdef"><tt>TYPE_INTEGER</tt>,</pre></td>
+  <td valign="top" class="paramdef"><pre class="paramdef">/* ilişiklendirilecek tür */</pre></td>
+</tr><tr>
+  <td valign="top" class="paramdef"><pre class="paramdef">char    <i>adimlama</i>,</pre></td>
+  <td valign="top" class="paramdef"><pre class="paramdef">/* sıfırlarla doldurulacak yer sayısı */</pre></td>
+</tr><tr>
+  <td valign="top" class="paramdef"><pre class="paramdef">int     <i>vmin</i>,</pre></td>
+  <td valign="top" class="paramdef"><pre class="paramdef">/* geçerli aralık */</pre></td>
+</tr><tr>
+  <td valign="top" class="paramdef"><pre class="paramdef">int     <i>vmax</i>);</pre></td>
+  <td valign="top" class="paramdef"><pre class="paramdef">/* geçerli aralık */</pre></td>
+</tr></table></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Geçerli karakterler önlerinde eksi işareti olabilen sayılardır. Menzil kontrolü çıkış anında gerçeklenir. Eğer aralığın en büyük değeri en az değerden küçük veya eşitse aralık gözardı edilir.
+</div><div class="para">
+Eğer değer aralık kontrolünü geçerse, <i><tt>adimlama</tt></i> parametresindeki değere göre uygun sıfırlarla doldurma gerçeklenir.
+</div><div class="para">
+<tt>TYPE_INTEGER</tt> değer önbelleği C kütüphanesindeki atoi(3) işlevi ile uygun şekilde ifade edilebilir.
+</div></dd></dl><div style="padding:5px"></div>
+<div class="head4"><a name="id55" id="id55"></a>TYPE_NUMERIC</div><div class="para">
+Bu alan türü 10 tabanında bir sayı kabul eder. Şu şekilde ayarlanır:
+</div>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>set_field_type</tt></b></tt></td><td valign="top"><table cellpadding="0" cellspacing="0" border="0" class="funcinline">
+<tr>
+  <td valign="top" class="paramdef"><pre class="paramdef">(FIELD *<i>alan</i>,</pre></td>
+  <td valign="top" class="paramdef"><pre class="paramdef">/* değiştirilecek alan */</pre></td>
+</tr><tr>
+  <td valign="top" class="paramdef"><pre class="paramdef"> <tt>TYPE_NUMERIC</tt>,</pre></td>
+  <td valign="top" class="paramdef"><pre class="paramdef">/* ilişiklendirilecek tür */</pre></td>
+</tr><tr>
+  <td valign="top" class="paramdef"><pre class="paramdef"> int    <i>hassasiyet</i>,</pre></td>
+  <td valign="top" class="paramdef"><pre class="paramdef">/* noktadan sonraki hassasiyet */</pre></td>
+</tr><tr>
+  <td valign="top" class="paramdef"><pre class="paramdef"> int    <i>vmin</i>,</pre></td>
+  <td valign="top" class="paramdef"><pre class="paramdef">/* geçerli aralık */</pre></td>
+</tr><tr>
+  <td valign="top" class="paramdef"><pre class="paramdef"> int    <i>vmax</i>);</pre></td>
+  <td valign="top" class="paramdef"><pre class="paramdef">/* geçerli aralık */</pre></td>
+</tr></table></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Geçerli karakterle önlerinde eksi işareti de olabilen sayılardır. Muhtemelen bir de ondalık belirteci bir nokta vardır. Menzil kontrolü çıkışta kontrol edilir. Eğer aralığın en büyük değeri en küçük değerden küçük veya ona eşitse aralık gözardı edilir.
+</div><div class="para">
+Eğer değer, aralık kontrolünü geçerse <i><tt>hassasiyet</tt></i> kısmındaki değere göre uygun olarak sağ taraf sıfırlarla doldurulur.
+</div><div class="para">
+Bir <tt>TYPE_NUMERIC</tt> değeri C kütüphanesindeki atof(3) işlevi ile uygun şekilde ifade edilebilir.
+</div></dd></dl><div style="padding:5px"></div><div class="head4"><a name="id65" id="id65"></a>TYPE_REGEXP</div><div class="para">
+Bu alan düzenli ifadeler şeklinde yazılmış verileri kabul eder. Şu şekilde ayarlanır:
+</div>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>int <b><tt>set_field_type</tt></b></tt></td><td valign="top"><table cellpadding="0" cellspacing="0" border="0" class="funcinline">
+<tr>
+  <td valign="top" class="paramdef"><pre class="paramdef">(FIELD *<i>alan</i>,</pre></td>
+  <td valign="top" class="paramdef"><pre class="paramdef">/* değiştirilecek alan */</pre></td>
+</tr><tr>
+  <td valign="top" class="paramdef"><pre class="paramdef"><tt>TYPE_REGEXP</tt>,</pre></td>
+  <td valign="top" class="paramdef"><pre class="paramdef">/* ilişiklendirilecek tür */</pre></td>
+</tr><tr>
+  <td valign="top" class="paramdef"><pre class="paramdef">char   *<i>duzifd</i>);</pre></td>
+  <td valign="top" class="paramdef"><pre class="paramdef">/* eşleşecek ifade */</pre></td>
+</tr></table></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Düzensiz ifade sözdizimi regcomp(3) işlevindeki ile aynıdır. Düzensiz ifadeyi kontrol etmek için kontrol, çıkış anında gerçeklenir.
+</div></dd></dl><div style="padding:5px"></div>
+</dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/ncurses-howto-formwindows.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/ncurses-howto-forms.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/ncurses-howto-formdriver.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Form Pencereleri </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> form_driver: Form sisteminin dolap beygiri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

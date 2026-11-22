@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:30+03:00" /><title>greylistd</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/spam-filtering-exim-greylisting.html" title="Grilisteleme Desteğinin Eklenmesi" /><link rel="previous" href="../howto/spam-filtering-exim-greylisting.html" title="Grilisteleme Desteğinin Eklenmesi" /><link rel="next" href="../howto/spam-filtering-exim-greylist-mysql.html" title="MySQL gerçeklenimi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">greylistd</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/spam-filtering-exim-greylisting.html">Önceki</a> </td><th width="60%" align="center">Grilisteleme Desteğinin Eklenmesi</th><td width="20%" align="right"> <a accesskey="n" href="../howto/spam-filtering-exim-greylist-mysql.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="spam-filtering-exim-greylistd" id="spam-filtering-exim-greylistd"></a>greylistd</div><dl><dd><div class="para">
+Bu, belgenin yazarı tarafından bir Python gerçeklenimi olarak geliştirilmiş bir grilisteleme gerçeklenimidir. (Doğal olarak, bu gerçeklenim <a href="../howto/spam-filtering-exim-final.html" class="xref" title="Tamamlanmış ACL'ler">Tamamlanmış ACL'ler</a> bölümünde uygulanacak.) Tek başına bir artalan süreci olarak çalışır ve herhangi bir veritabanını kullanmaz. Grilesteleme verisi verimlilik açısından 32 bitlik basit bir çırpı olarak saklanır.
+      </div><div class="para">
+Paketi <a class="ulink" href="http://packages.debian.org/unstable/mail/greylistd" target="_top">http://packages.debian.org/unstable/mail/greylistd</a> adresinde bulabilirsiniz. Debian kullanıcıları APT ile kolayca kurabilir:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>apt-get install greylistd</tt></b>
+</pre></div></div>
+      <div class="para">
+<tt>greylistd</tt>'yi devreye sokmak için, <a href="../howto/spam-filtering-acl_rcpt_to_final.html" class="xref" title="acl_rcpt_to">acl_rcpt_to</a> ACL'sinde sonuncu <tt>accept</tt> deyiminden hemen önceye iki deyim ekleyeceğiz.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+  # Belli bir sunucu/gönderici/alıcı üçlüsü için grilisteleme durumunu
+  # belirleyecek "greylistd"'yi devreye sokacağız.
+  #
+  # Grilisteleme iletilerini bir boş gönderici için yapmıyoruz, çünkü
+  # boş gönderici adresli varlık doğrulaması işimize yaramaz (gerçek
+  # göndericinin varlığını sınamak için bir konağa posta gönderemeyiz).
+  #
+  defer
+    message     = $sender_host_address is not yet authorized to deliver mail \
+                  from &lt;$sender_address&gt; to &lt;$local_part@$domain&gt;. \
+                  Please try later.
+    log_message = greylisted.
+    domains     = +local_domains : +relay_to_domains
+    !senders    = : postmaster@*
+    set acl_m9  = $sender_host_address $sender_address $local_part@$domain
+    set acl_m9  = ${readsocket{/var/run/greylistd/socket}{$acl_m9}{5s}{}{}}
+    condition   = ${if eq {$acl_m9}{grey}{true}{false}}
+</pre></div></div>
+      <div class="para">
+Hatalı <a class="link" href="../howto/spam-filtering-glossary.html#spam-filtering-dsn">teslimat durum bildirimlerini</a> engellemek için <a class="link" href="../howto/spam-filtering-exim-sign.html" title="Zarf Gönderici İmlerinin Eklenmesi">zarf gönderici imlerini</a> kullanmıyorsanız, bunun benzeri bir deyimi <a href="../howto/spam-filtering-acl_data_final.html" class="xref" title="acl_data">acl_data</a> ACL'sine ayrıca boş göndericili grilisteleme iletileri olarak ekleyebilirsiniz.
+      </div><div class="para">
+Grilistelemenin amaçlarına uygun olarak veriyi burada yukarıdakinden biraz farklı olarak kullanıyoruz. Boş olan <tt>$sender_address</tt>'e ek olarak, bu noktada ne <tt>$local_part</tt> ne de <tt>$domain</tt> tanımlıdır. Ancak, <tt>$recipients</tt>, tüm alıcı adreslerinin virgüllerle ayrılmış bir listesini içerir. Meşru teslimat durum bildirimleri için bu değişken sadece bir adres içermelidir.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+  # Burada, zarf gönderici adresi olmayan iletilere grilisteleme
+  # uygulayacağız. Bunları RCPT TO:'dan sonra grilistelemeye konu
+  # etmeyeceğiz, çünkü gönderici varlık doğrulamaları yaparken
+  # karşı konaklarla olumsuz etkileşime girilebilir.
+  #
+  defer
+    message     = $sender_host_address is not yet authorized to send \
+                  delivery status reports to &lt;$recipients&gt;. \
+                  Please try later.
+    log_message = greylisted.
+    senders     = : postmaster@*
+    set acl_m9  = $sender_host_address $recipients
+    set acl_m9  = ${readsocket{/var/run/greylistd/socket}{$acl_m9}{5s}{}{}}
+    condition   = ${if eq {$acl_m9}{grey}{true}{false}}
+</pre></div></div>
+      </dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/spam-filtering-exim-greylisting.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/spam-filtering-exim-greylisting.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/spam-filtering-exim-greylist-mysql.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Grilisteleme Desteğinin Eklenmesi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> MySQL gerçeklenimi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

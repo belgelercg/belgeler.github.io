@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:15+03:00" /><title>Aygıtın Yapılandırılması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/touch-screen-howto.html" title="Linux Dokunmatik Ekran NASIL" /><link rel="previous" href="../howto/touch-screen-howto.html" title="Linux Dokunmatik Ekran NASIL" /><link rel="next" href="../howto/kahve-nasil.html" title="Kahve Yapmak Nasıl" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Aygıtın Yapılandırılması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/touch-screen-howto.html">Önceki</a> </td><th width="60%" align="center">Linux Dokunmatik Ekran NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/kahve-nasil.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="touch-screen-howto-configure" id="touch-screen-howto-configure"></a>Aygıtın Yapılandırılması</div><dl><dd><div class="para">
+Dokunmatik ekranlar <tt>XF86Config</tt> dosyasının (çoğunlukla <tt>/etc/X11/XF86Config</tt> veya <tt>/etc/XF86Config</tt>) Xinput bölümünde yapılandırılırlar. İlk olarak <tt>/usr/X11R6/lib/modules/</tt> dizininde bulunması gereken aygıt sürücüsü modüllerinin (yukarıda bahsedilen aygıtlar için bunlar <tt>xf86Elo.so</tt> ve <tt>xf86MuTouch.so</tt> dosyalarıdır) varlığını kontrol edin. Ardından <tt>XF86Config</tt> dosyasına baktığınızda aşağıdaki gibi bir bölüm görmelisiniz:
+   </div><div class="para"><div align="right"><pre class="screen">
+Section "Files"
+...
+ModulePath "/usr/X11R6/lib/modules"
+...
+EndSection
+</pre></div></div><div class="para">
+X sunucusu tarafından modülün yüklenebilmesi için aşağıdaki gibi bir bölüm olmalıdır:
+  </div><div class="para"><div align="right"><pre class="screen">
+Section "Module"
+  Load "xf86Elo.so"
+EndSection
+</pre></div></div><div class="para">
+Burası hassas bölümdür. X aygıt hakkında bazı parametrelere ihtiyaç duyar. Bununla ilgili bölüm aşağıdaki gibi olmalıdır (ayrıntılı bilgi için XF86Config kılavuz sayfasına bakabilirsiniz):
+  </div><div class="para"><div align="right"><pre class="screen">
+Section "Xinput"
+ SubSection "Elographics"
+#the entry for a MicroTouch device would be SubSection "MicrotouchFinger"
+  Port "/dev/ttyS1" # for a device at serial port 2
+  DeviceName "TouchScreen" #could be any unambiguous name
+  MinimumXPosition 300
+  MaximumXPosition 3700
+  MinimumYPosition 300
+  MaximumYPosition 3700
+  UntouchDelay 10 #not supported with MuTouch
+  ReportDelay 10  #not supported with MuTouch
+  AlwaysCore #activates the device on startup
+ EndSubSection
+EndSection
+</pre></div></div><div class="para">
+<tt>MinimumXPosition</tt> gibi değerler elbette kurmaya çalıştığınız donanıma özeldir (yani dokunmatik ekranın monitörünüze göreceli konumu ile ilgilidir). Bu değerler monitörünüzün (0,0) ve (xmax,ymax) noktalarının (xmax ve ymax Xserver için seçtiğiniz çözünürlüğe bağlıdır, 1024x768 gibi) dokunmatik ekranınızda nereye eşlendiğini gösterir. Aygıt sürücüsü bu değerleri okur ve diğer koordinatlara genişletir. Örnek bir durum şöyle gösterilebilir:
+  </div><div class="para"><pre class="literallayout">
+ ------------dokunmatik ekran alanı--------------
+ I                                              I
+ I  #######görünebilir ekran alanı############  I
+ I  #x                                       #  I
+ I  # (0,0)                                  #  I
+ I  # (MinimumXPosition,MinimumYPosition)    #  I
+ I  #                                        #  I
+ I  #                                        #  I
+ I  #                                        #  I
+ I  #                                        #  I
+ I  #                                        #  I
+ I  #                                        #  I
+ I  #                                        #  I
+ I  #     (MaximumXPosition,MaximumYPosition)#  I
+ I  #                             (xmax,ymax)#  I
+ I  #                                       x#  I
+ I  ##########################################  I
+ I                                              I
+ ------------------------------------------------
+</pre></div><div class="para">
+Bu haritalama deneme yanılma metoduyla yapılabileceği gibi aygıtın ham çıktısını okuyarak da yapılabilir (seri port programlama bilgisi gerekeceğinden <a class="ulink" href="http://www.tldp.org/HOWTO/Serial-Programming-HOWTO/" target="_top">Linux Seri Port Programlama NASIL</a> belgesine ihtiyacınız olabilir). EloTouch ve MicroTouch için bu belgenin yazarı tarafından hazırlanmış basit bir aracı <a class="ulink" href="http://www.sgoc.de/touchcal.html" target="_top">http://www.sgoc.de/touchcal.html</a> adresinden indirebilirsiniz.
+</div><div class="head3"><a name="touch-screen-howto-activate" id="touch-screen-howto-activate"></a>Aygıtın Etkin Hale Getirilmesi</div><div class="para">
+X başladıktan sonra bir Xterminal'de aşağıdaki komutu çalıştırın:
+  </div><div class="para"><div align="right"><pre class="screen">
+<b><tt>xsetpointer</tt></b> <i>aygıtismi</i>
+</pre></div></div><div class="para">
+Buradaki <i><tt>aygıtismi</tt></i> ifadesi <tt>XF86Config</tt> dosyasında DeviceName “.....” bölümüne yazdığınız ifade olmalıdır, bizim örneğimizde: <tt>TouchScreen</tt>.
+  </div><div class="para">
+Aygıtın açılışta çalışır duruma gelmesi için dokunmatik ekran bölümünde (önceki bölüme bakın) <tt>AlwaysCore</tt> seçeneğini kullanın.
+  </div><div class="head3"><a name="touch-screen-howto-paralel" id="touch-screen-howto-paralel"></a>Dokunmatik Ekran ve Farenin Paralel Kullanımı</div><div class="para">
+Dokunmatik ekran ve fareyi birlikte kullanabilmek için farenizin özelliklerini Xinput bölümünde belirtmelisiniz. Bu tanımlamalar <tt>Pointer</tt> bölümündekilerle aynı olmalıdır. Aşağıda PS/2 fare için bir örnek bulunmaktadır:
+  </div><div class="para"><div align="right"><pre class="screen">
+Section "Xinput"
+   SubSection "Mouse"
+      Protocol "PS/2"
+      Port "/dev/mouse" #/dev/psaux'da olabilir
+      DeviceName "Mouse"
+      AlwaysCore
+   EndSubSection
+...
+EndSection
+</pre></div></div><div class="para">
+Bu noktaya, özellikle <tt>AlwaysCore</tt> seçeneğine işaret eden çok kişi oldu, hepsine teşekkür ediyorum.
+  </div><div class="head3"><a name="touch-screen-howto-xfree86" id="touch-screen-howto-xfree86"></a>XFree86-4 Altında Yapılandırma</div><div class="para">Yazan: Lee Monamy</div><div class="para">
+ELO dokunmatik ekran için örnek <tt>XF86Config-4</tt>:
+  </div><div class="para"><div align="right"><pre class="screen">
+Section "InputDevice"
+    Identifier "ELO touchscreen"
+    Driver "elographics"
+    Option  "Device"                "/dev/ttyS0"
+    Option  "MinimumXPosition"      "300"
+    Option  "MaximumXPosition"      "3700"
+    Option  "MinimumYPosition"      "300"
+    Option  "MaximumYPosition"      "3700"
+    Option  "UntouchDelay"          "10"
+    Option  "ReportDelay"           "10"
+    Option  "SendCoreEvents"        "yes"
+EndSection
+</pre></div></div><div class="para">
+Sürüm 4 ile sürüm 3 arasındaki önemli fark port (<tt>Port</tt>) *değil* aygıt (<tt>Device</tt>) tanımlamanızdır, aksi halde hata alırsınız. Ayrıca sürüm3 'deki <tt>AlwaysCore</tt> yerine artık <tt>SendCoreEvents</tt> kullanılmaktadır.
+  </div><div class="para"><div align="right"><pre class="screen">
+(II) XINPUT: Adding extended input device "TOUCHSCREEN" (type: Elographics
+¬ Touch Screen)
+</pre></div></div><div class="para">
+Yukarıdaki gibi bir çıktı görseniz bile <tt>ServerLayout</tt> bölümünü de eklemeniz gereklidir:
+  </div><div class="para"><div align="right"><pre class="screen">
+Section "ServerLayout"
+  Identifier  "Default Layout"
+  Screen      "Default Screen"
+  InputDevice "Generic Keyboard"
+...
+  InputDevice "ELO touchscreen"
+EndSection
+</pre></div></div><div class="head4"><a name="touch-screen-howto-example" id="touch-screen-howto-example"></a>Örnek Yapılandırma</div><div class="para">Yazan: Dirk Mueller</div><div class="para">Microtouch SMT3 Serisi için:</div><div class="para"><div align="right"><pre class="screen">
+Section "InputDevice"
+    Identifier  "MicroTouchFinger"
+    Driver      "mutouch"
+    Option      "Type" "finger"
+    Option      "Device" "/dev/ttyS0"
+    Option      "ScreenNo" "0"
+    Option      "MinimumXPosition" "0"
+    Option      "MaximumXPosition" "16383"
+    Option      "MinimumYPosition" "0"
+    Option      "MaximumYPosition" "16383"
+EndSection
+</pre></div></div><div class="para">
+<tt>"Type"</tt> seçeneği <tt>"finger"</tt> ya da <tt>"stylus"</tt> değerlerini alabilir. Microtouch 3M-Touch tarafından satın alındığından kaynakları <a class="ulink" href="http://www.3M.com/3MTouchSystems/downloads/legacy.jhtml#Linux" target="_top">burada</a> bulabilirsiniz.
+  </div><div class="head4"><a name="touch-screen-howto-addendum" id="touch-screen-howto-addendum"></a>Ek Bilgi</div><div class="para">
+Wong Yeow Sen XFree86 4.2'de yapılandırma seçeneklerinin isimlerinin değiştiğini bildirdi (en azından Red Hat 7.3'de). Eğer bölmelendirme değerleriniz ayrıştırılmıyorsa aşağıdakini deneyin:
+  </div><div class="para"><div align="right"><pre class="screen">
+...
+    Option  "MinX"      "100"
+    Option  "MaxX"      "4000"
+    Option  "MinY"      "100"
+    Option  "MaxY"      "4000"
+...
+</pre></div></div><div class="head2"><a name="touch-screen-howto-fujitsu" id="touch-screen-howto-fujitsu"></a>Fujitsu LifeBooks Dokunmatik Ekranlar</div><div class="para">Yazan: Joerg Hau</div><div class="para">
+Bu aygıtlar hakkında ayrıntılı bilgi aşağıdaki adreslerde bulunabilir:
+  </div><ul type="disc" class="itemizedlist"><li>
+Harald Hoyer tarafından yazılan <a class="ulink" href="http://parzelle.de/Linux/Lifebook/" target="_top">Linux Touch Panel Drivers for the Fujitsu Lifebooks B112/B142/B2130</a>. Maalesef bu sayfalar sadece XFree 3.x için hazırlanmıştır ve 2000 yılından bu yana güncellenmemektedir.
+  </li><li>
+Kenan Esau tarafından yazılan <a class="ulink" href="http://www.conan.de/lifebook/lifebook.html" target="_top">Lifebook Series B Touchscreen driver</a>, Harald'ın sürücülerinin XFree 4.x için uyarlanmış halidir.
+  </li><li>
+Ben [Joerg Hau] de Kenan'ın sürücülerini Fujitsu LifeBook B142 için kullandım (<a class="ulink" href="http://www.mysunrise.ch/users/joerg.hau/linux/b142.htm" target="_top">http://www.mysunrise.ch/users/joerg.hau/linux/b142.htm</a>) ve harika bir sonuç elde ettim.
+  </li><li>...</li></ul><div class="head2"><a name="touch-screen-howto-reading" id="touch-screen-howto-reading"></a>Önerilen Kaynaklar</div><ul type="disc" class="itemizedlist"><li>
+XF86Config kılavuz sayfası
+  </li><li><a class="ulink" href="http://www.elotouch.com/Support/linux.asp" target="_top">http://www.elotouch.com/Support/linux.asp</a></li><li><a class="ulink" href="http://www.3M.com/3MTouchSystems/downloads/legacy.jhtml#Linux" target="_top">http://www.3M.com/3MTouchSystems/downloads/legacy.jhtml#Linux</a></li><li><a class="ulink" href="http://www.hof-berlin.de/tablet/tablet.html" target="_top">http://www.hof-berlin.de/tablet/tablet.html</a> (Bu URL'yi gönderen Christer Olofsson'a teşekkür ediyorum)
+  </li><li><a class="ulink" href="http://freshmeat.net/projects/xf86elousb" target="_top">http://freshmeat.net/projects/xf86elousb</a> (iTouch USB için sürücü)
+  </li><li>
+Dokunmatik ekranınızla birlikte gelen kitapçık <tt>:-)</tt></li></ul></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/touch-screen-howto.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/touch-screen-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/kahve-nasil.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Linux Dokunmatik Ekran NASIL </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Kahve Yapmak Nasıl</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

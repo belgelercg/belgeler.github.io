@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:33+03:00" /><title>Kurulum</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/postfix-kurulum.html" title="Postfix Kurulumu" /><link rel="previous" href="../howto/postfix-kurulum-giris.html" title="Hazırlık" /><link rel="next" href="../howto/postfix-kurulum-ayar.html" title="Yapılandırma" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Kurulum</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/postfix-kurulum-giris.html">Önceki</a> </td><th width="60%" align="center">Postfix Kurulumu</th><td width="20%" align="right"> <a accesskey="n" href="../howto/postfix-kurulum-ayar.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="postfix-kurulum-bu" id="postfix-kurulum-bu"></a>Kurulum</div><dl><dd> <div class="head3"><a name="id1" id="id1"></a><tt>cyrus-sasl</tt> Kurulumu</div><dl><dd>
+<div class="para"><div align="right"><pre class="screen"><tt># </tt><b><tt>tar zxf cyrus-sasl-2.1.18.tar.gz</tt></b>
+<tt># </tt><b><tt>cd cyrus-sasl-2.1.18</tt></b>
+<tt># </tt><b><tt>./configure --enable-plain --enable-login --disable-krb4 \</tt></b>
+<b><tt>--with-saslauthd=/var/run/saslauthd \</tt></b>
+<b><tt>--with-plugindir=/usr/local/lib/sasl2 --disable-cram --disable-digest \</tt></b>
+<b><tt>--disable-otp --disable-gssapi --disable-anon</tt></b>
+...
+<tt># </tt><b><tt>make</tt></b>
+...
+<tt># </tt><b><tt>make install</tt></b>
+...
+<tt># </tt><b><tt>ln -s /usr/local/lib/sasl2 /usr/lib/sasl2</tt></b>
+<tt># </tt><b><tt>echo "/usr/local/lib/" &gt;&gt; /etc/ld.so.conf</tt></b>
+<tt># </tt><b><tt>ldconfig</tt></b>
+</pre></div></div>
+  <div class="para">
+<b><tt>cyrus-sasl</tt></b> kurulumu esnasında muhtelemen kullanmayacağımız bazı seçenekleri <tt>disable</tt> seçenekleriyle iptal ettik. <tt>/usr/local/lib/sasl2/smtpd.conf</tt> dosyasını oluşturup içine şu satırları yazalım:
+  </div>
+<div class="para"><div align="right"><pre class="screen"># saslauthd kullanarak smtp kimlik dogrulamasi yap.
+<b><tt>pwcheck_method:saslauthd</tt></b>
+# Sadece plain ve login kimlik dogrulama yontemlerine izin verelim.
+<b><tt>mech_list: plain login</tt></b>
+</pre></div></div>
+  </dd></dl> <div class="head3"><a name="id2" id="id2"></a>Postfix Kurulumu</div><dl><dd><div class="para"></div>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>tar xvfz postfix-2.0.19.tar.gz</tt></b>
+# <b><tt>cd postfix-2.0.19</tt></b>
+# <b><tt>useradd postfix</tt></b>
+# <b><tt>groupadd postdrop</tt></b>
+# <b><tt>make makefiles CCARGS="-DUSE_SASL_AUTH -I/usr/local/include/sasl" \</tt></b>
+<b><tt>AUXLIBS="-L/usr/local/lib -lsasl2"</tt></b>
+<tt># </tt><b><tt>make</tt></b>
+...
+<tt># </tt><b><tt>make install</tt></b>
+</pre></div></div>
+  <div class="para">
+<b><tt>make install</tt></b> esnasında bir takım sorular soracak hepsinin öntanımlı değerini kabul edebilirsiniz. Şimdi aşağıdaki satırları <tt>/etc/rc.d/postfix</tt> dosyasına yazıp,
+  </div>
+<div class="para"><div align="right"><pre class="screen">
+#!/bin/bash
+#
+# postfix       Bu betik postfix'in baslatilip durdurulmasini saglar
+#
+
+
+case "$1" in
+    start)
+        /usr/sbin/postfix start
+    ;;
+    stop)
+        /usr/sbin/postfix stop
+    ;;
+    reload)
+        /usr/sbin/postfix reload
+    ;;
+    restart)
+        $0 stop
+        $0 start
+    ;;
+    *)
+    echo "Usage: $0 {start|stop|reload|restart}"
+    exit 1
+esac
+exit 0
+</pre></div></div>
+  <div class="para">755 izinlerini verelim.</div>
+<div class="para"><div align="right"><pre class="screen"><tt># </tt><b><tt>chmod 755 /etc/rc.d/postfix</tt></b>
+</pre></div></div>
+  </dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/postfix-kurulum-giris.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/postfix-kurulum.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/postfix-kurulum-ayar.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Hazırlık </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Yapılandırma</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

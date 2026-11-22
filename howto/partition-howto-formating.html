@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-9"><meta name="date" content="2005-11-06T18:17:19+02:00"><title>Disk Bölümlerinin Biçimlendirilmesi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png"><link rel="stylesheet" href="../belgeler.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun@superonline.com)"><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı"><link rel="up" href="../howto/partition-howto.html" title="Linux Disk Bölümleme NASIL"><link rel="previous" href="../howto/partition-howto-recovering.html" title="Silinmiş bir Disk Bölümünü Kurtarmak"><link rel="next" href="../howto/partition-rescue.html" title="Disk Bölümü Kurtarmak NASIL"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Navigation header" cellpadding="1" cellspacing="0" border="0"><tr><td bgcolor="black" class="navoutline"><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="white" class="navinline"><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Disk Bölümlerinin Biçimlendirilmesi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/partition-howto-recovering.html">Önceki</a> </td><th width="60%" align="center">Linux Disk Bölümleme NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/partition-rescue.html">Sonraki</a></td></tr></table></td></tr></table></td></tr></table><dl><div class="sect1"><dt><div> <h2 class="title" style="clear: both"><a name="partition-howto-formating"></a>Disk Bölümlerinin Biçimlendirilmesi</h2></div></dt><dd><p>
+Komut satırında disk bölümlerim üzerindeki dosya sistemlerini oluşturmaya başlıyorum.
+<a href="../howto/partition-howto-fdisk.html#partition-howto-mixed" title="Birincil ve mantıksal disk bölümleri karışık"> Birincil ve mantıksal disk bölümleri karışık</a> örneğini takiben:
+  </p><p>
+<div class="programlisting" align="right"><table width="95%" cellpadding="5" cellspacing="1" border="0" class="preoutline"><tr class="preinline"><td> <pre class="programlisting"># <b><tt>mke2fs /dev/sda1</tt></b>
+</pre> </td></tr></table></div>
+  </p><p>
+Bunu /dev/sda4 (ek disk bölümü) dışındakilerin hepsi için yapmalıyım.
+  </p><p>
+Linux ext2 dışındaki dosya sistemlerini de destekler. <tt>/usr/src/linux/include/linux/fs.h</tt> dosyasının içeriğine bakarak çekirdeğinizin hangi dosya sistemi türlerini desteklediğini öğrenebilirsiniz.
+    </p><p>
+Yaygın dosya sistemleri <tt>/sbin</tt> içerisindeki <tt>mk</tt> ile başlayan <b><tt>mkfs.msdos</tt></b> ve <b><tt>mke2fs</tt></b> gibi programlarla yapılabilir.
+  </p><dl><div class="sect2"><dt><div> <h3 class="title"><a name="partition-howto-swap"></a>Takas Alanınının Etkinleştirilmesi</h3></div></dt><dd><p>
+
+Bir takas alanını yapılandırmak için:
+    </p><p>
+<div class="programlisting" align="right"><table width="95%" cellpadding="5" cellspacing="1" border="0" class="preoutline"><tr class="preinline"><td> <pre class="programlisting"># <b><tt>mkswap -f /dev/hda5</tt></b>
+</pre> </td></tr></table></div>
+    </p><p>
+Takas alanını etkinleştirmek için:
+    </p><p>
+<div class="programlisting" align="right"><table width="95%" cellpadding="5" cellspacing="1" border="0" class="preoutline"><tr class="preinline"><td> <pre class="programlisting"># <b><tt>swapon  /dev/hda5</tt></b>
+</pre> </td></tr></table></div>
+    </p><p>
+Normalde, takas alanı önyükleme sırasında ilklendirme betikleri tarafından etkinleştirilir.
+    </p></dd></div></dl><dl><div class="sect2"><dt><div> <h3 class="title"><a name="partition-howto-mounting"></a>Disk Bölümlerinin Bağlanması</h3></div></dt><dd><p>
+
+Disk bölümlerini bağlamak onları linux dosya sistemi ile ilişkilendirmek demektir. Bir linux disk bölümünü bağlamak için:
+    </p><p>
+<div class="programlisting" align="right"><table width="95%" cellpadding="5" cellspacing="1" border="0" class="preoutline"><tr class="preinline"><td> <pre class="programlisting"># <b><tt>mount -t ext2 /dev/sda1 /opt</tt></b>
+</pre> </td></tr></table></div>
+    </p><p><div class="variablelist"><dl><dt><span class="term"><tt>-t ext2</tt></span></dt><dd>
+Dosya sistemi türü. Kullanmak isteyebileceğiniz diğer dosya sistemi türleri:
+    <p></p><p><div class="itemizedlist"><ul type="disc"><li>ext3 (ext2 tabalı günlüklemeli (journaling) dosya sistemi)</li><li>msdos (DOS)</li><li>hfs (mac)</li><li>iso9660 (CDROM)</li><li>nfs (ağ dosya sistemi)</li></ul></div>
+    </p><p></p></dd><dt><span class="term"><tt>/dev/sda1</tt></span></dt><dd>
+Aygıt adı. Kullanmak isteyebiledeğiniz diğer aygıt dosyası adları:
+    <p></p><p><div class="itemizedlist"><ul type="disc"><li><tt>/dev/hdb2</tt> (ikinci IDE sürücüsündeki ikinci disk bölümü)</li><li><tt>/dev/fd0</tt>  (floppy disk A)</li><li><tt>/dev/cdrom</tt>  (CDROM)</li></ul></div>
+    </p><p></p></dd><dt><span class="term"><tt>/opt</tt></span></dt><dd>
+Bağlama noktası. Burası <b><tt>ls /opt</tt></b> yazdığınız zaman "görmek" istediğiniz yerdir, böylece <tt>/dev/sda1</tt> içerisinde ne varmış diye görebilirsiniz. Eğer <tt>/opt</tt> altında halihazırda dizinler ve/veya dosyalar varsa bağlama işleminden sonra bunlar görünmez olacaklardır.
+    <p></p><p></p></dd></dl></div></p></dd></div></dl><dl><div class="sect2"><dt><div> <h3 class="title"><a name="partition-howto-fragmentation"></a>Saçılım ve Dosya sistemleri hakkında bazı gerçekler</h3></div></dt><dd><p>
+Disk alanı işletim sistemi tarafından bloklar ve blok kayıtları olarak yönetilir. ext2'de, bloklar ve blok kayıtları aynı büyüklükte olmalıdır, böylece açıklamamızı bloklarla sınırlandırabiliriz.
+    </p><p>
+Dosyalar herhangi bir büyüklükte olabilir. Blok sınırlarıyla sonlanmazlar. Dolayısiyle her bir dosya için bloğun bir kısmı boşa harcanır. Dosya boylarının rasgele olduğunu varsayarsak, her bir dosya için diskinizde yaklaşık yarım blok boşa harcanmaktadır. Tanenbaum "İşletim Sistemleri" ("Operating Systems") isimli kitabında buna "dahili saçılım" ("internal fragmentation") demektedir.
+    </p><p>
+Kaç dosyanız olduğunu dosya düğümü (inode) sayısına bakarak tahmin edebilirsiniz. Benim diskimde
+    </p><p>
+<div class="programlisting" align="right"><table width="95%" cellpadding="5" cellspacing="1" border="0" class="preoutline"><tr class="preinline"><td> <pre class="programlisting"># <b><tt>df -i</tt></b>
+Dosyasistemi      Dosyaindeksi Dolu    Boş    Kull% Bağlanılan yer
+/dev/hda3              64256   12234   52022    19%  /
+/dev/hda5              96000   43058   52942    45%  /var
+</pre> </td></tr></table></div>
+    </p><p>
+<tt>/</tt> üzerinde yaklaşık 12000, <tt>/var</tt> üzerinde ise yaklaşık 44000 dosya var. 1 kB'lık blok büyüklüğü için, yaklaşık  6+22 = 28 MB'lık disk alanı dosyaların blok sonlarındaki kısımlarında kaybedilir. 4 KB'lık blok büyüklüğü seçmiş olsaydım, bu büyüklüğün 4 katı kadarını kaybetmiş olacaktım.
+    </p><p>
+Veri aktarımı tek ve kesintisiz bir veri tomarında daha hızlı gerçekleşir. Bu da, dosyalar büyüdükçe ext2'nin ardışık 8 blokluk birimler tahsis etmesinin sebebidir. Dosya kapatıldığında ayrıldığı halde kullanılmayan bloklar serbest bırakılır ve böylece boşa alan harcanmaz.
+    </p><p>
+Dosyaların ardışık olmayan bloklardan oluşması performans açısından kötüdür, çünkü genelde dosyalara erişimde sıralı erişimle kullanılır. Bu durum da işletim sisteminin diske erişimini bölmeye zorlamakta ve de disk kafalarını hareketine sebep olmaktadır. Buna da harici saçılım ("external fragmentation") veya basitçe saçılım ("fragmentation") denir ki MS-DOS dosya yapılarındaki temel sorundur. MS-DOS'un kullandığı berbat önbelleğin birleşimi ile dosya saçılmalarının etkileri dikkat çekici boyutlardadır. DOS kullanıcıları disklerini birleştirmeyi bir kaç haftada bir yaptıkları mutad işler arasına almışlardır hatta bazıları disk birleştirmeyle ilgili törensel fikirler geliştirmiştir.
+    </p><p>
+Bu alışkanlıklarının hiç birisinin Linux ve ext2 üzerinde işi yoktur. Linux dosya yapısı normal kullanımda ve azından %5'lik bir disk alanının boş olması durumunda hiçbir koşulda disk birleştirmeye gerek duymaz. ext2'de disk birleştirmek için defrag isimli bir araç vardır, fakat kullanıcılar dikkatsiz kullanımı konusunda uyarılmaktadır. Böylesi bir işlem sırasındaki güç kesintisi sisteminizi çökertebilir. Verilerinizi yedeklemeniz gerekeceğinden, kopyasından yazmak iş görecektir.
+    </p><p>
+MS-DOS dosya yapısı aynı zamanda dahili saçılımdan dolayı büyük miktarda alan kaybetmesiyle bilinir. 256 MB'dan büyük disk kısımları için, DOS blok boyutu kullanılamayacak kadar büyür (Bu durum belli ölçülerde FAT32 için de geçerlidir). Ext2, 0.5 TB (terabayt, 1 TB = 1024 GB'tır) ve üstü büyüklükler dışında, sizi büyük dosya yapıları için büyük bloklar seçmeye zorlamaz. Bu durumlarda küçük blok büyüklükleri verimsiz hale gelmektedir. Dolayısiyle, DOS'takinin aksine büyük diskleri blok büyüklüğünü küçük tutmak için bir kaç bölüme ayırmanın gereği yoktur.
+    </p><p>
+Eğer pek çok küçük dosyanız varsa 1 kB'lık blok büyüklükleri kullanın. Büyük disk bölümleri için 4 kB yeterlidir.
+    </p></dd></div></dl></dd></div></dl><h1></h1><table width="100%" summary="Navigation header" cellpadding="1" cellspacing="0" border="0"><tr><td bgcolor="black" class="navoutline"><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="white" class="navinline"><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/partition-howto-recovering.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/partition-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/partition-rescue.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Silinmiş bir Disk Bölümünü Kurtarmak </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Disk Bölümü Kurtarmak NASIL</td></tr><tr><td colspan="3" align="center">
+                  Bir <a href="http://www.belgeler.org/">Linux Kitaplığı</a> Sayfası
+                </td></tr></table></td></tr></table></td></tr></table></body></html>

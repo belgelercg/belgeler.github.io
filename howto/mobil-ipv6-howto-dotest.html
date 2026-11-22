@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:38+03:00" /><title>Denemelerin Yapılması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/mobil-ipv6-howto.html" title="Linux Gezici IPv6 NASIL" /><link rel="previous" href="../howto/mobil-ipv6-howto-testbed.html" title="Deneme ortamı" /><link rel="next" href="../howto/mobil-ipv6-howto-faq.html" title="SSS" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Denemelerin Yapılması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/mobil-ipv6-howto-testbed.html">Önceki</a> </td><th width="60%" align="center">Linux Gezici IPv6 NASIL</th><td width="20%" align="right"> <a accesskey="n" href="../howto/mobil-ipv6-howto-faq.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="mobil-ipv6-howto-dotest" id="mobil-ipv6-howto-dotest"></a>Denemelerin Yapılması</div><dl><dd> <div class="head3"><a name="mobil-ipv6-howto-pretest" id="mobil-ipv6-howto-pretest"></a>Deneme öncesi</div><dl><dd><div class="para">
+Bütün yapılandırmaları önceki bölümde anlatıldığı gibi yapın. Ev ağında ve ziyaret edilen ağda farklı ESSID'lere sahip olunması özellikle önemlidir.
+    </div><div class="para">
+MN üzerinde gezici IPv6'yı başlattığınızda aşağıdaki gibi yönlendirici talebi iletileri göreceksiniz:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+# <b><tt>tcpdump -i eth0 -vv ip6 or proto ipv6</tt></b>
+
+...
+13:32:54.681763 fe80::202:a5ff:fe6f:a08a &gt; ff02::2: icmp6: router solicitation \
+(src lladdr: 0:2:a5:6f:a0:8a) (len 16, hlim 255)
+
+13:32:55.681763 fe80::202:a5ff:fe6f:a08a &gt; ff02::2: icmp6: router solicitation \
+(src lladdr: 0:2:a5:6f:a0:8a) (len 16, hlim 255)
+
+13:32:57.681765 fe80::202:a5ff:fe6f:a08a &gt; ff02::2: icmp6: router solicitation \
+(src lladdr: 0:2:a5:6f:a0:8a) (len 16, hlim 255)
+...
+
+</pre></div></div></dd></dl> <div class="head3"><a name="mobil-ipv6-howto-MovDet" id="mobil-ipv6-howto-MovDet"></a>Hareketin Farkedilmesi</div><dl><dd><div class="para">
+Temel olarak hareket algılama, hareketli düğüm yeni bir yönlendirici bulmak zorunda olduğunda (genellikle yeni bir bağlantıda) öntanımlı yönlendiricinin artık iki yönde de ulaşılamaz olduğu anı tespit etmek için Komşunun Ulaşılamazlığının Algılanması (Neighbor Unreachability Detection) yöntemini kullanır.
+    </div><div class="para">
+Neler olup bittiğini görmek için aşağıdaki komutların her birini birer xterm'de çalıştırın:     </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>watch ifconfig eth0</tt></b>
+# <b><tt>watch route -A inet6</tt></b>
+# <b><tt>tcpdump -i eth0 -vv ip6 or proto ipv6</tt></b>
+</pre></div></div>
+    <div class="para">
+Başka bir ağa "hareket etmek" için, MN'de aşağıdaki komutu çalıştırabilirsiniz:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>iwconfig eth1 essid visitnet</tt></b></pre></div></div>
+    <div class="para">
+MN artık diğer telsiz ağdadır,  yönlendirici talebinde bulunduğundan dolayı (multicast) bizim AR'miz onun önekiyle birlikte cevap verecektir. MN aldığı önek ve kendi MAC adresiyle yeni IPv6 adresini yapılandıracaktır. <b><tt>ifconfig eth0</tt></b> komutunu verirseniz yeni IPv6 adresinizi görürsünüz:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>ifconfig eth0</tt></b>
+eth0  Link encap:Ethernet  HWaddr 00:90:7D:F3:03:1A
+      inet6 addr: fec0:106:1100:0:290:7dff:fef3:31a/64 Scope:Site <a name="mobil-ipv6-howto-newaddr" id="mobil-ipv6-howto-newaddr"></a><b style="background: transparent url(&quot;../images/xsl/callouts/1.png&quot;) no-repeat left 40%;">  </b>
+      inet6 addr: fec0:106:2700:0:290:7dff:fef3:31a/64 Scope:Site <a name="mobil-ipv6-howto-superadr" id="mobil-ipv6-howto-superadr"></a><b style="background: transparent url(&quot;../images/xsl/callouts/2.png&quot;) no-repeat left 40%;">  </b>
+      inet6 addr: fec0:106:2700::4/64 Scope:Site                  <a name="mobil-ipv6-howto-oldaddr" id="mobil-ipv6-howto-oldaddr"></a><b style="background: transparent url(&quot;../images/xsl/callouts/3.png&quot;) no-repeat left 40%;">  </b>
+      inet6 addr: fe80::290:7dff:fef3:31a/64 Scope:Link           <a name="mobil-ipv6-howto-linkaddr" id="mobil-ipv6-howto-linkaddr"></a><b style="background: transparent url(&quot;../images/xsl/callouts/4.png&quot;) no-repeat left 40%;">  </b>
+      UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+      RX packets:854 errors:154 dropped:154 overruns:0 frame:148
+      TX packets:293 errors:58 dropped:0 overruns:0 carrier:0
+      collisions:0 txqueuelen:100
+      RX bytes:96536 (94.2 Kb)  TX bytes:44664 (43.6 Kb)
+      Interrupt:3 Base address:0x100
+</pre></div></div>
+    <div class="para">
+      <div class="calloutlist"><table border="0" summary="Dikkat edilecek hususlar" cellspacing="0" cellpadding="3" width="100%"><tr><td width="15" valign="top" align="left" class="coimage"><a href="#mobil-ipv6-howto-newaddr"><img src="../images/xsl/callouts/1.png" alt="1" border="0" /></a> </td><td valign="top" align="left"><div class="para">
+Yeni "dış" adres, AR'nin öneki ve MAC adresinin birleşiminden oluşturulmuştur.
+      </div></td></tr><tr><td width="15" valign="top" align="left" class="coimage"><a href="#mobil-ipv6-howto-superadr"><img src="../images/xsl/callouts/2.png" alt="2" border="0" /></a> </td><td valign="top" align="left"><div class="para">
+Gereksiz ev ağı adresi (HA <b><tt>radvd</tt></b> iletileri ve MN <tt>autoconf</tt>'unun <tt>true</tt> değerine ayarlanmış olmasından dolayı).
+      </div></td></tr><tr><td width="15" valign="top" align="left" class="coimage"><a href="#mobil-ipv6-howto-oldaddr"><img src="../images/xsl/callouts/3.png" alt="3" border="0" /></a> </td><td valign="top" align="left"><div class="para">
+orjinal (ev) adres.
+      </div></td></tr><tr><td width="15" valign="top" align="left" class="coimage"><a href="#mobil-ipv6-howto-linkaddr"><img src="../images/xsl/callouts/4.png" alt="4" border="0" /></a> </td><td valign="top" align="left"><div class="para">
+Sistem açılışı sırasında üretilen yerele özgü adres.
+      </div></td></tr></table></div>
+    </div><div class="para">
+Nerdeyse aynı zamanda MN, HA'ya bir bağlama güncellemesi uygulayacaktır. Tcpdump pencerenizde HA'ya gideceği belirlenmiş paketler göreceksiniz. Bağlama güncellemesinin yollandığını ve MN tarafından alındığını doğrulamak için:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>mipdiag -s</tt></b>
+Mobile IPv6 Statistics
+NEncapsulations           : 0
+NDecapsulations           : 0
+NBindUpdatesRcvd          : 0
+NBindAcksRcvd             : 1    <a name="mobil-ipv6-howto-back" id="mobil-ipv6-howto-back"></a><b style="background: transparent url(&quot;../images/xsl/callouts/1.png&quot;) no-repeat left 40%;">  </b>
+NBindNAcksRcvd            : 0
+NBindRqsRcvd              : 0
+NBindUpdatesSent          : 1    <a name="mobil-ipv6-howto-bupdate" id="mobil-ipv6-howto-bupdate"></a><b style="background: transparent url(&quot;../images/xsl/callouts/2.png&quot;) no-repeat left 40%;">  </b>
+NBindAcksSent             : 0
+NBindNAcksSent            : 0
+NBindRqsSent              : 0
+NBindUpdatesDropAuth      : 0
+NBindUpdatesDropInvalid   : 0
+NBindUpdatesDropMisc      : 0
+NBindAcksDropAuth         : 0
+NBindAcksDropInvalid      : 0
+NBindAcksDropMisc         : 0
+NBindRqsDropAuth          : 0
+NBindRqsDropInvalid       : 0
+NBindRqsDropMisc          : 0
+</pre></div></div>
+    <div class="para">
+<div class="calloutlist"><table border="0" summary="Dikkat edilecek hususlar" cellspacing="0" cellpadding="3" width="100%"><tr><td width="15" valign="top" align="left" class="coimage"><a href="#mobil-ipv6-howto-back"><img src="../images/xsl/callouts/1.png" alt="1" border="0" /></a> </td><td valign="top" align="left"><div class="para">Bir bağlanma izni için tekmil (ACK) alındı.</div></td></tr><tr><td width="15" valign="top" align="left" class="coimage"><a href="#mobil-ipv6-howto-bupdate"><img src="../images/xsl/callouts/2.png" alt="2" border="0" /></a> </td><td valign="top" align="left"><div class="para">Bağlanma izni bilgisi (UPDATE) gönderildi.</div></td></tr></table></div>
+    </div><div class="para">
+Bağlantıyı aşağıdaki komut ile de doğrulayabilirsiniz (MN üzerinde):
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>mipdiag -l</tt></b>
+Mobile IPv6 Binding update list
+Recipient CN: fec0:106:2700::2
+BINDING home address: fec0:106:2700::4 care-of address: ¬
+ fec0:106:1100:0:290:7dff:fef3:31a
+        expires: 936 sequence: 0 state: 1
+        delay: 3 max delay 32 callback time: 736
+</pre></div></div>
+    <div class="para">
+Ayrıca bunu istatistik seçeneği (<tt>-s</tt>) ve "bağlama önbelleği" (<tt>-c</tt>) seçeneği ile HA üzerinde de doğrulayabilirsiniz:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>mipdiag -c</tt></b>
+Mobile IPv6 Binding cache
+Home Address      Care-of Address                    Lifetime  Type
+fec0:106:2700::4  fec0:106:1100:0:290:7dff:fef3:31a  971       2
+</pre></div></div></dd></dl> <div class="head3"><a name="mobil-ipv6-howto-ping6" id="mobil-ipv6-howto-ping6"></a>ping6</div><dl><dd><div class="para">
+MN'den AR'nin eth1 arabirimini pinglemeyi deneyebilirsiniz (fec0:106:1100::1):
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>ping6 fec0:106:1100::1</tt></b>
+PING fec0:106:1100::1(fec0:106:1100::1) from fec0:106:2700::4 : 56 data bytes
+64 bytes from fec0:106:1100::1: icmp_seq=1 ttl=62 time=8.01 ms
+64 bytes from fec0:106:1100::1: icmp_seq=2 ttl=62 time=8.02 ms
+...
+</pre></div></div>
+     <div class="para">
+Tcpdump kullanarak paketlerin nasıl yolculuk ettiklerini görebilirsiniz
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+12:13:51.789688 fec0:106:1100:0:202:a5ff:fe6f:a08a &gt; fec0:106:2700::2: \  <a name="mobil-ipv6-howto-mntoha" id="mobil-ipv6-howto-mntoha"></a><b style="background: transparent url(&quot;../images/xsl/callouts/1.png&quot;) no-repeat left 40%;">  </b>
+fec0:106:2700::4 &gt; fec0:106:1100::1: icmp6: echo request \ <a name="mobil-ipv6-howto-hatocr" id="mobil-ipv6-howto-hatocr"></a><b style="background: transparent url(&quot;../images/xsl/callouts/2.png&quot;) no-repeat left 40%;">  </b>
+(len 64, hlim 64) (len 104, hlim 255)
+
+12:13:51.797675 fec0:106:2700::2 &gt; fec0:106:1100:0:202:a5ff:fe6f:a08a: \ <a name="mobil-ipv6-howto-artomn" id="mobil-ipv6-howto-artomn"></a><b style="background: transparent url(&quot;../images/xsl/callouts/3.png&quot;) no-repeat left 40%;">  </b>
+fec0:106:1100::1 &gt; fec0:106:2700::4: icmp6: echo reply \
+(len 64, hlim 62) (len 104, hlim 253)
+</pre></div></div>
+    <div class="para">
+<div class="calloutlist"><table border="0" summary="Dikkat edilecek hususlar" cellspacing="0" cellpadding="3" width="100%"><tr><td width="15" valign="top" align="left" class="coimage"><a href="#mobil-ipv6-howto-mntoha"><img src="../images/xsl/callouts/1.png" alt="1" border="0" /></a> </td><td valign="top" align="left"><div class="para">
+Paket MN'nin yeni IPv6 adresini kullanarak ilk olarak  MN'den HA'ya gider.
+  </div></td></tr><tr><td width="15" valign="top" align="left" class="coimage"><a href="#mobil-ipv6-howto-hatocr"><img src="../images/xsl/callouts/2.png" alt="2" border="0" /></a> </td><td valign="top" align="left"><div class="para">
+Daha sonra HA'dan AR'ye.
+  </div></td></tr><tr><td width="15" valign="top" align="left" class="coimage"><a href="#mobil-ipv6-howto-artomn"><img src="../images/xsl/callouts/3.png" alt="3" border="0" /></a> </td><td valign="top" align="left"><div class="para">
+AR HA'ya yanıt verir ve paketleri MN'ye tüneller.
+</div></td></tr></table></div>
+     </div><div class="para">
+Artık MN üzerinde güncellenmiş  istatistikleri görebilirsiniz:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>mipdiag -s</tt></b>
+Mobile IPv6 Statistics
+NEncapsulations           : 56
+NDecapsulations           : 25
+...
+</pre></div></div></dd></dl> <div class="head3"><a name="mobil-ipv6-howto-routeTable" id="mobil-ipv6-howto-routeTable"></a>Çekirdek IP yönlendirme tablosu</div><dl><dd><div class="para">
+MIPv6'nın gerçekleştirdiği ilginç bir şey de öntanımlı rotanın bir tünele değiştirilmesidir. Yeni öntanımlı rota aşağıdaki hali alır:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>route -A inet6</tt></b>
+Kernel IPv6 routing table
+Destination      Next Hop       Flags Metric Ref    Use Iface
+::/0             ::             UD    64     0        0 ip6tnl1
+....
+</pre></div></div>
+    <div class="para">
+Böyle bir öntanımlı rota eklenmemişse, kendiniz ekleyebilirsiniz:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>ip route ::/0 via dev ip6tnl</tt></b></pre></div></div>
+  </dd></dl> <div class="head3"><a name="mobil-ipv6-howto-movement" id="mobil-ipv6-howto-movement"></a>Farklı dış yerel ağlarda gezinme</div><dl><dd><div class="para">
+Ziyaret edilen ağlarda gezinmek tek bir ağı gezmekten farklı değildir. Aklınızda olması gereken tek şey her ziyaret edilen ağ için yeni bir adres oluşturacağınızdır.
+    </div>
+<div class="figure"><div class="formaltitle"><b><a name="mobil-ipv6-howto-LANvisits" id="mobil-ipv6-howto-LANvisits"></a>Şekil 6.3. MN'nin farklı yerel ağlarda gezinmesi</b></div><div class="mediaobject"><img src="images/mobil-ipv6/lanvisits.png" class="imagedata" align="middle" width="550" alt="" /></div></div>
+    
+    <ol class="orderedlist" start="ignore" type="1"><li><div class="listitem">
+Yukarıdaki şekilde, MN önce <tt>fec0:106:1100::/64</tt> ağını (visitnet) ziyaret eder.
+      </div></li><li><div class="listitem">
+MN bundan sonra <tt>fec0:106:1000::/64</tt> ağını (visitnet2) ziyaret eder.
+      </div></li><li><div class="listitem"><tt>visitnet2</tt>'deyken MN yeni bir IPv6 adresi oluşturur ve HA'ya yeni bir bağlama güncellemesi yapar.
+      </div></li><li><div class="listitem">
+Sonra MN eve geri döner. (Bir sonraki bölüme bakınız.)
+      </div></li></ol>
+     <div class="para">
+<tt>fec0:106:1100::/64</tt> adresi yerine <tt>fec0:106:1000::/64</tt>  adresini kullanması dışında <tt>visitnet2</tt>'deki AR aynen diğer AR (<tt>visitnet</tt>'teki) gibi yapılandırılmıştır.
+    </div><div class="para">
+Gezici düğümün <tt>visitnet</tt>'ten <tt>visitnet2</tt>' ye gitmesini sağlamak için aşağıdaki komut kullanılır (MN üzerinde):
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>iwconfig eth0 essid visitnet2</tt></b></pre></div></div>
+    <div class="para">
+Bu komutla MN'nin kendi kendini yeni ağa göre yapılandırdığını göreceksiniz:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>ifconfig eth0</tt></b>
+eth1  Link encap:Ethernet  HWaddr 00:90:7D:F3:03:1A
+      inet6 addr: fec0:106:1000:0:290:7dff:fef3:31a/64 Scope:Site <a name="mobil-ipv6-howto-net2" id="mobil-ipv6-howto-net2"></a><b style="background: transparent url(&quot;../images/xsl/callouts/1.png&quot;) no-repeat left 40%;">  </b>
+      inet6 addr: fec0:106:1100:0:290:7dff:fef3:31a/64 Scope:Site
+      inet6 addr: fec0:106:2700:0:290:7dff:fef3:31a/64 Scope:Site
+      inet6 addr: fec0:106:2700::4/64 Scope:Site
+      inet6 addr: fe80::290:7dff:fef3:31a/64 Scope:Link
+      UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+      RX packets:1073 errors:212 dropped:212 overruns:0 frame:204
+      TX packets:371 errors:72 dropped:0 overruns:0 carrier:0
+      collisions:0 txqueuelen:100
+      RX bytes:120340 (117.5 Kb)  TX bytes:56912 (55.5 Kb)
+      Interrupt:3 Base address:0x100
+</pre></div></div>
+    <div class="para">
+<div class="calloutlist"><table border="0" summary="Dikkat edilecek hususlar" cellspacing="0" cellpadding="3" width="100%"><tr><td width="15" valign="top" align="left" class="coimage"><a href="#mobil-ipv6-howto-net2"><img src="../images/xsl/callouts/1.png" alt="1" border="0" /></a> </td><td valign="top" align="left"><div class="para"><tt>visitnet2</tt>'deki otomatik yapılandırılmış yeni adres.</div></td></tr></table></div>
+    </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/caution.png" /></td><th class="admon">Dikkat</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Yeni bir ağa geldiğinizde MN üzerindeki gezici-ipv6'yı yeniden başlatmanız gerekebilir!&gt;
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>/etc/init.d/mobile-ip6 restart</tt></b>
+Stopping Mobile IPv6: OK
+Starting Mobile IPv6: OK
+</pre></div></div>
+    </td></tr></table></div><div class="para">
+Bu durumda MN HA'ya yeni bir bağlama güncellemesi gerçekleştirecektir. Yeni "konuma bağlı adres"e (care-of address) dikkat edin:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>mipdiag -l</tt></b>
+Mobile IPv6 Binding update list
+Recipient CN: fec0:106:2700::2
+BINDING home address: fec0:106:2700::4 care-of address: ¬
+ fec0:106:1000:0:290:7dff:fef3:31a
+    expires: 973 sequence: 14 state: 1
+    delay: 3 max delay 32 callback time: 773
+</pre></div></div>
+    <div class="para">
+HA üzerinde güncellenmiş "bağlama önbelleği"ni de görebilirsiniz:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>mipdiag -c</tt></b>
+Mobile IPv6 Binding cache
+Home Address      Care-of Address                    Lifetime  Type
+fec0:106:2700::4  fec0:106:1000:0:290:7dff:fef3:31a  943       2
+</pre></div></div>
+    </dd></dl> <div class="head3"><a name="mobil-ipv6-howto-home" id="mobil-ipv6-howto-home"></a>Eve Dönüş</div><dl><dd><div class="para">
+MN'yi eve geri getirmek için aşağıdaki komutu çalıştırmanız yeterli olacaktır:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>iwconfig eth0 essid homenet</tt></b></pre></div></div>
+    <div class="para">
+HA radvd mesajlarını HA-bit kümeleriyle (AdvHomeAgentFlag) yolladığından MN eve döndüğünü bilecektir, bakınız <a href="../howto/mobil-ipv6-howto-testbed.html#mobil-ipv6-howto-radvdar" class="xref" title="Ev yetkilisi üzerinde radvd yapılandırması">Ev yetkilisi üzerinde radvd yapılandırması</a>.
+    </div><div class="para">
+HA'da bağlanma önbellek bilgisi boşaldığından MN'nin "evde olduğunu" görebilirsiniz:
+    </div>
+<div class="para"><div align="right"><pre class="screen">Mobile IPv6 Binding cache
+Home Address      Care-of Address                     Lifetime  Type
+</pre></div></div>
+    </dd></dl> <div class="head3"><a name="mobil-ipv6-howto-realLife" id="mobil-ipv6-howto-realLife"></a>Gerçek yaşam testi - pürüzsüzlük</div><dl><dd><div class="para">
+Gezici IP'nin nasıl çalıştığını gerçekten hissetmek için GnomeMeeting'i kullanın (GnomeMeeting şekline bakın ve bir netmeeting başlatın. Dikkat! IPv6 desteği almak için GnomeMeeting'in en son sürümünü kullanmalısınız). Bir "gezinti" yapın, yağdan kıl çekercesine işlediğini göreceksiniz.
+    </div>
+    <div class="figure"><div class="formaltitle"><b><a name="mobil-ipv6-howto-gnomemeeting" id="mobil-ipv6-howto-gnomemeeting"></a>Şekil 6.4. GnomeMeeting</b></div><span class="inlinemediaobject"><img src="images/mobil-ipv6/gnomemeeting1.png" class="imagedata" align="middle" width="250" alt="" /></span></div>
+  </dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/mobil-ipv6-howto-testbed.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/mobil-ipv6-howto.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/mobil-ipv6-howto-faq.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Deneme ortamı </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> SSS</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

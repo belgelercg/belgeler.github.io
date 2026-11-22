@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2019-10-17T22:36:15+03:00" /><title>Sqwebmail Kurulumu</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/qmail-kurulumu-nasil_kur-2.html" title="B. İkinci Tür Kurulum" /><link rel="previous" href="../howto/qmail-kurulumu-nasil_kur-2.cimap.html" title="Courier-IMAP Kurulumu" /><link rel="next" href="../howto/qmail-kurulumu-nasil_kur-2.pop3.html" title="POP3 Sunucu Kurulumu" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Sqwebmail Kurulumu</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/qmail-kurulumu-nasil_kur-2.cimap.html">Önceki</a> </td><th width="60%" align="center">B. İkinci Tür Kurulum</th><td width="20%" align="right"> <a accesskey="n" href="../howto/qmail-kurulumu-nasil_kur-2.pop3.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="qmail-kurulumu-nasil_kur-2.sqweb" id="qmail-kurulumu-nasil_kur-2.sqweb"></a>Sqwebmail Kurulumu</div><dl><dd><div class="para">
+        <tt>Sqwebmail</tt> C CGI'da qmail için yazılmış web üzerinden
+        eposta gönderip almaya yarayan bir webmail programıdır ve sadece Maildir
+        biçeminde çalışır.
+      </div><div class="para">
+        CGI olmasına rağmen HTML'ler ayrı bir dizinde tutulur. Bu sayede sadece
+HTML'leri değiştirmekle istediğiniz biçemde bir webmail hazırlayabilirsiniz.
+      </div><div class="para">
+<a class="ulink" href="http://www.courier-mta.org/download.html#sqwebmail" target="_top">http://www.courier-mta.org/download.html#sqwebmail</a> adresinden
+<tt>sqwebmail</tt>'in
+en son sürümünü indiriniz ve root olarak paketi açın:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# tar -zxvf sqwebmail-3.3.7.tar.gz
+# cd  sqwebmail-3.3.7
+</pre></div></div>
+      <div class="para">
+        Bazı <tt>sqwebmail</tt> yapılandırma parametreleri:
+      </div><div class="variablelist"><dl><dt><span class="term">--with-module</span></dt><dd class="varlist"><div class="para">
+              Destek vermek istediğiniz kimlik kanıtlaması modülünü belirtmek için.
+              </div></dd><dt><span class="term">--without-module</span></dt><dd class="varlist"><div class="para">
+              Destek vermek istemediğiniz kimlik kanıtlaması modülünü belirtmek
+              için.</div></dd><dt><span class="term">--with-cachedir</span></dt><dd class="varlist"><div class="para">
+              Sqwebmail koltukaltı (cache) dizini belirtilir.
+              </div></dd><dt><span class="term">--with-htmllibdir</span></dt><dd class="varlist"><div class="para">
+              Sqwebmail'in HTML dosyalarının hangi dizinde tutulacağı belirtilir.
+              </div></dd><dt><span class="term">--enable-imagedir</span></dt><dd class="varlist"><div class="para">
+              Resimlerin saklanacağı dizin belirtilir.
+              </div></dd><dt><span class="term">--enable-mimetypes</span></dt><dd class="varlist"><div class="para">
+              Apache web sunucusunun <tt>mime.types</tt> dosyasının
+              nerede olduğu belirtilir.
+              </div></dd><dt><span class="term">--enable-cgibindir</span></dt><dd class="varlist"><div class="para">
+              Apache web sunucusunun <tt>cgi-bin</tt> dizini belirtilir.
+              Derleme sonucu oluşan <tt>sqwebmail</tt> isimli CGI bu
+              dizin altına kopyalanır. Daha fazla bilgi için
+              <tt>sqwebmail.tar.gz</tt> ile gelen <tt>INSTALL</tt>
+              dosyasını okuyunuz.
+              </div></dd></dl></div><div class="para">
+        Şimdi kuruluma başlayabiliriz.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# mkdir /usr/local/sqwebmail
+# ./configure --without-authldap --without-authmysql --with-authvchkpw \
+--enable-imagedir=/usr/local/sqwebmail/sqimage \
+--enable-mimetypes=/usr/local/etc/apache/mime.types \
+--enable-cgibindir=/usr/local/www/cgi-bin/  --enable-unicode=ISO8859-9
+#make
+#make install
+</pre></div></div>
+      <div class="para">
+Sqwebmail'in her açılışta çalışması için aşağıdaki komutu açılış dosyalarına
+        ekleyin.
+</div>
+<div class="para"><div align="right"><pre class="screen">
+/usr/local/share/sqwebmail/libexec/authlib/authdaemond start
+</pre></div></div>
+      <div class="para">
+Diyelim ki eposta sunucunuz <tt>mail.example.net</tt> ve öntanımlı
+        alanadı <tt>example.net</tt>, yani
+        <tt>--enable-default-domain=example.net</tt> şeklinde vpopmail
+        kurduk ve başka bir <tt>example.org</tt> diye ikinci bir
+alanadımız var. <tt>example.net</tt> alanadı altında
+<tt>yenigul</tt> diye bir kullanıcımız var.
+ <tt>example.org</tt> alanadı altında ise
+        <tt>balaban</tt> diye bir kullanıcımız var.
+        <tt>http://mail.example.net/cgi-bin/sqwebmail</tt> adresinden
+        <tt>yenigul</tt> kullanıcısı, kullanıcı adı olarak yenigul ve
+        parolasını yazarak login olabilir. <tt>example.org</tt> alanadı
+        altındaki <tt>balaban</tt> kullanıcısı ile kullanıcı adı olarak
+        <tt>balaban@example.org</tt> şeklinde yazmalı.
+      </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/qmail-kurulumu-nasil_kur-2.cimap.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/qmail-kurulumu-nasil_kur-2.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/qmail-kurulumu-nasil_kur-2.pop3.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Courier-IMAP Kurulumu </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> POP3 Sunucu Kurulumu</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

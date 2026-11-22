@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2019-10-17T22:36:15+03:00" /><title>Vpopmail'in Özelleştirlmesi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/qmail-kurulumu-nasil_kur-2.html" title="B. İkinci Tür Kurulum" /><link rel="previous" href="../howto/qmail-kurulumu-nasil_kur-2.vop1.html" title="Vpopmail Kurulumu" /><link rel="next" href="../howto/qmail-kurulumu-nasil_kur-2.ezmlm.html" title="Ezmlm Kurulumu" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Vpopmail'in Özelleştirlmesi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/qmail-kurulumu-nasil_kur-2.vop1.html">Önceki</a> </td><th width="60%" align="center">B. İkinci Tür Kurulum</th><td width="20%" align="right"> <a accesskey="n" href="../howto/qmail-kurulumu-nasil_kur-2.ezmlm.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="qmail-kurulumu-nasil_kur-2.vpop2" id="qmail-kurulumu-nasil_kur-2.vpop2"></a>Vpopmail'in Özelleştirlmesi</div><dl><dd><div class="para">
+        Bu bölümde anlatılanları yapmak zorunda değilsiniz ama yaparsanız da fena
+        olmaz :)
+      </div><div class="para">
+        Kota uyarısı:
+      </div><div class="para">
+        Kullanıcıların eposta hesaplarındaki doluluk oranı %90'a geldiğinde
+kullanıcılara bir uyarı gitmesini sağlayabilirsiniz. Kullanıcının kullandığı
+        eposta alani boyutunu hesaplamak için, vpopmail her kullanıcının dizinde
+<tt>maildirsize</tt> diye bir dosya tutar. Her posta geldiğinde bu
+        dosyada gerekli değişiklikleri yapar. Ama qmail'in pop3 programı
+<tt>qmail-pop3</tt> bunu desteklemediği için
+<tt>qmail-pop3d</tt> programına
+<tt>vpopmail-5.2.1/contrib/qmail-pop3d-maildirquota.patch.gz</tt>
+        yamasının uygulanıp qmail'in baştan kurulması gerekiyor.
+      </div><div class="para">
+Bu iş için qmail'i herşeyi ile baştan kurmaya gerek yok. Qmail'i derledikten
+        sonra sadece yeni derlenen <tt>qmail-pop3</tt> dosyasını
+        <tt>/var/qmail/bin</tt> dizine kopyalamak yeterli. (Tüm
+        paketlerin aynı dizinde olduğunu kabul ediyorum).
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# gunzip vpopmail-5.2.1/contrib/qmail-pop3d-maildirquota.patch.gz
+# cd qmail-1.03
+# patch &lt; ../ vpopmail-5.2.1/contrib/qmail-pop3d-maildirquota.patch
+# make
+# cp -p qmail-pop3d /var/qmail/bin
+</pre></div></div>
+      <div class="para">
+<tt>vpopmail-5.2.1/</tt> dizinindeki <tt>quotawarn.msg</tt>
+        dosyasını istediğiniz şekilde değiştirin ve
+        <tt>~vpopmail/domains/.quotawarn.msg</tt> adresine kopyalayın.
+        Bu sayede kullanıcının eposta hesabı %90 doluluğa ulaştığında, kullanıcıya
+        <tt>.quotawarn.msg</tt> dosyasına yazdığınız uyarı iletilecektir.
+Ama dosyayı <tt>~vpopmail/domains/enderunix.org/.quotawarn.msg</tt>
+gibi sadece bir alanadı altına kopyalarsanız sadece o alanadındaki kullanıcılar
+        için uyarı gidecektir.
+      </div><div class="para">
+        Son olarak kotası dolan kullanıcıya bir eposta geldiğinde vpopmail postayı
+gönderen kişiye <tt>user_is_over_quota</tt> şeklinde bir hata döndürür.
+      </div><div class="para">
+        İsterseniz bu mesajı özelleştirebilirsiniz. Örneğin karşı tarafa "Kullanıcı
+kotası dolmuştur, epostanız kullanıcıya iletilememiştir / User is over quota"
+        şeklinde bir uyarı ile dönmek istiyorsaniz
+<tt>~vpopmail/domains/.over-quota.msg</tt> veya sadece bir alanismi
+        için <tt>~vpopmail/domains/enderunix.org/.over-quota.msg</tt>
+        dosyasına bu mesajı yazmanız yeterli. (<tt>.over-quota.msg</tt>
+        dosyasının çalışması için herhangi bir yamaya gerek yoktur.)
+      </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/qmail-kurulumu-nasil_kur-2.vop1.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/qmail-kurulumu-nasil_kur-2.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/qmail-kurulumu-nasil_kur-2.ezmlm.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Vpopmail Kurulumu </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Ezmlm Kurulumu</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

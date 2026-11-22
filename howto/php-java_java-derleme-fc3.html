@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:26+03:00" /><title>Fedora Core 3 için</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/php-java_php-derleme.html" title="PHP Paketinin Yapılandırılması" /><link rel="previous" href="../howto/php-java_php-derleme.html" title="PHP Paketinin Yapılandırılması" /><link rel="next" href="../howto/php-java_java-derleme-debian.html" title="Debian için" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Fedora Core 3 için</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/php-java_php-derleme.html">Önceki</a> </td><th width="60%" align="center">PHP Paketinin Yapılandırılması</th><td width="20%" align="right"> <a accesskey="n" href="../howto/php-java_java-derleme-debian.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="php-java_java-derleme-fc3" id="php-java_java-derleme-fc3"></a>Fedora Core 3 için</div><dl><dd><div class="para">
+Önce PHP4 kaynak paketlerini indirmeniz gerekiyor. Ben Fedora Core 3 kurmadan önce php-4.3.6 sürümünü indirmiştim. Yeni bir sürümünü indirmek yerine daha önce yapılandırıp kurduğum bu sürümü bu kez Java desteği vererek derleyeceğim. Siz daha yeni bir sürümle bunu yapabilirsiniz. Ancak dikkat edin. PHP5'in değil, PHP4'ün son sürümünü indirmelisiniz. Bu takdirde benim yaptıklarımı aynen uygulayabilirsiniz.
+  </div><div class="para">
+<tt>php-4.3.6.tar.gz</tt> paketini indirip <tt>/usr/src/php-4.3.6</tt> dizini altına açtığınızı varsayıyorum. Sırf bu paket için değil, bir paketi derleyeceksem, paketin kök dizinine <tt>configme</tt> diye bir dosya açar, yapılandırma seçeneklerini bu dosyaya yazarım; size de öneririm, aynı uygulamanın yeni bir sürümünü derlerken amerikayı yeniden keşfetmek zorunda kalmazsınız. <tt>php-4.3.6</tt> için, <tt>configme</tt> dosyamın içeriği şöyle:
+  </div>
+<div class="para"><div align="right"><pre class="screen">./configure \
+--prefix=/usr --with-apxs2 --with-config-file-path=/etc \
+--with-exec-dir=/usr/bin --disable-static --disable-cgi \
+--enable-cli --enable-bcmath --enable-calendar --enable-dba --enable-dbase \
+--enable-dbx --enable-dio --enable-exif --enable-ftp \
+--enable-gd-native-ttf --enable-mbstring --enable-memory-limit \
+--enable-pcntl --enable-sigchild --enable-sockets --enable-sysvmsg \
+--enable-sysvsem --enable-sysvshm --enable-ucd-snmp-hack --enable-xml \
+--enable-wddx --enable-yp --enable-zend-multibyte --with-bz2=shared \
+--with-curl=shared  --with-dom=shared --with-dom-xslt=shared \
+--with-dom-exslt=shared --with-gd=shared --with-ttf=shared \
+--with-gettext=shared --with-gmp=shared --with-hyperwave=shared \
+--with-iconv --with-kerberos --with-imap-ssl --with-ldap  \
+--with-libmbfl --with-mcrypt --with-mhash --with-mime-magic \
+--with-mysql=/usr --with-mysql-sock=/usr --with-ncurses=shared \
+--with-openssl=/usr --with-unixODBC=shared --with-pgsql=shared \
+--with-pspell=shared --with-libedit=shared --with-readline=/usr \
+--with-shmop=shared --with-snmp=shared --with-regex \
+--with-xmlrpc=shared --with-zlib=shared \
+--with-java=/usr/java/j2sdk1.4.2_08
+</pre></div></div>
+  <div class="para">
+Burada bizim için önemli olan son satır. Bu yapılandırma, devasa denebilecek bir <tt>libphp.so</tt> dosyası (6 MB) oluşturuyor. Siz daha az seçenekle derleyebilirsiniz.
+  </div><div class="para">
+Ardından derleme ve kurulum işlemine başlıyoruz:
+  </div>
+<div class="para"><div align="right"><pre class="screen">$ <b><tt>. ./configme</tt></b>
+  ...
+$ <b><tt>make</tt></b>
+  ...
+$ <b><tt>su -</tt></b>
+Password:
+# <b><tt>make install</tt></b>
+</pre></div></div>
+  <div class="para">
+Yapılandırmada değişiklik yaparak paketi yeniden derlemek zorunda kalırsanız, <tt>config.cache</tt> dosyasını silmeyi unutmayın.
+  </div><div class="para">
+Bu işlem bittikten sonra, <tt>/usr/lib/php</tt> dizinine geçip şu işlemleri yapıyoruz:
+  </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cp php_java.jar ./extensions/no-debug-non-zts-20020429</tt></b>
+# <b><tt>cd extensions/no-debug-non-zts-20020429</tt></b>
+# <b><tt>ln -s java.so libphp_java.so</tt></b>
+</pre></div></div>
+  <div class="para">
+Bu işlemler yapılmazsa, yazdığınız kod çalışmayabilir (benimki çalışmamıştı).
+  </div><div class="para">
+Şimdi <tt>/etc/php.ini</tt> dosyasında bazı değişiklikler yapacağız. <tt>include_path</tt> ve <tt>extension_dir</tt> satırlarını bulup bunların aşağıdaki gibi olmasını sağlayın:
+  </div>
+<div class="para"><div align="right"><pre class="screen">include_path = "/usr/lip/php"
+extension_dir = /usr/lib/php/extensions/no-debug-non-zts-20020429
+</pre></div></div>
+  <div class="para">
+Java eklentisiyle ilgili yapılandırma bilgilerinin bulunduğu kısmı ise şöyle değiştirin:
+  </div>
+<div class="para"><div align="right"><pre class="screen">[Java]
+java.class.path = /usr/lib/php/php_java.jar
+java.library.path = /usr/lib/php/extensions/no-debug-non-zts-20020429
+extension=java.so
+</pre></div></div>
+  <div class="para">
+Java destekli PHP kurulumu böylece bitti. Apache yeniden başlatıldığında değişiklikler etkin olacaktır:
+  </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>service httpd restart</tt></b>
+httpd durduruluyor:                                        [  TAMAM  ]
+httpd başlatılıyor:                                        [  TAMAM  ]
+</pre></div></div>
+  <div class="para">
+<tt>/var/www/info.php</tt> adlı bir dosya oluşturup içine aşağıdaki kodu yazıp <tt>http://localhost/info.php</tt> adresine bakarsanız, sayfanın ortalarında bir Java bölümü göreceksiniz.
+  </div>
+<div class="para"><div align="right"><pre class="screen">&lt;?php phpinfo(); ?&gt;</pre></div></div>
+  
+<div style="padding-bottom:12px;"><h2 style="text-align: center">java</h2>
+  <div style="overflow: auto;"><table border="1" cellpadding="3" style="border-collapse:collapse"><tbody><tr class="h"><th bgcolor="#8B89D6" align="center" rowspan="1" colspan="1">Directive</th><th bgcolor="#8B89D6" align="center" rowspan="1" colspan="1">Local Value</th><th bgcolor="#8B89D6" align="center" rowspan="1" colspan="1">Master Value</th></tr><tr><td class="e" bgcolor="#C0C0FF" rowspan="1" colspan="1">java.class.path</td><td bgcolor="#DEDEDE" rowspan="1" colspan="1">/usr/lib/php/php_java.jar</td><td bgcolor="#DEDEDE" rowspan="1" colspan="1">/usr/lib/php/php_java.jar</td></tr><tr><td class="e" bgcolor="#C0C0FF" rowspan="1" colspan="1">java.home</td><td bgcolor="#DEDEDE" rowspan="1" colspan="1"><i>no value</i></td><td bgcolor="#DEDEDE" rowspan="1" colspan="1"><i>no value</i></td></tr><tr><td class="e" bgcolor="#C0C0FF" rowspan="1" colspan="1">java.library</td><td bgcolor="#DEDEDE" rowspan="1" colspan="1">/usr/java/j2sdk1.4.2_08/jre/lib/i386/libjava.so</td><td bgcolor="#DEDEDE" rowspan="1" colspan="1">/usr/java/j2sdk1.4.2_08/jre/lib/i386/libjava.so</td></tr><tr><td class="e" bgcolor="#C0C0FF" rowspan="1" colspan="1">java.library.path</td><td bgcolor="#DEDEDE" rowspan="1" colspan="1">/usr/lib/php/extensions/no-debug-non-zts-20020429</td><td bgcolor="#DEDEDE" rowspan="1" colspan="1">/usr/lib/php/extensions/no-debug-non-zts-20020429</td></tr></tbody></table></div></div>
+  </dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/php-java_php-derleme.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/php-java_php-derleme.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/php-java_java-derleme-debian.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">PHP Paketinin Yapılandırılması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Debian için</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

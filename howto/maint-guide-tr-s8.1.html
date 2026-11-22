@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:24:04+03:00" /><title>Paketlerin Debian arşivine gönderilmesi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/maint-guide-tr-s8.html" title="Paketin Debian'a gönderilmesi" /><link rel="previous" href="../howto/maint-guide-tr-s8.html" title="Paketin Debian'a gönderilmesi" /><link rel="next" href="../howto/maint-guide-tr-s8.2.html" title="Paketin özel bir arşive gönderilmesi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Paketlerin Debian arşivine gönderilmesi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/maint-guide-tr-s8.html">Önceki</a> </td><th width="60%" align="center">Paketin Debian'a gönderilmesi</th><td width="20%" align="right"> <a accesskey="n" href="../howto/maint-guide-tr-s8.2.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="maint-guide-tr-s8.1" id="maint-guide-tr-s8.1"></a>Paketlerin Debian arşivine gönderilmesi</div><dl><dd><div class="para">
+Resmen bir geliştirici olduktan sonra paketi Debian arşivine yüklemeniz gerekecektir. Bunu elle yapabilirsiniz, fakat <b><tt>dupload(1)</tt></b> ve <b><tt>dput(1)</tt></b> gibi bu amaç için geliştirilmiş araçları kullanmak işinizi kolaylaştırır.
+      </div><div class="para">
+Önce, <b><tt>dupload</tt></b> komutunun yapılandırma dosyasını düzenlemelisiniz. Bunun için ya <tt>/etc/dupload.conf</tt> dosyasını veya kendi <tt>~/.dupload.conf</tt> dosyanızda bazı yerleri değiştirmelisiniz. Dosyaya aşağıdakine benzer satırlar koyun:
+      </div>
+<div class="para"><div align="right"><pre class="screen">package config;
+
+$default_host = "anonymous-ftp-master";
+
+$cfg{'anonymous-ftp-master'} = {
+      fqdn =&gt; "ftp-master.debian.org",
+      method =&gt; "ftp",
+      incoming =&gt; "/pub/UploadQueue/",
+      # files pass on to dinstall on ftp-master which sends emails itself
+      dinstall_runs =&gt; 1,
+};
+
+1;
+</pre></div></div>
+      <div class="para">
+Elbetteki benim kişisel ayarlarımı kendinizinkine göre değiştirin ve dosyadaki her bir seçeneğin ne anlama geldiğini anlamak için <b><tt>dupload.conf(5)</tt></b> kılavuz sayfasını okuyunuz.
+      </div><div class="para">
+<tt>$default_host</tt> seçeneği en yanıltıcı olanıdır - hangi yükleme kuyruğunun öntanımlı olarak kullanılacağını belirler. "<tt>anonymous-ftp-master</tt>", birincil olandır, fakat daha hızlı bir tane eklemek isteyeceksinizdir. Yükleme kuyruklarıyla ilgili daha fazla bilgi için  Geliştiricilerin Referansında (Developers' Reference) "Paket Yükleme" ("Uploading a package") bölümünü (<tt>/usr/share/doc/developers-reference/ch-pkgs.en-us.iso-8859-1.html#s-upload</tt> dosyasındadır) okuyunuz.
+      </div><div class="para">
+İnternet sağlayıcınıza bağlanarak şu komutu çalıştırın:
+      </div>
+<div class="para"><div align="right"><pre class="screen">$ <b><tt>dupload gentoo_0.9.12-1_i386.changes</tt></b>
+</pre></div></div>
+      <div class="para">
+<b><tt>dupload</tt></b>, <tt>.changes</tt> içindeki dosyaların MD5 sağlamalarının doğruluğunu kontrol eder, gerektiğinde yeniden paketi, <a href="../howto/maint-guide-tr-s6.1.html" class="xref" title="Baştan yeniden derlemek">Baştan yeniden derlemek</a> bölümündeki gibi yeniden oluşturmanız için uyaracaktır, bu işlemden sonra paketiniz düzgün bir şekilde yüklenebilir.
+      </div><div class="para">
+Eğer <a class="ulink" href="ftp://ftp-master.debian.org/pub/UploadQueue/" target="_top">ftp://ftp-master.debian.org/pub/UploadQueue/</a> adresinde <b><tt>dupload</tt></b> ile yüklemeyle ilgili bir sorun yaşarsanız, ftp'yi kullanarak <tt>gnupg</tt> ile imzalanmış <tt>*.commands</tt> dosyasını aynı adrese kendiniz yüklemeyi deneyerek sorunu çözebilirsiniz.<sup>[<a name="id57" href="#ftn.id57" id="id57">57</a>]</sup> Örneğin,<tt>hello.commands</tt>'i kullanın:
+      </div>
+<div class="para"><div align="right"><pre class="screen">-----BEGIN PGP SIGNED MESSAGE-----
+
+Uploader: Roman Hodek &lt;Roman.Hodek@informatik.uni-erlangen.de&gt;
+Commands:
+ rm hello_1.0-1_i386.deb
+ mv hello_1.0-1.dsx hello_1.0-1.dsc
+
+-----BEGIN PGP SIGNATURE-----
+Version: 2.6.3ia
+
+iQCVAwUBNFiQSXVhJ0HiWnvJAQG58AP+IDJVeSWmDvzMUphScg1EK0mvChgnuD7h
+BRiVQubXkB2DphLJW5UUSRnjw1iuFcYwH/lFpNpl7XP95LkLX3iFza9qItw4k2/q
+tvylZkmIA9jxCyv/YB6zZCbHmbvUnL473eLRoxlnYZd3JFaCZMJ86B0Ph4GFNPAf
+Z4jxNrgh7Bc=
+=pH94
+-----END PGP SIGNATURE-----
+</pre></div></div>
+      <div class="footnotes"><br /><hr width="100" align="left" /><div class="footnote"><div class="para"><sup>[<a name="ftn.id57" href="#id57" id="ftn.id57">57</a>] </sup><a class="ulink" href="ftp://ftp-master.debian.org/pub/UploadQueue/README" target="_top">ftp://ftp-master.debian.org/pub/UploadQueue/README</a> dosyasına bakın. Bundan başka, <tt>dput</tt> paketindeki <b><tt>dcut</tt></b> komutunu da kullanabilirsiniz.</div></div></div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/maint-guide-tr-s8.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/maint-guide-tr-s8.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/maint-guide-tr-s8.2.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Paketin Debian'a gönderilmesi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Paketin özel bir arşive gönderilmesi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

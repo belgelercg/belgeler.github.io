@@ -1,0 +1,614 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:23:51+03:00" /><title>X Terminalinin Oluşturulması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/windows-ve-linux__terminal.html" title="X Terminal Sisteminin Yapılması" /><link rel="previous" href="../howto/windows-ve-linux_baglan.html" title="Ağa Bağlanan Linux Terminali" /><link rel="next" href="../howto/windows-ve-linux_sonuc.html" title="Sonuç" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">X Terminalinin Oluşturulması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/windows-ve-linux_baglan.html">Önceki</a> </td><th width="60%" align="center">X Terminal Sisteminin Yapılması</th><td width="20%" align="right"> <a accesskey="n" href="../howto/windows-ve-linux_sonuc.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="windows-ve-linux_x-terminali" id="windows-ve-linux_x-terminali"></a>X Terminalinin Oluşturulması</div><dl><dd><div class="para">
+Knoppix'i istemci makinada çalıştırdığımızda X yapılandırmasını içeren iki dosya kopyalamıştık. Biri X çalıştırıldığında X'in okuyup kendini yapılandırdığı <tt>XF86Config</tt> dosyası, diğeri ise X çalıştığında yaptığı işlemleri günlüklediği <tt>XFree86.0.log</tt> dosyası. <tt>XF86Config</tt> dosyasını biraz değiştirip kullanacağız. <tt>XFree86.0.log</tt> dosyasından ise  X çalıştığında hangi dosyaları yüklediğini öğrenip bu dosyaları sistemimize yerleştireceğiz ki, bizim sistemimizde çalıştırıldığında bu dosyaları bulabilsin. Ancak bu dosyalarda gereken bütün dosyalara ilişkin bilgi yok. Bazılarını da X çalıştığında verdiği hatalardan öğrendim. Siz de X çalıştırıldığında benzer hatalar alabilirsiniz. En azından benim aldığım hataları almayacaksınız. Çünkü ben en azından bu sistemi daha önce çalıştırdığım için gerekli bazı dosyaları biliyorum. Hemen ürkmeyin öyle; siz bir hata yapmamışsanız, büyük ihtimalle hiç hata almayacaksınız.
+    </div><div class="para">
+X ile ilgili herşey başlıca iki dizin altında bulunur: <tt>/usr/X11R6</tt> ve <tt>/etc/X11</tt>. Bu iki dizinin yeri bütün dağıtımlarda aynıdır. Bu benzerliği bizde kullanıyoruz; bir farkla: <tt>/usr/X11R6</tt> dizininin içeriğine baktığımızda kök dizine benzediğini görüyoruz. Bu benzerlikten yararlanarak <tt>/usr/X11R6</tt> dizinini kök dizini gösteren bir bağ dosyası yapabiliyoruz. Böylece büyükçe ayrı bir dizin ağacı oluşturmak yerine kök dizinindeki dizin yapısından yararlanabiliyoruz. <tt>initrd</tt> dizininin içeriğini incelediğinizde bunun burada anlattığım şekilde oluşturulmuş olduğunu göreceksiniz. Yani, normal bir sistemde <tt>/usr/X11R6</tt> altında olan herşeyi <tt>initrd</tt> dizini içindeki dizinlere yerleştireceğiz.
+    </div><div class="para">
+Önce <tt>/usr/X11R6/bin/X</tt> sembolik bağı ile bu bağın hedefindeki dosyayı kendi sistemimize yerleştirelim:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cp -d /usr/X11R6/bin/X /a3/ramdisk/initrd/bin/</tt></b>
+# <b><tt>cp /usr/X11R6/bin/XFree86 /a3/ramdisk/initrd/bin/</tt></b>
+</pre></div></div>
+    <div class="para">
+Bunun ardından <b><tt>XFree86</tt></b>'nın hangi kütüphanelere bağımlı olduğunu tespit edip bunları da sistemimize yerleştirelim:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>ldd /a3/ramdisk/initrd/bin/XFree86</tt></b>
+        libz.so.1 =&gt; /usr/lib/libz.so.1 (0x40030000)
+        libm.so.6 =&gt; /lib/i686/libm.so.6 (0x4003e000)
+        libpam.so.0 =&gt; /lib/libpam.so.0 (0x40060000)
+        libdl.so.2 =&gt; /lib/libdl.so.2 (0x40068000)
+        libpam_misc.so.0 =&gt; /lib/libpam_misc.so.0 (0x4006b000)
+        libc.so.6 =&gt; /lib/i686/libc.so.6 (0x4006e000)
+        /lib/ld-linux.so.2 =&gt; /lib/ld-linux.so.2 (0x40000000)
+</pre></div></div>
+    <div class="para">
+Bu kütüphanelerden son ikisini zaten sistemimize daha önce kopyalamıştık. Diğerlerini de kopyalayalım:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cd /a3/ramdisk/initrd/lib</tt></b>
+# <b><tt>cp -d /usr/lib/libz.so.1 ./</tt></b>
+# <b><tt>cp -d /lib/libm.so.6 ./</tt></b>
+# <b><tt>cp -d /lib/libpam.so.0 ./</tt></b>
+# <b><tt>cp -d /lib/libdl.so.2 ./</tt></b>
+# <b><tt>cp -d /lib/libpam_misc.so.0 ./</tt></b>
+</pre></div></div>
+    <div class="para">
+Sembolik bağları kopyaladık. Bu sembolik bağların hedefindeki dosyalar hatta bu sembolik bağlar bile sizin sisteminizde farklı olabilir. Ben benimkileri aşağıdaki gibi kopyaladım, siz de sizinkilerin hedeflerindeki dosyaları kopyalayın:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cp /usr/lib/libz.so.1.1.4 ./</tt></b>
+# <b><tt>cp /lib/libm-2.3.2.so ./</tt></b>
+# <b><tt>cp /lib/libpam.so.0.77 ./</tt></b>
+# <b><tt>cp /lib/libdl-2.3.2.so ./</tt></b>
+# <b><tt>cp /lib/libpam_misc.so.0.77 ./</tt></b>
+</pre></div></div>
+    <div class="para">
+X'in çalışması için gerekli en temel koşulları sağladık. X çalıştıktan sonra sistem yapılandırmasını öğrenmek için <tt>/etc/X11/XF86Config</tt> dosyasına bakar ve oradaki verilere göre bazı kütüphaneleri ve dosyaları yükler. Hangi kütüphaneleri yüklediğini ise günlük kayıt dosyası olan <tt>/var/log/XFree86.0.log</tt> dosyasına yazar. Bu dosyaların birer kopyasını Knoppix sayesinde edinmiştik. Önce Knoppix için anlamlı olan <tt>XF86Config</tt> dosyasını kendi sistemimiz için anlamlı olan biçime getirmeliyiz. Bunun için önce <tt>"Files"</tt> bölümünde <tt>Fontpath</tt> satırını düzenleyeceğiz:
+    </div>
+<div class="para"><div align="right"><pre class="screen">Section "Files"
+        RgbPath      "/usr/X11R6/lib/X11/rgb"
+        FontPath     "tcp/10.10.10.1:7100"
+EndSection
+</pre></div></div>
+    <div class="para">
+Dosyanın görünümü sizinkinde farklı olabilir ama işe yarayan satırlar, bunlar. <tt>FontPath</tt> satırını yukarıdaki gibi düzenleyin. Bu satırdaki <tt>10.10.10.1</tt>, <b><tt>xfs</tt></b> sunucusunun çalıştığı makinanın IP adresi olmalı. Bu satır sayesinde X çalıştırıldığında gerekli yazıtiplerini bu adresteki <b><tt>xfs</tt></b> sunucusundan yükleyecek.
+    </div><div class="para">
+İkinci düzenleme klavye ile ilgili. Şüphesiz Türkçe karakterleri kullanmak isteyeceksiniz. Klavye ile ilgili bölüm fazlalıkları temizlenmiş olarak aşağıdaki gibi olmalı:
+    </div>
+<div class="para"><div align="right"><pre class="screen">Section "InputDevice"
+        Identifier  "Keyboard0"
+        Driver      "keyboard"
+        Option      "XkbRules" "xfree86"
+        Option      "XkbModel" "pc105"
+        Option      "XkbLayout" "tr_q,tr_f"
+        Option      "XkbOptions" "caps:shift,grp:shift_toggle"
+EndSection
+</pre></div></div>
+    <div class="para">
+Bu yapılandırma, her iki Shift tuşuna birlikte basıldığında Q ve F klavyeleri arasında geçiş yapar.
+    </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../images/xsl/warning.png" /></td><th class="admon">Uyarı</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">Bu yapılandırma standart X ile uyumlu değildir. Sistem bu özel duruma göre yapılandırılacaktır (Türkçe X klavyesinin yazarından bir hediye).</div></td></tr></table></div>
+    <div class="para">
+Bu düzenlemeleri yaptıktan sonra dosyayı <tt>/a3/ramdisk/initrd/etc/X11</tt> dizini altına kopyalayın.
+    </div><div class="para">
+İstemci makinalardaki fare, bir PS/2 fare ise <tt>dev</tt> dizinindeki <tt>mouse</tt> sembolik bağını <tt>psaux</tt> dosyasını gösterecek duruma getirmelisiniz (Normalde birinci seri portu gösterir).
+    </div><div class="para">
+Şimdi sıra <tt>XFree86.0.log</tt> dosyasına bakarak gerekli kütüphaneleri sistemimize yerleştirmeye geldi. <tt>XFree86.0.log</tt> dosyasına baktığınızda <tt>(II) Loading</tt> ile başlayan aşağıdakine benzer satırlar göreceksiniz:
+    </div>
+<div class="para"><div align="right"><pre class="screen">(II) Loading /usr/X11R6/lib/modules/fonts/libbitmap.a</pre></div></div>
+    <div class="para">
+Bu satırlar sistemimize kopyalamamız gereken kütüphane dosyalarını belirtir. Bu satırlara bakarak, X'in aynı dosya yolunda aynı dosyayı bulabilmesini sağlamamız gerekir. Yukarıdaki dosya için bu işlem şöyle yapılmalıdır:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cp /usr/X11R6/lib/modules/fonts/libbitmap.a /a3/ramdisk/initrd/lib/modules/fonts/</tt></b>
+</pre></div></div>
+    <div class="para">
+Bu işlemi benzer şekilde <tt>XFree86.0.log</tt> dosyasındaki diğer kütüphane yükleme satırları için yapın. <tt>XFree86.0.log</tt> dosyasından önce bu satırları seçiyorum:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cat XFree86.0.log | grep "Loading /"</tt></b>
+(II) Loading /usr/X11R6/lib/modules/fonts/libbitmap.a
+(II) Loading /usr/X11R6/lib/modules/libpcidata.a
+(II) Loading /usr/X11R6/lib/modules/extensions/libdbe.a
+(II) Loading /usr/X11R6/lib/modules/extensions/libextmod.a
+(II) Loading /usr/X11R6/lib/modules/linux/libfbdevhw.a
+(II) Loading /usr/X11R6/lib/modules/extensions/libglx.a
+(II) Loading /usr/X11R6/lib/modules/extensions/libGLcore.a
+(II) Loading /usr/X11R6/lib/modules/extensions/librecord.a
+(II) Loading /usr/X11R6/lib/modules/fonts/libfreetype.a
+(II) Loading /usr/X11R6/lib/modules/fonts/libtype1.a
+(II) Loading /usr/X11R6/lib/modules/extensions/libdri.a
+(II) Loading /usr/X11R6/lib/modules/linux/libdrm.a
+(II) Loading /usr/X11R6/lib/modules/drivers/s3virge_drv.o
+(II) Loading /usr/X11R6/lib/modules/input/mouse_drv.o
+(II) Loading /usr/X11R6/lib/modules/libvgahw.a
+(II) Loading /usr/X11R6/lib/modules/libvbe.a
+(II) Loading /usr/X11R6/lib/modules/linux/libint10.a
+(II) Loading /usr/X11R6/lib/modules/libddc.a
+(II) Loading /usr/X11R6/lib/modules/libi2c.a
+(II) Loading /usr/X11R6/lib/modules/libfb.a
+(II) Loading /usr/X11R6/lib/modules/libxaa.a
+(II) Loading /usr/X11R6/lib/modules/libramdac.a
+</pre></div></div>
+    <div class="para">
+Bu liste büyük ihtimalle sizin için farklı olacaktır. Şimdi bu listeye göre bu dosyaları ramdisk sistemine kopyalayacağım:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cd /a3/ramdisk/initrd/lib/modules</tt></b>
+# <b><tt>cp /usr/X11R6/lib/modules/fonts/libbitmap.a ./fonts/</tt></b>
+# <b><tt>cp /usr/X11R6/lib/modules/libpcidata.a ./</tt></b>
+# <b><tt>cp /usr/X11R6/lib/modules/extensions/libdbe.a ./extensions/</tt></b>
+# <b><tt>cp /usr/X11R6/lib/modules/extensions/libextmod.a ./extensions/</tt></b>
+# <b><tt>cp /usr/X11R6/lib/modules/linux/libfbdevhw.a ./linux/</tt></b>
+# <b><tt>cp /usr/X11R6/lib/modules/extensions/libglx.a ./extensions/</tt></b>
+# <b><tt>cp /usr/X11R6/lib/modules/extensions/libGLcore.a ./extensions/</tt></b>
+# <b><tt>cp /usr/X11R6/lib/modules/extensions/librecord.a ./extensions/</tt></b>
+# <b><tt>cp /usr/X11R6/lib/modules/fonts/libfreetype.a ./fonts/</tt></b>
+# <b><tt>cp /usr/X11R6/lib/modules/fonts/librecord.a ./fonts/</tt></b>
+# <b><tt>cp /usr/X11R6/lib/modules/extensions/libdri.a ./extensions/</tt></b>
+# <b><tt>cp /usr/X11R6/lib/modules/linux/libdrm.a ./linux/</tt></b>
+# <b><tt>cp /usr/X11R6/lib/modules/input/mouse_drv.o ./input/</tt></b>
+# <b><tt>cp /usr/X11R6/lib/modules/libvgahw.a ./</tt></b>
+# <b><tt>cp /usr/X11R6/lib/modules/libvbe.a ./</tt></b>
+# <b><tt>cp /usr/X11R6/lib/modules/linux/libint10.a ./linux/</tt></b>
+# <b><tt>cp /usr/X11R6/lib/modules/libddc.a ./</tt></b>
+# <b><tt>cp /usr/X11R6/lib/modules/libi2c.a ./</tt></b>
+# <b><tt>cp /usr/X11R6/lib/modules/libfb.a ./</tt></b>
+# <b><tt>cp /usr/X11R6/lib/modules/libxaa.a ./</tt></b>
+# <b><tt>cp /usr/X11R6/lib/modules/libramdac.a ./</tt></b>
+</pre></div></div>
+    <div class="para">
+X bunlardan başka klavye için gereken bazı dosyaları da arar ve bunlar günlük dosyasında görünmezler. Şimdi bu dosyaları yükleyeceğiz. Yalnız bu dosyaları sadece türkçe klavye yüklenecek biçimde küçülteceğiz. Bu işlemleri burada anlattığım gibi aynen yapmalısınız. Önce gerekli dizinleri oluşturun:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cd /a3/ramdisk/initrd/lib/X11/xkb</tt></b>
+# <b><tt>mkdir compat geometry keycodes keymap rules semantics symbols symbols/pc types</tt></b>
+# <b><tt>ln -s ../../../var/lib/xkb compiled</tt></b>
+</pre></div></div>
+    <div class="para">
+<b><tt>xkbcomp</tt></b> dosyasını kopyalayalım ve hangi kütüphanelere ihtiyaç duyduğuna bakalım:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cp /usr/X11R6/lib/X11/xkb/xkbcomp ./</tt></b>
+# <b><tt>ldd ./xkbcomp</tt></b>
+        libXext.so.6 =&gt; /usr/X11R6/lib/libXext.so.6 (0x40030000)
+        libX11.so.6 =&gt; /usr/X11R6/lib/libX11.so.6 (0x4003e000)
+        libc.so.6 =&gt; /lib/i686/libc.so.6 (0x4011d000)
+        libdl.so.2 =&gt; /lib/libdl.so.2 (0x40258000)
+        /lib/ld-linux.so.2 =&gt; /lib/ld-linux.so.2 (0x40000000)
+</pre></div></div>
+    <div class="para">
+Son 3 kütüphane zaten var. Diğerlerini kopyalamamız lazım:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cd /a3/ramdisk/initrd/lib</tt></b>
+# <b><tt>cp -d /usr/X11R6/lib/libXext.so.6 ./</tt></b>
+# <b><tt>cp -d /usr/X11R6/lib/libX11.so.6 ./</tt></b>
+# <b><tt>cp /usr/X11R6/lib/libXext.so.6.4 ./</tt></b>
+# <b><tt>cp /usr/X11R6/lib/libX11.so.6.2 ./</tt></b>
+# <b><tt>cd /a3/ramdisk/initrd/lib/X11/xkb</tt></b>
+</pre></div></div>
+    <div class="para">
+Bu dizinde 6 tane de dosya bulunacak. Bu dosyalar ve içerikleri aşağıdaki gibi olmalı. Ben basitçe dosyaları <b><tt>cat</tt></b> komutu ile aldığım konsol çıktılarını aşağıya kopyaladım, siz bunları dosya haline getirin. (Bu dosyalar sisteminizde de vardır ama genel amaçlı olduklarından çok yer kaplarlar, bu dosyalar fazlalıklarından temizlenmiştir. Ama, sisteminizdeki dosyaları değiştirmeyin, sakın. Sabit diske kurulmuş bir sistemin böyle bir yer kazancına ihtiyacı yoktur.):
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cat compat.dir</tt></b>
+-dp----- -------- accessx(basic)
+--p----- -------- accessx(full)
+-d------ -------- basic(basic)
+-d------ -------- complete(complete)
+-d------ -------- default(default)
+-d------ -------- group_led(group_led)
+-dp----- -------- iso9995(default)
+h-p----- -------- keypad(overlay)
+h-p----- -------- keypad(overlay1)
+h-p----- -------- keypad(overlay2)
+--p----- -------- leds(scroll)
+--p----- -------- leds(num)
+--p----- -------- leds(caps)
+-dp----- -------- misc(misc)
+-dp----- -------- mousekeys(mousekeys)
+-dp----- -------- norepeat(norepeat)
+-dp----- -------- pc(pc)
+-dp----- -------- xfree86(basic)
+-d------ -------- xtest(xtest)
+# <b><tt>cat geometry.dir</tt></b>
+-d------ -------- pc(pc101)
+-------- -------- pc(pc102)
+-------- -------- pc(pc104)
+-------- -------- pc(pc105)
+# <b><tt>cat keycodes.dir</tt></b>
+-d------ -------- xfree86(xfree86)
+-------- -------- xfree86(basic)
+-------- -------- xfree86(102)
+-d------ -------- xfree86.xkb-broken-capslock-fix-CVS11006(xfree86)
+-------- -------- xfree86.xkb-broken-capslock-fix-CVS11006(basic)
+-------- -------- xfree86.xkb-broken-capslock-fix-CVS11006(102)
+# <b><tt>cat keymap.dir</tt></b>
+-------- -------- xfree86(tr_q)
+-------- -------- xfree86(tr_f)
+# <b><tt>cat symbols.dir</tt></b>
+--p----- -m------ altwin(meta_alt)
+--p----- -m------ altwin(meta_win)
+--p----- -m------ altwin(left_meta_win)
+--p----- -m------ altwin(super_win)
+--p----- -m------ altwin(hyper_win)
+--p----- -m------ altwin(menu)
+--p----- -m------ compose(ralt)
+--p----- -m------ compose(rwin)
+--p----- -m------ compose(menu)
+--p----- -m------ ctrl(nocaps)
+--p----- -m------ ctrl(swapcaps)
+--p----- -m------ ctrl(ctrl_ac)
+--p----- -m------ ctrl(ctrl_aa)
+--p----- -m------ group(switch)
+--p----- -m------ group(lswitch)
+--p----- -m------ group(win_switch)
+--p----- -m------ group(lwin_switch)
+--p----- -m------ group(rwin_switch)
+--p----- -m------ group(toggle)
+--p----- -m------ group(shift_toggle)
+--p----- -m------ group(ctrl_shift_toggle)
+--p----- -m------ group(caps_toggle)
+--p----- -m------ group(ctrl_alt_toggle)
+--p----- -m------ group(alt_shift_toggle)
+--p----- -m------ group(menu_toggle)
+--p----- -m------ group(lwin_toggle)
+--p----- -m------ group(rwin_toggle)
+--p----- -m------ group(ctrls_toggle)
+--p----- -m------ group(alts_toggle)
+--p----- -m------ group(lshift_toggle)
+--p----- -m------ group(rshift_toggle)
+--p----- -m------ group(lalt_toggle)
+--p----- -m------ group(lctrl_toggle)
+--p----- -m------ group(rctrl_toggle)
+h-p----- am--g--- iso9995-3(full_common)
+--p----- am--g--- iso9995-3(full)
+--p----- am--g--- iso9995-3(full101)
+h-p----- --k----- keypad(overlay)
+h-p----- --k----- keypad(overlay1)
+h-p----- --k----- keypad(overlay2)
+--p----- -m------ level3(switch)
+--p----- -m------ level3(ralt_switch)
+--p----- -m------ level3(ralt_switch_multikey)
+--p----- -m------ level3(menu_switch)
+--p----- -m------ level3(win_switch)
+--p----- -m------ level3(lwin_switch)
+--p----- -m------ level3(rwin_switch)
+h-p----- -m------ lock(shift)
+h-p----- -m------ lock(caps)
+h-p----- -m------ lock(group)
+-dp----- -m------ pc104(altmeta)
+-------- -------- pc104(compose)
+--p----- -m------ pc104(menu)
+--p----- --kf---- srvr_ctrl(xfree86)
+--p----- --k----- srvr_ctrl(stdkeypad)
+--p----- ---f---- srvr_ctrl(fkey2vt)
+-dp----- -------- pc/latin(basic)
+--p----- -------- pc/latin(type2)
+--p----- -------- pc/latin(type3)
+--p----- -------- pc/latin(type4)
+--p----- -------- pc/latin(nodeadkeys)
+--p----- -------- pc/latin(type2_nodeadkeys)
+--p----- -------- pc/latin(type3_nodeadkeys)
+--p----- -------- pc/latin(type4_nodeadkeys)
+h-p----- am------ pc/pc(basic)
+-------- -------- pc/pc(pc101)
+-------- -------- pc/pc(pc102)
+-d------ -------- pc/pc(pc104)
+-------- -------- pc/pc(pc105)
+-------- -------- pc/pc(common)
+-dp----- -------- pc/tr_q(basic)
+--p----- -------- pc/tr_f(basic)
+-dp----- -------- pc/tr.xkb-broken-capslock-fix-CVS11006(basic)
+h-p----- am------ pc/pc.xkb-sysreq(basic)
+-------- -------- pc/pc.xkb-sysreq(pc101)
+-------- -------- pc/pc.xkb-sysreq(pc102)
+-d------ -------- pc/pc.xkb-sysreq(pc104)
+-------- -------- pc/pc.xkb-sysreq(pc105)
+-------- -------- pc/pc.xkb-sysreq(common)
+--p----- -m------ level3.xkb-broken-capslock-fix-CVS11006(switch)
+--p----- -m------ level3.xkb-broken-capslock-fix-CVS11006(menu_switch)
+--p----- -m------ level3.xkb-broken-capslock-fix-CVS11006(win_switch)
+--p----- -m------ level3.xkb-broken-capslock-fix-CVS11006(lwin_switch)
+--p----- -m------ level3.xkb-broken-capslock-fix-CVS11006(rwin_switch)
+--p----- -m------ level3.xkb-ru-group-number-fix-CVS11092(switch)
+--p----- -m------ level3.xkb-ru-group-number-fix-CVS11092(ralt_switch)
+--p----- -m------ level3.xkb-ru-group-number-fix-CVS11092(ralt_switch_multikey)
+--p----- -m------ level3.xkb-ru-group-number-fix-CVS11092(menu_switch)
+--p----- -m------ level3.xkb-ru-group-number-fix-CVS11092(win_switch)
+--p----- -m------ level3.xkb-ru-group-number-fix-CVS11092(lwin_switch)
+--p----- -m------ level3.xkb-ru-group-number-fix-CVS11092(rwin_switch)
+# <b><tt>cat types.dir</tt></b>
+-d------ -------- basic(basic)
+-dp----- -------- cancel(Shift_Cancels_Caps)
+--p----- -------- caps(internal)
+--p----- -------- caps(internal_nocancel)
+--p----- -------- caps(shift)
+--p----- -------- caps(shift_nocancel)
+-d------ -------- complete(complete)
+-d------ -------- default(default)
+-dp----- -------- extra(default)
+-dp----- -------- iso9995(default)
+-dp----- -------- mousekeys(default)
+-dp----- -------- nocancel(nocancel)
+-dp----- -------- pc(default)
+</pre></div></div>
+    <div class="para">
+<tt>compat</tt> dizini için aşağıdaki işlemleri yapın:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cp /usr/X11R6/lib/X11/xkb/compat/* ./compat/</tt></b>
+# <b><tt>rm -f ./compat/README</tt></b>
+</pre></div></div>
+    <div class="para">
+<tt>geometry</tt> dizini için aşağıdaki işlemi yapın:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cp /usr/X11R6/lib/X11/xkb/geometry/pc ./geometry/</tt></b>
+</pre></div></div>
+    <div class="para">
+<tt>keycodes</tt> dizini için aşağıdaki işlemleri yapın:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cp /usr/X11R6/lib/X11/xkb/keycode/aliases ./geometry/</tt></b>
+# <b><tt>cp /usr/X11R6/lib/X11/xkb/keycode/xfree86 ./geometry/</tt></b>
+</pre></div></div>
+    <div class="para">
+<tt>keymap</tt> dizini için aşağıdaki işlemi yapın:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cp /usr/X11R6/lib/X11/xkb/keymap/xfree86 ./keymap/</tt></b>
+</pre></div></div>
+    <div class="para">
+<tt>rules</tt> dizini için aşağıdaki işlemi yapın:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cp /usr/X11R6/lib/X11/xkb/rules/xfree86 ./rules/</tt></b>
+</pre></div></div>
+    <div class="para">
+<tt>semantics</tt> dizini için aşağıdaki işlemi yapın:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cp /usr/X11R6/lib/X11/xkb/semantics/* ./semantics/</tt></b>
+</pre></div></div>
+    <div class="para">
+<tt>symbols</tt> dizinine,  <tt>/usr/X11R6/lib/X11/xkb/symbols/</tt> dizininden <tt>altwin, ctrl, iso9995-3, level3, lt_std, pc104, srvr_ctrl, us_group3, compose, group, keypad, lock, ralt, us_group2</tt> ve <tt>us_intl</tt> dosyalarını kopyalayın.
+    </div><div class="para">
+<tt>symbols/pc</tt> dizinine,  <tt>/usr/X11R6/lib/X11/xkb/symbols/pc</tt> dizininden <tt>latin</tt> ve <tt>pc</tt> dosyalarını kopyalayın. Aşağıdaki 2 dosyayı oluşturun:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cat tr_q</tt></b>
+// based on
+// Turkish keyboard symbols for PC and xkb
+// This file distributed without any expressed or implied warranty
+// Nilgün Belma Bugüner &lt;nilgun@superonline.com&gt;, 2004
+//
+//Default Layout (Turkish Q)
+default partial
+xkb_symbols "basic" {
+
+    include "pc/latin"
+
+    name[Group1]="Turkish_Q";
+
+    key &lt;AE01&gt;  { [         1,    exclam,    onesuperior,    exclamdown ] };
+    key &lt;AE02&gt;  { [         2, apostrophe,      sterling,   twosuperior ] };
+    key &lt;AE03&gt;  { [        3, asciicircum,    numbersign, threesuperior ] };
+    key &lt;AE04&gt;  { [         4,       plus,        dollar,    onequarter ] };
+    key &lt;AE06&gt;  { [         6,  ampersand, threequarters,    VoidSymbol ] };
+    key &lt;AE07&gt;  { [         7,      slash,     braceleft,    VoidSymbol ] };
+    key &lt;AE08&gt;  { [         8,  parenleft,   bracketleft,    VoidSymbol ] };
+    key &lt;AE09&gt;  { [         9, parenright,  bracketright,     plusminus ] };
+    key &lt;AE10&gt;  { [         0,      equal,    braceright,        degree ] };
+    key &lt;AE11&gt;  { [  asterisk,   question,     backslash,  questiondown ] };
+    key &lt;AE12&gt;  { [     minus, underscore,      division,    VoidSymbol ] };
+
+    key &lt;AD02&gt;  { [         w,          W,   VoidSymbol,   VoidSymbol ] };
+    key &lt;AD03&gt;  { [         e,          E,     EuroSign,   VoidSymbol ] };
+    key &lt;AD05&gt;  { [         t,          T,    trademark,   VoidSymbol ] };
+    key &lt;AD07&gt;  { [         u,          U,  ucircumflex,  Ucircumflex ] };
+    key &lt;AD08&gt;  { [  idotless,          I,  icircumflex,  Icircumflex ] };
+    key &lt;AD09&gt;  { [         o,          O,  ocircumflex,  Ocircumflex ] };
+    key &lt;AD10&gt;  { [         p,          P,   VoidSymbol,   VoidSymbol ] };
+    key &lt;AD11&gt;  { [    gbreve,     Gbreve ] };
+    key &lt;AD12&gt;  { [udiaeresis, Udiaeresis,   asciitilde,  dead_macron ] };
+
+    key &lt;AC01&gt;  { [         a,          A,  acircumflex,  Acircumflex ] };
+    key &lt;AC02&gt;  { [         s,          S,      section,   VoidSymbol ] };
+    key &lt;AC03&gt;  { [         d,          D,   VoidSymbol,   VoidSymbol ] };
+    key &lt;AC04&gt;  { [         f,          F,  ordfeminine,   VoidSymbol ] };
+    key &lt;AC05&gt;  { [         g,          G,   VoidSymbol,   VoidSymbol ] };
+    key &lt;AC06&gt;  { [         h,          H,   VoidSymbol,   VoidSymbol ] };
+    key &lt;AC08&gt;  { [         k,          K,   VoidSymbol,   VoidSymbol ] };
+    key &lt;AC09&gt;  { [         l,          L,   VoidSymbol,   VoidSymbol ] };
+    key &lt;AC10&gt;  { [  scedilla,   Scedilla,        acute,   dead_acute ] };
+    key &lt;AC11&gt;  { [         i,  Iabovedot,   apostrophe,   dead_caron ] };
+    key &lt;TLDE&gt;  { [  quotedbl,  backslash,    plusminus,       degree ] };
+
+    key &lt;BKSL&gt;  { [     comma,  semicolon,        grave,   dead_grave ] };
+    key &lt;LSGT&gt;  { [      less,    greater,          bar,    brokenbar ] };
+    key &lt;AB08&gt;  { [odiaeresis, Odiaeresis,     multiply,   VoidSymbol ] };
+    key &lt;AB09&gt;  { [  ccedilla,   Ccedilla, periodcentered,     division ] };
+    key &lt;AB10&gt;  { [    period,      colon, dead_abovedot, dead_abovedot ] };
+    key &lt;SPCE&gt;  { [     space,      space, nobreakspace,   nobreakspace ] };
+
+    include "level3(ralt_switch_multikey)"
+    modifier_map Mod5   { &lt;RALT&gt; };
+};
+# <b><tt>cat tr_f</tt></b>
+// based on
+// Turkish keyboard symbols for PC and xkb
+// This file distributed without any expressed or implied warranty
+// Nilgün Belma Bugüner &lt;nilgun@superonline.com&gt;, 2004
+//
+//Default Layout (Turkish F)
+default partial
+xkb_symbols "basic" {
+
+    include "pc/latin"
+
+    name[Group1]="Turkish_F";
+
+    key &lt;AE01&gt;  { [         1,     exclam,  onesuperior,   exclamdown ] };
+    key &lt;AE02&gt;  { [         2,   quotedbl,  twosuperior,   VoidSymbol ] };
+    key &lt;AE03&gt;  { [         3, asciicircum, numbersign, threesuperior ] };
+    key &lt;AE04&gt;  { [         4,     dollar,   onequarter,   VoidSymbol ] };
+    key &lt;AE06&gt;  { [         6,  ampersand, threequarters,  VoidSymbol ] };
+    key &lt;AE07&gt;  { [         7, apostrophe,    braceleft,   VoidSymbol ] };
+    key &lt;AE08&gt;  { [         8,  parenleft,  bracketleft,   VoidSymbol ] };
+    key &lt;AE09&gt;  { [         9, parenright, bracketright,    plusminus ] };
+    key &lt;AE10&gt;  { [         0,      equal,   braceright,       degree ] };
+    key &lt;AE11&gt;  { [     slash,   question,    backslash, questiondown ] };
+    key &lt;AE12&gt;  { [     minus, underscore,     division,   VoidSymbol ] };
+
+    key &lt;AD01&gt;  { [         f,          F,           at,   VoidSymbol ] };
+    key &lt;AD02&gt;  { [         g,          G,   VoidSymbol,   VoidSymbol ] };
+    key &lt;AD03&gt;  { [    gbreve,     Gbreve,   VoidSymbol,   VoidSymbol ] };
+    key &lt;AD04&gt;  { [  idotless,          I,    paragraph,   VoidSymbol ] };
+    key &lt;AD05&gt;  { [         o,          O,  ocircumflex,  Ocircumflex ] };
+    key &lt;AD06&gt;  { [         d,          D,          yen,   VoidSymbol ] };
+    key &lt;AD07&gt;  { [         r,          R,   registered,   VoidSymbol ] };
+    key &lt;AD08&gt;  { [         n,          N,   VoidSymbol,   VoidSymbol ] };
+    key &lt;AD09&gt;  { [         h,          H,       degree,   VoidSymbol ] };
+    key &lt;AD10&gt;  { [         p,          P,     sterling,   VoidSymbol ] };
+    key &lt;AD11&gt;  { [         q,          Q, dead_diaeresis, dead_abovering ] };
+    key &lt;AD12&gt;  { [         w,          W,   asciitilde,   dead_breve ] };
+
+    key &lt;AC01&gt;  { [         u,          U,  ucircumflex,  Ucircumflex ] };
+    key &lt;AC02&gt;  { [         i,  Iabovedot,  icircumflex,  Icircumflex ] };
+    key &lt;AC03&gt;  { [         e,          E,     EuroSign,   VoidSymbol ] };
+    key &lt;AC04&gt;  { [         a,          A,  acircumflex,  Acircumflex ] };
+    key &lt;AC05&gt;  { [udiaeresis, Udiaeresis,  ucircumflex,  Ucircumflex ] };
+    key &lt;AC06&gt;  { [         t,          T,    trademark,   VoidSymbol ] };
+    key &lt;AC07&gt;  { [         k,          K,   VoidSymbol,   VoidSymbol ] };
+    key &lt;AC08&gt;  { [         m,          M,           mu,   VoidSymbol ] };
+    key &lt;AC09&gt;  { [         l,          L,   VoidSymbol,   VoidSymbol ] };
+    key &lt;AC10&gt;  { [         y,          Y,        acute,   dead_acute ] };
+    key &lt;AC11&gt;  { [  scedilla,   Scedilla,   numbersign,   dead_caron ] };
+    key &lt;TLDE&gt;  { [      plus,   asterisk,      notsign,    plusminus ] };
+
+    key &lt;BKSL&gt;  { [         x,          X,        grave,   dead_grave ] };
+    key &lt;AB01&gt;  { [         j,          J, guillemotleft,  VoidSymbol ] };
+    key &lt;AB02&gt;  { [odiaeresis, Odiaeresis, guillemotright, VoidSymbol ] };
+    key &lt;AB03&gt;  { [         v,          V, leftdoublequotemark, VoidSymbol ] };
+    key &lt;AB04&gt;  { [         c,          C,         cent,    copyright ] };
+    key &lt;AB05&gt;  { [  ccedilla,   Ccedilla, rightdoublequotemark, VoidSymbol] };
+    key &lt;AB06&gt;  { [         z,          Z,   VoidSymbol,   VoidSymbol ] };
+    key &lt;AB07&gt;  { [         s,          S,      section,   VoidSymbol ] };
+    key &lt;AB08&gt;  { [         b,          B,     multiply, nobreakspace ] };
+    key &lt;AB09&gt;  { [    period,      colon,     division, dead_abovedot] };
+    key &lt;AB10&gt;  { [     comma,  semicolon, periodcentered, VoidSymbol ] };
+    key &lt;SPCE&gt;  { [    space,       space, nobreakspace, nobreakspace ] };
+    key &lt;LSGT&gt;  { [     less,     greater,          bar,    brokenbar ] };
+
+    include "level3(ralt_switch_multikey)"
+    modifier_map Mod5   { &lt;RALT&gt; };
+};
+</pre></div></div>
+    <div class="para">
+<tt>types</tt> dizini için aşağıdaki işlemleri yapın:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cp /usr/X11R6/lib/X11/xkb/types/* ./types/</tt></b>
+# <b><tt>rm -f ./types/README</tt></b>
+</pre></div></div>
+    <div class="para">
+Klavye yapılandırması ile ilgili olarak <tt>/a3/ramdisk/initrd/lib/X11/locale</tt> dizininde de bazı işlemler yapacağız. Önce bize gereken dizinleri açalım:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cd /a3/ramdisk/initrd/lib/X11/locale</tt></b>
+# <b><tt>mkdir C en_US.UTF-8 iso8859-9 lib lib/common</tt></b>
+</pre></div></div>
+    <div class="para">
+Bu dizinde 3 dosya oluşturacağız. Bunlar:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cat compose.dir</tt></b>
+iso8859-1/Compose               C
+iso8859-1/Compose               en_US.ISO8859-1
+iso8859-9/Compose               tr_TR.ISO8859-9
+#
+en_US.UTF-8/Compose             en_US.UTF-8
+en_US.UTF-8/Compose             tr_TR.UTF-8
+# <b><tt>cat locale.alias</tt></b>
+POSIX                                           C
+POSIX-UTF2                                      C
+C_C.C                                           C
+C.en                                            C
+C.iso88591                                      en_US.ISO8859-1
+Cextend                                         en_US.ISO8859-1
+Cextend.en                                      en_US.ISO8859-1
+English_United-States.437                       C
+en_US                                           en_US.ISO8859-1
+en_US.88591                                     en_US.ISO8859-1
+en_US.88591.en                                  en_US.ISO8859-1
+en_US.iso88591                                  en_US.ISO8859-1
+en_US.iso885915                                 en_US.ISO8859-15
+en_US.ISO-8859-1                                en_US.ISO8859-1
+en_US.ISO_8859-1                                en_US.ISO8859-1
+
+tr                                              tr_TR.ISO8859-9
+tr_TR                                           tr_TR.ISO8859-9
+tr_TR.iso88599                                  tr_TR.ISO8859-9
+tr_TR.ISO-8859-9                                tr_TR.ISO8859-9
+tr_TR.utf8                                      tr_TR.UTF-8
+
+tr:                                             tr_TR.ISO8859-9
+tr_TR:                                          tr_TR.ISO8859-9
+tr_TR.iso88599:                                 tr_TR.ISO8859-9
+tr_TR.ISO-8859-9:                               tr_TR.ISO8859-9
+tr_TR.utf8:                                     tr_TR.UTF-8
+# <b><tt>cat locale.dir</tt></b>
+C/XLC_LOCALE                            C
+iso8859-1/XLC_LOCALE                    en_US.ISO8859-1
+iso8859-9/XLC_LOCALE                    tr_TR.ISO8859-9
+en_US.UTF-8/XLC_LOCALE                  en_US.UTF-8
+en_US.UTF-8/XLC_LOCALE                  tr_TR.UTF-8
+
+C/XLC_LOCALE:                           C
+iso8859-15/XLC_LOCALE:                  en_US.ISO8859-15
+iso8859-9/XLC_LOCALE:                   tr_TR.ISO8859-9
+en_US.UTF-8/XLC_LOCALE:                 en_US.UTF-8
+en_US.UTF-8/XLC_LOCALE:                 tr_TR.UTF-8
+</pre></div></div>
+    <div class="para">
+<tt>C</tt> dizini için aşağıdaki işlemi yapın:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cp /usr/X11R6/lib/X11/locale/C/* ./C/</tt></b>
+</pre></div></div>
+    <div class="para">
+<tt>en_US.UTF-8</tt> dizini için aşağıdaki işlemi yapın:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cp /usr/X11R6/lib/X11/locale/en_US.UTF-8/* ./en_US.UTF-8/</tt></b>
+</pre></div></div>
+    <div class="para">
+<tt>iso8859-9</tt> dizini için aşağıdaki işlemi yapın:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cp /usr/X11R6/lib/X11/locale/iso8859-9/* ./iso8859-9/</tt></b>
+</pre></div></div>
+    <div class="para">
+<tt>lib/common</tt> dizini için aşağıdaki işlemi yapın:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cp /usr/X11R6/lib/X11/locale/lib/common/* ./lib/common/</tt></b>
+</pre></div></div>
+    <div class="para">
+Bu dosyalardan başka X'in yüklediği bazı dosyalar var. Bunları bulamazsa hata verip çalışmasını durduruyor. Siz böyle bir durumda X terminaliniz çalışmazsa komut satırından <b><tt>cat /var/log/XFree86.0.log</tt></b> komutunu verip, hatanın sebebini öğrenip X'in aradığı dosyayı sisteminize eklemelisiniz.
+    </div><div class="para">
+Son işlemlerden olarak, aşağıdaki işlemleri yapın:
+    </div>
+<div class="para"><div align="right"><pre class="screen"># <b><tt>cd /a3/ramdisk/initrd/lib/X11</tt></b>
+# <b><tt>cp /usr/X11R6/lib/X11/app-defaults/Xmessage ./app-defaults/</tt></b>
+# <b><tt>cp /usr/X11R6/lib/X11/Cards ./</tt></b>
+# <b><tt>cp /usr/X11R6/lib/X11/Options ./</tt></b>
+# <b><tt>cp /usr/X11R6/lib/X11/rgb.txt ./</tt></b>
+# <b><tt>cp /usr/X11R6/lib/X11/XErrorDB ./</tt></b>
+# <b><tt>cp /usr/X11R6/lib/X11/XKeysymDB ./</tt></b>
+# <b><tt>ln -s /etc/X11/XF86Config</tt></b>
+# <b><tt>cd /a3/ramdisk/etc/X11</tt></b>
+# <b><tt>ln -s ../../bin/XFree86 X</tt></b>
+# <b><tt>cp /etc/X11/xserver/SecurityPolicy ./xserver/</tt></b>
+</pre></div></div>
+    <div class="para">
+X ile ilgili olarak sistemin yapılandırılması bitti. Şimdi açılış sırasında X'in yüklenmesini sağlayacak işlemleri yapalım. <tt>etc/inittab</tt> dosyasını aşağıdaki biçime getirin:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+::sysinit:/etc/init.d/baslat
+
+tty1::askfirst:/bin/busybox sh
+tty2::askfirst:/bin/X -query 10.10.10.1
+
+::ctrlaltdel:/bin/reboot -d 0
+::restart:/sbin/init
+</pre></div></div>
+    <div class="para">
+Bu dosyanın bir önceki inittab dosyasından farkı <tt>tty2::askfirst:/bin/X -query 10.10.10.1</tt> satırı. Bu satırla 2. konsola geçip enter tuşuna bastığımızda X çalıştırılacak. <tt>-query 10.10.10.1</tt> seçeneği ile de bağlanacağı X sunucusunun IP adresini belirtiyoruz.
+    </div><div class="para">
+<tt>etc/init.d/baslat</tt> betiğine de bazı açıklamalar koysak iyi olur. Dosyanın sonununa aşağıdaki satırları ya da siz ne uygun görürseniz yazın. Bu, sadece, X terminalinin kullanıcısına bilgi vermek için:
+    </div>
+<div class="para"><div align="right"><pre class="screen">clear
+
+echo ""
+echo ""
+echo ""
+echo "          +-----------------------------------------------+"
+echo "          | X oturumunu baslatmak icin: ALT-F2 ve ENTER   |"
+echo "          |                                               |"
+echo "          | X Oturumunundan cikmak icin : CTRL-ALT-F1     |"
+echo "          |                                               |"
+echo "          | Sistemi kapatmak icin:                        |"
+echo "          | X oturumundan ciktiktan sonra poweroff yazip  |"
+echo "          | ENTER'a basin.                                |"
+echo "          +-----------------------------------------------+"
+
+exit 0
+</pre></div></div>
+    <div class="para">
+Son olarak, <b><tt>initrdyap</tt></b> betiğini çalıştırıp <tt>initrd.img</tt> dosyasını oluşturduktan sonra istemci makinaya geçip, <tt>netlogon</tt> dizinindeki betiği çalıştırıp dosyaları windows'a aktarın ve <tt>LINUX OL</tt> simgesine tıklayıp yaptıklarınızı deneyin.
+    </div><div class="para">
+Sunucu makinaya bağlantı kurulduğunda karşınıza <b><tt>gdm</tt></b>'nin oturum açma ekranı gelecek. 10 saniye içinde bir kullanıcı ismi ve parolası vermezseniz <tt>talebe</tt> kullanıcısı ile size bir oturum açılacaktır. Bu noktadan sonra artık sunucu makinanın bir kullanıcısı olacaksınız ve ev dizininiz <tt>/home/talebe</tt> dizini olacaktır. Eğer tüm X terminali kullanıcılarının ayrı ev dizinleri olmasını isterseniz (hepsi <tt>talebe</tt>'nin ev dizinini kullanırsa kavga çıkabilir) onlar için sunucu makina üzerinde kullanıcı oluşturup, daha sonra değiştirmelerini söyleyerek bir parola vermelisiniz. Kullanıcılar sisteme kendi kullanıcı isimleriyle bağlandıktan sonra parolalarını <b><tt>passwd</tt></b> komutu ile değiştirebilirler. <tt>talebe</tt> kullanıcısı için bunu yapamazlar, çünkü yapmaları sistem tarafından engellenir.
+    </div><div class="para">
+<tt>/a3/ramdisk/initrd</tt> dizini altındaki sistemin ne kadar yer kapladığını <b><tt>du /a3/ramdisk/initrd</tt></b> komutunu vererek öğrenebilirsiniz. Çıktının son satırı dizinin sabit diskte kapladığı alanı kB cinsinden verir. Bu değer benim oluşturduğum sistem için 11279 kB idi. Eğer oluşturduğunuz sistem (12000 - 500) kB'ı aşıyorsa, <b><tt>initrdyap</tt></b> betiğindeki 12000 lik değeri arttırmalısınız. <tt>linux.bat</tt> dosyasında da bu değeri değiştirmelisiniz. X terminalinin konsolunda <b><tt>df -k</tt></b> komutu ile ramdiskin boyutunu ve ne kadarının kullanıldığı ile ne kadar yerin boş olduğunu öğrenebilirsiniz. Bu değerlere bakarak <tt>initrd.rd</tt> dosyasının boyutunun ne olması gerektiği hakkında bir fikir edinebilirsiniz. Ben 200 kB kadar bir boş alan kalmasına dikkat ettim ve bu dosyayı <b><tt>initrdyap</tt></b> betiği ile 12000 kB olarak oluşturdum. Çok sınır değerler için <b><tt>initrdyap</tt></b> betiği hata verecektir. Biraz bol tutmakta (ben ~700 kB kadar artı yer ayırdım) yarar var.
+    </div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/windows-ve-linux_baglan.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/windows-ve-linux__terminal.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/windows-ve-linux_sonuc.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Ağa Bağlanan Linux Terminali </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Sonuç</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

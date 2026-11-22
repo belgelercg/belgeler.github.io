@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2019-10-17T22:36:15+03:00" /><title>QmailAdmin Kurulumu</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../howto/qmail-kurulumu-nasil_kur-2.html" title="B. İkinci Tür Kurulum" /><link rel="previous" href="../howto/qmail-kurulumu-nasil_kur-2.resp.html" title="Autoresponder Kurulumu" /><link rel="next" href="../howto/qmail-kurulumu-nasil_kur-2.cimap.html" title="Courier-IMAP Kurulumu" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">QmailAdmin Kurulumu</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../howto/qmail-kurulumu-nasil_kur-2.resp.html">Önceki</a> </td><th width="60%" align="center">B. İkinci Tür Kurulum</th><td width="20%" align="right"> <a accesskey="n" href="../howto/qmail-kurulumu-nasil_kur-2.cimap.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="qmail-kurulumu-nasil_kur-2.admin" id="qmail-kurulumu-nasil_kur-2.admin"></a>QmailAdmin Kurulumu</div><dl><dd><div class="para">
+<tt>Qmailadmin</tt> vpopmail'i web'den yönetmeye yarayan bir programdır.
+Bu program ile kullanıcı açma, silme, yönlendirme, takma ad (alias) tanımlama,
+liste açma, liste özelliklerini değiştirme gibi özellikleri vardır. Qmailadmin
+ile qmail+vpopmail yönetimi çok kolay hale gelmektedir. Hatta şirketinizdeki
+        qmail'in "q"sundan bir şey anlamayan sekreter bile çok yukarıda saydığım
+        işlemleri çok rahat bir şekilde yapabilir. :)
+      </div><div class="para">
+<a class="ulink" href="http://www.inter7.com/qmailadmin-project/" target="_top">http://www.inter7.com/qmailadmin-project/</a>
+adresinden  en son sürümünü indiriniz. Şu anki sürümü: 1.0.6
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# tar -zxvf qmailadmin-1.0.6.tar.gz
+# cd qmailadmin-1.0.6
+</pre></div></div>
+      <div class="para">
+Qmailadmin'i kurmadan önce vpopmail, ezmlm ve autorespond'u  kurmanız lazim.
+        Kurmadıysanız hemen kurunuz.
+      </div><div class="para">
+        Bazı yapılandırma parametrelerin açıklamaları:
+      </div><div class="variablelist"><dl><dt><span class="term">--enable-cgibindir=</span></dt><dd class="varlist"><div class="para">Qmailmin'in kurulacagi CGI dizini</div></dd><dt><span class="term">--with-htmllibdir=</span></dt><dd class="varlist"><div class="para">HTML dosyalarının kurulacağı dizin</div></dd><dt><span class="term">--enable-cgipath=/cgi-bin/qmailadmin/qmailadmin</span></dt><dd class="varlist"><div class="para">
+              CGI için URL (yani
+<tt>http://mail.domain.org/cgi-bin/qmailadmin/qmailadmin</tt>)
+              </div></dd></dl></div>
+<div class="para"><div align="right"><pre class="screen">
+# ./configure --enable-cgibindir=/usr/local/www/cgi-bin/qmailadmin \
+              --with-htmllibdir=/usr/local/www/data/qmailadmin \
+              --enable-vpopuser=vpopmail \
+              --enable-autoresponder-bin=/usr/local/bin \
+              --enable-ezmlmdir=/usr/local/bin  \
+              --enable-cgipath=/cgi-bin/qmailadmin/qmailadmin
+# make
+# make install-strip
+</pre></div></div>
+      <div class="para">
+        Yukarıdaki kurulum sonucu qmailadmin programı
+<tt>/usr/local/www/cgi-bin/qmailadmin</tt> altına kurulacaktır. Eğer
+aşağıdaki gibi hata alırsanız (bu hatayı sadece vpopmail'i MySQL desteği ile
+        kurduğunuz zaman alırsınız).
+</div>
+<div class="para"><div align="right"><pre class="screen">
+/home/vpopmail/lib/libvpopmail.a(vauth.o): In function `vupdate_rules':
+/usr/local/qmail/vpopmail-5.2.1/vauth.c:591: undefined reference to ¬
+ `mysql_query'
+/usr/local/qmail/vpopmail-5.2.11/vauth.c:594: undefined reference to ¬
+ `mysql_query'
+/usr/local/qmail/vpopmail-5.2.1/vauth.c:599: undefined reference to ¬
+ `mysql_use_result'
+/usr/local/qmail/vpopmail-5.2.1/vauth.c:606: undefined reference to ¬
+ `mysql_fetch_row'
+/usr/local/qmail/vpopmail-5.2.1/vauth.c:607: undefined reference to ¬
+ `mysql_free_result'
+/home/vpopmail/lib/libvpopmail.a(vauth.o): In function `vclear_open_smtp':
+/usr/local/qmail/vpopmail-5.2.1/vauth.c(.text+0x1058): undefined reference to ¬
+ `mysql_query'
+/home/vpopmail/lib/libvpopmail.a(vauth.o): In function `vcreate_relay_table':
+/usr/local/qmail/vpopmail-5.2.1/vauth.c:630: undefined reference to ¬
+ `mysql_query'
+/usr/local/qmail/vpopmail-5.2/1/vauth.c:634: undefined reference to ¬
+ `mysql_store_result'
+/usr/local/qmail/vpopmail-5.2.1/vauth.c:635: undefined reference to ¬
+ `mysql_free_result'
+/home/vpopmail/lib/libvpopmail.a(vauth.o): In function `vclose':
+</pre></div></div>
+<div class="para">
+Makefile dosyasında  <tt>CPPFLAGS</tt>, <tt>LDFLAGS</tt>
+        ve <tt>LIBS</tt> değişkenlerine değer olarak sizin vpopmail
+        ve mysql include ve lib dizinleri belirtin:
+</div>
+<div class="para"><div align="right"><pre class="screen">
+CPPFLAGS = -I/home/vpopmail/include -I/usr/local/include/mysql
+LDFLAGS=-L/home/vpopmail/lib -L/usr/local/lib/mysql
+LIBS= -lvpopmail -lmysqlclient
+#make
+#make install-strip
+</pre></div></div>
+      <div class="para">
+Qmailadmin'e <tt>http://yourdomain/cgi-bin/qmailadmin/qmailadmin</tt>
+adresinden erişebilirsiniz. Ekrana gelen sayfada <tt>postmaster</tt>
+yazan bölüme dokunmayın.
+      </div><div class="para">
+        Altındaki <tt>domain</tt> bölümünde işlem yapmak istediğiniz
+        alanadını yazınız. En alttaki parola bölümüne ise
+</div>
+<div class="para"><div align="right"><pre class="screen">
+# vadddomain example.com
+</pre></div></div>
+<div class="para">
+komutunu verdikten sonra sizden
+istenilen parolaya ne yazdıysanız onu yazınız.(alanadınız açılırken verdiğiniz
+parola postmaster kullanıcısının paroalsıdır.). Son olarak sisteminizin
+güvenliği için, mümkünse qmailadmin sitesine erişirken SSL (https) ile bağlantı
+kurun ve <tt>/usr/local/www/cgi-bin/qmailadmin</tt> dizinine erişimi
+apache'deki <tt>.htaccess</tt> ile kısıtlayın. Apache'de
+<tt>.htaccess</tt> ile erişim kısıtlamasının nasıl yapılacağı hakkında
+bilgi almak için <a class="link" href="../howto/sanal-adresleme-nasil_constraint.html" title="Dizin Erişimini Kısıtlama">Apache Web
+Sunucusunda Sanal Adresleme ve Dizin Erişiminin Kısıtlanması NASIL</a>
+belgesine bakabilirsiniz.
+      </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../howto/qmail-kurulumu-nasil_kur-2.resp.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../howto/qmail-kurulumu-nasil_kur-2.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../howto/qmail-kurulumu-nasil_kur-2.cimap.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Autoresponder Kurulumu </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Courier-IMAP Kurulumu</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>
