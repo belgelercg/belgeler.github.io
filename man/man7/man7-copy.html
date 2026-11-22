@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:25:19+03:00" /><title>COPY</title><link rel="icon" type="image/png" href="../../images/belgeler-logo.png" /><link rel="stylesheet" href="../../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../../man/man7/man7.html" title="SQL Deyimleri, Makro Paketleri vs." /><link rel="previous" href="../../man/man7/man7-commit.html" title="COMMIT" /><link rel="next" href="../../man/man7/man7-create_aggregate.html" title="CREATE AGGREGATE" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">COPY</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../../man/man7/man7-commit.html">Önceki</a> </td><th width="60%" align="center">SQL Deyimleri, Makro Paketleri vs.</th><td width="20%" align="right"> <a accesskey="n" href="../../man/man7/man7-create_aggregate.html">Sonraki</a></td></tr></table></td></tr></table><div class="refentry"><a name="tr-man7-copy" id="tr-man7-copy"></a><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="25%"><b>COPY(7)</b></td><td class="mheadfoot" align="center" width="50%"><b>SQL - Dil Deyimleri</b> </td><td class="mheadfoot" align="right" width="25%"><b>COPY(7)</b></td></tr></table></div><dl><dt class="head3">İSİM</dt><dd>COPY — bir tablo ile bir dosya arasında veri kopyalar<br /></dd><dd><div class="para"></div></dd><dt class="head3">KULLANIM</dt><dd><div class="para"><div class="para"><div align="center"><pre class="synopsis"><b><tt>COPY</tt></b> <i>tablo_ismi</i> [ ( <i>sütun</i> [, ...] ) ]
+    <b><tt>FROM</tt></b> { '<i>dosya_ismi</i>' | <b><tt>STDIN</tt></b> }
+    [ [ <b><tt>WITH</tt></b> ]
+          [ <b><tt>BINARY</tt></b> ]
+          [ <b><tt>OIDS</tt></b> ]
+          [ <b><tt>DELIMITER</tt></b> [ <b><tt>AS</tt></b> ] '<i>ayraç</i>' ]
+          [ <b><tt>NULL</tt></b> [ <b><tt>AS</tt></b> ] '<i>boş_dizge</i>' ]
+          [ <b><tt>CSV</tt></b> [ <b><tt>QUOTE</tt></b> [ <b><tt>AS</tt></b> ] '<i>tırnak</i>' ]
+                [ <b><tt>ESCAPE</tt></b> [ <b><tt>AS</tt></b> ] '<i>öncelem</i>' ]
+                [ <b><tt>FORCE NOT NULL</tt></b> <i>sütun</i> [, ...] ]
+
+<b><tt>COPY</tt></b> <i>tablo_ismi</i> [ ( <i>sütun</i> [, ...] ) ]
+    <b><tt>TO</tt></b> { '<i>dosya_ismi</i>' | <b><tt>STDOUT</tt></b> }
+    [ [<b><tt> WITH</tt></b> ]
+          [ <b><tt>BINARY</tt></b> ]
+          [ <b><tt>OIDS</tt></b> ]
+          [ <b><tt>DELIMITER</tt></b> [ <b><tt>AS</tt></b> ] '<i>ayraç</i>' ]
+          [ <b><tt>NULL</tt></b> [ <b><tt>AS</tt></b> ] '<i>boş_dizge</i>' ]
+          [ <b><tt>CSV</tt></b> [ <b><tt>QUOTE</tt></b> [ <b><tt>AS</tt></b> ] '<i>tırnak</i>' ]
+                [ <b><tt>ESCAPE</tt></b> [ <b><tt>AS</tt></b> ] '<i>öncelem</i>' ]
+                [ <b><tt>FORCE QUOTE</tt></b> <i>sütun</i> [, ...] ]
+</pre></div></div></div></dd><dt class="head3">Açıklama</dt><dd><div class="para">
+<b><tt>COPY</tt></b> PostgreSQL<sup>TM</sup> tabloları ile standart dosya sistemi dosyaları arasında veri taşımak için kullanılır. <b><tt>COPY TO</tt></b> bir tablonun içeriğini bir dosyaya, <b><tt>COPY FROM</tt></b> ise bir dosyadaki veriyi bir tabloya kopyalar (mevcut bir tabloya veri eklemek şeklinde).
+  </div><div class="para">
+Eğer bir sütun listesi verilmişse, sadece belirtilen sütunların verileri kopyalamaya konu olur. Eğer sütun listesindeki sütunlar, tablodaki sütunların hepsini içermiyorsa, <b><tt>COPY FROM</tt></b> veri sağlanmamış sütunlara öntanımlı değerlerini yazar.
+  </div><div class="para">
+Bir dosya ismi ile kullanılan <b><tt>COPY</tt></b>, PostgreSQL sunucusunun okumak ve yazmak için doğrudan bir dosyaya erişmesini sağlar. Dosya sunucu tarafından erişilebilir olmalı ve dosya ismi sunucuya göre belirtilmelidir. <b><tt>STDIN</tt></b> veya <b><tt>STDOUT</tt></b> belirtildiğinde, veri istemci ile sunucu arasındaki bağlantı üzerinden iletilir.
+  </div></dd><dt class="head3">Parametreler</dt><dd><div class="variablelist"><dl><dt><i><tt>tablo_ismi</tt></i></dt><dd class="varlist"><div class="para">Mevcut bir tablonun ismi (şema nitelemeli olabilir).
+    </div></dd><dt><i><tt>sütun</tt></i></dt><dd class="varlist"><div class="para">Kopyalanacak sütunların isteğe bağlı listesi. Bir sütun listesi belirtilmemişse, sütunların hepsi kullanılır.
+    </div></dd><dt><i><tt>dosya_ismi</tt></i></dt><dd class="varlist"><div class="para">Girdi veya çıktı dosyasının mutlak dosya yoluyla ismi.
+    </div></dd><dt><b><tt>STDIN</tt></b></dt><dd class="varlist"><div class="para">Girdinin istemci uygulamadan geldiğini belirtir.
+    </div></dd><dt><b><tt>STDOUT</tt></b></dt><dd class="varlist"><div class="para">Çıktının istemci uygulamaya gittiğini belirtir.
+    </div></dd><dt><b><tt>BINARY</tt></b></dt><dd class="varlist"><div class="para">Saklanacak ya da okunacak verinin metin biçiminde değil, ikilik biçimde olacağını belirtir. İkilik kipte <b><tt>DELIMITER</tt></b>, <b><tt>NULL</tt></b> veya <b><tt>CSV</tt></b> seçeneklerini belirtemezsiniz.
+    </div></dd><dt><b><tt>OIDS</tt></b></dt><dd class="varlist"><div class="para">Her satır için nesne kimliklerinin kopyalanacağını belirtir. (Eğer nesne kimlikleri olmayan bir tablo için <b><tt>OIDS</tt></b> belirtilmişse, bir hata oluşur.)
+    </div></dd><dt><i><tt>ayraç</tt></i></dt><dd class="varlist"><div class="para">Dosyanın her satırındaki sütunları ayıran tek karakter. Metin kipinde sekme, <b><tt>CSV</tt></b> kipinde virgül öntanımlıdır.
+    </div></dd><dt><i><tt>boş_dizge</tt></i></dt><dd class="varlist"><div class="para">Bir boş değer belirten dizge. Metin kipinde <tt>\N</tt>, <b><tt>CSV</tt></b> kipinde tırnak içine alınmamış boş dizge öntanımlıdır. NULL ile boş dizge arasında ayrım yapılmamasını istediğiniz yerlerde metin kipinde bile boş dizge kullanmayı tercih etmelisiniz.
+     </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+<b><tt>COPY FROM</tt></b> kullanırken, bu dizge ile eşleşen her veri öğesi bir NULL değer olarak saklanacaktır, dolayısıyla aynı dizgeyi <b><tt>COPY TO</tt></b> için de kullanmaya dikkat etmelisiniz.
+    </div></td></tr></table></div></dd><dt><b><tt>CSV</tt></b></dt><dd class="varlist"><div class="para">Virgül Ayraçlı Değer kipini seçer (<b><tt>CSV</tt></b> - Comma Separated Value).
+    </div></dd><dt><i><tt>tırnak</tt></i></dt><dd class="varlist"><div class="para"><b><tt>CSV</tt></b> kipinde kullanılan tırnak karakterini belirtmek içindir. Çift tırnak (") öntanımlıdır.
+    </div></dd><dt><i><tt>öncelem</tt></i></dt><dd class="varlist"><div class="para"><b><tt>CSV</tt></b> kipindeki <b><tt>QUOTE</tt></b> veri karakteri (genelde çift tırnaktır) veri içinde kullanıldığında bu karakteri önceleyen karakter.
+    </div></dd><dt><b><tt>FORCE QUOTE</tt></b></dt><dd class="varlist"><div class="para"><b><tt>CSV COPY TO</tt></b> kipinde, belirtilen sütunlardaki <tt>NULL</tt> olmayan değerler için tırnak kullanımını zorunlu hale getirir. <tt>NULL</tt> değerler asla tırnak içine alınmaz.
+    </div></dd><dt><b><tt>FORCE NOT NULL</tt></b></dt><dd class="varlist"><div class="para"><b><tt>CSV COPY FROM</tt></b> kipinde, belirtilen her sütunun tırnaklı değer içerdiği, dolayısıyla bir <tt>NULL</tt> değer içermediği kabulü ile işlem yapılır. <b><tt>CSV</tt></b> kipindeki öntanımlı boş dizge (<tt>''</tt>) için, bu seçenek eksik değerlerin sıfır uzunluklu dizge olarak ele alınmasına sebep olur.
+    </div></dd></dl></div></dd><dt class="head3">Ek Bilgi</dt><dd><div class="para">
+<b><tt>COPY</tt></b> sadece normal tablolarla kullanılabilir, sanal tablolarla kullanılamaz.
+   </div><div class="para">
+<b><tt>BINARY</tt></b> seçeneği, tüm verinin metin değil ikilik biçimde saklanmasına/okunmasına sebep olur. Kısmen daha hızlı olsa da, ikilik biçimli dosyalar makine mimarileri ve farklı PostgreSQL<sup>TM</sup> sürümleri arasında daha az taşınabilirdir.
+   </div><div class="para">
+<b><tt>COPY TO</tt></b> tarafından okunan tablolarda <b><tt>SELECT</tt></b>, <b><tt>COPY FROM</tt></b> ile veri girilen tablolarda ise <b><tt>INSERT</tt></b> yetkiniz olmalıdır.
+   </div><div class="para">
+Bir <b><tt>COPY</tt></b> cümlesindeki isimli dosyalar istemci tarafından değil, sunucu tarafından okunur/yazılır. Bu nedenle, ya sunucu tarafında olmalı ya da sunucu makinedeki veritabanına erişiminiz olmalıdır. Bunlar PostgreSQL<sup>TM</sup> kullanıcısı (sunucuyu çalıştıran kullanıcı) tarafından okuma/yazma anlamında erişebilir olmalıdır, istemcinin değil. Bir dosyaya <b><tt>COPY</tt></b> isminin verilebilmesi, sunucunun erişebildiği her dosyaya okuma ve yazma yetkisi olduğundan, sadece veritabanı ayrıcalıklı kullanıcı için mümkündür.
+   </div><div class="para">
+<b><tt>COPY</tt></b> sözcüğünü psql'in <b><tt>\copy</tt></b> komutuyla karıştırmayın. <b><tt>\copy</tt></b> komutu psql istemcisinin erişebildiği bir dosyanın verisini almak/saklamak için <b><tt>COPY FROM STDIN</tt></b> veya <b><tt>COPY TO STDOUT</tt></b> çağrısı yapar. Bu nedenle, <b><tt>\copy</tt></b> kullanıldığında dosyaya erişilebilirlik ve erişim izinleri bakımından sunucu değil istemci etkindir.
+   </div><div class="para">
+<b><tt>COPY</tt></b> ile kullanılacak dosyanın daima mutlak dosya yolu ile belirtilmesi önerilir. Bu, <b><tt>COPY TO</tt></b> durumunda zorunludur, ama <b><tt>COPY FROM</tt></b> için bir dosyayı göreli dosya yolu ile belirtebilirsiniz; göreli dosya yolu, istemcinin çalışma dizinine göre değil, sunucu sürecinin çalışma dizinine (veri dizininin altında bir yer) göre yorumlanacaktır.
+   </div><div class="para">
+<b><tt>COPY FROM</tt></b> hedef tablodaki tetikleri ve sınama kısıtlarını da çağıracaktır. Ancak, kurallar çağrılmayacaktır.
+   </div><div class="para">
+<b><tt>COPY</tt></b> girdi ve çıktısı <tt>DateStyle</tt>  değerinden etkilenecektir. Öntanımlı olmayan <tt>DateStyle</tt> değerleri kullanabilen diğer PostgreSQL<sup>TM</sup> kurulumlarına taşınabilirlik bakımından, <b><tt>COPY TO</tt></b> kullanmadan önce <tt>DateStyle</tt> değeri olarak <b><tt>ISO</tt></b> belirtmelisiniz.
+   </div><div class="para">
+<b><tt>COPY</tt></b>, işlemi ilk hatada durdurur. Bunun <b><tt>COPY TO</tt></b> için sorunlara yol açmaması gerekir, ama hedef tablo hatadan önceki satırları almış olacaktır. Bu satırlar görünür ve erişilebilir olmayacak ama yine de diskte yer kaplıyor olacaktır. Eğer hata çok büyük bir kopyalama işleminde gerçekleşmişse, bu, diskin önemli bir bölümünün yararsız kullanımına yol açacaktır. Yararsız kısımlardan kurtulmak için <b><tt>VACUUM</tt></b> kullanmayı deneyebilirsiniz.
+   </div></dd><dt class="head3">Dosya Biçimleri</dt><dd><dl><dt class="head4">Metin Biçimi</dt><dd><div class="para">
+<b><tt>COPY</tt></b> cümlesi <b><tt>BINARY</tt></b> veya <b><tt>CSV</tt></b> seçenekleri olmaksızın kullanılırken, verinin okunması veya yazılmasında, bir metin dosyasının her satırına bir tablonun bir satırı karşılık getirilir. Bir satırdaki sütunlar ayraç karakteri ile ayrılırlar. Sütunların değerleri ya çıktı işlevleri tarafından üretilmiş ya da girdi işlevleri tarafından özniteliklerinin veri türünde oldukları kabul edilen dizgelerdir. Belirtilen boş dizgeler sütunlara NULL değerler olarak yerleştirilir. Eğer girdi dosyasının bir satırı umulandan daha az ya da daha fazla sütun içeriyorsa, <b><tt>COPY FROM</tt></b> bir hata oluşturacaktır. Eğer <b><tt>OIDS</tt></b> belirtilmişse, nesne kimliği, veri sütunlarından önce, ilk sütun olarak okunur ya da yazılır.
+   </div><div class="para">
+Verinin sonu sadece bir tersbölü ve nokta (<tt>\.</tt>) içeren  tek bir satırla ifade edilebilir. Veri dosyadan okunurken veri sonunun imlenmesi, dosya sonu zaten iyi algılanabildiğinden gerekli değildir; sadece 3.0 öncesi istemci protokolünü kullanan istemci uygulamaları ile veri kopyalanırken gerekli olur.
+   </div><div class="para">
+Sütun verisi içinde ayraç ve tırnak karakterleri kullanılırken, bunların ayraç ve tırnak karakterleri olarak algılanmaması için tersbölü karakteri (<tt>\</tt>) bunları öncelemekte kullanılabilir. Bir sütun değerinin içinde yer aldığında bir tersbölü ile öncelenmesi gereken karakterler şunlardır: tersbölü karakterinin kendisi, satırsonu, satırbaşı karakterleri ile ayraç ve tırnak olarak kullanılan karakterler.
+   </div><div class="para">
+Belirtilmiş bir boş dizge <b><tt>COPY TO</tt></b> tarafından tersbölü eklenmeden gönderilir; bunun aksine, <b><tt>COPY FROM</tt></b> girdi olan boş dizgeyi tersbölüleri silmeden önce eşleştirir. Bu nedenle, <tt>\N</tt> gibi bir boş dizge aslında bir veri değeri olan <tt>\N</tt> ile karışmaz (<tt>\\N</tt> olarak ifade edildiğinden).
+   </div><div class="para">
+<b><tt>COPY FROM</tt></b> tarafından tanınan tersbölü öncelemeli dizgeler:
+   </div>
+<div class="para"><pre class="literallayout">
+ Dizge          Anlamı
+--------       ---------------------------------------
+  \b           Terbölü (ASCII 8)
+  \f           Sayfa ileri (ASCII 12)
+  \n           Satırsonu (ASCII 10)
+  \r           Satırbaşı (ASCII 13)
+  \t           Sekme (ASCII 9)
+  \v           Düşey sekme (ASCII 11)
+  \rakamlar    tersbölüden sonra gelen sekizlik tabandaki üç rakam
+               bir karakterin sayısal değerini belirtir
+</pre></div>
+   <div class="para">
+Şu an, <b><tt>COPY TO</tt></b> tersbölü karakterini izleyen sekizlik rakamlar çıktılamayacak, ama yukarıda listelenmiş diğer dizgeleri kullanacaktır.
+   </div><div class="para">
+Yukarıdaki listede belirtilmemiş ama terbölü öncelemeli olarak belirtilmiş başka karakterler de olabilir, bu karakterler kendileri olarak değerlendirilecektir. Yine de tersbölülerin gereksiz yere kullanılmasından kaçınılmalıdır, çünkü istemeden veri sonunu imleyen <tt>\.</tt> ile boş dizgeyi imleyen <tt>\N</tt> dizgeleri üretilebilir. Bu dizgeler, bir tersbölü işlemi yapılmadan önce algılanmaya çalışılacaktır.
+   </div><div class="para">
+<b><tt>COPY</tt></b> için veri üreten uygulamaların veri içindeki satırsonu ve satırbaşı karakterlerini mutlaka <tt>\n</tt> ve <tt>\r</tt> dizgelerine dönüştürerek döndürmeleri önerilir. Şimdilik bu karakterler bu dizgelerle gösterilebiliyor olsa da ileride bu gösterimler kabul edilmeyebilir. Ayrıca bu karakterler, bilhassa dosyanın farklı makineler arasında aktarılması sırasında (örneğin, Unix ile Windows) bozulmalara yol açabilir.
+   </div><div class="para">
+<b><tt>COPY TO</tt></b> her satırı Unix tarzı satırsonu ("<tt>\n</tt>") ile sonlandıracaktır. Microsoft Windows üzerinde çalışan sunucular ise bunun yerine satırbaşı/satırsonu ("<tt>\r\n</tt>") çıktılayacaktır, fakat sadece bir sunucu dosyasına kopyalama için; platformlar arasında tutarlılığı sağlamak için <b><tt>COPY TO STDOUT</tt></b> sunucu platformundan bağımsız olarak daima "<tt>\n</tt>" gönderecektir. <b><tt>COPY FROM</tt></b> satırsonları ister satırbaşı, ister satırsonu, ister satırbaşı/satırsonu ile bitsin, satırları düzgün olarak elde edebilir. Veri içinde tersbölü ile öncelenmemiş satırsonu ve satırbaşı karakterlerinden dolayı hata oluşması riskini en aza indirmek için <b><tt>COPY FROM</tt></b> satırsonlarının beklendiği gibi bitmediğinden şikayet edecektir.
+   </div></dd></dl><dl><dt class="head4">CSV Biçimi</dt><dd><div class="para">
+Bu biçim, hesap çizelgesi uygulamaları gibi başka uygulamalarla veri alışverişi yapmak için kullanılır. Bu kipte, PostgreSQL'in standart metin kipi tarafından kullanılan önceleme mekanizması yerine, bilinen CSV önceleme mekanizması kullanılır.
+   </div><div class="para">
+Her kayıttaki değerler <b><tt>DELIMITER</tt></b> karakteri ile ayrılır. Eğer değer ayraç karakteri, <b><tt>QUOTE</tt></b> karakteri, <tt>NULL</tt> dizge, bir satırsonu ya da satırbaşı karakteri içeriyorsa, değerin tamamı <b><tt>QUOTE</tt></b> karakterleri ile sarmalanır ve değerin içindeki <b><tt>QUOTE</tt></b> veya <b><tt>ESCAPE</tt></b> karakteri önceleme karakteri ile öncelenir. Ayrıca, belli sütunlarda <tt>NULL</tt> olmayan değerleri çıktılarken mutlaka tırnak kullanılacağını belirtmek için <b><tt>FORCE QUOTE</tt></b> kullanabilirsiniz.
+   </div><div class="para">
+<b><tt>CSV</tt></b> biçiminde, bir <tt>NULL</tt> değeri bir boş dizgeden ayırmanın standart bir yolu yoktur. PostgreSQL'in <b><tt>COPY</tt></b> oluşumu bunu tırnaklarla elde eder. Bir <tt>NULL</tt>, <tt>NULL</tt> dizge olarak çıktılanır ve tırnak içine alınmazken, <tt>NULL</tt> dizge ile eşleşen bir veri değeri tırnak içine alınır. Bu nedenle, öntanımlı ayarları kullanarak, bir <tt>NULL</tt> dizge tırnak içine alınmamış bir boş dizge olarak yazılırken, bir boş dizge tırnakların içine alınarak (<tt>""</tt>) yazılır. Değerlerin okunması da benzer şekilde yapıllır. Belli sütunlar için <tt>NULL</tt> dizge karşılaştırmasını önlemek için <b><tt>FORCE NOT NULL</tt></b> kullanabilirsiniz.
+   </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../../images/xsl/note.png" /></td><th class="admon">Not</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+CSV kipi gömülü satırsonu ve satırbaşı karakterleri içeren tırnak içine alınmış değerlerli CSV dosyalarını tanır ve bunları üretir. Bu bakımdan bu dosyaların metin kipindeki gibi her satırı bir tablo satırına karşılık gelmeyebilir. Eğer CSV dosyası, kendisinde kullanılan satır sonlandırma uzlaşımıyla uyuşmayan, gömülü satır sonlandırma karakterleri içeren alanlar içeriyorsa, PostgreSQL'in <b><tt>COPY</tt></b> oluşumu bu dosyayı girdi olarak reddedecektir. Bu nedenle, gömülü satır sonlandırma karakterleri içeren verinin CSV kipinde değil, metin ya da ikilik kipte alınması daha güvenli olur.
+    </div><div class="para">
+Çoğu uygulama standarddan çok bir uzlaşımın sonucu gibi görünen dosya biçimli, tuhaf CSV dosyalar üretir. Bu bakımdan, bu mekanizmanın bazı dosyaları kabul etmediğini ya da <b><tt>COPY</tt></b> oluşumunun ürettiği dosyaların başka uygulamalar tarafından işlenemediğini keşfedebilirsiniz.
+    </div></td></tr></table></div></dd></dl><dl><dt class="head4">İkilik Biçim</dt><dd><div class="para">
+<b><tt>COPY BINARY</tt></b> için kullanılan dosya biçimi PostgreSQL<sup>TM</sup> 7.4'de değişmiştir. Yeni dosya biçimi, bir dosya başlığı, sıfır ya da daha fazla sayıda satır verisi içeren demet ve bir dosya kuyruğu içerir. Başlık ve veri şimdi ağ bayt sıralamasındadır.
+   </div><dl><dt class="head5">Dosya başlığı</dt><dd><div class="para">
+Dosya başlığı, değişken uzunluktaki başlık ek veri alanı ile biten, 15 baytlık sabit uzunlukta  bir alandan oluşur. Sabit uzunluklu alanlar şunlardır:
+    </div><div class="variablelist"><dl><dt>İmza</dt><dd class="varlist"><div class="para">
+11 bayt uzunluktaki <tt>PGCOPY\n\377\r\n\0</tt> dizgesi; bu dizgenin sonundaki boş karakter (<tt>\0</tt>) imzanın bir parçası olarak gereklidir. (Bu imza, temiz 8 bitlik olmayan bir aktarımla anlaşılırlığı bozulan dosyaların kolayca tanımlanabilmesi için tasarlanmıştır. Bu imza, böyle bir aktarımda, satırsonu dönüşüm süzgeçleri, boş karakterlerin kaldırılması, eşlik değişiklikleri ya da yüksek bitlerin kaldırılmasıyla değiştirilecektir.)
+       </div></dd><dt>Seçenekler alanı</dt><dd class="varlist"><div class="para">Dosya biçiminin önemli niteliklerini açıklayan 32 bitlik tamsayı bit maskesi. Bitler 0'dan (LSB) 31'e (MSB) kadar numaralanmıştır. Bu alan da, dosya biçiminin diğer tamsayı alanları gibi ağ bayt sıralamasında (en kıymetli bayt ilk bayttır) saklanmıştır. 16-31 arasındaki bitler dosya biçimi bakımından yaşamsal önemdeki nitelikler için yedek olarak ayrılmıştır; bir okuyucu bu bitlerden beklenmeyen birinin etkin olduğunu saptarsa, dosyayı reddetmelidir. 0-15 arasındaki bitler ise dosya biçiminin geriye doğru uyumluluğu ile ilgili alanlar için ayrılmıştır; bir okuyucu bu bitlerden beklenmeyen birinin etkin olduğunu saptarsa, bunu yoksaymalıdır. Şimdilik sadece bir bit tanımlıdır, kalan bitler sıfır olmalıdır:
+      </div><div class="variablelist"><dl><dt>Bit 16</dt><dd class="varlist"><div class="para">Bu bit 1 ise, veri, nesne kimliklerini içeriyor, 0 ise içermiyor demektir.
+          </div></dd></dl></div>
+       </dd><dt>Başlık ek veri alanı uzunluğu</dt><dd class="varlist"><div class="para">Kendisi hariç, başlığın kalanının bayt cinsinden uzunluğunu veren 32 bitlik bir tamsayı. Şimdilik bu alanın değeri sıfırdır ve hemen ardından ilk demet gelmektedir. İleride başlığın ek veriler içermesi gerekirse bu değişebilir. Bir okuyucu böyle bir ek veriye rastlarsa ve onunla ne yapacağını bilmiyorsa, basitçe atlaması önerilir.
+       </div></dd></dl></div>
+    <div class="para">
+Başlığın ek veri alanının kendinden menkul parçalardan oluşacağı düşünülmüştür. Bayrakları içeren alan ise okuyucuya ek veri alanında nelerin bulunduğunu açıklamak için tasarlanmamıştır. Başlığın ek veri alanının neleri içereceği daha sonraki dağıtımlara bırakılmıştır.
+    </div><div class="para">
+Bu tasarım, hem geriye uyumlu başlık eklemelerine (başlık ek veri parçaları veya düşük baytlardaki ek seçenek bitleri) hem de geriye uyumlu olmayan değişikliklere (yüksek baytlardaki seçenek bitleri bu değişiklikleri belirtmek için kullanılabileceği gibi gerekirse destek verisi ek veri alanına eklenebilir) izin verir.
+    </div></dd></dl><dl><dt class="head5">Demetler</dt><dd><div class="para">
+Her demet, içindeki alan sayısını belirten 16 bitlik bir tamsayı ile başlar. (Şimdilik, bir tablo aynı sayıda alan içereceğinden tüm demetlerin aynı sayıda alan içereceği belli ise de bu her zaman doğru olmayabilir.) Bundan sonra alanlar gelir. Her alan, alan uzunluğunu belirten 32 bitlik bir tamsayı ile başlar (bu tamsayı, alan uzunluğuna dahil değildir ve sıfır da olabilir). Özel bir durum olarak -1 değeri bir NULL alan değeri belirtir ve bu alan sıfır uzunluktadır.
+    </div><div class="para">
+Alanlar arasında adımlama anlamında herhangi bir ek alan bulunmaz.
+    </div><div class="para">
+Şimdilik, bir <b><tt>COPY BINARY</tt></b> dosyasındaki tüm veri değerlerinin ikilik biçimde olacağı kabul edilmektedir. Gelecekte, sütun biçim kodlarının belirtileceği bir başlık alanının eklenebileceği umulmaktadır.
+    </div><div class="para">
+Demet verisinin ikilik biçimini daha iyi anlayabilmek için PostgreSQL'in kaynak dosyalarına bakınız. Her sütunun veri türü <tt>*send</tt> ve <tt>*recv</tt> işlevlerinde görülebilir. Bu işlevler genellike kaynak paketinin <tt>src/backend/utils/adt/</tt> dizininde bulunur.
+    </div><div class="para">
+Nesne kimlikleri dosyada bulunuyorsa, OID alanı alan sayısını belirten tamsayıdan hemen sonra gelir ve alan sayısına dahil edilmemesi dışında normal bir alandır. Yani, normal alanlar gibi uzunluğunu belirten bir tamsayı ile başlar. Böylece 4 baytlık ve 8 baytlık nesne kimliklerinin belirtilebilmesi mümkün olur, hatta istenirse, nesne kimliklerinin boş olarak gösterilmesini de mümkün kılar.
+    </div></dd></dl><dl><dt class="head5">Dosya Kuyruğu</dt><dd><div class="para">
+Dosya kuyruğu -1 içeren 16 bitlik bir tamsayıdan oluşur. Bu, bir demetin alan sayısı değerinden kolayca ayrılır.
+    </div><div class="para">
+Eğer alan sayısını belirten tamsayı ne -1 ne de umulan sütun sayısını içeriyorsa, okuyucunun bir hata raporlaması gerekir. Bu, verinin düzgün olarak alınıp alınmadığıyla ilgili ek bir sınama da sağlar.
+    </div></dd></dl></dd></dl></dd><dt class="head3">Örnekler</dt><dd><div class="para">
+Alan ayracı olarak <tt>|</tt> kullanarak istemciye bir tablonun kopyalanması:
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">COPY country TO STDOUT WITH DELIMITER '|';
+</pre></div></div>
+  <div class="para">
+Verinin bir dosyadan <tt>country</tt> tablosuna kopyalanması:
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">COPY country FROM '/usr1/proj/bray/sql/country_data';
+</pre></div></div>
+  <div class="para">
+<b><tt>STDIN</tt></b>'den bir tabloya kopyalanmaya uygun veri örneği:
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">AF      AFGHANISTAN
+AL      ALBANIA
+DZ      ALGERIA
+ZM      ZAMBIA
+ZW      ZIMBABWE
+</pre></div></div>
+  <div class="para">
+Burada her satırın içindeki boşluklar aslında birer sekme karakteridir.
+  </div><div class="para">
+Aşağıda aynı veri ikilik biçimde çıktılanmıştır. Buradaki veri bir Unix aracı olan <b><tt>od -c</tt></b> ile süzüldükten sonra gösterilmiştir. Tablo üç alana sahiptir; ilk alan <tt>char(2)</tt> türünde, ikinci alan <tt>text</tt> türünde, üçüncü alan ise <tt>integer</tt> türündedir. Tüm satırların üçüncü sütunları birer NULL değer içermektedir.
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">0000000   P   G   C   O   P   Y  \n 377  \r  \n  \0  \0  \0  \0  \0  \0
+0000020  \0  \0  \0  \0 003  \0  \0  \0 002   A   F  \0  \0  \0 013   A
+0000040   F   G   H   A   N   I   S   T   A   N 377 377 377 377  \0 003
+0000060  \0  \0  \0 002   A   L  \0  \0  \0 007   A   L   B   A   N   I
+0000100   A 377 377 377 377  \0 003  \0  \0  \0 002   D   Z  \0  \0  \0
+0000120 007   A   L   G   E   R   I   A 377 377 377 377  \0 003  \0  \0
+0000140  \0 002   Z   M  \0  \0  \0 006   Z   A   M   B   I   A 377 377
+0000160 377 377  \0 003  \0  \0  \0 002   Z   W  \0  \0  \0  \b   Z   I
+0000200   M   B   A   B   W   E 377 377 377 377 377 377
+</pre></div></div>
+  </dd><dt class="head3">Uyumluluk</dt><dd><div class="para">
+SQL standardında <b><tt>COPY</tt></b> diye bir deyim yoktur.
+  </div><div class="para">
+Aşağıdaki sözdizimi PostgreSQL'in 7.3 sürümünden önce kullanılmaktaydı ve hala desteklenmektedir:
+  </div>
+<div class="para"><div align="center"><pre class="synopsis"><b><tt>COPY</tt></b> [ <b><tt>BINARY</tt></b> ] <i>tablo_ismi</i> [ <b><tt>WITH OIDS</tt></b> ]
+    <b><tt>FROM</tt></b> { '<i>dosya_ismi</i>' | <b><tt>STDIN</tt></b> }
+    [ [<b><tt>USING</tt></b>] <b><tt>DELIMITERS</tt></b> '<i>ayraç</i>' ]
+    [ <b><tt>WITH NULL AS</tt></b> '<i>boş_dizge</i>' ]
+
+<b><tt>COPY</tt></b> [ <b><tt>BINARY</tt></b> ] <i>tablo_ismi</i> [ <b><tt>WITH OIDS</tt></b> ]
+    <b><tt>TO</tt></b> { '<i>dosya_ismi</i>' | <b><tt>STDOUT</tt></b> }
+    [ [<b><tt>USING</tt></b>] <b><tt>DELIMITERS</tt></b> '<i>ayraç</i>' ]
+    [ <b><tt>WITH NULL AS</tt></b> '<i>boş_dizge</i>' ]
+</pre></div></div>
+  </dd><dt class="head3">Çeviren</dt><dd><div class="para">
+Nilgün Belma Bugüner <span class="email">&lt;nilgun (at) belgeler·gen·tr&gt;</span>, Nisan 2005
+</div></dd></dl><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="30%"><b>PostgreSQL</b></td><td class="mheadfoot" align="center" width="40%"></td><td class="mheadfoot" align="right" width="30%"><b>COPY(7)</b></td></tr></table></div></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../../man/man7/man7-commit.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../../man/man7/man7.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../../man/man7/man7-create_aggregate.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">COMMIT </td><td width="20%" align="center"><a accesskey="h" href="../../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> CREATE AGGREGATE</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

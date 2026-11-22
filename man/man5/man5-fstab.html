@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:25:10+03:00" /><title>fstab</title><link rel="icon" type="image/png" href="../../images/belgeler-logo.png" /><link rel="stylesheet" href="../../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../../man/man5/man5.html" title="Dosya Biçimleri ve Dosya Dönüşümleri" /><link rel="previous" href="../../man/man5/man5-fs.html" title="fs" /><link rel="next" href="../../man/man5/man5-group.html" title="group" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">fstab</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../../man/man5/man5-fs.html">Önceki</a> </td><th width="60%" align="center">Dosya Biçimleri ve Dosya Dönüşümleri</th><td width="20%" align="right"> <a accesskey="n" href="../../man/man5/man5-group.html">Sonraki</a></td></tr></table></td></tr></table><div class="refentry"><a name="tr-man5-fstab" id="tr-man5-fstab"></a><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="25%"><b>fstab(5)</b></td><td class="mheadfoot" align="center" width="50%"><b>Linux Yazılımcısının Kılavuzu</b> </td><td class="mheadfoot" align="right" width="25%"><b>fstab(5)</b></td></tr></table></div><dl><dt class="head3">İSİM</dt><dd>fstab — dosya sistemleri hakkındaki bilgileri içerir<br /></dd><dd><div class="para"></div></dd><dt class="head3">KULLANIM</dt><dd><div class="para"><div class="para">
+<b><tt>#include &lt;fstab.h&gt;</tt></b>
+  </div></div></dd><dt class="head3">AÇIKLAMA</dt><dd><div class="para">
+<b><tt>fstab</tt></b> dosyası çeşitli dosya sistemleri hakkında açıklayıcı bilgiler içerir. <b><tt>fstab</tt></b> dosyasına uygulamalar tarafından yazılmaz, sadece okunur; bu dosyanın oluşturulması ve bakımı sistem yöneticisinin sorumluluğundadır. <b><tt>fstab</tt></b>'daki girdilerin sırası önemlidir; çünkü <tt><b>fsck(8)</b></tt>, <tt><a href="../../man/man8/man8-mount.html"><b>mount(8)</b></a></tt> ve <tt><a href="../../man/man8/man8-umount.html"><b>umount(8)</b></a></tt>, işlemleri sırasında <b><tt>fstab</tt></b> içeriğini sıralı bir şekilde işlerler.
+    </div><div class="para">
+Her dosya sistemi ayrı bir satırda açıklanmıştır; her satırdaki alanlar boşluklar veya sekmelerle ayrılmıştır:
+    </div>
+<div class="para"><pre class="literallayout">
+<i><tt>  ds_belirtimi  ds_dizini  ds_türü  seçenekler  dump_alanı  fsck_alanı</tt></i>
+</pre></div>
+    <dl><dt><span class="glossterm"><i><tt>ds_belirtimi</tt></i></span></dt><dd class="halfpara"><div class="para">
+Blok aygıtını ya da bağlanacak uzak dosya sistemini belirtir.
+    </div><div class="para">
+Bu alan, sıradan bağlama işlemlerinde bağlanacak aygıt için blok aygıtı dosyası ismini (<tt><b>mknod(8)</b></tt> ile oluşturulmuş '/dev/cdrom' ya da '/dev/sdb7' gibi aygıt dosyaları) içerir. NFS bağlama işlemlerinde bu alanın sözdizimi şöyledir: &lt;<i><tt>konak</tt></i>&gt;:&lt;<i><tt>dizin</tt></i>&gt;. Örnek: ‘<tt>knuth.aeb.nl:/</tt>’. <tt>procfs</tt> için ise '<tt>proc</tt> kullanılır.
+    </div><div class="para">
+Aygıt isimlerini açıkça belirterek kullanmak yerine, <tt>LABEL=&lt;etiket&gt;</tt>, <tt>UUID=&lt;uuid&gt;</tt> sözdizimiyle, bağlanacak dosya sisteminin (ext2 ya da xfs) <tt>UUID</tt>'si ya da oylum etiketi (bkz. <tt><a href="../../man/man8/man8-e2label.html"><b>e2label(8)</b></a></tt>  ya da  <tt><b>xfs_admin(8)</b></tt>) kullanılabilir (örnek: ‘<tt>LABEL=Boot</tt>’ ya da `<tt>UUID=3e6be9de-8139-11d1-9106-a43f08d823a6</tt>’). Bu kullanım sistemin değişikliklere uyumunu da sağlayacaktır. Örneğin, bir SCSI disk eklemek ya da kaldırmak istediğinizde diskin aygıt dosyası adı değişse bile dosya sisteminin oylum etiketi değişmeyecektir.
+      </div></dd><dt><span class="glossterm"><i><tt>ds_dizini</tt></i></span></dt><dd class="halfpara"><div class="para">
+Dosya sisteminin bağlama noktasını tanımlar. Bu alan takas bölümleri için '<tt>none</tt>' (yok) olarak tanımlanmalıdır. Eğer bağlama noktası ismi boşluklar içeriyorsa, bu boşluk karakterleri '\040' şeklinde öncelenmelidir.
+      </div></dd><dt><span class="glossterm"><i><tt>ds_türü</tt></i></span></dt><dd class="halfpara"><div class="para">
+Dosya sisteminin türünü tanımlar. Sistem şu anda aşağıdaki dosya sistemleri desteklemektedir (diğer desteklenen sistemler için <tt>/proc/filesystems</tt> dosyasına bakın).
+    </div><dl><dt><span class="glossterm"><b><tt>minix</tt></b></span></dt><dd class="halfpara"><div class="para">
+14 veya 30 karakterlik dosya isimlerini destekleyen bir yerel dosya sistemidir.
+      </div></dd><dt><span class="glossterm"><b><tt>ext</tt></b></span></dt><dd class="halfpara"><div class="para">
+<b><tt>minix</tt></b>'e göre daha uzun dosya isimlerine ve daha geniş dosya düğümlerine destek veren bir yerel dosya sistemidir. Bu dosya sisteminin
+yerini ext2 almıştır, artık kullanılmamaktadır.
+      </div></dd><dt><span class="glossterm"><b><tt>ext2</tt></b></span></dt><dd class="halfpara"><div class="para">
+Daha uzun dosya isimleri ve daha geniş dosya düğümleri ile daha pek çok özellik içeren bir yerel dosya sistemidir.
+      </div></dd><dt><span class="glossterm"><b><tt>ext3</tt></b></span></dt><dd class="halfpara"><div class="para">
+<b><tt>ext2</tt></b>'nin günlüklü türüdür.
+      </div></dd><dt><span class="glossterm"><b><tt>xiafs</tt></b></span></dt><dd class="halfpara"><div class="para">
+Daha uzun dosya isimleri ve daha geniş dosya düğümleri ile daha pek çok özellik içeren bir yerel dosya sistemidir.
+      </div></dd><dt><span class="glossterm"><b><tt>xfs</tt></b></span></dt><dd class="halfpara"><div class="para">
+Jurnalleme, ölçeklenebilirlik ile daha pek çok özellik içeren bir yerel dosya sistemidir.
+      </div></dd><dt><span class="glossterm"><b><tt>msdos</tt></b></span></dt><dd class="halfpara"><div class="para">
+MS-DOS disk bölümleri için kullanılan bir yerel dosya sistemidir.
+      </div></dd><dt><span class="glossterm"><b><tt>hpfs</tt></b></span></dt><dd class="halfpara"><div class="para">
+HPFS disk bölümleri için kullanılan bir yerel dosya sistemidir.
+      </div></dd><dt><span class="glossterm"><b><tt>iso9660</tt></b></span></dt><dd class="halfpara"><div class="para">
+CD-ROM aygıtları için kullanılan bir yerel dosya sistemidir.
+      </div></dd><dt><span class="glossterm"><b><tt>swap</tt></b></span></dt><dd class="halfpara"><div class="para">
+Takas bölümleri için kullanılan bir disk bölümüdür.
+      </div></dd></dl><div class="para">
+Eğer <i><tt>ds_türü</tt></i> alanında dosya türü olarak <b><tt>ignore</tt></b> (yoksay) verilirse, girdi yoksayılır. Bu özellik kullanılmayan disk bölümlerini belirtmek için kullanışlıdır.
+      </div></dd><dt><span class="glossterm"><i><tt>seçenekler</tt></i></span></dt><dd class="halfpara"><div class="para">
+Bu alan, dosya sisteminin bağlama seçenekleri için ayrılmıştır.
+      </div><div class="para">
+Bu alan virgülle ayrılmış liste biçimindedir. En azından bağlantı türünü ve ek olark da dosya sistemlerine özel seçenekleri içerir. <b><tt>nfs</tt></b> dışındaki dosya sistemlerinin seçenekleri hakkında ayrıntılı bilgileri <tt><a href="../../man/man8/man8-mount.html"><b>mount(8)</b></a></tt>'da bulabilirsiniz. <b><tt>nfs</tt></b> dosya sistemi seçenekleri için de <tt><b>nfs(5)</b></tt>'ye bakabilirsiniz. Bütün dosya sistemleri için ortak olan seçenekler şunlardır:
+      </div><dl><dt><span class="glossterm"><b><tt>noauto</tt></b></span></dt><dd class="halfpara"><div class="para">Sistem açılışı sırasında (<b><tt>mount -a</tt></b>) bu dosya sistemi bağlanmaz. ''user'' bir kullanıcının bağlamasına izin verir  ve ''owner'' sadece aygıt sahibinin bağlamasına izin verir. Daha detaylı belgeleme için <tt><a href="../../man/man8/man8-mount.html"><b>mount(8)</b></a></tt>'a bakın.
+        </div></dd><dt><span class="glossterm"><b><tt>user</tt></b></span></dt><dd class="halfpara"><div class="para">Dosya sistemini herhangi bir kullanıcı bağlayabilir.
+        </div></dd><dt><span class="glossterm"><b><tt>owner</tt></b></span></dt><dd class="halfpara"><div class="para">Dosya sistemini sadece sahibi bağlayabilir.
+      </div></dd></dl><div class="para">
+Daha ayrıntılı bilgi için <b><tt>mount</tt></b>(8)'a bakınız.
+    </div></dd><dt><span class="glossterm"><i><tt>dump_alanı</tt></i></span></dt><dd class="halfpara"><div class="para">
+<b><tt>dump</tt></b>(8) komutu tarafından bu dosya sisteminin dökümlenmesinin gerekip gerekmediğini belirtmek için kullanılır. Eğer bu alan atlanmışsa veya sıfır değeri verilmişse, dosya sisteminin dökümlenmesinin gerekmediğini kabul edilir.
+      </div></dd><dt><span class="glossterm"><i><tt>fsck_alanı</tt></i></span></dt><dd class="halfpara"><div class="para">
+<b><tt>fsck</tt></b>(8) komutu tarafından, sistem yeniden başlatılırken yapılan denetimlerin hangi sırada yapılacağını belirlemek için kullanılır. Kök dosya sistemi için bu alanın değeri 1 olmalıdır. Diğer dosya sistemlerine ise 2 değeri verilmelidir. Aynı sürücü üstündeki dosya sistemleri sıra ile kontrol edilirken, farklı sürücüler üzerindeki dosya sistemleri, farklı sürücülerin aynı anda çalışabilme özelliklerini de sınamak için, aynı anda denetlenir. Eğer bu alan atlanmışsa ya da sıfırsa, <b><tt>fsck</tt></b> dosya sisteminin denetlenmesi gerekmediğini varsayar.
+      </div></dd></dl><div class="para">
+<b><tt>fstab</tt></b>'daki girdileri okumanın en uygun yolu <tt><b>getmntent(3)</b></tt> işlevini kullanmaktır.
+    </div></dd><dt class="head3">İLGİLİ DOSYALAR</dt><dd><div class="para">
+<tt>/etc/fstab</tt> - <b><tt>fstab</tt></b> dosyası <tt>/etc</tt> içindedir.
+    </div></dd><dt class="head3">HATALAR</dt><dd><div class="para">
+<b><tt>mount</tt></b>(8) belgeleri daha sık güncellenir.
+    </div></dd><dt class="head3">İLGİLİ BELGELER</dt><dd><div class="para">
+<tt><b>getmntent(3)</b></tt>, <tt><a href="../../man/man5/man5-fs.html"><b>fs(5)</b></a></tt>, <tt><b>nfs(5)</b></tt>, <tt><a href="../../man/man8/man8-mount.html"><b>mount(8)</b></a></tt>, <tt><a href="../../man/man8/man8-swapon.html"><b>swapon(8)</b></a></tt>.
+    </div></dd><dt class="head3">GEÇMİŞ</dt><dd><div class="para">
+<b><tt>fstab</tt></b> dosya biçimi ilk kez 4.0 BSD'de kullanılmıştır.
+    </div></dd><dt class="head3">ÇEVİREN</dt><dd><div class="para">Can Kavaklıoğlu <span class="email">&lt;linuxcucan (at) yahoo.com&gt;</span>, Şubat 2004</div></dd></dl><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="30%"><b>Linux 2.2</b></td><td class="mheadfoot" align="center" width="40%"><b>15 Haziran 1999</b></td><td class="mheadfoot" align="right" width="30%"><b>fstab(5)</b></td></tr></table></div></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../../man/man5/man5-fs.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../../man/man5/man5.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../../man/man5/man5-group.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">fs </td><td width="20%" align="center"><a accesskey="h" href="../../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> group</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

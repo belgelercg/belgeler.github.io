@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:15+03:00" /><title>Disk hatalarının badblocks ile denetlenmesi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../sag/sag_fs.html" title="Dosya Sistemleri" /><link rel="previous" href="../sag/sag_fs-fsck.html" title="&#10;      fsck ile dosya sistemi bütünlüğünün sınanması&#10;    " /><link rel="next" href="../sag/sag_fs-fragmentation.html" title="Dosya sistemi üzerindeki parçalanmalarla savaşmak" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Disk hatalarının badblocks ile denetlenmesi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../sag/sag_fs-fsck.html">Önceki</a> </td><th width="60%" align="center">Dosya Sistemleri</th><td width="20%" align="right"> <a accesskey="n" href="../sag/sag_fs-fragmentation.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="sag_fs-badblocks" id="sag_fs-badblocks"></a>Disk hatalarının <b><tt>badblocks</tt></b> ile denetlenmesi</div><dl><dd><div class="para">
+      Bozuk bloklar için periyodik denetimler yapmak iyi bir fikir olabilir.
+      Bu işlem <b><tt>badblocks</tt></b> komutu ile yapılabilir. Bu komut
+      bulabildiği bütün bozuk bloklar için bir liste verir. Bu liste
+      <b><tt>fsck</tt></b> için dosya sistemi veri yapısı içinde bulunan
+      kayıtlara yönlendirilebilir, böylece işletim sisteminin bozuk blok
+      hatalarının kaydı tutulmak zorunda kalınmaz. Aşağıdaki örnek bunun
+      nasıl yapılacağını açıklamaktadır.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>badblocks -o bad-blocks /dev/fd0u1440</tt></b>
+<tt>#</tt> <b><tt>fsck -t ext2 -l bad-blocks /dev/fd0u1440</tt></b>
+fsck 1.25 (20-Sep-2001)
+e2fsck 1.25 (20-Sep-2001)
+1. geçiş: dosya indeksleri, bloklar ve uzunluklar denetleniyor
+2. geçiş: Dizin yapısı denetleniyor
+3. geçiş: Dizin bağlanabilirliği denetleniyor
+4. geçiş: Başvuru sayısı denetleniyor
+5. geçiş: grup özet bilgileri denetleniyor
+
+/dev/fd0u1440: ***** DOSYA SİSTEMİ DEĞİŞTİRİLDİ *****
+/dev/fd0u1440: 11/184 dosya (0.%0 yanyana olmayan düğüm), 41/1440 blok
+<tt>#</tt>
+</pre></div></div>
+    <div class="para">
+      Şayet kullanımdaki bir bloğun hatalı olduğu rapor edilirse
+      <b><tt>e2fsck</tt></b> bu bloğu başka bir yere taşıyacaktır.
+      Şayet durum gerçekten kötü ise bu blok içindeki dosyaların
+      içeriği bile bozulabilir.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../sag/sag_fs-fsck.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../sag/sag_fs.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../sag/sag_fs-fragmentation.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">
+      fsck ile dosya sistemi bütünlüğünün sınanması
+     </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Dosya sistemi üzerindeki parçalanmalarla savaşmak</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

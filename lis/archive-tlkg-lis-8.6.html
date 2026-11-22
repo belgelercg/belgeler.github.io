@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:30:28+03:00" /><title>NFS</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../lis/archive-tlkg-lis-8.html" title="TCP/IP" /><link rel="previous" href="../lis/archive-tlkg-lis-8.5.html" title="Yönlendirme" /><link rel="next" href="../lis/archive-tlkg-lis-8.7.html" title="Uzaktan Bağlantı Kurulması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">NFS</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-8.5.html">Önceki</a> </td><th width="60%" align="center">TCP/IP</th><td width="20%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-8.7.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="archive-tlkg-lis-8.6" id="archive-tlkg-lis-8.6"></a>NFS</div><dl><dd><div class="para">
+      <i>NFS</i> (Network File System), bir ağ üzerinden disklerin paylaşımını
+      sağlamak üzere geliştirilmiştir. NFS sayesinde bir makinada yeralan
+      belirli bir disk bölümü, başka makinalar tarafından okunabilir
+      veya yazılabilir. Bu işleme özellikle büyük organizasyonlarda, disk
+      alanından tasarruf etmek için başvurulur. Her makinada aynı dosyalar,
+      çalıştırılabilir programlar olması yerine bunlar tek sunucuda toplanır,
+      diğer bilgisayarlar bu alanı ortaklaşa paylaşırlar. Paylaşılan dizin,
+      sanki yerel makinanın bir diziniymiş gibi davranır. Kendi disk alanını
+      paylaştıran makinaya NFS sunucusu, bu diske erişim yapan makinalara da
+      NFS istemcisi adı verilir.
+    </div><div class="para">
+      NFS kullanımının pek çok avantajı sayılabilir. Bunlar kısaca:
+    </div>
+      <ul type="disc" class="itemizedlist"><li>Yerel bir işletmede tüm kullanıcılar tek bilgisayar üzerindeki
+        aynı disk alanını paylaşabilirler. Diğer bilgisayarlar açıldıktan sonra
+        bu diskleri kendi dosya sisteminlerine bindirebilirler. NFS'in NIS ile
+        birlikte kullanımı sayesinde bir kullanıcı herhangi bir makinaya girip
+        diğer kullanıcılarla birlikte aynı dosya yapısı ile çalışabilir.</li><li>Paylaşım sayesinde büyük disk alanı isteyen programlar tek bir
+        sunucuda toplanabilir ve bu sayede önemli miktarda diskten tasarruf
+        sağlanabilir.</li><li>Bir makina üzerinde yapılan değişiklik, her makinada yapılmış
+        gibi olur. Böylece aynı yazılımı örneğin 20 bilgisayara yüklemek zorunda
+        kalmazsınız.</li></ul>
+     <div class="head3"><a name="id1" id="id1"></a>Ağ Üzerinde Paylaşım</div><dl><dd><div class="para">
+        NFS'in çalışması, yerel bir diskin mount edilmesi kadar kolaydır. Örnek
+        olarak NFS sunucusu olan aspendos makinasında yeralan <tt>/home</tt> dizinini,
+        yerel makinadaki <tt>/users</tt> dizinine yerleştirmek için:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# mount -t nfs aspendos:/home /users
+</pre></div></div>
+      <div class="para">
+        kullanılır. mount, karşı makinanın erişim izinleri doğru olduğunu teyit
+        ettiği anda bu işlemi gerçekleştirir. Sunucu ile istemci arasındaki
+        mesaj alış-verişini <tt>mountd</tt> programı üstlenir.
+      </div><div class="para">
+        NFS kullanabilmek için çekirdekte NFS desteği olması şarttır. Çekirdeğin
+        hangi dosya sistemlerini desteklediğini <tt>/proc</tt> dosya sistemi
+        altındaki filesystems dosyasını okuyarak anlayabilmek mümkündür.
+        Eğer aşağıdaki satırlarda nfs kelimesi geçmiyorsa çekirdeğe NFS desteği
+        verilerek tekrar derlenmesi gerekir.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ cat /proc/filesystems
+        minix
+        ext2
+        msdos
+nodev   proc
+nodev   nfs
+</pre></div></div>
+      <div class="para">
+        NFS için mount programının genel kullanımı şu şekildedir:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+mount -t nfs &lt;sunucu-adresi:paylasma-dizini&gt; &lt;yerel-dizin&gt; -o &lt;secenekler&gt;
+</pre></div></div>
+      <div class="para">
+        Sistem açılırken <tt>/etc/fstab</tt> dosyasında yeralan bilgilerle
+        uzak makinanın diski otomatik olarak paylaştırılabilir. Mount programı
+        bazı seçenekleri destekler. Bu seçenekler <tt>-o</tt> yardımıyla
+        komut satırında verilebildiği gibi <tt>/etc/fstab</tt> içinde de
+        belirtilebilir. Her iki durumda da birden fazla seçenek kullanılırsa
+        bunlar birbirlerinden virgülle ayrılırlar.
+      </div><div class="para">
+        Açılış sırasında <i>news</i> makinasındaki <tt>/usr/spool/news</tt>
+        dosyasını yerel makinadaki <tt>/usr/spool/news</tt> dizini altına
+        yerleştiren <tt>/etc/fstab</tt> satırı
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+news:/usr/spool/news  /usr/spool/news   nfs   timeo=20
+</pre></div></div>
+      <div class="para">
+        şeklinde yazılır. NFS ile kullanılan timeo seçeneğinin karşısında yeralan
+        sayı (saniyenin onda biri olarak), bağlantının kurulabilmesi için geçecek
+        maksimum zamanı gösterir. Bu zamanın aşılması halinde sunucuyla bağlantı
+        kesilir.
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>NFS Kurulumu</div><dl><dd><div class="para">
+        Yerel makinanın sunucu olabilmesi için nfsd ve mountd programlarının
+        çalıştırılması gerekir. Bu yazılımlar açılış esnasında aşağıda görülen
+        <tt>/etc/rc.d/rc.inet2</tt> dosyasından başlatılırlar. <tt>telnetd</tt>,
+        <tt>fingerd</tt> ve benzeri süreçlerin aksine bu iki program <tt>inetd</tt>
+        tarafından yönetilmezler. Dikkat etmeniz gereken bir durum da <tt>nfsd</tt>
+        ve <tt>mountd</tt> programlarının <tt>rpc.portmap</tt> programından sonra
+        çalıştırılması gerektiğidir:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+if [ -x /usr/sbin/rpc.mountd ]; then
+# (rpc.mountd programi var ve calistirilabilir mi ?)
+        /usr/sbin/rpc.mountd; echo -n " mountd"
+fi
+if [ -x /usr/sbin/rpc.nfsd ]; then
+# (rpc.nfsd programi var ve calistirilabilir mi ?)
+        /usr/sbin/rpc.nfsd; echo -n " nfsd"
+fi
+</pre></div></div>
+      <div class="para">
+        Sunucunun hangi dizinlerini, hangi istemci(ler) tarafından
+        paylaşılabileceği <tt>/etc/exports</tt> dosyasında belirtilir. Örnek
+        bir exports dosyasının görünümü aşağıdaki gibidir:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+/home            davul.cclub.metu.edu.tr, ordek.cclub.metu.edu.tr
+/usr/ftp         (ro)
+/cdrom           *.edu.tr
+</pre></div></div>
+      <div class="para">
+        Her satır, yerel makinadaki dizin ismi ile başlar, bu dizini mount etmeye
+        izin verilen bilgisayar isimleri ile devam eder. Makina isimlerinde
+        ? veya * joker karakterleri kullanılabilir. Dosyanın üçüncü satırı, sonu
+        .edu.tr ile biten tüm makinaların <tt>/cdrom</tt> dizinine ulaşabileceğini
+        belirtir.
+      </div><div class="para">
+        Aynı dizini paylaşacak birden fazla makina adı, aralarında virül konarak
+        yazılabilir. Parantez içinde yeralan ro kelimesi, dizinlerin salt okunur
+        mount edilmesi gerektiğini belirtir.
+      </div><div class="para">
+        Daha geniş bilgi için <tt>mount</tt> programının man dosyasına göz
+        atmanızı tavsiye ederim.
+      </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-8.5.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../lis/archive-tlkg-lis-8.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-8.7.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Yönlendirme </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Uzaktan Bağlantı Kurulması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:06+03:00" /><title>GNU Düzenli İfadesinin Derlenmesi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../regex/regexinfo-GNU-Regex-Functions.html" title="GNU Regex İşlevleri" /><link rel="previous" href="../regex/regexinfo-GNU-Pattern-Buffers.html" title="GNU Şablon Tamponları" /><link rel="next" href="../regex/regexinfo-GNU-Matching.html" title="GNU Eşleştirme İşlevi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">GNU Düzenli İfadesinin Derlenmesi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../regex/regexinfo-GNU-Pattern-Buffers.html">Önceki</a> </td><th width="60%" align="center">GNU Regex İşlevleri</th><td width="20%" align="right"> <a accesskey="n" href="../regex/regexinfo-GNU-Matching.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="regexinfo-GNU-Regular-Expression-Compiling" id="regexinfo-GNU-Regular-Expression-Compiling"></a>GNU Düzenli İfadesinin Derlenmesi</div><dl><dd><div class="para">
+GNU’da, belirtilmiş olan bir düzenli ifade için hem eşleme hem de arama yapabilirsiniz. Bunu yapmak için, öncelikle onu bir <a class="link" href="../regex/regexinfo-GNU-Pattern-Buffers.html" title="GNU Şablon Tamponları">şablon tamponu</a> içinde derlemelisiniz.
+    </div><a name="regexinfo-re_syntax_options" id="regexinfo-re_syntax_options"></a>
+<a class="indexterm" name="idx92" id="idx92"></a>
+<a class="indexterm" name="idx93" id="idx93"></a>
+<a class="indexterm" name="idx94" id="idx94"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt><b><tt>re_syntax_options</tt></b></tt></td></tr></table></div><div class="sagsutun">değişken</div></div></div><dl><dd><div class="para">
+Düzenli ifadeler birlikte derlendikleri söz dizimlerine göre eşleşirler; GNU‘da, <b><tt>re_compile_pattern</tt></b> derleme işlevi çağrılmadan önce, <b><tt>re_syntax_options</tt></b> değişkeni (<tt>regex.h</tt> içinde bildirilmiş ve <tt>regex.c</tt> içinde tanımlanmıştır) ile hangi sözdizimini istediğinizi belirtebirsiniz. <a href="../regex/regexinfo-Syntax-Bits.html" class="xref" title="Sözdizimi Bitleri">Sözdizimi Bitleri</a> ve
+<a href="../regex/regexinfo-Predefined-Syntaxes.html" class="xref" title="Öntanımlı Sözdizimleri">Öntanımlı Sözdizimleri</a> bölümlerine bakınız.
+    </div><div class="para">
+<b><tt>re_syntax_options</tt></b> değişkeninin değerini istediğiniz zaman değiştirebilirsiniz. Ancak, genellikle, değeri bir kere atanır ve bir daha değiştirilmez.
+</div></dd></dl><div style="padding:5px"></div><div class="para">
+<a class="indexterm" name="idx95" id="idx95"></a>
+<b><tt>re_compile_pattern</tt></b> işlevi argüman olarak <b><tt>struct re_pattern_buffer</tt></b> türünde bir <i><tt>şablon_tamponu</tt></i> alır. Aşağıdaki alanları ilklendirmelisiniz:
+    </div><div class="variablelist"><dl><dt><span class="term"><tt>translate</tt></span></dt><dd class="varlist"><div class="para">
+Bir çeviri tablosunu göstermesini istiyorsanız bir ile, istemiyorsanız sıfır ile ilklendirin. Çeviri tabloları, <a href="../regex/regexinfo-GNU-Translate-Tables.html" class="xref" title="GNU Çeviri Tabloları">GNU Çeviri Tabloları</a> bölümünde açıklanmıştır.
+      </div></dd><dt><span class="term"><tt>fastmap</tt></span></dt><dd class="varlist"><div class="para">
+Bir hızlı eşlem istiyorsanız bir ile istemiyorsanız sıfır ile ilklendirin.
+      </div></dd><dt><span class="term"><tt>buffer</tt></span></dt><dt><span class="term"><tt>allocated</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>re_compile_pattern</tt></b> işlevinin derlenmiş şablon için bellek ayırmasını istiyorsanız bunların her ikisini de sıfır ile ilklendirin. Daha önce <b><tt>malloc</tt></b> ile ayırdığınız bir bellek bloğu varsa ve Regex'in bunu kullanmasını istiyorsanız, adresi ile <b><tt>buffer</tt></b>'ı genişliği ile de
+<b><tt>allocated</tt></b>'i ilklendirin:
+       </div>
+<div class="para"><div align="right"><pre class="screen">struct re_pattern_buffer buf;
+
+buf.allocated = 1;
+buf.buffer = xmalloc (buf.allocated);
+</pre></div></div>
+       <div class="para">
+<b><tt>re_compile_pattern</tt></b> işlevi, gerektiği takdirde ayrılan bloğu genişletmek için <b><tt>realloc</tt></b> işlevini kullanacaktır.
+      </div></dd></dl></div><a name="regexinfo-re_compile_pattern" id="regexinfo-re_compile_pattern"></a>
+<a class="indexterm" name="idx101" id="idx101"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>char *<b><tt>re_compile_pattern</tt></b></tt></td><td valign="top"><pre class="paramdef">(const char               *<i><tt>düzenli_ifade</tt></i>,
+ const int                *<i><tt>ifade_boyutu</tt></i>,
+ struct re_pattern_buffer *<i><tt>şablon_tamponu</tt></i>)</pre></td></tr></table></div><div class="sagsutun">işlev</div></div></div><dl><dd><div class="para">
+Bir şablon tamponunu derlemek için kullanılır.
+      </div><div class="para">
+<i><tt>düzenli_ifade</tt></i> düzenli ifadenin adresidir, <i><tt>ifade_boyutu</tt></i> ifadenin uzunluğu ve
+<i><tt>şablon_tamponu</tt></i> da şablon tamponunun adresidir.
+      </div><div class="para">
+<b><tt>re_compile_pattern</tt></b> işlevi şablon tamponunu başarıyla derlerse sıfır ile döner ve <tt>*<i>şablon_tamponu</i></tt> derlenen tamponu gösterir.  Şablon tamponunun işlev tarafından ayarlanan alanları:
+      </div><div class="variablelist"><dl><dt><span class="term"><tt>buffer</tt></span></dt><dd class="varlist"><div class="para">
+derlenen şablon ile ilkendirilir.
+         </div></dd><dt><span class="term"><tt>used</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>şablon_tamponu</tt></i> içindeki derlenmiş şablonun bayt cinsinden uzunluğu ile ilklendirilir.
+         </div></dd><dt><span class="term"><tt>syntax</tt></span></dt><dd class="varlist"><div class="para">
+<b><tt>re_syntax_options</tt></b> değişkeninin o anki değeri ile ilklendirilir.
+         </div></dd><dt><span class="term"><tt>re_nsub</tt></span></dt><dd class="varlist"><div class="para">
+<i><tt>düzenli_ifade</tt></i> içindeki alt ifadelerin sayısı ile ilklendirilir.
+         </div></dd><dt><span class="term"><tt>fastmap_accurate</tt></span></dt><dd class="varlist"><div class="para">
+Teorik olarak <i><tt>şablon_tamponu</tt></i> içine derlediğiniz şablon bir önceki derlemeden farklı olacağından sıfırla ilklendirilir; bu durumda (bir derlenmiş şablon olmaksızın bir hızlı eşlem yapamayacağınızdan), <b><tt>fastmap</tt></b> ya uyumsuz bir hızlı eşlem içerecekti ya da hiçbir şey.
+         </div></dd></dl></div><div class="para">
+<b><tt>re_compile_pattern</tt></b> işlevi <i><tt>düzenli_ifade</tt></i>'yi, derleyemezse, <a href="../regex/regexinfo-POSIX-Regular-Expression-Compiling.html" class="xref" title="POSIX Düzenli İfadelerinin Derlenmesi">POSIX Düzenli İfadelerinin Derlenmesi</a> bölümünde listesi verilen hatalardan birine karşılık olan bir hata dizgesi ile döner.
+    </div></dd></dl><div style="padding:5px"></div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../regex/regexinfo-GNU-Pattern-Buffers.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../regex/regexinfo-GNU-Regex-Functions.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../regex/regexinfo-GNU-Matching.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">GNU Şablon Tamponları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> GNU Eşleştirme İşlevi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

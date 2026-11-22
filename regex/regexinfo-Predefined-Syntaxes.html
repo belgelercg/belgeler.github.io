@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:03+03:00" /><title>Öntanımlı Sözdizimleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../regex/regexinfo-Regular-Expression-Syntax.html" title="Düzenli İfade Sözdizimi" /><link rel="previous" href="../regex/regexinfo-Syntax-Bits.html" title="Sözdizimi Bitleri" /><link rel="next" href="../regex/regexinfo-Collating-Elements-vs.-Characters.html" title="Elemanların ve Karakterlerin Alfabetik Sıralaması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Öntanımlı Sözdizimleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../regex/regexinfo-Syntax-Bits.html">Önceki</a> </td><th width="60%" align="center">Düzenli İfade Sözdizimi</th><td width="20%" align="right"> <a accesskey="n" href="../regex/regexinfo-Collating-Elements-vs.-Characters.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="regexinfo-Predefined-Syntaxes" id="regexinfo-Predefined-Syntaxes"></a>Öntanımlı Sözdizimleri</div><dl><dd><a class="indexterm" name="idx22" id="idx22"></a><a class="indexterm" name="idx23" id="idx23"></a><a class="indexterm" name="idx24" id="idx24"></a><a class="indexterm" name="idx25" id="idx25"></a><a class="indexterm" name="idx26" id="idx26"></a><div class="para">
+Şayet Regex ile yazılım geliştiriyorsanız, bir şablon tamponun (bkz. <a href="../regex/regexinfo-GNU-Pattern-Buffers.html" class="xref" title="GNU Şablon Tamponları">GNU Şablon Tamponları</a> ve <a href="../regex/regexinfo-POSIX-Pattern-Buffers.html" class="xref" title="POSIX Şablon Tamponları">POSIX Şablon Tamponları</a>) <b><tt>syntax</tt></b> alanını, <a class="link" href="../regex/regexinfo-Syntax-Bits.html" title="Sözdizimi Bitleri">sözdizimi bitlerini</a> kendiniz belirleyerek ya da Regex tarafından  tanımlandığı biçimde belirtebilirsiniz.  Bu yapılandırmalar, belirli yazılımlar -GNU Emacs, POSIX Awk, geleneksel Awk, Grep, Egrep- tarafından kullanılan sözdizimlerini, temel ve genişletilmiş POSIX düzenli ifadelerinin sözdizimlerine ek olarak tanımlar.
+   </div><div class="para">
+Doğrudan <tt>regex.h</tt> başlık dosyasından alınmış önceden tanımlı sözdizimleri:
+   </div>
+<div class="para"><div align="right"><pre class="screen">#define RE_SYNTAX_EMACS 0
+
+#define RE_SYNTAX_AWK                                                   \
+  (RE_BACKSLASH_ESCAPE_IN_LISTS | RE_DOT_NOT_NULL                       \
+   | RE_NO_BK_PARENS            | RE_NO_BK_REFS                         \
+   | RE_NO_BK_VBAR               | RE_NO_EMPTY_RANGES                   \
+   | RE_UNMATCHED_RIGHT_PAREN_ORD)
+
+#define RE_SYNTAX_POSIX_AWK                                             \
+  (RE_SYNTAX_POSIX_EXTENDED | RE_BACKSLASH_ESCAPE_IN_LISTS)
+
+#define RE_SYNTAX_GREP                                                  \
+  (RE_BK_PLUS_QM              | RE_CHAR_CLASSES                         \
+   | RE_HAT_LISTS_NOT_NEWLINE | RE_INTERVALS                            \
+   | RE_NEWLINE_ALT)
+
+#define RE_SYNTAX_EGREP                                                 \
+  (RE_CHAR_CLASSES        | RE_CONTEXT_INDEP_ANCHORS                    \
+   | RE_CONTEXT_INDEP_OPS | RE_HAT_LISTS_NOT_NEWLINE                    \
+   | RE_NEWLINE_ALT       | RE_NO_BK_PARENS                             \
+   | RE_NO_BK_VBAR)
+
+#define RE_SYNTAX_POSIX_EGREP                                           \
+  (RE_SYNTAX_EGREP | RE_INTERVALS | RE_NO_BK_BRACES)
+
+/* P1003.2/D11.2, section 4.20.7.1, lines 5078ff.  */
+#define RE_SYNTAX_ED RE_SYNTAX_POSIX_BASIC
+
+#define RE_SYNTAX_SED RE_SYNTAX_POSIX_BASIC
+
+/* Temel ve genişletilmiş POSIX düzenli ifade sözdizimlerinin
+   her ikisi için de geçerli sözdizimi bitleri.  */
+#define _RE_SYNTAX_POSIX_COMMON                                         \
+  (RE_CHAR_CLASSES | RE_DOT_NEWLINE      | RE_DOT_NOT_NULL              \
+   | RE_INTERVALS  | RE_NO_EMPTY_RANGES)
+
+#define RE_SYNTAX_POSIX_BASIC                                           \
+  (_RE_SYNTAX_POSIX_COMMON | RE_BK_PLUS_QM)
+
+/* Farklar:  Sadece ..._POSIX_BASIC'deki RE_BK_PLUS_QM'in yerini
+   RE_LIMITED_OPS alır, yani, \? \+ \| artık tanınmaz. Aslında, \` gibi
+   diğer işleçler iptal edilmediğinden bu pek de ufak tefek değildir. */
+#define RE_SYNTAX_POSIX_MINIMAL_BASIC                                   \
+  (_RE_SYNTAX_POSIX_COMMON | RE_LIMITED_OPS)
+
+#define RE_SYNTAX_POSIX_EXTENDED                                        \
+  (_RE_SYNTAX_POSIX_COMMON | RE_CONTEXT_INDEP_ANCHORS                   \
+   | RE_CONTEXT_INDEP_OPS  | RE_NO_BK_BRACES                            \
+   | RE_NO_BK_PARENS       | RE_NO_BK_VBAR                              \
+   | RE_UNMATCHED_RIGHT_PAREN_ORD)
+
+/* Farklar: ..._POSIX_EXTENDED'deki RE_CONTEXT_INVALID_OPS'nin yerini
+   RE_CONTEXT_INDEP_OPS alır ve RE_NO_BK_REFS eklenir.  */
+#define RE_SYNTAX_POSIX_MINIMAL_EXTENDED                                \
+  (_RE_SYNTAX_POSIX_COMMON  | RE_CONTEXT_INDEP_ANCHORS                  \
+   | RE_CONTEXT_INVALID_OPS | RE_NO_BK_BRACES                           \
+   | RE_NO_BK_PARENS        | RE_NO_BK_REFS                             \
+   | RE_NO_BK_VBAR          | RE_UNMATCHED_RIGHT_PAREN_ORD)
+</pre></div></div>
+</dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../regex/regexinfo-Syntax-Bits.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../regex/regexinfo-Regular-Expression-Syntax.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../regex/regexinfo-Collating-Elements-vs.-Characters.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Sözdizimi Bitleri </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Elemanların ve Karakterlerin Alfabetik Sıralaması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

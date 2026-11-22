@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:28+03:00" /><title>MySQL’e Giriş</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../hpm/html-php-mysql-giris_prg-php.html" title="PHP ve MySQL ile Web Programlama" /><link rel="previous" href="../hpm/html-php-mysql-giris_prg-php-giris.html" title="PHP'ye Giriş" /><link rel="next" href="../hpm/html-php-mysql-giris_prg-phpmysql.html" title="PHP ile MySQL kullanmak" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">MySQL’e Giriş</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../hpm/html-php-mysql-giris_prg-php-giris.html">Önceki</a> </td><th width="60%" align="center">PHP ve MySQL ile Web Programlama</th><td width="20%" align="right"> <a accesskey="n" href="../hpm/html-php-mysql-giris_prg-phpmysql.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="html-php-mysql-giris_prg-mysql" id="html-php-mysql-giris_prg-mysql"></a>MySQL’e Giriş</div><dl><dd><div class="para">
+          PHP, MySQL dışında birçok veritabanı yazılımı (PostgreSQL, MsSQL,
+          Oracle, dBase...) ile birlikte sorunsuz çalışabilmesine rağmen en
+          yüksek performans PHP+MySQL+Apache üçlüsünden elde edilmiştir
+          (Bu belgeyi hazırladığım sırada Slackware Linux’un son sürümü olan
+          8.0 sürümünde PHP ile MySQL desteği gelmektedir, 7.1 sürümünde MySQL
+          yerine PostgreSQL bulunmaktaydı!). Zaten Internet üzerinde
+          bulabileceğiniz hazır PHP betikleri ya da yardım belgelerinin çoğu
+          PHP’yi MySQL ile birlikte ele almaktadır. Benim bilgimde sadece
+          MySQL dahilinde olduğu için, ben de bu belgede PHP+MySQL ikilisini
+          anlatacağım.
+        </div> <div class="head3"><a name="id1" id="id1"></a>Veritabanı Nedir?</div><dl><dd><div class="para">
+            Bir veritabanı adından da anlaşılacağı gibi bilgilerin depolandığı
+            hiyerarşik bir yapıdır. Biz web üzerinde kullanıcı adı, şifresi,
+            e-posta adresi gibi bilgileri bu veritabanlarında saklarız. Aynı
+            bilgileri bir dosyaya yazıp gerektiğinde dosyayı açıp bilgileri
+            okutmak da bir çözüm gibi görünse de bu işlem hem daha karmaşık
+            ve zahmetli hem de daha yavaştır. Aslında az çok İngilizce bilen
+            birisi için MySQL kullanmak  pek zor olmayacaktır. Ben denemelerimi
+            Linux altında yaptığım için bu belgede de anlatım o doğrultuda
+            olacaktır. Fakat veritabanına bağlandıktan sonra SQL komutları
+            (evet MySQL değil SQL. MySQL ile kullanılan komutlar birçok
+            veritabanı sorgulama dilindekilerle aynıdır) arasında bir fark
+            yoktur. Sadece Linux işletim sistemi altında büyük-küçük harf ayrımı
+            vardır. Denemelerinizi yaptığınız sunucu üzerinde kullanıcı adınızın
+            <tt>kullanici</tt> ve parolanızın <tt>parola</tt>
+            olduğunu varsayarak bölüme başlıyorum.
+            Veritanına bir Linux terminalinden bağlanmak için
+          </div>
+<div class="para"><div align="right"><pre class="screen">
+$ mysql –h localhost –u kullanici –p
+</pre></div></div>
+          <div class="para">
+            komut satırını kullanmanız gerekli. En sondaki <tt>-p</tt>
+            parametresi bizim kullanıcımız için bir parola tanımlı olduğunu ve
+            yukarıdaki komutu verdikten sonra bu parolayı girmemiz gerektiğini
+            anlatır.
+          </div><div class="para">
+            Eğer bir sorun ile karşılaşmadan veritabanına bağlanabildiyseniz
+            karşınıza aşağıdaki gibi bir ekran gelecektir.
+          </div>
+            <div class="para"><div align="right"><pre class="screen">mysql&gt;</pre></div></div>
+          <div class="para">
+            Bu ekran bizim SQL’e doğru bir şekilde bağlandığımızı gösterir.
+            Bir veritabanı hiyerarşisi içinde barındırdığı veritabanlarından ve bu
+            veritabalarının içlerindeki tablolardan oluşur. Linux altındaki MySQL
+            kurulumlarında “test” ve “mysql” isimli veritabanları hazır olarak
+            gelir. Bir veritabanı hiyerarşisinde her kullanıcının kendine ait bir
+            veritabanı vardır ve işlemlerini bu veritabanı altında gerçekleştirir.
+            Yani kendi veritabanı altında tablo oluşturabilir, silebilir, tabloya
+            bilgi ekleyip bilgi çıkarabilir. Bunun dışında her kurulum ile gelen
+            “test” veritabanı tüm kullanıcıların kullanımına açıktır, “mysql”
+            veritabanında ise kullanıcılara ait bilgiler tutulur ve bu veritabanını
+            sadece veritabanı yöneticisi kullanabilir. Benim işlemlerimi yapacağım
+            hayali veritabınımın ismi “base” olacak.
+          </div>
+<div class="para"><div align="right"><pre class="screen">
+$ mysql -h localhost -u kullanici -p
+Enter Password:
+
+mysql&gt; show databases;
+
++----------+
+| Database |
++----------+
+| mysql    |
+| test     |
++----------+
+2 rows in set (0.00 sec)
+
+mysql&gt;
+</pre></div></div>
+          <div class="para">
+            Yukarıda sistemimizde mevcut veritabanlarını listesini
+            <b><tt>show databases;</tt></b> komutu ile alıyoruz.
+            MySQL’de her komuttan sonra mutlaka <tt>;</tt> karakteri
+            kullanılmalıdır. Aşağıda yeni bir veritabanı oluşturuyor ve onu
+            kullanmaya başlıyorum.
+          </div>
+<div class="para"><div align="right"><pre class="screen">
+mysql&gt; create database base;
+
+mysql&gt; show databases;
+
++----------+
+| Database |
++----------+
+| mysql    |
+| test     |
+| base     |
++----------+
+3 rows in set (0.00 sec)
+
+mysql&gt; use base;
+
+Database changed
+mysql&gt;
+</pre></div></div>
+          <div class="para">
+            Yukarıda <tt>base</tt> adlı bir veritabanı oluşturdum
+            (<tt>create database base;</tt>) ve <tt>use base;</tt>
+            komutu ile işlem yapacağım veritabanını belirledim. Burada dikkat
+            edilmesi gereken husus bizim istediğimiz zaman bir veritabanı
+            oluşturamayacağımızdır. Veritabanı hiyeraşisine kaydımız yapılırken
+            bize kullanım hakkı verilen veritabanını oluşturabilir ve kullanabiliriz.
+            Yani ben <tt>kullanici</tt> kullanıcısıyla
+            <tt>herhangi</tt> adlı bir veritabanı oluşturamam.
+          </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>MySQL’de Tablolar</div><dl><dd><div class="para">
+            Bilgilerimizi saklamak için veritabanlarını kullandığımızı daha önce
+            belirtmiştim. Sakladığımız bilgileri daha kolay bir şekilde
+            işleyebilmek için sınıflandırmamız gerekir. Bu sınıflandırma işlemi
+            için tabloları kullanırız. Tablolar sütunlar ve satırlardan oluşur.
+            Aşağıda veritabanında kayıtlı “kullanicilar” isimli bir tablo
+            görünüyor (Tabloların nasıl oluşturulacağını ilerideki bölümlerde
+            aklayacağım).
+          </div>
+<div class="para"><div align="right"><pre class="screen">
+mysql&gt; select * from kullanicilar;
+
++----+--------------+---------+------------------------+-------+
+| no | Ad           | Soyad   |  eposta                | bolum |
++----+--------------+---------+------------------------+-------+
+|  1 | Fehmi Noyan  | ISI     | fni18444@gantep.edu.tr | eee   |
+|  2 | Mehmet       | Korkmaz | kormkaz@linux.org.tr   | pe    |
+|  3 | Adem         | Sarnici | a_sarnici@yahoo.com    | pe    |
+|  4 | Seckin Fatih | Solgun  | sf_solgun@freebsd.org  | me    |
++----+--------------+---------+------------------------+-------+
+4 rows in set (0.05 sec)
+
+mysql&gt;
+</pre></div></div>
+          <div class="para">
+            Yukarıdaki tabloda dört sütun ve dört satır var. Tablodaki verileri
+            ekrana basmak için <tt>select * from kullanicilar;</tt>
+            komutunu kullandım. Aynı komutu <tt>select Ad from kullanicilar;</tt>
+            şeklinde verince
+          </div>
+<div class="para"><div align="right"><pre class="screen">
+mysql&gt; select Ad from kullanicilar;
+
++--------------+
+| Ad           |
++--------------+
+| Fehmi Noyan  |
+| Mehmet       |
+| Adem         |
+| Seckin Fatih |
++--------------+
+4 rows in set (0.03 sec)
+
+mysql&gt;
+</pre></div></div>
+          <div class="para">
+            Yukarıdaki gibi bir tablo elde ederiz. MySQL ile MS-DOS ve UNIX
+            işletim sistemlerinde olduğu gibi joker karakterler kullanılabilir.
+            İlk komut satırında kullandığım “*” karakteri de bu joker karakterlere
+            bir örnek. İlk tablodaki no, Ad, Soyad ve eposta adlı bölümler
+            tablonun sütunlarının isimlerini gösterir. Komut satırında kullandığım
+            “*” karakteri bu sütunların hepsinin görüntülenmesini istediğimi
+            belirtir. Aslında daha önceden komut satırından işlem yönetenler
+            için fazla yabancı bir ifade olmasa da ilk kez karşılaşacaklar için
+            biraz karışıktır fakat zamanla kavranacaktır.  Kısacası veritabanından
+            bilgi almak için
+          </div>
+<div class="para"><pre class="literallayout">
+  <b><tt>select</tt></b> <i>istenen_bilgi</i> <b><tt>from</tt></b> <i>tablo_adı</i><b><tt>;</tt></b>
+</pre></div>
+          <div class="para">
+            gibi bir kalıp kullanılır.
+            Veritabanından alınan sorgu belli koşulları gerektirebilir. Mesela
+            yukarıdaki <tt>kullanicilar</tt> adlı tabloda ismi
+            <tt>Mehmet</tt> olan kullanıcıları ekrana görüntülemek
+            istersem
+          </div>
+<div class="para"><div align="right"><pre class="screen">
+mysql&gt; select Ad from kullanicilar where Ad=’Mehmet’;
+</pre></div></div>
+          <div class="para">
+            gibi bir komut kullanmam gerekirdi.
+          </div><div class="para">
+            Örnekleri çoğaltmak mümkün. Yapılan sorgu isteğe ve gereksinime göre
+            değişik koşullar dahilinde gerçekleştirilebilir. <tt>where</tt>
+            kalıbı ile olmasını istediğimiz bir özelliği belirtiyoruz. Peki
+            elimizdeki verilerde olmasını istemediğimiz bir bilgiyi nasıl
+            belirteceğiz? Bu iş için <tt>not</tt> kalıbı kullanılır.
+          </div>
+<div class="para"><div align="right"><pre class="screen">
+mysql&gt; select eposta from kullanicilar where not bolum=’pe’;
+</pre></div></div>
+          <div class="para">
+            Yukarıdaki sorgu kalıbı <tt>kullanicilar</tt> adlı tablodan
+            <tt>bolum</tt> bilgisi <tt>pe</tt> olmayan tüm
+            kullanıcıların e-posta adreslerini ekrana basacaktır.
+            <tt>not</tt> kalıbı ile <tt>or</tt> kalıbı da
+            kullanılır. <tt>or</tt> kalıbı çift istekli durumlarda
+            <tt>not</tt> işleçinin tam tersi işlev görür. Yani
+            <tt>kullanicilar</tt> adlı tablodan <tt>Ad</tt>
+            bilgisi <tt>Mehmet</tt> olan ve bölümü <tt>eee</tt>
+            olmayan kullanıcıların listesi için kullanılması gereken SQL komutu
+            aşağıdaki gibidir.
+          </div>
+<div class="para"><div align="right"><pre class="screen">
+mysql&gt; select Ad from kullanicilar where not bolum=’pe’ or Ad=’Mehmet’;
+</pre></div></div>
+          <div class="para">
+            Buraya kadar hep tablolar üzerinde işlemlerden bahsettim. Sıra
+            üzerinde işlem yaptığımız bu tabloları nasıl oluşturduğumuza geldi.
+          </div><div class="para">
+            SQL’de tablo oluşturma işi aynen veritabanı oluşturma gibidir. Sadece
+            tablo oluştururken tabloda tanımlı alanların özelliklerinin belirtilmesi
+            gerekir. Yukarıda tüm örneklerimde kullandığım <tt>kullanicilar</tt>
+            adlı tabloyu oluşturmak için kullanılacak SQL satırı aşağıdaki gibidir.
+          </div>
+<div class="para"><div align="right"><pre class="screen">
+mysql&gt; create table kullanicilar
+-&gt;(no int auto_increment, Ad varchar(13), Soyad varchar(12),
+-&gt; eposta varchar(25), bolum varchar(5), primary key(no));
+
+mysql&gt;
+</pre></div></div>
+          <div class="para">
+            Tabloda kullanılan sütunların veri tiplerini ve en fazla kaç baytlık
+            veri saklayabileceklerini belirttim. <tt>int</tt> terimi
+            kullanılacak verinin sayısal bir değer olacağını simgeler, diğer
+            sütunlar için kullandığım <tt>varchar</tt> terimi ise
+            girilecek dizinin karakter kümesi olduğunu ve parantez içindeki
+            sayısal değer ise bu kümenin maksimum alabileceği karakter sayısını
+            belirler. Eğer girilen veri belirtilen maksimum değerden fazla ise
+            belirtilen değer kadar karakter işleme alınır. Bunun için tablo
+            oluştururken girilecek verilerin uzunluğunu göz önünde bulundurmanızda
+            fayda vardır. Bunların dışında <tt>-&gt;</tt> karakteri de
+            dikkatinizi çekmiştir. SQL’de bir komutu <tt>;</tt> ile
+            sonlandırmadığınız sürece o komut ENTER tuşun bassanız bile bitmiş
+            sayılmaz ve sizden bitirici karakteri (“<tt>;</tt>” ya da
+            <tt>\g</tt>) girmeniz beklenir. Komutu üç satır halinde
+            yazmamın sebebi sadece uzun ve karmaşık bir satır yazmaktan kaçınmak
+            içindi. Aynı komutu tek satır yazmanız halinde de sonuçta herhangi
+            bir değişiklik olmayacaktır. <tt>no</tt> sütunu için
+            kullandığım <tt>auto_increment</tt> ve en sonda kullandığım
+            <tt>primary key(no)</tt> kalıpları tabloda <tt>no</tt>
+            ile belirtilen kısmın otomatik olarak her veri girdiğinde bir
+            arttırılmasını sağlar. Bu özelliğin kullanılabilmesi için kullanılacak
+            sütuna <tt>primary key</tt> özelliğinin atanması gerekir.
+          </div><div class="para">
+            Diyelim ki tablomuzu oluşturduk ve web üzerinden bilgilerimizi kaydediyoruz.
+            Bir gün, tablomuzu oluştururken kullandığımız sütun özelliklerini görmek
+            istersek ne yapacağız? Bunun için <b><tt>describe</tt></b> komutu
+            kullanılır. Komutun kullanımı
+          </div>
+<div class="para"><pre class="literallayout">
+  <b><tt>describe</tt></b> <i>tablo_adi</i><b><tt>;</tt></b>
+</pre></div>
+          <div class="para">
+            şeklindedir.
+          </div><div class="para">
+            Şimdi sıra boş olarak oluşturduğumuz <tt>kullanicilar</tt> adlı
+            tabloya bilgi girişinde. Bilgi girişi için <b><tt>insert</tt></b>
+            komutu kullanılır.
+          </div>
+<div class="para"><div align="right"><pre class="screen">
+mysql&gt; insert into kullanicilar
+-&gt; values (“”,”Fehmi Noyan”,”ISI”,
+-&gt; “fni18444@gantep.edu.tr”,”eee”);
+</pre></div></div>
+          <div class="para">
+            Yukarıdaki komut kümesi <tt>kullanicilar</tt> adlı tabloya
+            belirtilen bilgileri sırası ile girer. Bilgi girişi için
+          </div>
+<div class="para"><pre class="literallayout">
+  <b><tt>insert into</tt></b> <i>tablo_adi</i> <b><tt>values (</tt></b><i>"alan1_değeri", "alan2_değeri", ..., "alanN_değeri"</i><b><tt>);</tt></b>
+</pre></div>
+          <div class="para">
+            kalıbı kullanılır. İlk sütuna gelecek bolume sadece <tt>“”</tt>
+            karakterlerini bırakmam bu bölümün <tt>auto_increment</tt>
+            özelliğinden dolayı SQL tarafından otomatik olarak doldurulacak
+            olmasındandır. Girilen her değer tırnak içinde yazılır ve birbirlerinden
+            virgül ile ayrılır.
+          </div><div class="para">
+            Bazen bir tablodaki verileri herhangi bir sebepten dolayı yenilememiz
+            gerekebilir. Mesela yukarıdaki tabloda <tt>Fehmi Noyan</tt>
+            adlı kullanıcının e-posta adresi değişmişse ve biz yeni adresi
+            tablomuzda eski adresle değiştirmek istiyorsak kullanacağımız komut
+            <b><tt>update</tt></b> komutudur.
+          </div>
+<div class="para"><div align="right"><pre class="screen">
+mysql&gt; update kullanicilar set eposta=’yeni_adresim@adres.com’
+    -&gt; where no=’1’;
+</pre></div></div>
+          <div class="para">
+            Yukarıdaki SQL satırı <tt>kullanicilar</tt> adlı tablodan
+            <tt>no</tt> bilgisi 1 olan kullanıcının <tt>eposta</tt>
+            bilgisini <tt>yeni_adresim@adres.com</tt> olarak değiştirilmesi
+            için kullanılır. Komutun kullanımında
+          </div>
+<div class="para"><pre class="literallayout">
+  <b><tt>update</tt></b> <i>tablo_adı</i> <b><tt>set</tt></b> <i>sütun_adı=’yeni değer’</i> <b><tt>where</tt></b> <i>koşul</i><b><tt>;</tt></b>
+</pre></div>
+          <div class="para">
+            kalıbı uygulanır. <tt>where</tt> koşulundan sonra herhangi
+            bir koşul satırı kullanılabilir (ben <tt>no</tt> bilgisini
+            kullandım).
+          </div><div class="para">
+            Girilen bilgileri silmek için <b><tt>delete</tt></b> komutu
+            kullanılır.
+          </div>
+<div class="para"><div align="right"><pre class="screen">
+mysql&gt; delete from kullanicilar where bolum=’eee’;
+</pre></div></div>
+          <div class="para">
+            Yukarıdaki SQL komutu <tt>kullanicilar</tt> tablosundaki
+            <tt>bolum</tt> bilgisi <tt>eee</tt> olan tüm
+            kullanıcılar ile ilgili satırları silecektir. Komutun kullanımı
+          </div>
+<div class="para"><pre class="literallayout">
+  <b><tt>delete from</tt></b> <i>tablo_adı</i> <b><tt>where</tt></b> <i>koşul</i><b><tt>;</tt></b>
+</pre></div>
+          <div class="para">
+            şeklindedir.
+          </div><div class="para">
+            Son olarak da, MySQL’den çıkış için <b><tt>quit</tt></b> komutu
+            kullanılır.
+          </div><div class="para">
+            MySQL hakkında yazacaklarım bu kadar. Tabi benim bu belgeye dahil
+            etmediğim daha birçok komut ve kullanım mevcut. Fakat ben bir
+            sonraki bölümde PHP ile tablo işlemlerinde genelde bu komutları
+            (bilgi ekleme, bilgi silme, bilgi alma ve bilgi yenileme)
+            kullanacağım için sadece gerekli komutları verdim. Tabii yapacağınız
+            çalışmanın amacına göre kullanacağınız veritabanlarının niteliği
+            farklı olacaktır ama buradaki bilgilerin, en azından, MySQL hakkında
+            hiç bilgisi olmayan bir kullanıcı için yaralı olabileceğini düşünüyorum.
+          </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../hpm/html-php-mysql-giris_prg-php-giris.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../hpm/html-php-mysql-giris_prg-php.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../hpm/html-php-mysql-giris_prg-phpmysql.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">PHP'ye Giriş </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> PHP ile MySQL kullanmak</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

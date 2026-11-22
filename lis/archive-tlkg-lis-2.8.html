@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:30:26+03:00" /><title>Linux Komut Yapısı</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../lis/archive-tlkg-lis-2.html" title="Linux Kurulumu ve Başlangıç" /><link rel="previous" href="../lis/archive-tlkg-lis-2.7.html" title="Başlangıçta" /><link rel="next" href="../lis/archive-tlkg-lis-2.9.html" title="Dosya ve Dizin Yapısı" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Linux Komut Yapısı</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-2.7.html">Önceki</a> </td><th width="60%" align="center">Linux Kurulumu ve Başlangıç</th><td width="20%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-2.9.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="archive-tlkg-lis-2.8" id="archive-tlkg-lis-2.8"></a>Linux Komut Yapısı</div><dl><dd><div class="para">
+    UNIX ve benzeri işletim sitemlerinde kullanıcının komut yazmasını
+    sağlayan, bu komutları yorumlayarak gerekli işlemleri yapan programlara
+    <i>kabuk</i> (shell) adı verilir. UNIX'te bir kullanıcı bir dizi kabuktan
+    istediğini seçebilir. Kabuklar ile ilgili ayrıntılı bilgi ileride
+    verilecektir. Kullandığınız kabuk ne olursa olsun, gerek kabuktan
+    kaynaklanan, gerekse UNIX komutlarının hepsinin uyduğu bazı
+    standartlardan kaynaklanan bazı geleneksel yapılar vardır. Bunları
+    bilmeniz ilk kez duyduğunuz bir komutun kullanımını bile kolayca
+    çıkarabilmenizin yanı sıra, bir dizi genel hatadan kaçınmanızı da
+    sağlayacaktır.
+    </div>
+      <ul type="disc" class="itemizedlist"><li><div class="para">
+          UNIX'te (ve Linux'ta) bütün komutlar ve dosya isimlerinde
+          büyük/küçük harf ayrımı önemlidir. Sistem komutlarının ve
+          dosyaların çoğu küçük harfle yazılır.
+        </div></li><li><div class="para">
+          Komut ve dosya adlarında kullanacağınız bazı karakterlerin gerek
+          dosya ve dizin yapısı, gerekse kabuk ve diğer komutlar nedeniyle
+          bazı özel anlamları vardır. Bu karakterlerden yeri geldikçe söz
+          edilecektir. Örneğin, `/' karakteri hiçbir dosya adında
+          bulunamaz (dosya ve dizinler için ayraç olarak
+          kullanıldığından). `-' ile başlayan bir dosya oluşturulabilir
+          olsa da silmeye kalktığında yeni bir UNIX kullanıcısının başına
+          dert açabilir.
+        </div></li><li><div class="para">
+          UNIX'te komutlara seçenek verirken seçenekten önce `-' karakteri
+          kullanılır.  Örneğin <tt>ls -l</tt>
+        </div></li><li><div class="para">
+          UNIX komutları tersi istenmedikçe girdilerini <i>standart
+          girdiden</i> (klavye) alır, çıktılarını <i>standart çıktıya</i>
+          (ekran) yazar. Bu özellik ileride anlatılacak olan yönlendirme
+          ve boru (pipe) öperatorleri ile birlikte komut satırından birçok
+          işlemi kolayca yapmanızı sağlar.
+        </div></li><li><div class="para">
+          UNIX kabukları komut satırından verilen komutu çalıştırmadan önce
+          bir dizi karakteri yorumlayarak dosya ad(lar)ına çevirirler. Bu
+          karakterler:
+        </div>
+          <ul type="circle" class="itemizedlist"><li><div class="para">
+              <b><tt>*</tt></b> 0 dahil herhangi bir sayıda karakter yerine geçer.
+              Örneğin <tt>rm *</tt> komutu bütün dosyaları siler, <tt>ls
+              -l a*</tt> komutu `a' ile başlayan dosyaların listesini
+              verir.
+            </div></li><li><div class="para">
+              <b><tt>?</tt></b> tek bir karakter yerine geçer. Örneğin <tt>??</tt> adı iki
+              karakterden oluşan bütün dosyalar anlamına gelir.
+            </div></li><li><div class="para">
+              <b><tt>[]</tt></b> karakterleri arasında yazılan liste
+              içindeki herhangi bir harfe dönüştürülür. Örneğin <tt>cp
+              *[abc] /tmp </tt> komutu `a', `b' ya da `c' ile
+              biten bütün dosyaları <tt>/tmp</tt> dizinine
+              kopyalayacaktır. liste içinde aralarına `-' işareti
+              koyarak aralıklar verebilirsiniz. Örneğin,
+              <tt>[A-Z]*</tt> büyük harfle başlayan bütün
+              dosyalar anlamına gelir. Liste içindeki `^'
+              karakteri sonrasında belirtilen liste dışındaki bütün
+              karakterler anlamına gelir. Örneğin
+              <tt>*[^0-9]*</tt> adında rakam olmayan
+              herhangi bir dosya anlamına gelecektir.
+            </div></li></ul>
+        </li></ul>
+    </dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-2.7.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../lis/archive-tlkg-lis-2.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-2.9.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Başlangıçta </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Dosya ve Dizin Yapısı</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

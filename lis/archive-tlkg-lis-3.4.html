@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:30:26+03:00" /><title>Çokgörevlilik</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../lis/archive-tlkg-lis-3.html" title="Kabuk İşlemleri" /><link rel="previous" href="../lis/archive-tlkg-lis-3.3.html" title="Kanallama (pipe) İşlemleri" /><link rel="next" href="../lis/archive-tlkg-lis-4.html" title="Dosya ve Dizin İşlemleri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Çokgörevlilik</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-3.3.html">Önceki</a> </td><th width="60%" align="center">Kabuk İşlemleri</th><td width="20%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-4.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="archive-tlkg-lis-3.4" id="archive-tlkg-lis-3.4"></a>Çokgörevlilik</div><dl><dd><div class="para">
+      UNIX'in en büyük silahlarından biri süreçlerdir. Her süreç sistemde
+      bağımsız çalışan, birbirini etkilemeyen ve herbiri kendi kaynağını
+      kullanan programdır. Süreçler arkaplanda veya kabuğun kontrolünde
+      çalışabilir. Çekirdek, her sürecin kullandığı sistem kaynağından
+      haberdar olur ve bu kaynakların süreçler arasında adilce paylaşılmasından
+      sorumludur.
+    </div><div class="para">
+      Bir süreç, aksi belirtilmedikçe çalıştığı süre içinde klavyeden bilgi
+      alır ve ekrana bilgi verir.
+    </div><div class="para">
+      Kullanıcıların haberi bile olmadan çalışan süreçler, Linux makinasındaki
+      G/Ç işlemlerini gerçekleştirebilmek için sürekli faaliyet içinde
+      bulunurlar. Onlarca süreçten bazıları kullanıcıların sisteme girmesini
+      sağlarken (getty) bazıları da WWW ve FTP gibi İnternet tabanlı istekleri
+      yerine getirir (httpd, ftpd).
+    </div> <div class="head3"><a name="id1" id="id1"></a>Arkaplanda Çalıştırma</div><dl><dd><div class="para">
+        Bir komutu arkaplanda çalıştırmak için, komutun sonuna <tt>&amp;</tt> karakteri
+        getirin. Komutu girdikten sonra tekrar kabuk istemcisine düşecek ve kaldığınız
+        yerden devam edebileceksiniz. Program, arkaplanda diğer süreçlerle
+        çakışmadan bir süre çalışır ve işi bittiğinde durur.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ sort buyuk_dosya &gt; buyuk_dosya.sirali &amp;
+[1] 772
+</pre></div></div>
+      <div class="para">
+        Komutun arkaplana atılmasından sonra ekranda yeralan <tt>[1]</tt> , sürecin sıra
+        numarasını, 772 sayısı ise süreç kimliğini (PID - Process ID) gösterir.
+        Her program, sistem kaynaklarını biraz daha azalttığından Linux'çuların
+        deyimiyle makina <i>yavaşlar</i>.
+      </div><div class="para">
+        Çalışan programların listesini görmek için <tt>ps</tt> komutunu kullanın. Hiç
+        parametre vermeden yazılırsa sadece üzerinde çalışılan kullanıcının
+        süreçleri ekrana gelir. Sık kullanılan bir başka parametre dizisi de <tt>uax</tt>
+        tir. Bu sayede sistemdeki o anda çalışan tüm programlar daha ayrıntılı
+        bir şekilde ekrana listelenir.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ ps
+PID TTY STAT  TIME COMMAND
+   76 v02 S     0:00 -bash
+  111 v02 R     0:00 ps
+</pre></div></div>
+      
+<div class="para"><div align="right"><pre class="screen">
+$ ps -aux
+USER       PID %CPU %MEM SIZE  RSS TTY STAT START   TIME COMMAND
+bin         63  0.0  5.5   64  364  ?  S    11:12   0:00 /usr/sbin/rpc.portmap
+gorkem      76  0.0  9.7  101  644 v02 S    11:12   0:00 -bash
+gorkem     112  0.0  5.0   59  332 v02 R    11:16   0:00 ps -aux
+root         1  0.0  5.0   56  332  ?  S    11:12   0:00 init [5]
+root         6  0.0  4.2   35  284  ?  S    11:12   0:00 bdflush (daemon)
+root         7  0.0  4.2   35  284  ?  S    11:12   0:00 update (bdflush)
+root        48  0.0  5.1   45  340  ?  S    11:12   0:00 /usr/sbin/crond -l10
+root        59  0.0  5.5   53  364  ?  S    11:12   0:00 /usr/sbin/syslogd
+root        61  0.0  5.0   44  336  ?  S    11:12   0:00 /usr/sbin/klogd
+root        65  0.0  5.5   62  364  ?  S    11:12   0:00 /usr/sbin/inetd
+root        67  0.0  5.8   79  388  ?  S    11:12   0:00 /usr/sbin/rpc.mountd
+root        69  0.0  6.0   88  400  ?  S    11:12   0:00 /usr/sbin/rpc.nfsd
+root        75  0.1  9.9  115  660 v01 S    11:12   0:00 -bash
+root        77  0.0  4.6   52  304 v03 S    11:12   0:00 /sbin/agetty 38400 tty3
+root        78  0.0  4.6   52  304 v04 S    11:12   0:00 /sbin/agetty 38400 tty4
+root        79  0.0  4.6   52  304 v05 S    11:12   0:00 /sbin/agetty 38400 tty5
+root        80  0.0  4.6   52  304 v06 S    11:12   0:00 /sbin/agetty 38400 tty6
+root        81  0.0  5.5   42  368  ?  S    11:12   0:00 gpm -t ms
+</pre></div></div>
+      <div class="para">
+        Burada yeralan bilgiler sırasıyla:
+      </div>
+        <div class="variablelist"><dl><dt><span class="term">PID</span></dt><dd class="varlist"><div class="para">
+              Süreç numarası. Her sürecin farklı bir numara alması sistem
+              tarafından düzenlenir.
+            </div></dd><dt><span class="term">%CPU</span></dt><dd class="varlist"><div class="para">
+              İşlemcinin % olarak ne kadarı süreç tarafından kullanılıyor ?
+            </div></dd><dt><span class="term">%MEM</span></dt><dd class="varlist"><div class="para">
+              % olarak hafızada kapladığı yer
+            </div></dd><dt><span class="term">SIZE</span></dt><dd class="varlist"><div class="para">
+              Programın toplam kullandığı bellek alanı (kilobyte)
+            </div></dd><dt><span class="term">RSS</span></dt><dd class="varlist"><div class="para">
+              Programın bellekte kapladığı gerçel alan. Bu değer
+              paylaşılan sistem kütüphaneleri (shared library) nedeniyle
+              genellikle <tt>SIZE</tt> değerinden küçüktür.
+            </div></dd><dt><span class="term">TTY</span></dt><dd class="varlist"><div class="para">
+              Sürecin çalıştırıldığı (sanal) terminal
+            </div></dd><dt><span class="term">STAT:</span></dt><dd class="varlist"><div class="para">
+              Süreç o sırada ne yapıyor?
+            </div>
+              <div class="variablelist"><dl><dt><span class="term">S</span></dt><dd class="varlist"><div class="para">
+                    Uyumakta, bu durum genellikle sürecin bir
+                    G/Ç işlemi (örneğin fare'nin hareketi ya da
+                    ağdan gelecek veriler) beklemesi sırasında olur.
+                  </div></dd><dt><span class="term">R</span></dt><dd class="varlist"><div class="para">
+                    Çalışabilir. Çalışabilir süreçler, gereksinim
+                    duydukları bütün sistem kaynaklarına sahip olan
+                    süreclerdir. Çekirdek (tek işlemcili bir makinada) belirli
+                    aralıklarla bu süreçlerden sadece birini çalıştırır.
+                  </div></dd><dt><span class="term">T</span></dt><dd class="varlist"><div class="para">
+                    Durmuş. Bu durum sürecin kullanıcı tarafından
+                    (örneğin <tt>Control-Z</tt> tuşlarına basılarak)
+                    durdurulmasında görülür.
+                  </div></dd><dt><span class="term">Z</span></dt><dd class="varlist"><div class="para">
+                    Zombie. Bu tür süreçler, kendisini çalıştıran sürece
+                    mesaj bırakamadıklarından takılmış süreçlerdir.
+                    <i>Öldürülemezler</i> ancak sitem kaynaklarını da
+                    kullanmazlar.
+                  </div></dd><dt><span class="term">D</span></dt><dd class="varlist"><div class="para">
+                    Kesilemez uykuda. Bazı G/Ç işlemleri o
+                    sırada bu işlemi yapan sürecin kesilmemesini gerektirir.
+                    Böyle durumdaki süreçleri de ilgili G/Ç işlemi bitinceye
+                    kadar öldüremezsiniz.
+                  </div></dd></dl></div>
+            </dd><dt><span class="term">START</span></dt><dd class="varlist"><div class="para">
+              Sürecin çalıştığı zaman
+            </div></dd><dt><span class="term">COMMAND:</span></dt><dd class="varlist"><div class="para">
+              komut satırından girilen programın ismi
+            </div></dd></dl></div>
+      <div class="para">
+        <tt>ps</tt> komutuna bilgisayar üzerinde çalıştığınız her an
+        ihtiyaç duymanız mümkündür, bu yüzden çeşitli parametrelerle kullanmayı
+        öğrenmelisiniz.
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Klavye Üzerinden Kesinti</div><dl><dd><div class="para">
+        Linux (ve UNIX) altında, klavyeden bazı tuş kombinasyonları yardımıyla
+        çalışmakta olan program kesintiye uğratılabilir.
+      </div><div class="para">
+        Klavyeden kabuk komut satırına yazılan bir programın uzun sürmesi halinde,
+        eğer daha önceden komutun arkasına <tt>&amp;</tt> işareti koyup arkaplanda çalışır
+        halde bırakılmamışsa, klavyeden yapılan bir müdahele ile durdurulup
+        arkaplanda çalışır hale getirilebilir. Örnek vermek gerekirse, uzun
+        sürmesi beklenen bir komutu klavyeden yazalım ve ardından <tt>Control-Z</tt>
+        tuşlarına basalım:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+linux:/etc/rc.d# find /usr -name "o*" -print
+/usr/bin/od
+/usr/lib/lilo/doc/other.fig
+/usr/lib/lilo/doc/other.tex
+/usr/man/man1/od.1.gz
+
+[1]+  Stopped                 find /usr -name "o*" -print
+linux:/etc/rc.d#
+</pre></div></div>
+      <div class="para">
+        Bu esnada sürecin çalışmasına ara verilmiş, fakat program tamamen
+        durmamıştır. Programın çalışmasını arkaplanda sürdürmek için <tt>bg</tt>
+        komutunu kullanın.
+      </div>
+        <div class="para"><div align="right"><pre class="screen">$ bg</pre></div></div>
+      <div class="para">
+        Bu komutu tekrar komut satırında çalışacak ve klavyeden bilgi girilecek
+        şekilde terminale bağlamak için <tt>fg</tt> yazın:
+      </div>
+        <div class="para"><div align="right"><pre class="screen">$ fg</pre></div></div>
+      <div class="para">
+        Bir programı çalıştırmaya başlattıktan sonra tamamen durdurmaya karar
+        vermişseniz klavyeden <tt>Control-C</tt> tuşlarına basın.
+      </div><div class="para">
+        Durdurulup arkaplanda çalışmaya yönlendirilen süreçlere kısaca <i>görev</i>
+        ismi verilir. Tüm görevleri görebilmek için
+      </div>
+        <div class="para"><div align="right"><pre class="screen">$ jobs</pre></div></div>
+      <div class="para">
+        yazın. Görevler, birden fazla oldukları zaman sıra numarası ile
+        belirtilirler.
+      </div></dd></dl> <div class="head3"><a name="id3" id="id3"></a>Süreçlerin Sona Erdirilmesi</div><dl><dd><div class="para">
+        Her an çalışan süreçlerden biri veya birkaçı, beklenmedik döngüye
+        girebilir. Bunun sonucu olarak sistemin kaynaklarını, özellikle hafızayı
+        tüketici bir duruma gelebilir. Bu tür kısır döngüye giren süreçleri bulup,
+        eğer hayati önem taşımıyorlarsa `öldürmek' gerekir. Süreci öldürmekten
+        kasıt, programı tamamen durdurarak sistemle ilişkisini kesmektir. Bu
+        sayede programın hafızada kapladığı bölge serbest kalacak, çekirdek
+        de hafıza düzenlemesini tekrar yaparak başka süreçlere daha fazla yer
+        ayıracaktır. Bir süreci öldürmek için <tt>kill</tt> komutu kullanılır.
+        Yukarıdaki 67 numaralı sürece ait <tt>/usr/sbin/rpc.mountd</tt>
+        programını öldürmek için şunları yazın:
+      </div>
+        <div class="para"><div align="right"><pre class="screen">$ kill 67</pre></div></div>
+      <div class="para">
+        Birçok süreç sizden bu mesajı aldıktan sonra, dosya sistemi üzerinde
+        yarattığı geçici dosyaları, dosyalar üzerine koyduğu kilitleri
+        temizlemek gibi yapması gereken işlemleri yaptiktan sonra çalışmasına
+        son verecektir. Eğer öldürmeye çalıştığınız süreç herhangi bir nedenle
+        takılmışsa ve bu komuta tepki vermiyorsa aşağıdakini deneyin:
+      </div>
+        <div class="para"><div align="right"><pre class="screen">$ kill -9 67</pre></div></div>
+      <div class="para">
+        Artık programın sistemle ilişkisi tamamen kesilmiştir. Kill komutu,
+        <tt>-9</tt> seçeneğiyle sürece 9 numaralı sinyali gönderir. Bu sinyali
+        alan sürecin yukarıda sözü edilen iki özel durum dışında çalışmayı
+        sürdürmesi olanaksızdır. <tt>-9</tt> seçeneğini özellikle sistem süreçleri
+        üzerinde gerekmedikçe kullanmamalısınız. Diğer sinyaller ve anlamları
+        yeri geldikçe diğer bölümlerde anlatılacaktır.
+      </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-3.3.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../lis/archive-tlkg-lis-3.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-4.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Kanallama (pipe) İşlemleri </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Dosya ve Dizin İşlemleri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

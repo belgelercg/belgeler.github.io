@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:30:27+03:00" /><title>Konsolda Türkçe Yazmak</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../lis/archive-tlkg-lis-5.html" title="Linux Sistem Yönetimi" /><link rel="previous" href="../lis/archive-tlkg-lis-5.11.html" title="Linux Dosya Sistemi Yapısı" /><link rel="next" href="../lis/archive-tlkg-lis-5.13.html" title="Belirli Zamanlarda Komut İşletilmesi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Konsolda Türkçe Yazmak</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-5.11.html">Önceki</a> </td><th width="60%" align="center">Linux Sistem Yönetimi</th><td width="20%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-5.13.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="archive-tlkg-lis-5.12" id="archive-tlkg-lis-5.12"></a>Konsolda Türkçe Yazmak</div><dl><dd><div class="para">
+      (Türkçe desteği için <a class="link" href="../howto/turkish-howto.html" title="Türkçe NASIL">Türkçe NASIL</a>
+      belgesine bakınız.)
+    </div><div class="para">
+      Linux sanal terminallerinde bir tuşa basıldığı zaman bilgisayarın
+      ekranda herhangi bir dildeki alfabeye ait harfi göstermesi kolayca
+      sağlanabilir. Bunun yanında 12 fonksiyon tuşunun herbirine belirli bir
+      dizisel değer atanabilir ve bu sayede bu tuşlara basıldığında bir komutun
+      veya programın çalışması mümkün olur.
+    </div><div class="para">
+      Aslında bunları yapabilmek için önümüzdeki iki temel sorunu aşmamız
+      gerekiyor. Birincisi standart olmayan karakterlerin (örneğin Türkçe)
+      ekranda görüntülenebilmesi, ikincisi de bilgisayara standart dışı bir
+      klavye olduğunun belirtilmesidir.
+    </div><div class="para">
+      Dünya üzerindeki belli başlı dillerin hepsi yıllar önce bir standart
+      geliştirilmesi amacıyla sınıflandırıldı. Avrupa'da Slav dilleri
+      hariç hemen tüm dillerin karakterleri ISO (Uluslararası Standartlar
+      Organizasyonu) tarafından tek bir sınıfa yerleştirildi ve buna ISO8859-1
+      (latin 1) dendi. O vakit izlenen yanlış politikalar nedeniyle Türkçe bu
+      sınıfa dahil edilmedi ve sadece Türkçe için ISO8859-9 (latin 5) isminde
+      ayrı bir sınıf açıldı.
+    </div><div class="para">
+      Türkçe yazabilme sorununu hemen her işletim sisteminde hissediyor
+      olmalısınız. Linux altında Türkçe desteğini sağlamak için birkaç işlem
+      yapılmalıdır. Bu işlemlerin başında Linux'a Türkçe destekli klavye ve
+      font tanıtmak geliyor.
+    </div><div class="para">
+      <tt>/usr/lib/kbd/keytables</tt> dizini altında yeralan dosyalar, çeşitli ülke
+      dillerine ait klavye dağılımını içeriyor. Buradaki bilgileri kullanarak
+      klavye üzerinde yeralan tuşlara basılması halinde yazılı tuş dışında
+      bir karakterin ekranda gösterimi sağlanabilir.
+    </div><div class="para">
+      Sistem açıldığı zaman -eğer kurulum aşamasında bir font beğenip
+      sürekli onu kullanmıyorsanız- <tt>defkeymap.map</tt> dosyasında yeralan klavye
+      dağılımını kullanacaktır. Farklı bir klavye düzeni kullanmak için .map
+      dosyalarını yüzeysel olarak anlamanız gerekiyor. <tt>/usr/lib/kbd/keytables</tt>
+      dizini altındaki herhangi bir dosyada 300'den fazla satır ve üç ana
+      tanımlamayla karşılaşacaksınız. Birinci grup, "keycode", "alt", "control"
+      gibi bir satırla, ikinci grup "string" ile, üçüncü grup ise "compose"
+      kelimesiyle başlar.
+    </div><div class="para">
+      Dosyanın yapısını daha iyi kavrayabilmek için üzerinde bir örnekle
+      açıklamaya çalışalım. Control-Alt-Del tuşlarına basılınca bilgisayar
+      kendini "reset"ler. Eğer yanlışlıkla bu üç tuşa basmışsanız, klavyeden
+      girilecek bir <tt>shutdown -c</tt> komutunu yazmak ve sistemi kapanmaktan
+      kurtarmak için sadece 3-4 saniyeniz vardır. Fakat <tt>shutdown -c</tt> komutunu
+      bir fonksiyon tuşuna bağlar ve bu tuşa basarsanız sistem eski haline
+      dönecektir. Örnek olarak Control-F1 tuşunu bu işe ayıralım.
+    </div><div class="para">
+      Öncelikle <tt>/usr/lib/kbd/keytables</tt> dosyasında yeralan <tt>defkeymap.map</tt>
+      dosyasındaki F1 fonksiyon tuşunun hangi tuş tanımına denk geldiğini
+      bulmalıyız. Dosyadaki F1 ile ilgili satırlar şunlardır:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+keycode  59 = F1               F13              Console_13
+        control keycode  59 = F25
+        shift   control keycode  59 = F37
+        alt     keycode  59 = Console_1
+        control alt     keycode  59 = Console_1
+</pre></div></div>
+    <div class="para">
+      Linux, her satıra bir numara atar. Yukarıdaki satırda, F1 tuşunun
+      numarasının 59 olduğu kolayca görülüyor. 59 numaralı tuşa basılınca,
+      F1 ile tanımlanan dizi ekrana yazılacaktır. Benzer şekilde F1'e control
+      ile birlikte basılması halinde ise F25 dizisini ekrana basar. Önceden
+      tanımlanan değerlerden <i>Console_1</i>, 1 numaralı sanal konsolun ekranda
+      gösterilmesini işaret eder. Tüm bu dizilerin içeriğini görebiliriz. Aynı
+      dosyanın sonlarında şu satır yeralıyor:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+string F1 = "\033[[A"
+</pre></div></div>
+    <div class="para">
+      Bunun anlamı,  F1'e basınca  <tt>ESC[[A</tt> dizisini ekrana gönder demektir.
+      sayısı, Escape tuşunun oktal (sekizli) sistemde gösterimidir.
+    </div><div class="para">
+      Bu satırı veya F1'den itibaren seçeceğimiz bir fonksiyon tuşu ismini
+      istediğimiz şekilde değiştirebiliriz. Yanlız dikkat etmemiz gereken
+      bir husus, bu tuşun başka uygulamalar tarafından kullanılabiliyor
+      olmasıdır. Örnek olarak F61 ve karşılık gelen dizi değeri dosyada
+      yeralmıyor. Dosyaya küçük bir ekleme yapalım:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+string F61 = "shutdown -c\n"
+</pre></div></div>
+    <div class="para">
+      Dosyayı farklı bir isimde (örneğin <tt>bas.map</tt>) kaydedip
+      çıkın. Yeni klavye dağılımını denemek için
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+# loadkeys bas.map
+</pre></div></div>
+    <div class="para">
+      komutunu kullanın. Artık yeni klavye standardı sisteme
+      yerleşmiştir. Sistemin çalıştığına emin olmak için Shift-Control-F1
+      tuşuna basın. <tt>shutdown -c</tt> komutu işletilmelidir.
+    </div><div class="para">
+      Artık Türkçe yazabilmeye geldik. Bunun için standart dışı klavyeden gelen bir
+      Türkçe karakteri ekranda gösterebilmek amacıyla bir font dosyası oluşturmamız
+      gerekecek. Linux altında bu dosyalar <tt>/usr/lib/kbd/consolefonts</tt>
+      dizini altında yeralıyor.
+    </div><div class="para">
+      Linux'ta standart dışı bir font yüklemek için <tt>setfont</tt> komutu
+      kullanılır. Türkçe fontları,
+      <a class="ulink" href="ftp://ftp.linux.org.tr" target="_top">Linux Kullanıcıları Grubu ftp arşivinden</a> temin edebilir veya iso09 ön adlı herhangi bir
+      fontu kullanabilirsiniz. Aşağıdaki komut, 8 piksel eni, 16 piksel boyu
+      olan Türkçe font yükleyecektir.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+setfont tr8x16.map
+</pre></div></div>
+    <div class="para">
+      Türkce klavye düzenlerini içeren dosyaları ftp ile yine aynı
+      adresten alabilirsiniz. Burada <tt>tr.map</tt> ve <tt>trq.map</tt> adlı iki dosya
+      bulacaksınız. Bunlardan <tt>tr.map</tt>, normal klavye düzeninin yanında `alt'
+      tuşları ile "c, g, i, s, o, u" tuşlarına basıldığında karşılık gelen
+      özel Türkçe karakterler görüntülenir. <tt>trq.map</tt> yaygın olarak kullanılmakta
+      olan Q-Türkçe klavye düzenini içerir.
+    </div><div class="para">
+      Bash kabuğu altında Türkçe yazabilmek için aşağıdaki üç komutu <tt>.inputrc</tt>
+      dosyanıza eklemeniz gerekir.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+set meta-flag on
+set output-meta on
+set convert-meta off
+</pre></div></div>
+    <div class="para">
+      <tt>less</tt> komutununu Türkçe karakterleri göstermesi için de
+      aşağıdaki gibi LESSCHARSET değişkenini latin5 yapmak gerekiyor.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+LESSCHARSET=latin5
+</pre></div></div>
+    <div class="para">
+      <tt>loadkeys</tt> ve <tt>setfont</tt> komutlarını sistem
+      açılırken aktif olmaları için
+      bunları <tt>/etc/rc.d/rc.local</tt> dosyasına yerleştirebilirsiniz. Fontu ve
+      klavye düzenini ayarladıktan sonra sistemde çıkın ve tekrar girin.
+    </div><div class="para">
+      Artık Türkçe yazabilirsiniz.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-5.11.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../lis/archive-tlkg-lis-5.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-5.13.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Linux Dosya Sistemi Yapısı </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Belirli Zamanlarda Komut İşletilmesi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:30:26+03:00" /><title>Standart Girdi, Çıktı ve Hata</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../lis/archive-tlkg-lis-3.html" title="Kabuk İşlemleri" /><link rel="previous" href="../lis/archive-tlkg-lis-3.1.html" title="Yönlendirme" /><link rel="next" href="../lis/archive-tlkg-lis-3.3.html" title="Kanallama (pipe) İşlemleri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Standart Girdi, Çıktı ve Hata</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-3.1.html">Önceki</a> </td><th width="60%" align="center">Kabuk İşlemleri</th><td width="20%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-3.3.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="archive-tlkg-lis-3.2" id="archive-tlkg-lis-3.2"></a>Standart Girdi, Çıktı ve Hata</div><dl><dd><div class="para">
+      Linux'ta, programın ekrana yazılan bilgiyi iki sınıf altında
+      toplayabiliriz. Birincisi, olağandışı bir durumu bildiren standart hata,
+      diğeri de her türlü verinin yazıldığı standart çıktı. Program çalıştığı
+      andan itibaren bu iki kanal üzerinden akan bilgiler, programın çalıştığı
+      sanal terminale yazılırlar. Program girdilerini ise standart girdi
+      aracı olan klavyeden alır.
+    </div><div class="para">
+      Eğer bu bilgiler bir ekran boyundan (25 satır) fazla tutuyorsa bazı
+      satırlar programcının gözünden kaçabilir. Bunu önlemek amacıyla standart
+      çıktı ve hata bir dosyaya yazılacak şekilde ayarlanabilir. Yönlendirme
+      olarak da bilinen bu işlem UNIX altında (DOS'ta olduğu gibi) <tt>&gt;</tt>
+      karakteri ile gerçekleştirilir.
+    </div><div class="para">
+      Örnek olarak o an bulunduğunuz dizinde yeralan dosyaları ekrana getirin:
+    </div>
+      <div class="para"><div align="right"><pre class="screen">$ ls -al</pre></div></div>
+    <div class="para">
+      Bu komut, standart çıktı olarak dosyaların bilgilerini ekrana
+      getirecektir. Bu çıktıyı, bir dosyaya yönlendirelim ve dosyanın içeriğine
+      göz atalım:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+linux:~$ ls -al &gt; liste
+linux:~$ cat liste
+total 16
+drwxr-xr-x   5 gorkem   users        1024 Feb 13 13:10 .
+drwxr-xr-x   4 root     root         1024 Jan  7  1980 ..
+-rw-r--r--   1 gorkem   users         390 Feb 13 12:56 .Xdefaults
+-rw-r--r--   1 gorkem   ftpadm       2016 Feb 13 13:09 .bash_history
+-rw-r--r--   1 gorkem   users           1 Feb 13 12:57 .bashrc
+-rw-r--r--   1 gorkem   users         163 Nov 24  1993 .kermrc
+-rw-r--r--   1 gorkem   users          34 Nov 24  1993 .less
+-rw-r--r--   1 gorkem   users         114 Nov 24  1993 .lessrc
+drwxr-xr-x   2 gorkem   users        1024 Jan  7  1980 .term
+-rw-r--r--   1 gorkem   users          87 Feb 13 12:56 .xinitrc
+-rw-r--r--   1 gorkem   users        2795 Feb 13 13:06 adres
+-rw-r--r--   1 gorkem   users           0 Feb 13 13:10 liste
+drwxr-xr-x   2 gorkem   users        1024 Feb 13 12:54 mail
+drwxr-xr-x   2 gorkem   users        1024 Feb 13 12:54 perl
+-rw-r--r--   1 gorkem   users           0 Feb 13 13:10 typescript
+linux:~$
+</pre></div></div>
+    <div class="para">
+      <tt>&gt;</tt> karakteri standart hatayı dosyaya yönlendirmez. Bu işlem için
+      <tt>2&gt;</tt> kullanılır. Ama hatayı görebilmek için, hata yaratan bir
+      komut yazmalıyız, değil mi?
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+$ ls /deneme
+/deneme : No such file or directory
+$ ls /deneme 2&gt; hata
+$ cat hata
+/deneme : No such file or directory
+</pre></div></div>
+    <div class="para">
+      Aşağıdaki komutun işletilmesinin ardından standart çıktı <tt>oku1</tt> dosyasına,
+      standart hata ise <tt>oku2</tt> dosyasına yazılacaktır. Bu dosyaları komutu
+      çalıştırdıktan sonra incelemek suretiyle neler olup bittiğini anlamak
+      mümkün olur.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+$ mkdir ~/deneme           (deneme isimli bir dizin yaratır)
+$ touch ~/deneme/gecici    (gecici isimli bir dosya yaratır)
+$ cat ~/deneme 2&gt;oku2 &gt;oku1
+</pre></div></div>
+    <div class="para">
+      Kabuk, standart çıktı ve standart girdi için sırayla 2 ve 1 numaralarının
+      kullanımına izin verir. Yukarıda yeralan son komutta, standart
+      hata mesajları için 2 kullanılarak hataların <tt>oku2</tt> dosyasına
+      yazılmıştır. Aşağıda, çekirdek derlemek için sürekli kullandığım
+      program yeralıyor. Yönlendirme sayesinde ekrana gelmesi gereken mesajlar
+      kullanılmayan 9. sanal konsola yönlendiriliyor.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+# make config
+# make dep &gt; /dev/tty9
+# make clean &gt; /dev/tty9
+# time make zImage &gt; /dev/tty9
+</pre></div></div>
+    <div class="para">
+      Son satırdaki <tt>time</tt> komutu, kendinden sonra gelen komutun ne kadar
+      zaman içinde çalıştırıldığını gösterir. Çekirdek derlemede geçen zaman,
+      makinanın gücü hakkında bir fikir verebilir. Peki ne hata, ne de çıktıyı
+      ekranda görmek istemiyorsam ne yapmalıyım ? Bunun için standart çıktı
+      ve hatayı biraraya getirerek yönlendirilen her çıktının kaybolduğu
+      ``kara deliğe'' atmak yeterlidir:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+$ ls /deneme &gt; /dev/null 2&gt;&amp;1
+</pre></div></div>
+    <div class="para">
+      Yukarıdaki komutun yazılış sırasına dikkat edin.
+    </div><div class="para">
+      <i>Standart çıktı</i> ya da <i>standart hata</i>yı yönlendirirken, <tt>&gt;</tt>
+      işareti kullanırsanız: dosya yoksa, oluşturulur ve komutun çıktısı dosyaya
+      yazılır. Dosya varsa, içeriği yok olur ve komutun çıktısı dosyanın yeni
+      içeriği olur. Var olan bir dosyayının eski içeriğini tamamen silmek
+      değil de komutun çıktısını dosyaya eklemek istiyorsanız <tt>&gt;&gt;</tt>
+      kullanmalısınız.  Bu durumda dosya varsa komutun çıktısı dosyanın eski
+      içeriği korunarak sonuna eklenir, dosya yoksa oluşturulur ve komutun
+      çıktısı dosyaya yazılır. Örneğin:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+$ echo deneme1 &gt;&gt;deneme.txt
+$ cat deneme.txt
+deneme1
+$ echo deneme2 &gt;&gt;deneme.txt
+$ cat deneme.txt
+deneme1
+deneme2
+$
+</pre></div></div>
+    <div class="para">
+      Örnekte görüldügü gibi ilk komut <tt>deneme.txt</tt> dosyasını
+      oluşturdu. İkincisi ise oluşan dosyanın içeriğini koruyarak ikinci komutun
+      çıktısını bu dosyanın sonuna ekliyor.
+    </div><div class="para">
+      Standart hata ve çıktıya ek olarak UNIX'in desteklediği bir yönlendirme
+      daha vardır: Standart girdi sayesinde bir dosyayı oluşturan satırlar,
+      bir komut veya programa yönlendirilebilir. Daha önce bir metin editor
+      kullanarak hazırlamış olduğumuz raporu patrona kısa yoldan göndermek
+      için,
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+$ mail -s "rapor" patron &lt; rapor.txt
+</pre></div></div>
+    <div class="para">
+      Dosyanın içeriği, mail komutuna girdi olmuş ve <tt>rapor.txt</tt> dosyası
+      <tt>patron</tt> kullanıcısına ``rapor'' konu başlığıyla e-posta ile
+      gönderilmiştir.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-3.1.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../lis/archive-tlkg-lis-3.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-3.3.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Yönlendirme </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Kanallama (pipe) İşlemleri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

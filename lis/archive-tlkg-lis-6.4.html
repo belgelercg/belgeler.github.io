@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:30:27+03:00" /><title>Özel Kabuk Değişkenleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../lis/archive-tlkg-lis-6.html" title="Bash Kabuğu" /><link rel="previous" href="../lis/archive-tlkg-lis-6.3.html" title="Özel Kabuk Tanımları" /><link rel="next" href="../lis/archive-tlkg-lis-6.5.html" title="Sisteme Giriş Dosyaları" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Özel Kabuk Değişkenleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-6.3.html">Önceki</a> </td><th width="60%" align="center">Bash Kabuğu</th><td width="20%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-6.5.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="archive-tlkg-lis-6.4" id="archive-tlkg-lis-6.4"></a>Özel Kabuk Değişkenleri</div><dl><dd><div class="para">
+      Sisteme girdiğiniz zaman Linux size bir kabuk tahsis eder ve kabuk üzerinde
+      değişkenler tanımlayabilmenize izin verir. Kabuk içinde bir kabuk betiği
+      (script) çalıştırılınca sistem tarafından bir alt kabuk daha yaratılır.
+      Bu andan itibaren iki kabuk çalışır, birisi sisteme girdiğiniz anda tahsis
+      edilen, diğeri de programın çalıştırılabilmesi için sistem tarafından
+      çağırılan. Program bittiği anda alt kabuğun işlevi sona erer ve sistem
+      tarafından öldürülür.
+    </div><div class="para">
+      Bir kabuk altında tanımlanan değişken o kabuğa özgüdür. Bir kabuk altında
+      erişilebilen değişkene diğer bir kabuk erişemez. Fakat bash kabuğu altında
+      bir çevre değişkeni yaratılırsa, sistem tarafından her alt kabuğa bu çevre
+      değişkeni kopyalanır. Böylece bir değişken yaratılır, ama her alt kabuk
+      tarafından kullanılabilir. bash kabuğunda yaratılan çevre değişkenlerinin
+      normal değişkenlerden tek farkı, bu değişkenin diğer alt kabuklar tarafından
+      tanınmasıdır.
+    </div><div class="para">
+      Bir çevre değişkeni belirtmek için <tt>export</tt> komutu kullanılır.
+      Aşağıdaki örnekte <i>dosyam</i> isimli çevre değişkeni
+      tanımlanıyor.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+$ export dosyam="internet.97.txt"
+$ echo $dosyam
+internet.97.txt
+</pre></div></div>
+    <div class="para">
+      Bu esnadan sonra tüm kabuklar altında bu değişken tanımlı olacaktır.
+    </div><div class="para">
+      <tt>env</tt> komutu yardımıyla sistemde öntanımı yapılan veya
+      sonradan tanımlanan tüm değişkenler ekrana listelenir.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+$ env
+HOME=/home/gorkem
+SHELL=/bin/bash
+LS_OPTIONS=--8bit --color=tty -F -b -T 0
+PS1=\h:\w\$
+PS2=&gt;
+LOGNAME=gorkem
+OSTYPE=Linux
+</pre></div></div>
+    <div class="para">
+      Sisteme girdiğiniz anda tanımlanan bazı komutlar ve açıklamaları aşağıda
+      verilmiştir:
+    </div><div class="para">
+      <b><tt>HISTFILE</tt></b>: Tüm yazdığınız komutlar
+      <tt>.bash_history</tt> adlı bir dosya içinde tutulur. Her
+      kullanıcının kendi ev dizinleri içinde kullanıcıya özgü bu dosyadan
+      vardır. <tt>$HISTFILE</tt> değişkeni ile dosyanın ismi
+      değiştirilebilir.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+$ echo $HISTFILE
+/home/gorkem/.bash_history
+$ HISTFILE="komutlar"
+$ echo $HISTFILE
+komutlar
+</pre></div></div>
+    <div class="para">
+      <b><tt>PATH</tt></b>: PATH değişkeninde bir komut yazıldığı anda sistem tarafından
+      aranacak olan patika listesi görüntülenir. Örnek olarak <tt>who</tt> komutu
+      <tt>/usr/bin/</tt> dizini altındadır ve bu bilgi PATH değişkeninde saklı
+      tutulur. Kullanıcının yaptığı programları çalıştırabilmesi için PATH
+      değişkeninde bulunduğu dizini de tanımlaması gerekir.
+    </div><div class="para">
+      PATH değişkeninde her dizin iki nokta üstüste işareti ile birbirinden
+      ayrılır. Örnek olarak <tt>/usr/local/bin:/usr/bin</tt> dizisi sırasıyla
+      <tt>/usr/local/bin</tt> ve <tt>/usr/bin</tt> patikalarına karşılık gelir.
+    </div><div class="para">
+      Kullanıcı PATH değişkenine yeni girdiler ekleyebilir. Aşağıdaki örnekte
+      bunun nasıl uygulandığı görülüyor. Kullanıcı kısaca PATH değişkeninin
+      sonuna kendisinin istediği patikayı veya patikaları ekler.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+$ echo $PATH                    # PATH degiskenini ekrana bas
+$ export PATH=$PATH:/usr/net    # buna /usr/net patikasini ekle
+</pre></div></div>
+    <div class="para">
+      <b><tt>SHELL</tt></b>: O an kullanılan kabuğun patika ismini verir.
+      Kabuk programları genellikle <tt>/bin</tt> dizini altında
+      tutulurlar. Her kabuğun patika ismi sistemdeki
+      <tt>/etc/shells</tt> dosyasında bulunmalıdır.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+$ echo $SHELL
+/bin/bash
+</pre></div></div>
+    <div class="para">
+      <b><tt>HOME</tt></b>: Kullanıcının ev dizinini gösteren patikayı
+      ekrana basar. Her kullanıcının ev dizini, sistemde hesap açılırken
+      sistem görevlisi tarafından belirlenir. Linux Slackware dağıtımı
+      altında bu dizin öntanımlı olarak <tt>/home</tt> 'dur.
+      Aşağıdaki örnek kullanıcının ev dizinine ait patikayı ekrana basıyor.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+$ echo $HOME
+/home/gorkem
+</pre></div></div>
+    <div class="para">
+      <b><tt>LOGNAME</tt></b>: Sistemdeki kullanıcı hesabınının ismini tutar.
+      Her kullanıcı için farklı bir değerde olur.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+$ echo $LOGNAME
+gorkem
+</pre></div></div>
+    <div class="para">
+      <b><tt>TERM</tt></b>: Kullanıcının halen üzerinde çalıştığı terminal
+      tipini görüntüler. <tt>vi</tt> ve <tt>pico</tt>
+      gibi editörler çalıştırıldıkları anda TERM çevresel değişkenine bakarlar.
+      Bu sayede ekran ile ilgili bilgileri önceden düzenleyebilirler.
+      Aşağıdaki komut önce halihazırdaki TERM değişkenini görüntülüyor, ardından
+      değişkene başka bir değer atıyor.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+$ echo $TERM
+linux
+$ export TERM=vt100
+$ echo $TERM
+vt100
+</pre></div></div>
+    <div class="para">
+      <b><tt>PS1 ve PS2</tt></b>: Ekranda komut satırının başına gelecek olan
+      karakterleri belirlerler. Komut isteminin en başındaki yazı bu iki değişken
+      yardımıyla değiştirilebilir. PS1, birinci satırın karakterlerini tutarken
+      satıra sığmayan komutlar bir satır aşağı geçeceklerinden ikinci satırın
+      karakterlerini de PS2 belirler. Aşağıdaki satır, bu iki değişkenin
+      öntanımlı olan "$" işaretini bir kelimeyle değiştiriyorlar.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+$ export PS1='-&gt; '
+-&gt; export PS2='&gt;'
+-&gt;
+</pre></div></div>
+    <div class="para">
+      Önceden tanımlanan kodlar yardımıyla komut satırı değiştirilebilir.
+      Her kodun başında \ karakteri vardır. Bu kodların herbiri örneğin o
+      anki saati, makinanın ismini veya bulunduğunuz dizini ekrana yazabilirler.
+      Örneğin \h ve \w kodları sırasıyla çalışılan makinanın ismini ve çalışma
+      dizinini gösterirler. Bu örnekte PS1 değişkeni bu iki kod yardımıyla
+      değiştiriliyor.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+$ export PS1='\h:\w\$ '
+linux:~$                        # yeni komut satiri goruntusu
+linux:~$ cd /tmp
+linux:/tmp$                     # calisma dizinini de gosteriyor
+</pre></div></div>
+    <div class="para">
+      Aşağıda, sıkça kullanılan kodların bir listesi görülüyor.
+    </div>
+      <ul type="disc" class="itemizedlist"><li><b><tt>\t</tt></b>, saat </li><li><b><tt>\d</tt></b>, tarih</li><li><b><tt>\s</tt></b>, kabuk ismi</li><li><b><tt>\w</tt></b>, çalışma dizini</li><li><b><tt>\u</tt></b>, kullanıcı ismi</li><li><b><tt>\h</tt></b>, makina ismi</li></ul>
+    </dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-6.3.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../lis/archive-tlkg-lis-6.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-6.5.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Özel Kabuk Tanımları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Sisteme Giriş Dosyaları</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

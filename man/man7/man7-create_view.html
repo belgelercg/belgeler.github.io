@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:25:24+03:00" /><title>CREATE VIEW</title><link rel="icon" type="image/png" href="../../images/belgeler-logo.png" /><link rel="stylesheet" href="../../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../../man/man7/man7.html" title="SQL Deyimleri, Makro Paketleri vs." /><link rel="previous" href="../../man/man7/man7-create_user.html" title="CREATE USER" /><link rel="next" href="../../man/man7/man7-deallocate.html" title="DEALLOCATE" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">CREATE VIEW</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../../man/man7/man7-create_user.html">Önceki</a> </td><th width="60%" align="center">SQL Deyimleri, Makro Paketleri vs.</th><td width="20%" align="right"> <a accesskey="n" href="../../man/man7/man7-deallocate.html">Sonraki</a></td></tr></table></td></tr></table><div class="refentry"><a name="tr-man7-create_view" id="tr-man7-create_view"></a><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="25%"><b>CREATE VIEW(7)</b></td><td class="mheadfoot" align="center" width="50%"><b>SQL - Dil Deyimleri</b> </td><td class="mheadfoot" align="right" width="25%"><b>CREATE VIEW(7)</b></td></tr></table></div><dl><dt class="head3">İSİM</dt><dd>CREATE VIEW — yeni bir sanal tablo tanımlar<br /></dd><dd><div class="para"></div></dd><dt class="head3">KULLANIM</dt><dd><div class="para"><div class="para"><div align="center"><pre class="synopsis"><b><tt>CREATE</tt></b> [ <b><tt>OR REPLACE</tt></b> ] <b><tt>VIEW</tt></b> <i>isim</i> [ ( <i>sütun_ismi</i> [, ...] ) ] <b><tt>AS</tt></b> <i>sorgu</i>
+</pre></div></div></div></dd><dt class="head3">Açıklama</dt><dd><div class="para">
+<b><tt>CREATE VIEW</tt></b> bir sorgudan yeni bir sanal tablo tanımlar. Sanal tablo fiziken mevcut değildir. Her seferinde sorgu yeniden çalıştırılıp sanal tablo oluşturulur.
+  </div><div class="para">
+<b><tt>CREATE OR REPLACE VIEW</tt></b> de hemen hemen aynıdır, farklı olarak, aynı isimde bir sanal tablo zaten varsa, yeniden oluşturulur. Böyle bir sanal tabloyu yeni bir sorgudan yeniden, sadece aynı sütun isimleri ve veri türleriyle oluşturabilirsiniz.
+  </div><div class="para">
+<b><tt>CREATE VIEW myschema.myview ...</tt></b> gibi bir şema nitelemeli isim kullanırsanız, sanal tablo belirtilen şemada oluşturulur. Aksi takdirde, o anki şemada oluşturulur. Sanal tablonun ismi aynı şemada bulunan tablo, kayıt listesi, indeks ve sanal tablo isimlerinden farklı olmalıdır.
+  </div></dd><dt class="head3">Parametreler</dt><dd><div class="variablelist"><dl><dt><i><tt>isim</tt></i></dt><dd class="varlist"><div class="para">Oluşturulacak sanal tablonun ismi (şema nitelemeli olabilir).
+    </div></dd><dt><i><tt>sütun_ismi</tt></i></dt><dd class="varlist"><div class="para">Sanal tablonun isteğe bağlı sütun isimleri. Belirtilmezse, sütun isimleri sorgudan saptanır.
+    </div></dd><dt><i><tt>sorgu</tt></i></dt><dd class="varlist"><div class="para">Sanal tablonun satır ve sütunlarının elde edileceği sorgu (bu bir <b><tt>SELECT</tt></b> cümlesidir).
+     </div><div class="para">
+Sorgular hakkında bilgi edinmek için <tt><b>SELECT</b>[select(7)]</tt> kılavuz sayfasına bakınız.
+    </div></dd></dl></div></dd><dt class="head3">Ek Bilgi</dt><dd><div class="para">
+Şimdilik, sanal tablolar salt okunurdur: sistem, veri girme, veri silme ve güncelleme işlemlerine izin vermez. Güncellenebilir bir sanal tabloyu, diğer tablolardaki veri girme, veri silme veya güncelleme işlemlerini yeniden yazan kurallar oluşturarak elde edebilirsiniz. Daha fazla bilgi için <tt><b>CREATE RULE</b>[<a href="../../man/man7/man7-create_rule.html">create_rule(7)</a>]</tt> kılavuz sayfasına bakınız.
+   </div><div class="para">
+Sanal tabloyu kaldırmak için <b><tt>DROP VIEW</tt></b> kullanın.
+   </div><div class="para">
+Sanal tablonun sütunlarının isim ve veri türlerinin sizin istediğiniz şekilde atanmasını sağlamalısınız. Örneğin,
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">    CREATE VIEW vista AS SELECT 'Hello World';
+</pre></div></div>
+  <div class="para">
+şeklinde bir cümle iki bakımdan kötüdür: sütun isimleri için <tt>?column?</tt>, sütun veri türleri için ise <tt>unknown</tt> öntanımlıdır. Bu cümleyi şöyle yazarsanız, sanal tablodan ne isteyeceğinizi de bilirsiniz:
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">CREATE VIEW vista AS SELECT text 'Hello World' AS hello;
+</pre></div></div>
+   <div class="para">
+Sanal tablonun oluşturulduğu tablolara erişim, sanal tablonun sahibine göre belirlenir. Ancak, sanal tabloda çağrılan işlevler, doğrudan sorgudan çağılmış gibi ele alınır. Bu yüzden, sanal tablo kullanıcısının sanal tablo tarafından çağrılan tüm işlevleri çağıracak izinlerinin olması gerekir.
+   </div></dd><dt class="head3">Örnekler</dt><dd><div class="para">
+Tamamı komedi filmlerinden oluşan bir sanal tablonun oluşturulması:
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">CREATE VIEW komediler AS
+    SELECT *
+    FROM filmler
+    WHERE cinsi = 'Komedi';
+</pre></div></div>
+  </dd><dt class="head3">Uyumluluk</dt><dd><div class="para">
+SQL standardı <b><tt>CREATE VIEW</tt></b> deyimi için bazı ek yetenekler belirtir:
+  </div>
+<div class="para"><div align="center"><pre class="synopsis"><b><tt>CREATE VIEW</tt></b> <i>isim</i> [ ( <i>sütun</i> [, ...] ) ]
+    <b><tt>AS</tt></b> sorgu
+    [ <b><tt>WITH</tt></b> [ <b><tt>CASCADE</tt></b> | <b><tt>LOCAL</tt></b> ] <b><tt>CHECK OPTION</tt></b> ]
+</pre></div></div>
+  <div class="para">
+Burada isteğe bağlı deyimler şunlardır:
+  </div>
+   <div class="variablelist"><dl><dt><b><tt>CHECK OPTION</tt></b></dt><dd class="varlist"><div class="para">Güncellenebilir sanal tablolar yapar. Sanal tablo üzerindeki tüm <b><tt>INSERT</tt></b> ve <b><tt>UPDATE</tt></b> komutlarının sanal tablo tanımlama koşullarına uygunluğu sınanacaktır (yani, yeni verinin sanal tablo üzerinden görünür olması gerekir). Sınama başarısız olursa, güncelleme reddedilecektir.
+      </div></dd><dt><b><tt>LOCAL</tt></b></dt><dd class="varlist"><div class="para">Sanal tablonun kendi bütünlüğü sınanır.
+      </div></dd><dt><b><tt>CASCADE</tt></b></dt><dd class="varlist"><div class="para">Sanal tablonun diğer sanal tablolarla bütünlük içinde olup olmadığı sınanır. Ne <b><tt>CASCADE</tt></b> ne de <b><tt>LOCAL</tt></b> belirtilmişse, <b><tt>CASCADE</tt></b> öntanımlıdır.
+      </div></dd></dl></div>
+  <div class="para">
+<b><tt>CREATE OR REPLACE VIEW</tt></b> ise bir PostgreSQL<sup>TM</sup> oluşumudur.
+  </div></dd><dt class="head3">İlgili Belgeler</dt><dd><div class="para">
+<tt><b>DROP VIEW</b>[<a href="../../man/man7/man7-drop_view.html">drop_view(7)</a>]</tt>.
+  </div></dd><dt class="head3">Çeviren</dt><dd><div class="para">
+Nilgün Belma Bugüner <span class="email">&lt;nilgun (at) belgeler·gen·tr&gt;</span>, Nisan 2005
+</div></dd></dl><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="30%"><b>PostgreSQL</b></td><td class="mheadfoot" align="center" width="40%"></td><td class="mheadfoot" align="right" width="30%"><b>CREATE VIEW(7)</b></td></tr></table></div></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../../man/man7/man7-create_user.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../../man/man7/man7.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../../man/man7/man7-deallocate.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">CREATE USER </td><td width="20%" align="center"><a accesskey="h" href="../../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> DEALLOCATE</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

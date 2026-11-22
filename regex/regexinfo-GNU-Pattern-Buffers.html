@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:05+03:00" /><title>GNU Şablon Tamponları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../regex/regexinfo-GNU-Regex-Functions.html" title="GNU Regex İşlevleri" /><link rel="previous" href="../regex/regexinfo-GNU-Regex-Functions.html" title="GNU Regex İşlevleri" /><link rel="next" href="../regex/regexinfo-GNU-Regular-Expression-Compiling.html" title="GNU Düzenli İfadesinin Derlenmesi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">GNU Şablon Tamponları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../regex/regexinfo-GNU-Regex-Functions.html">Önceki</a> </td><th width="60%" align="center">GNU Regex İşlevleri</th><td width="20%" align="right"> <a accesskey="n" href="../regex/regexinfo-GNU-Regular-Expression-Compiling.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="regexinfo-GNU-Pattern-Buffers" id="regexinfo-GNU-Pattern-Buffers"></a>GNU Şablon Tamponları</div><dl><dd><a class="indexterm" name="idx88" id="idx88"></a><a class="indexterm" name="idx89" id="idx89"></a><a class="indexterm" name="idx90" id="idx90"></a><div class="para">
+Verilen bir düzenli ifadenin derlenmesi, eşleştirilmesi veya araştırılması için bir şablon tamponu yaratmak zorundasınızdır.  Bir <span class="wordasword"><i>şablon tamponu</i></span> derlenmiş bir düzenli ifadeyi tutar.<sup>[<a name="id114" href="#ftn.id114" id="id114">114</a>]</sup>
+    </div><div class="para">
+Aynı anda birden çok ve farklı şablon tamponuna sahip olabilirsiniz, her biri değişik bir düzenli ifade için derlenmiş bir şablonu tutabilir.
+    </div><a name="regexinfo-re_pattern_buffer" id="regexinfo-re_pattern_buffer"></a>
+<a class="indexterm" name="idx91" id="idx91"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct <b><tt>re_pattern_buffer</tt></b></tt></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+<tt>regex.h</tt> şablon tamponu yapısını aşağıda belirtilen şekilde  tanımlar:
+    </div><dl><dt><span class="glossterm"><tt>unsigned char *</tt><b><tt>buffer</tt></b></span></dt><dd class="halfpara"><div class="para">
+Derlenmiş şablonu tutan tampon. <tt>unsigned char *</tt> şeklinde bildirilir, çünkü elemanları bazen dizi indisleri olarak kullanılır.
+      </div></dd><dt><span class="glossterm"><tt>unsigned long </tt><b><tt>allocated</tt></b></span></dt><dd class="halfpara"><div class="para">
+Tampon için ayrılan baytların sayısı.
+      </div></dd><dt><span class="glossterm"><tt>unsigned long </tt><b><tt>used</tt></b></span></dt><dd class="halfpara"><div class="para">
+Tampon içinde kullanılmış bayt sayısı.
+      </div></dd><dt><span class="glossterm"><tt>reg_syntax_t </tt><b><tt>syntax</tt></b></span></dt><dd class="halfpara"><div class="para">
+Şablonun birlikte derlendiği sözdizimi ayarları.
+      </div></dd><dt><span class="glossterm"><tt>char *</tt><b><tt>fastmap</tt></b></span></dt><dd class="halfpara"><div class="para">
+Varsa bir hızlı eşleme gösterici, aksi takdirde sıfır. Eşleşmelerin imkansız başlangıç noktalarını atlamak için varsa <b><tt>fastmap</tt></b>, <b><tt>re_search</tt></b> işlevi tarafından kullanılır.
+      </div></dd><dt><span class="glossterm"><tt>char *</tt><b><tt>translate</tt></b></span></dt><dd class="halfpara"><div class="para">
+Karşılaştırma öncesi tüm karakterlere uygulanacak çeviri tablosu, çeviri yoksa sıfır. Çeviri, derlenirken şablona ve eşleştirilirken dizgeye uygulanır.
+      </div></dd><dt><span class="glossterm"><tt>size_t </tt><b><tt>re_nsub</tt></b></span></dt><dd class="halfpara"><div class="para">
+Derleyici tarafından bulunan alt ifadelerin sayısı.
+      </div></dd><dt><span class="glossterm"><tt>unsigned </tt><b><tt>can_be_null</tt></b></span></dt><dd class="halfpara"><div class="para">
+Bu şablon boş dizgeyi eşleştiremezse sıfır yoksa bir. Aslında sadece, <b><tt>fastmap</tt></b> kullanmamızın gerekip gerekmeyeceğini saptamak için <b><tt>re_search_2</tt></b> işlevi tarafından kullanılır. Bu nedenle bunu mükemmel olarak ayarlayamadık; <a href="../regex/regexinfo-Searching-with-Fastmaps.html" class="xref" title="Hızlı Eşlemlerle Arama">Hızlı Eşlemlerle Arama</a> bölümüne bakınız.
+      </div></dd><dt><span class="glossterm"><tt>unsigned </tt><b><tt>regs_allocated</tt></b></span></dt><dd class="halfpara"><div class="para">
+<tt>REGS_UNALLOCATED</tt> tanımlıysa, <tt>max (RE_NREGS, re_nsub + 1)</tt> grup için <b><tt>regs</tt></b> yapısı içinde yer ayrılır. <tt>REGS_REALLOCATE</tt> tanımlıysa, gerekliyse yer yeniden ayrılır. <tt>REGS_FIXED</tt> tanımlıysa, olan kullanılır; bu öntanımlıdır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">#define REGS_UNALLOCATED 0
+#define REGS_REALLOCATE 1
+#define REGS_FIXED 2
+</pre></div></div>
+      </dd><dt><span class="glossterm"><tt>unsigned </tt><b><tt>fastmap_accurate</tt></b></span></dt><dd class="halfpara"><div class="para">
+<b><tt>regex_compile</tt></b> işlevi ile bir şablonu derlediğiniz zaman sıfır olur; şayet <b><tt>fastmap</tt></b>, <b><tt>re_compile_fastmap</tt></b> işlevi ile güncellenirse bir olur.
+      </div></dd><dt><span class="glossterm"><tt>unsigned </tt><b><tt>no_sub</tt></b></span></dt><dd class="halfpara"><div class="para">
+Birse, <b><tt>re_match_2</tt></b> işlevi alt ifadeler hakkında bilgi döndürmez.
+      </div></dd><dt><span class="glossterm"><tt>unsigned </tt><b><tt>not_bol</tt></b></span></dt><dd class="halfpara"><div class="para">
+Bir ise satır başı ile eşleşme işleci dizgenin başlangıcıyla eşleşmez. Öntanımlı değeri 1'dir.
+      </div></dd><dt><span class="glossterm"><tt>unsigned </tt><b><tt>not_eol</tt></b></span></dt><dd class="halfpara"><div class="para">
+Satır sonu ile eşleşme işleci için <b><tt>not_bol</tt></b> alanına benzer.
+      </div></dd><dt><span class="glossterm"><tt>unsigned </tt><b><tt>newline_anchor</tt></b></span></dt><dd class="halfpara"><div class="para">
+Birse, demir, satırsonu karakteri ile eşleşir. Öntanımlı değeri 1'dir.
+      </div></dd></dl></dd></dl><div style="padding:5px"></div><div class="footnotes"><br /><hr width="100" align="left" /><div class="footnote"><div class="para"><sup>[<a name="ftn.id114" href="#id114" id="ftn.id114">114</a>] </sup>Düzenli İfadeler, “şablon tamponu” isminden dolayı “şablonlar/kalıplar” olarak da adlandırılır.</div></div></div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../regex/regexinfo-GNU-Regex-Functions.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../regex/regexinfo-GNU-Regex-Functions.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../regex/regexinfo-GNU-Regular-Expression-Compiling.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">GNU Regex İşlevleri </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> GNU Düzenli İfadesinin Derlenmesi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

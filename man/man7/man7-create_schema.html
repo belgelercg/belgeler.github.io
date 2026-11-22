@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:25:22+03:00" /><title>CREATE SCHEMA</title><link rel="icon" type="image/png" href="../../images/belgeler-logo.png" /><link rel="stylesheet" href="../../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../../man/man7/man7.html" title="SQL Deyimleri, Makro Paketleri vs." /><link rel="previous" href="../../man/man7/man7-create_rule.html" title="CREATE RULE" /><link rel="next" href="../../man/man7/man7-create_sequence.html" title="CREATE SEQUENCE" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">CREATE SCHEMA</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../../man/man7/man7-create_rule.html">Önceki</a> </td><th width="60%" align="center">SQL Deyimleri, Makro Paketleri vs.</th><td width="20%" align="right"> <a accesskey="n" href="../../man/man7/man7-create_sequence.html">Sonraki</a></td></tr></table></td></tr></table><div class="refentry"><a name="tr-man7-create_schema" id="tr-man7-create_schema"></a><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="25%"><b>CREATE SCHEMA(7)</b></td><td class="mheadfoot" align="center" width="50%"><b>SQL - Dil Deyimleri</b> </td><td class="mheadfoot" align="right" width="25%"><b>CREATE SCHEMA(7)</b></td></tr></table></div><dl><dt class="head3">İSİM</dt><dd>CREATE SCHEMA — yeni bir şema tanımlar<br /></dd><dd><div class="para"></div></dd><dt class="head3">KULLANIM</dt><dd><div class="para"><div class="para"><div align="center"><pre class="synopsis"><b><tt>CREATE SCHEMA AUTHORIZATION</tt></b> <i>kullanıcı_ismi</i> [ <i>şema_öğesi</i> [ ... ] ]
+<b><tt>CREATE SCHEMA</tt></b> <i>şema_ismi</i>
+          [ <b><tt>AUTHORIZATION</tt></b> <i>kullanıcı_ismi</i> ] [ <i>şema_öğesi</i> [ ... ] ]
+</pre></div></div></div></dd><dt class="head3">Açıklama</dt><dd><div class="para">
+<b><tt>CREATE SCHEMA</tt></b> o anki veritabanında yeni bir şema oluşturur. Şema ismi o anki veritabanındaki şema isimlerinden farklı olmalıdır.
+  </div><div class="para">
+Bir şema aslında bir isim alanıdır: isimli nesneler (tablolar, veri türleri, işlevler ve işleçler) içerir ve bu isimler diğer şemalardaki nesnelerin isimlerinin tekrarı olabilir. İsimli nesnelere ya isimlerin önüne şema ismi getirilerek ya da istenen şemaları içeren bir arama yolu atanarak erişilir. Bir <b><tt>CREATE</tt></b> komutunda nitelenmemiş bir nesne isminin belirtilmesiyle nesne o anki şemada oluşturulur (o anki şema, <tt>current_schema</tt> işlevi ile saptanabilen ve arama yolunun başındaki şemadır).
+  </div><div class="para">
+İsteğe bağlı olarak, <b><tt>CREATE SCHEMA</tt></b>, yeni şemada bulunacak nesneleri oluşturacak alt komutları içerebilir. Bu alt komutlar, aslında, şema oluşturulduktan sonra verilmiş komutlarmış gibi çalıştırılır. Yalnız, eğer <b><tt>AUTHORIZATION</tt></b> deyimi kullanılmışsa, oluşturulan tüm nesnelerin sahibi bu kullanıcı olur.
+  </div></dd><dt class="head3">Parametreler</dt><dd><div class="variablelist"><dl><dt><i><tt>şema_ismi</tt></i></dt><dd class="varlist"><div class="para">Oluşturulacak şemanın ismi. Belirtilmezse, şema ismi olarak kullanıcı ismi kullanılır. İsim, sistem şema isimlerinin oluşturulmasında kullanılan <tt>pg_</tt> öneki ile başlayamaz.
+      </div></dd><dt><i><tt>kullanıcı_ismi</tt></i></dt><dd class="varlist"><div class="para">Şemanın sahibi olacak kullanıcının ismi. Belirtilmezse, komutu çalıştıran kullanıcının ismi öntanımlıdır. Sadece ayrıcalıklı kullanıcılar kendileri dışında bir kullanıcı için şema oluşturabilir.
+      </div></dd><dt><i><tt>şema_öğesi</tt></i></dt><dd class="varlist"><div class="para">Şema içinde oluşturulacak nesneyi tanımlayan bir SQL deyimi. Şimdilik,  <b><tt>CREATE SCHEMA</tt></b> cümlesinde sadece <b><tt>CREATE TABLE</tt></b>, <b><tt>CREATE VIEW</tt></b>, <b><tt>CREATE INDEX</tt></b>, <b><tt>CREATE SEQUENCE</tt></b>, <b><tt>CREATE TRIGGER</tt></b> ve <b><tt>GRANT</tt></b> deyimleri kullanılabilmektedir. Diğer nesne çeşitleri şema oluşturulduktan ayrı komutlarla oluşturulabilir.
+      </div></dd></dl></div></dd><dt class="head3">Ek Bilgi</dt><dd><div class="para">
+Bir şemayı oluşturabilmek için, kullanıcının o anki veritabanında <b><tt>CREATE</tt></b> yetkisi olması gerekir.
+  </div></dd><dt class="head3">Örnekler</dt><dd><div class="para">
+Bir şemayı oluşturmak için:
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">CREATE SCHEMA myschema;</pre></div></div>
+  <div class="para">
+Şemayı <tt>joe</tt> kullanıcısı için, kendi ismiyle oluşturmak için:
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">CREATE SCHEMA AUTHORIZATION joe;</pre></div></div>
+  <div class="para">
+Bir şemanın, bir sanal ve bir gerçek tabloyla oluşturulması:
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">CREATE SCHEMA hollywood
+    CREATE TABLE films (title text, release date, awards text[])
+    CREATE VIEW winners AS
+        SELECT title, release FROM films WHERE awards IS NOT NULL;
+</pre></div></div>
+  <div class="para">
+Dikkat ederseniz, alt komutların sonunda noktalı virgül kullanılmamıştır.
+  </div><div class="para">
+Aşağıdaki örnek de aynı sonucu verir:
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">CREATE SCHEMA hollywood;
+CREATE TABLE hollywood.films (title text, release date, awards text[]);
+CREATE VIEW hollywood.winners AS
+  SELECT title, release FROM hollywood.films WHERE awards IS NOT NULL;
+</pre></div></div>
+  </dd><dt class="head3">Uyumluluk</dt><dd><div class="para">
+PostgreSQL'in de kabul ettiği alt komutların yanında SQL standardı <b><tt>CREATE SCHEMA</tt></b> içinde <b><tt>DEFAULT CHARACTER SET</tt></b> deyimine de izin verir.
+  </div><div class="para">
+SQL standardı, <b><tt>CREATE SCHEMA</tt></b> içinde bu alt komutların herhangi bir sırada olabileceğini belirtir. PostgreSQL gerçeklemesi şimdilik, alt komutlarda ileri yönde başvurular tüm durumlarda elde edememektedir; ileri yönde başvurulardan kaçınmak için bazan alt komutların yeniden sıralanması gerekli olabilmektedir.
+  </div><div class="para">
+SQL standardına göre bir şemanın sahibi daima içindeki tüm nenelerin sahibidir. PostgreSQL<sup>TM</sup> ise, şemanın içinde başka kullanıcıların nesnelerine de izin verir. Bu sadece eğer şema sahibi şemasında başkalarına <b><tt>CREATE</tt></b> yetkisi verirse mümkün olur.
+  </div></dd><dt class="head3">İlgili Belgeler</dt><dd><div class="para">
+<tt><b>ALTER SCHEMA</b>[<a href="../../man/man7/man7-alter_schema.html">alter_schema(7)</a>]</tt>,
+<tt><b>DROP SCHEMA</b>[<a href="../../man/man7/man7-drop_schema.html">drop_schema(7)</a>]</tt>.
+ </div></dd><dt class="head3">Çeviren</dt><dd><div class="para">
+Nilgün Belma Bugüner <span class="email">&lt;nilgun (at) belgeler·gen·tr&gt;</span>, Nisan 2005
+</div></dd></dl><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="30%"><b>PostgreSQL</b></td><td class="mheadfoot" align="center" width="40%"></td><td class="mheadfoot" align="right" width="30%"><b>CREATE SCHEMA(7)</b></td></tr></table></div></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../../man/man7/man7-create_rule.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../../man/man7/man7.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../../man/man7/man7-create_sequence.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">CREATE RULE </td><td width="20%" align="center"><a accesskey="h" href="../../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> CREATE SEQUENCE</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

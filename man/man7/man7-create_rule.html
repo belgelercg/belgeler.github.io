@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:25:22+03:00" /><title>CREATE RULE</title><link rel="icon" type="image/png" href="../../images/belgeler-logo.png" /><link rel="stylesheet" href="../../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../../man/man7/man7.html" title="SQL Deyimleri, Makro Paketleri vs." /><link rel="previous" href="../../man/man7/man7-create_operator_class.html" title="CREATE OPERATOR CLASS" /><link rel="next" href="../../man/man7/man7-create_schema.html" title="CREATE SCHEMA" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">CREATE RULE</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../../man/man7/man7-create_operator_class.html">Önceki</a> </td><th width="60%" align="center">SQL Deyimleri, Makro Paketleri vs.</th><td width="20%" align="right"> <a accesskey="n" href="../../man/man7/man7-create_schema.html">Sonraki</a></td></tr></table></td></tr></table><div class="refentry"><a name="tr-man7-create_rule" id="tr-man7-create_rule"></a><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="25%"><b>CREATE RULE(7)</b></td><td class="mheadfoot" align="center" width="50%"><b>SQL - Dil Deyimleri</b> </td><td class="mheadfoot" align="right" width="25%"><b>CREATE RULE(7)</b></td></tr></table></div><dl><dt class="head3">İSİM</dt><dd>CREATE RULE — bir yeniden yazma kuralı tanımlar<br /></dd><dd><div class="para"></div></dd><dt class="head3">KULLANIM</dt><dd><div class="para"><div class="para"><div align="center"><pre class="synopsis"><b><tt>CREATE</tt></b> [ <b><tt>OR REPLACE</tt></b> ] <b><tt>RULE</tt></b> <i>isim</i> <b><tt>AS ON</tt></b> <i>olay</i>
+    <b><tt>TO</tt></b> <i>tablo</i> [ <b><tt>WHERE</tt></b> <i>koşul</i> ]
+    <b><tt>DO</tt></b> [ <b><tt>ALSO</tt></b> | <b><tt>INSTEAD</tt></b> ] { <b><tt>NOTHING</tt></b> | <i>komut</i> | ( <i>komut</i> ; <i>komut</i> ... ) }
+</pre></div></div></div></dd><dt class="head3">Açıklama</dt><dd><div class="para">
+<b><tt>CREATE RULE</tt></b> belirtilen bir tabloya uygulanması için yeni bir kural tanımlar. <b><tt>CREATE OR REPLACE RULE</tt></b> ya yeni bir kural oluşturur ya da o tabloda mevcut aynı isimde bir kural varsa o kuralı değiştirir.
+  </div><div class="para">
+PostgreSQL<sup>TM</sup> kural sistemi veritabanı tablolarında veri girme, güncelleme veya silme işlemlerini gerçekleştirecek ek bir eylem tanımlamayı mümkün kılar. Başka bir deyişle, bir kural, belirtilen bir tablo üzerinde her komut çalıştırılışında ek komutların çalıştırılmasına sebep olur. Bundan başka, bir <b><tt>INSTEAD</tt></b> kuralı ile bir komutun bir başka komut ile değiştirilebilmesi, hatta hiç çalıştırılmaması da mümkündür. Kurallar, sanal tabloların oluşturulmasında da kullanılabilir. Bir kuralın aslında bir komut dönüştürme mekanizası mı yoksa bir komut makrosu mu olduğunu bilmek önemlidir. Dönüşüm, verilen komutlar çalıştırılmadan önce meydana gelir. Eğer, bir işlemin herbir fiziksel satır için tek tek uygulanmasını istiyorsanız, bunu şüphesiz bir kuralla değil, bir tetikle yaparsınız. Kural sistemi hakkında daha ayrıntılı bilgi edinmek için<br /><a class="ulink" href="http://www.postgresql.org/docs/8.0/static/rules.html" target="_top">http://www.postgresql.org/docs/8.0/static/rules.html</a> adresine bakınız.
+  </div><div class="para">
+Şimdilik, <b><tt>ON SELECT</tt></b> kuralları koşulsuz <b><tt>INSTEAD</tt></b> kuralları olmalı ve tek bir <b><tt>ON SELECT</tt></b> komutundan oluşan eylemler içermelidirler. Bu şekilde, bir <b><tt>ON SELECT</tt></b> kuralı aslında bir tabloyu bir sanal tabloya döndürür, ancak tabloda ne varsa değil, kuralın <b><tt>SELECT</tt></b> komutunun döndürdüğü satırlar kullanılır. Sanal tabloları, önce bir gerçek tablo ardından da buna bir  <b><tt>ON SELECT</tt></b> kuralı uygulayıp oluşturmak yerine bir <b><tt>CREATE VIEW</tt></b> komutu yazarak oluşturmak daha iyi bir çözümdür.
+  </div><div class="para">
+Bir sanal tablo üzerinde <b><tt>ON INSERT</tt></b>, <b><tt>ON UPDATE</tt></b> ve <b><tt>ON DELETE</tt></b> kuralları tanımlayıp, diğer tabloların ilgili güncellemelerini bu güncelleme eylemleri ile değiştirerek güncellenebilir bir sanal tablo görüntüsü oluşturabilirsiniz.
+  </div><div class="para">
+Sanal tablo güncellemeleri için koşullu kurallar kullanmak isterseniz bir hileye başvurabilirsiniz: belirteceğiniz her eylemin bir koşulsuz <b><tt>INSTEAD</tt></b> kuralı içermesini sağlamalısınız. Eğer kural, koşullu ise ya da <b><tt>INSTEAD</tt></b> kuralı değilse, sistem güncelleme eylemini uygulamayı hala reddetmeye çalışacaktır. Çünkü, bazı durumlarda, sanal tablonun taklidi üzerinde uygulanacak eylemin sonuna geldiğini varsayacaktır. Eğer, koşullu kurallardaki tüm kullanışlı durumların uygulanmasını istiyorsanız, sistemin asla bir tablo taklidini güncelleme çağrısı yapılmadığını anlamasını sağlamak için koşulsuz bir <b><tt>DO INSTEAD NOTHING</tt></b> kuralı ekleyin. Ardından da <b><tt>INSTEAD</tt></b> içermeyen koşullu kuralları oluşturun; uygulandıkları yerlerde, bunlar öntanımlı <b><tt>INSTEAD NOTHING</tt></b> eylemine eklenir.
+  </div></dd><dt class="head3">Parametreler</dt><dd><div class="variablelist"><dl><dt><i><tt>isim</tt></i></dt><dd class="varlist"><div class="para">Oluşturulacak kuralın ismi. Bu aynı tablodaki diğer kuralların isimlerinden farklı olmalıdır. Aynı tabloda ve aynı olay türünde çok sayıda kural varsa, bunlar alfabetik sırada uygulanır.
+    </div></dd><dt><i><tt>olay</tt></i></dt><dd class="varlist"><div class="para"><b><tt>SELECT</tt></b>, <b><tt>INSERT</tt></b>, <b><tt>UPDATE</tt></b> ve <b><tt>DELETE</tt></b> cümlelerinden biridir.
+    </div></dd><dt><i><tt>tablo</tt></i></dt><dd class="varlist"><div class="para">Kuralın uygulanacağı tablo ya da sanal tablonun ismi (şema nitelemeli olabilir).
+    </div></dd><dt><i><tt>koşul</tt></i></dt><dd class="varlist"><div class="para">Herhangi bir koşullu SQL ifadesi (<tt>boolean</tt> döndüren). <b><tt>NEW</tt></b> ve <b><tt>OLD</tt></b> olması ve ortak değer işlevleri içermemesi dışında bu koşullu ifade hiçbir tabloya başvuru yapamaz.
+    </div></dd><dt><b><tt>INSTEAD</tt></b></dt><dd class="varlist"><div class="para">Komutların "özgün komutların yerine" çalıştırılacağını belirtir.
+    </div></dd><dt><b><tt>ALSO</tt></b></dt><dd class="varlist"><div class="para">Komutların "özgün komutlara ek olarak" çalıştırılacağını belirtir.
+     </div><div class="para">
+<b><tt>ALSO</tt></b> ve <b><tt>INSTEAD</tt></b> birlikte belirtilemez. <b><tt>ALSO</tt></b> öntanımlıdır.
+    </div></dd><dt><i><tt>komut</tt></i></dt><dd class="varlist"><div class="para">Kuralın eylemleri olan komut ya da komutlar. Geçerli komutlar <b><tt>SELECT</tt></b>, <b><tt>INSERT</tt></b>, <b><tt>UPDATE</tt></b>, <b><tt>DELETE</tt></b> veya <b><tt>NOTIFY</tt></b>'dır.
+    </div></dd></dl></div><div class="para">
+<i><tt>koşul</tt></i> ve <i><tt>komut</tt></i> içinde, özel tablo isimleri <b><tt>NEW</tt></b> ve <b><tt>OLD</tt></b> başvurulacak tablonun değerlerini nitelemek için kullanılabilir. <b><tt>NEW</tt></b>, <b><tt>ON INSERT</tt></b> ve <b><tt>ON UPDATE</tt></b> kurallarında veri girilecek ya da güncellenecek yeni bir satırı belirtirken kullanılabilir. <b><tt>OLD</tt></b> ise, <b><tt>ON UPDATE</tt></b> ve <b><tt>ON DELETE</tt></b> kurallarında güncellenecek ya da silinecek mevcut bir satırı belirtirken kullanılabilir.
+  </div></dd><dt class="head3">Ek Bilgi</dt><dd><div class="para">
+Üzerinde bir kural tanımlayabilmeniz için tablo üzerinde <b><tt>RULE</tt></b> yetkiniz olmalıdır.
+  </div><div class="para">
+Döngüsel kurallardan kaçınmaya çalışmanız çok önemlidir. Örneğin, aşağıdaki iki kural tanımı PostgreSQL tarafından kabul edildiği halde sorgunun defalarca baştan uygulanması nedeniyle PostgreSQL bir hata raporlayacaktır:
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">CREATE RULE "_RETURN" AS
+    ON SELECT TO t1
+    DO INSTEAD
+        SELECT * FROM t2;
+
+CREATE RULE "_RETURN" AS
+    ON SELECT TO t2
+    DO INSTEAD
+        SELECT * FROM t1;
+
+SELECT * FROM t1;
+</pre></div></div>
+  <div class="para">
+Şimdilik, bir kural eylemi bir <b><tt>NOTIFY</tt></b> komutu içeriyorsa, ne olursa olsun, kuralın uygulanacağı bir satır olmasa bile, <b><tt>NOTIFY</tt></b> komutu çalıştırılır. Örnek:
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">CREATE RULE notify_me AS ON UPDATE TO mytable DO ALSO NOTIFY mytable;
+
+UPDATE mytable SET name = 'foo' WHERE id = 42;
+</pre></div></div>
+  <div class="para">
+<b><tt>UPDATE</tt></b> sırasında, <b><tt>id = 42</tt></b> koşulu ile eşleşen bir satır olmasa bile, bir <b><tt>NOTIFY</tt></b> olayı gönderilecektir. Bu, gerçekleme ile ilgili bir kısıtlamadır; ileriki sürümlerde düzeltilebilir.
+  </div></dd><dt class="head3">Uyumluluk</dt><dd><div class="para">
+<b><tt>CREATE RULE</tt></b>, sorgunun tamamını yeniden yazma sistemi olarak bir PostgreSQL<sup>TM</sup> oluşumudur.
+  </div></dd><dt class="head3">Çeviren</dt><dd><div class="para">
+Nilgün Belma Bugüner <span class="email">&lt;nilgun (at) belgeler·gen·tr&gt;</span>, Nisan 2005
+</div></dd></dl><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="30%"><b>PostgreSQL</b></td><td class="mheadfoot" align="center" width="40%"></td><td class="mheadfoot" align="right" width="30%"><b>CREATE RULE(7)</b></td></tr></table></div></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../../man/man7/man7-create_operator_class.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../../man/man7/man7.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../../man/man7/man7-create_schema.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">CREATE OPERATOR CLASS </td><td width="20%" align="center"><a accesskey="h" href="../../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> CREATE SCHEMA</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

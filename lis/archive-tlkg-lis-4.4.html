@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:30:27+03:00" /><title>Dosya Arşivleme ve Sıkıştırma</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../lis/archive-tlkg-lis-4.html" title="Dosya ve Dizin İşlemleri" /><link rel="previous" href="../lis/archive-tlkg-lis-4.3.html" title="Sembolik Bağlantılar" /><link rel="next" href="../lis/archive-tlkg-lis-4.5.html" title="Dizin Tarama" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Dosya Arşivleme ve Sıkıştırma</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-4.3.html">Önceki</a> </td><th width="60%" align="center">Dosya ve Dizin İşlemleri</th><td width="20%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-4.5.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="archive-tlkg-lis-4.4" id="archive-tlkg-lis-4.4"></a>Dosya Arşivleme ve Sıkıştırma</div><dl><dd><div class="para">
+      Linux altında dosya arşivlenmesi ve sıkıştırılması neredeyse belirli ve
+      standartlaşmış birkaç komut ile gerçekleştiriliyor. <tt>tar</tt>
+      komutu yardımıyla istenilen dosyaları arşivleyebilir, bunların üzerine
+      yenilerini ekleyebilir, istediğiniz zaman da tekrar açıp eski haline
+      getirebilirsiniz. GNU <tt>gzip</tt> komutu ise dosyaların
+      sıkıştırılması (zip) ve sıkıştırılmış dosyaların açılması (unzip)
+      işlemlerini yapabiliyor. Fazla disk alanınız yoksa bu iki komut her
+      zaman yardımınıza koşacaktır.
+    </div> <div class="head3"><a name="id1" id="id1"></a>Dosya Arşivleme</div><dl><dd><div class="para">
+        <tt>tar</tt> (Tape ARchive) programı, bir veya birden fazla
+        dosyayı tek bir forma sokar. Genellikle bir dizin ve bu dizinin altında
+        yer alan tüm alt dizinleri biraraya getirmek için kullanılır.
+        <tt>tar</tt>, dosyaların üzerinde sıkıştırma işlemini normalde
+        uygulamaz. Fakat <tt>tar</tt>'ın GNU sürümü (Linux'ta da
+        kullanılan) bu işlemi gzip kullanmadan da yapabiliyor.
+      </div><div class="para">
+        <tt>tar</tt> komutuna bir örnek verelim:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ tar -cf arsiv.tar tmp/
+</pre></div></div>
+      <div class="para">
+        Bu komut, <tt>-c</tt> (create archive) parametresi yardımıyla
+        <tt>tmp</tt> dizini altındaki herşeyi paketleyip
+        <tt>arsiv.tar</tt> isimli dosyaya yollar. <tt>-f</tt>
+        parametresi, hangi dosyaya yazılacağını belirtir. İstediğiniz zaman
+        dosyayı tekrar açmak isterseniz:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ tar -xf arsiv.tar
+</pre></div></div>
+      <div class="para">
+        komutunu kullanın. <tt>-x</tt> (extract) parametresi,
+        <tt>-f</tt> ile belirtilen dosyayı açacaktır.
+      </div><div class="para">
+        <tt>-r</tt>seçeneği ile daha önce yaratılmış bir arşive
+        dosya eklenebilir. Böylece dosyayı açma ve tekrar arşiv oluşturma
+        işleminden kurtulmuş olursunuz.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ tar -rf arsiv.tar ekleme.txt
+</pre></div></div>
+      <div class="para">
+        Dosyanın içeriğini önceden görebilmek için <tt>-t</tt>
+        parametresini kullanın ve bu işlemi de alışkanlık haline getirin.
+        Bazı durumlarda arşivlenmiş yazılım, kendine ait bir dizin açmak
+        yerine içerdiği dosyaları bulunduğu yere yazabilir.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+tar -tf arsiv.tar
+</pre></div></div>
+      <div class="para">
+        Hangi dosyaların açıldığını ekranda görebilmek için
+        <tt>-v</tt> parametresini ekleyin:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# tar -zcvf tmp.tgz /tmp
+tar: Removing leading / from absolute path names in the archive.
+tmp/
+tmp/tar-error
+tmp/.X11-unix/
+tmp/rc.inet1.OLD
+tmp/networks.OLD
+tmp/linux/
+tmp/linux/fss.txt
+tmp/lilo.conf
+tmp/PKGTOOL.REMOVED
+</pre></div></div>
+      <div class="para">
+        Aşağıdaki komut, arşivlenen dosyaları diskete kaydetmeye yarıyor. Bunun
+        için temiz bir disketi yuvasına yerleştirin ve aşağıdaki satırı yazın.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# tar -cf /dev/fd0 tmp/
+</pre></div></div>
+      <div class="para">
+        <tt>tmp</tt> dizini altındaki herşeyi diskete kaydetmiş olduk.
+        Açmak için bilinen yöntemi kullanırız:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# tar -xf /dev/fd0
+</pre></div></div>
+      </dd></dl> <div class="head3"><a name="id2" id="id2"></a>Dosya Sıkıştırma ve Açma</div><dl><dd><div class="para">
+        Dosya sıkıştırma amacıyla sıkça kullanan iki yazılım vardır:
+        <tt>gzip</tt> ve <tt>compress</tt>. Her iki
+        yazılım da <i>Slackware Linux</i> dağıtımında
+        bulunuyor. GNU'nun dağıtımı olan <tt>gzip</tt>,
+        <tt>tar</tt> ile birlikte kullanılan ve dosya
+        sıkıştırma ve arşivlemede neredeyse standart haline gelmiş bir
+        program. Bir dosyayı sıkıştırmak için parametre girmeden <tt>gzip</tt>
+        komutunun ardından dosya ismini yazın.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ gzip elvis
+$ ls -al
+elvis.gz
+</pre></div></div>
+      <div class="para">
+        <tt>gzip</tt> ile sıkıştırılmış dosyaların sonu <tt>.gz</tt> ile biter.
+        Bunları açmak için <tt>gunzip</tt> komutunu kullanın:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ gunzip elvis.gz
+</pre></div></div>
+      <div class="para">
+        <tt>compress</tt> ve <tt>uncompress</tt> de sırayla
+        bir dosyayı sıkıştırmak ve açmak için kullanılır. Aslında Linux'ta
+        <tt>uncompress</tt> adında bir yazılım yoktur, bu dosya ismi
+        <tt>compress</tt> dosyasına bağlantılıdır.
+        <tt>compress</tt> ile sıkıştırılan dosyaların sonu
+        <tt>.Z</tt> ile biter.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ ls -al web.html
+-rw-r--r--   1 gorkem   users       41450 Jan 27 13:40 web.html
+$ compress web.html
+$ ls -al web.html.Z
+-rw-r--r--   1 gorkem   users       18906 Jan 27 13:40 web.html.Z
+</pre></div></div>
+      <div class="para">
+        Yukarıdaki <tt>web.html</tt> dosyasını sıkıştırdığımızda
+        dosyanın boyutu 41450 bayttan 18906 bayta indi. Açmak için:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ uncompress web.html.Z
+</pre></div></div>
+      <div class="para">
+        Bir dosyanın uzantısından ne tür bir dosya olduğunu anlayamazsanız file
+        komutu imdadınıza koşar. Linux'ta belirli uzantılı dosyaların başı
+        bilinen bir harf veya harf grubu ile başlar. file komutu dosyanın başındaki
+        karakterleri kontrol ederek ve bunları bir listeyle
+        (<tt>/etc/magic</tt>) karşılaştırarak dosyanın ne tür olduğunu söyler.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# file tmp.gz
+tmp.tgz: gzip compressed data - deflate method , last modified: Sat Feb 15 08:21:50 1997 os: Unix
+# file tmp.tar.Z
+tmp.tar.Z: compressed data 16 bits
+</pre></div></div>
+      </dd></dl> <div class="head3"><a name="id3" id="id3"></a>Birlikte Kullanım</div><dl><dd><div class="para">
+        ftp adreslerinde Linux için yeralan yazılımlar genellikle <tt>tar</tt> ve
+        <tt>gzip</tt>, nadiren de <tt>tar</tt> ve <tt>compress</tt> ile sıkıştırılıp
+        arşivelenerek saklanırlar. Çünkü tar komutu tek başına arşivi sıkıştırmaz, bu
+        işlem için <tt>gzip</tt> veya <tt>compress</tt> kullanılır. Bunların
+        açılabilmesi için <tt>tar</tt> komutu ve birkaç parametre yeterli olur.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ ls
+netscape-4.0.linux-elf.tar.gz
+</pre></div></div>
+      <div class="para">
+        Yukarıdaki dosya önce tar ile arşivlenmiş, ardından
+        <tt>gzip</tt> ile sıkıştırılmış. Tek adımda bu iki dosyayı
+        açmak için tar dosyasına x ve f parametrelerinin dışında z parametresini
+        de ekleyin:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ tar -zxf netscape-4.0.linux-elf.tar.gz
+$ ls
+netscape-4.0.linux-elf
+</pre></div></div>
+      <div class="para">
+        Eğer dosya sıkıştırılırken compress komutu kullanılmışsa z yerine
+        Z parametresini yazın.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ ls
+folder.tar.Z
+$ tar -Zxf folder.tar.Z
+$ ls
+folder
+</pre></div></div>
+      <div class="para">
+        Benzer şekile, bir dosyayı aynı anda hem tar ile arşivlemek, hem de
+        sıkıştırmak istersek c ve f parametreleri dışında compress ile Z,
+        gzip ile z parametrelerini girmek yeterlidir. Aşağıda sırayla
+        gn-gopher dizisinin önce tar ve gzip ile, ardından tar ve compress
+        ile arşivlenmesi görülüyor.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ ls
+gn-gopher/
+$ tar -zcf gopher.tgz gn-gopher/
+$ tar -Zcf gopher.tar.Z gn-gopher/
+</pre></div></div>
+      </dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-4.3.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../lis/archive-tlkg-lis-4.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-4.5.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Sembolik Bağlantılar </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Dizin Tarama</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

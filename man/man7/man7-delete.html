@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:25:24+03:00" /><title>DELETE</title><link rel="icon" type="image/png" href="../../images/belgeler-logo.png" /><link rel="stylesheet" href="../../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../../man/man7/man7.html" title="SQL Deyimleri, Makro Paketleri vs." /><link rel="previous" href="../../man/man7/man7-declare.html" title="DECLARE" /><link rel="next" href="../../man/man7/man7-drop_aggregate.html" title="DROP AGGREGATE" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">DELETE</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../../man/man7/man7-declare.html">Önceki</a> </td><th width="60%" align="center">SQL Deyimleri, Makro Paketleri vs.</th><td width="20%" align="right"> <a accesskey="n" href="../../man/man7/man7-drop_aggregate.html">Sonraki</a></td></tr></table></td></tr></table><div class="refentry"><a name="tr-man7-delete" id="tr-man7-delete"></a><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="25%"><b>DELETE(7)</b></td><td class="mheadfoot" align="center" width="50%"><b>SQL - Dil Deyimleri</b> </td><td class="mheadfoot" align="right" width="25%"><b>DELETE(7)</b></td></tr></table></div><dl><dt class="head3">İSİM</dt><dd>DELETE — bir tablo satırını siler<br /></dd><dd><div class="para"></div></dd><dt class="head3">KULLANIM</dt><dd><div class="para"><div class="para"><div align="center"><pre class="synopsis"><b><tt>DELETE FROM</tt></b> [ <b><tt>ONLY</tt></b> ] <i>tablo</i> [ <b><tt>WHERE</tt></b> <i>koşul</i> ]
+</pre></div></div></div></dd><dt class="head3">Açıklama</dt><dd><div class="para">
+<b><tt>DELETE</tt></b>, belirtilen tablodan yeri <b><tt>WHERE</tt></b> deyimi ile saptanan satırı siler. <b><tt>WHERE</tt></b> deyiminin yokluğunda tablonun tüm satırlarını siler; sonuç, geçerli ama boş bir tablo olur.
+  </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../../images/xsl/tip.png" /></td><th class="admon">İpucu</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+<tt><b>TRUNCATE</b>[truncate(7)]</tt> bir PostgreSQL<sup>TM</sup> oluşumu olarak, bir tablodaki tüm satırları silmek için daha hızlı bir mekanizma içerir.
+  </div></td></tr></table></div><div class="para">
+Öntanımlı olarak, <b><tt>DELETE</tt></b> belirtilen tablodakinden başka, tablonun alt tablolarındaki satırları da silecektir. Sadece belirttiğiniz tablodaki satırların silinmesini istiyorsanız, cümlede <b><tt>ONLY</tt></b> kullanmalısınız.
+  </div><div class="para">
+Bir tablodan satır silebilmek için, tablo üzerinde <b><tt>DELETE</tt></b> izninizin olması gereğinden başka, <i><tt>koşul</tt></i> ile belirtilen değerleri tablodan okuyabilmek için de <b><tt>SELECT</tt></b> izniniz olması gerekir.
+  </div></dd><dt class="head3">Parametreler</dt><dd><div class="variablelist"><dl><dt><i><tt>tablo</tt></i></dt><dd class="varlist"><div class="para">Mevcut bir tablonun ismi (şema nitelemeli olabilir).
+    </div></dd><dt><i><tt>koşul</tt></i></dt><dd class="varlist"><div class="para">Silinecek satırları seçmekte kullanılacak, <tt>boolean</tt> türünde değer döndüren bir ifade.
+    </div></dd></dl></div></dd><dt class="head3">Çıktı</dt><dd><div class="para">
+Başarılı bir işlemin ardından, <b><tt>DELETE</tt></b> komutu şöyle bir çıktı ile döner:
+  </div>
+<div class="para"><pre class="literallayout">    DELETE <i>miktar</i></pre></div>
+  <div class="para">
+Burada <i><tt>miktar</tt></i> silinen satırların sayısıdır. <i><tt>miktar</tt></i> 0 ise <i><tt>koşul</tt></i> ile eşleşen bir satır bulunamamış demektir (bu bir hata sayılmaz).
+  </div></dd><dt class="head3">Ek Bilgi</dt><dd><div class="para">
+PostgreSQL<sup>TM</sup>, <b><tt>WHERE</tt></b> deyiminin koşulu olarak başka tabloların sütunlarına da başvurmanızı mümkün kılar. Örneğin, belli bir yapımcının bütün filmlerini silmek için şöyle bir cümle yazılabilir:
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">DELETE FROM films
+  WHERE producer_id = producers.id AND producers.name = 'foo';
+</pre></div></div>
+  <div class="para">
+Burada yapılan aslında, films ve producers tabloları arasında katılım oluşturup, koşula uyan  films satırlarını silinmiş olarak imlemektir. Bu sözdizimi standart değildir. Standart yol:
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">
+DELETE FROM films
+  WHERE producer_id IN (SELECT id FROM producers WHERE name = 'foo');
+</pre></div></div>
+  <div class="para">
+şeklinde yazmaktır. Yine de, bazı durumlarda ilk sözdizimi alt seçimli ikinci tarza göre hem daha kolay yazılmakta hem de işlemin yerine getirilmesi daha hızlı olabilmektedir. Katılımlı sözdizimine tek itiraz, kullanılan tabloların listesinin açıkça belli olmayışı, bu sebeple de biraz daha hataya açık olması, ayrıca kendine katılımlı işlemin yapılamayışıdır.
+  </div></dd><dt class="head3">Örnekler</dt><dd><div class="para">
+Müzikâller dışında tüm filmleri silmek için:
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">DELETE FROM films WHERE kind &lt;&gt; 'Musical';
+</pre></div></div>
+  <div class="para">
+<tt>films</tt> tablosunu temizlemek için:
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">DELETE FROM films;</pre></div></div>
+  </dd><dt class="head3">Uyumluluk</dt><dd><div class="para">
+Bir PostgreSQL<sup>TM</sup> oluşumu olarak  <b><tt>WHERE</tt></b> deyiminin koşulunda başka tabloların sütunlarına da başvurulabilmesi dışında, bu komut SQL standardına uygundur.
+  </div></dd><dt class="head3">Çeviren</dt><dd><div class="para">
+Nilgün Belma Bugüner <span class="email">&lt;nilgun (at) belgeler·gen·tr&gt;</span>, Nisan 2005
+</div></dd></dl><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="30%"><b>PostgreSQL</b></td><td class="mheadfoot" align="center" width="40%"></td><td class="mheadfoot" align="right" width="30%"><b>DELETE(7)</b></td></tr></table></div></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../../man/man7/man7-declare.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../../man/man7/man7.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../../man/man7/man7-drop_aggregate.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">DECLARE </td><td width="20%" align="center"><a accesskey="h" href="../../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> DROP AGGREGATE</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:30:27+03:00" /><title>Belirli Zamanlarda Komut İşletilmesi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../lis/archive-tlkg-lis-5.html" title="Linux Sistem Yönetimi" /><link rel="previous" href="../lis/archive-tlkg-lis-5.12.html" title="Konsolda Türkçe Yazmak" /><link rel="next" href="../lis/archive-tlkg-lis-6.html" title="Bash Kabuğu" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Belirli Zamanlarda Komut İşletilmesi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-5.12.html">Önceki</a> </td><th width="60%" align="center">Linux Sistem Yönetimi</th><td width="20%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-6.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="archive-tlkg-lis-5.13" id="archive-tlkg-lis-5.13"></a>Belirli Zamanlarda Komut İşletilmesi</div><dl><dd><div class="para">
+      crontab dosyası yardımıyla sistem üzerinde olmadığınız zamanlarda
+      Linux'tan bazı belirli işleri yapmasını istemek mümkündür. Örneğin
+      gereksiz trafik sıkışıklığı yaratamak için akşam geç saatlerde sistemi
+      yedeklemek için evden İnternet'e bağlanmak yerine crontab ile bu işlemi
+      otomatikleştirmek mümkün olur.
+    </div><div class="para">
+      Bir crontab dosyasında toplam 6 alan bulunur. Bunlardan ilk beşi
+      komutun ne zaman işleneceğini gösterirken son kısımda bu saatler içinde
+      çalıştırılacak olan komutu gösterir. Zamanı belirten sütunlardan ilki
+      dakikayı (0 ile 59 arası), ikincisi saati (0 ile 23 arası), üçüncüsü
+      günü (1-31 arası), dördüncüsü ayı (1-12 arası), son kısım ise haftanın
+      gününü (0 pazarı göstermek üzere 0-6 arası) verir. Yine crontab'ın güzel
+      özelliklerinden birisi de bu alanların her birisinde zaman aralıklarını
+      yazmaya izin vermesidir. Mesela haftanın üçüncü ve beşinci günleri arası,
+      saat 4 ve 9 arası gibi. Eğer bir zaman alanına * girilirse, bunun anlamı
+      "her zaman" olur. Örneğin saat yerine * konulması "her saat", ay yerine *
+      konulması "her ay" anlamına gelecektir.
+    </div><div class="para">
+      Önce aşağıda yeralan küçük bir crontab dosyası incelenecek, ardından crontab
+      işlemine nasıl başlanılacağı kısaca anlatılacaktır.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+40 06 * * * updatedb
+</pre></div></div>
+    <div class="para">
+      Yukarıdaki örnekte birinci ve ikinci sayılar 06:40 saatini
+      gösteriyor. Diğer zaman kısımları * ile doldurulmuş olduklarından her
+      gün 06:40'ta <tt>updatedb</tt> isimli program çalışacaktır.
+    </div><div class="para">
+      Komut yerine kullanılacak olan program ismi parametre alabilir. Bu
+      örnekteki crontab dosyası pazartesi günleri saat 1'de, <tt>/tmp</tt> dizinindeki
+      üç günden daha eski dosyaları siler.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+0 1 * * mon find /tmp -atime 3 -exec rm -f {} \;
+</pre></div></div>
+    <div class="para">
+      Bu örnekte kullanılan virgül, her ayın 9, 19 ve 29'unu gösterir. Aynı
+      alanda birden fazla sayı kullanacaksanız arada boşluk bırakmamaya
+      dikkat edin.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+0 1 9,19,29 * * find /tmp -atime 3 -exec rm -rf {} \;
+</pre></div></div>
+    <div class="para">
+      Ay isimlerinde <i>ocak, şubat, mart, nisan, mayıs, haziran, temmuz,
+      ağustos, eylül, ekim, kasım, aralık</i> için sırasıyla <i>january, february,
+      march, april, may, june, july, august, september, october, november,
+      december</i> kullanabilirsiniz. Benzer şekilde <i>pazar, pazartesi, salı,
+      çarşamba, perşembe, cuma, cumartesi</i> ve <i>pazar yerine sunday, monday,
+      tuesday, wednesday, thursday, friday ve saturday</i> kullanın. Aşağıdaki
+      crontab girdisi yardımıyla iki ayda bir çalıştırılan komutla önce teyp
+      başa alınıyor, ardından <tt>/home</tt> dizini bu teybe yedekleniyor:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+0 2 1 */2 * mt -f /dev/rft0 rewind; tar -cf /dev/rft0 /home
+</pre></div></div>
+    <div class="para">
+      */2 ile belirtilen zaman dilimini ikiye bölebilirsiniz. 2 yerine uygun
+      herhangi bir tamsayı yazılabilir.
+    </div><div class="para">
+      Bu girdileri bir crontab dosyasına nasıl yazacağız? Bunun için root
+      kullanıcısı olarak girin ve aşağıdaki satırları yazın:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+# crontab -e
+</pre></div></div>
+    <div class="para">
+      Ekrana bilgisayar ilk kurulduğu anda ön tanımlı olarak girilen crontab
+      satırları gelecektir. Buraya yukarıda belirtilen yapıda istediğiniz
+      kadar crontab girdisi yapabilirsiniz. Eğer daha önceden <i>VISUAL</i> çevresel
+      değişkenini uygun bir editöre ayarlamamışsanız, vi altında çalışmanız
+      gerekecektir. Başka bir editörle çalışabilmek için bu değişkeni,
+      editörün patikasını gösterecek şekilde değiştirin. İleride de kısaca
+      bahsedilecek olan tin (haber grubu okuyucu yazılımı) de VISUAL değişkenine
+      göre metin editörünün patikasını ayarlayacaktır.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+# export VISUAL=/usr/bin/pico
+</pre></div></div>
+    <div class="para">
+      Crontab dosyasının normal olarak işletilmesinden crond sorumludur. Sistem
+      açılırken <tt>/etc/rc.d</tt> dizini içindeki dosyalardan bir tanesi crond
+      programını çalıştırır ve bu andan itibaren <tt>crontab -e</tt> komutuyla
+      yarattığınız dosyadaki emirler zamanı geldikçe yerine getirilir.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-5.12.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../lis/archive-tlkg-lis-5.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-6.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Konsolda Türkçe Yazmak </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Bash Kabuğu</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

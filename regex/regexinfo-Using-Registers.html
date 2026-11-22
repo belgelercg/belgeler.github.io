@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:06+03:00" /><title>Yazmaçların Kullanımı</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../regex/regexinfo-GNU-Regex-Functions.html" title="GNU Regex İşlevleri" /><link rel="previous" href="../regex/regexinfo-GNU-Translate-Tables.html" title="GNU Çeviri Tabloları" /><link rel="next" href="../regex/regexinfo-Freeing-GNU-Pattern-Buffers.html" title="GNU Şablon Tamponlarının Serbest Bırakılması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Yazmaçların Kullanımı</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../regex/regexinfo-GNU-Translate-Tables.html">Önceki</a> </td><th width="60%" align="center">GNU Regex İşlevleri</th><td width="20%" align="right"> <a accesskey="n" href="../regex/regexinfo-Freeing-GNU-Pattern-Buffers.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="regexinfo-Using-Registers" id="regexinfo-Using-Registers"></a>Yazmaçların Kullanımı</div><dl><dd><div class="para">
+Bir düzenli ifade içindeki bir grup, düzenli ifadenin tamamen eşleştiği bir dizgenin alt dizgesi (muhtemelen boş) ile eşleşebilir.  Eşleştirici, her bir grupla eşleşen alt dizgelerin başlangıç ve bitiş noktalarını hatırlar.
+    </div><div class="para">
+Onların nelerle eşleştiğini bulmak için bir GNU <a class="link" href="../regex/regexinfo-GNU-Matching.html" title="GNU Eşleştirme İşlevi">eşleştirme</a> ve <a class="link" href="../regex/regexinfo-GNU-Searching.html" title="GNU Arama İşlevi">arama</a> işlevinin <i><tt>yazmaçlar</tt></i> argümanına sıfırdan farklı bir değer, örneğin <tt>regex.h</tt> dosyasında tanımlı olan aşağıdaki gibi bir yapının adresini atayın:
+</div><a name="regexinfo-re_registers" id="regexinfo-re_registers"></a>
+<a class="indexterm" name="idx115" id="idx115"></a>
+<div class="tablo"><div class="satir"><div class="solsutun"><table cellpadding="5" cellspacing="0" border="0" class="funcinline"><tr><td valign="top" align="right" class="tt" nowrap="nowrap"><tt>struct <b><tt>re_registers</tt></b></tt></td><td valign="top"><pre class="paramdef">
+{
+  unsigned  <i><tt>num_regs</tt></i>;
+  regoff_t *<i><tt>start</tt></i>;
+  regoff_t *<i><tt>end</tt></i>;
+};
+</pre></td></tr></table></div><div class="sagsutun">veri türü</div></div></div><dl><dd><div class="para">
+<i><tt>num_regs</tt></i>'inci eleman hariç (aşağıya bakınız), <b><tt>start</tt></b> ve <b><tt>end</tt></b> dizilerinin <i><tt>i</tt></i>'nci elemanı, şablondaki  <i><tt>i</tt></i>'nci grup hakkındaki bilgileri kaydeder.  (Hiçbir C derleyicisi sıfır uzunluklu dizileri kabul etmediğinden bu diziler gösterici olarak bildirilmiştir; kavramsal olarak, onları dizi olarak düşünmek en kolayıdır.)
+    </div><div class="para">
+<a class="indexterm" name="idx116" id="idx116"></a>
+<b><tt>start</tt></b> ve <b><tt>end</tt></b> dizileri için, eşleştiriciye aktarılan şablon tamponu içindeki <b><tt>regs_allocated</tt></b> alanının değerine bağlı olarak çeşitli yöntemlerle bellek ayrılabilir.
+    </div><div class="para">
+<a class="indexterm" name="idx117" id="idx117"></a>
+<a class="indexterm" name="idx118" id="idx118"></a>
+Burada uygulanması en basit ve belki de en akıllıca yöntem; eşleştiriciye, düzenli ifade içindeki bütün grupların bilgilerinin kaydedilebileceği alanı (yeniden) ayırmaktır. <b><tt>regs_allocated</tt></b> alanının değeri <tt>REGS_UNALLOCATED</tt> ise, eşleştirici 1 + <i><tt>re_nsub</tt></i> yer tahsis eder (<a class="link" href="../regex/regexinfo-GNU-Pattern-Buffers.html" title="GNU Şablon Tamponları">şablon tamponu</a> içindeki bir alan). Ek elemana -1 ve <b><tt>regs_allocated</tt></b> alanına <tt>REGS_REALLOCATE</tt> değeri atanır. Daha sonradan aynı şablon tamponu ve <i><tt>yazmaçlar</tt></i> argümanıyla yapılan çağrılarda, eşleştirici gerektiği kadar alanı yeniden tahsis eder.
+    </div><div class="para">
+<b><tt>regs_allocated</tt></b> alanını <b><tt>re_registers</tt></b> yapısının bir parçası yapmak, şablon tamponun bir parçası yapmaktan daha akıllıca bir yöntem olabilir. Fakat bu durumda, çağrıcıya aktarılmadan önce yapının ilklendirilmesi zorunlu olacaktı. Mevcut kodların pek çoğu bu ilklendirmeyi yapmaz ve bundan kaçınmak her halükarda en iyisidir.
+    </div><div class="para">
+<b><tt>re_compile_pattern</tt></b>, <b><tt>regs_allocated</tt></b> alanına <tt>REGS_UNALLOCATED</tt> atar, böylece GNU düzenli ifade işlevlerini kullanırsanız, bu davranışı öntanımlı olarak elde etmiş olursunuz.
+    </div><div class="para">
+<a class="indexterm" name="idx119" id="idx119"></a>
+Diğer yandan, POSIX, farklı bir arayüze ihtiyaç duyar:  çağrıcı, eşleştirici tarafından doldurulacak sabit uzunluktaki bir dizi aktarılacağını varsayar. Bu nedenle, şayet <b><tt>regs_allocated</tt></b> alanının değeri  <tt>REGS_FIXED</tt> ise, eşleştirici o diziyi doldurur.
+    </div><div class="para">
+Aşağıdaki örneklerde, <b><tt>re_registers</tt></b> yapısına bilgi kaydedilmesi gösterilmiştir. (Hepsinde, <b><tt>(</tt></b> işlecinin grup başlatma, <b><tt>)</tt></b> işlecinin ise grup sonlandırma işleci olduğu varsayılmıştır.  <i><tt>dizge</tt></i> dizgesinin ilk karakterinin indisi 0 dır.)
+    </div><ul type="disc" class="itemizedlist"><li><div class="para">
+Şayet düzenli ifade, <i><tt>dizge</tt></i> dizgesinin bir alt dizgesi ile eşleşen ve bir alt grup içermeyen bir <i><tt>i</tt></i>'inci grup içeriyorsa, işlev, <i><tt>yazmaçlar</tt></i><tt>-&gt;start[<i>i</i>]</tt> alanını
+<i><tt>dizge</tt></i> içindeki, <i><tt>i</tt></i>'inci grupla eşleşen altdizgenin başlangıcına, <i><tt>yazmaçlar</tt></i><tt>-&gt;end[<i>i</i>]</tt> alanını da alt dizgenin sonuna denk gelen indise ayarlar. İşlev, <i><tt>yazmaçlar</tt></i><tt>-&gt;start[0]</tt> ve
+<i><tt>yazmaçlar</tt></i><tt>-&gt;end[0]</tt> alanlarını ise şablonun tamamı hakkındaki benzer bilgilere ayarlar.
+      </div><div class="para">
+Örneğin, <b><tt>((a)(b))</tt></b> ifadesini <b><tt>ab</tt></b> dizgesi ile eşleştirirseniz şunları elde edersiniz:
+      </div><ul type="circle" class="itemizedlist"><li><i><tt>yazmaçlar</tt></i><tt>-&gt;start[0]</tt> için 0, <i><tt>yazmaçlar</tt></i><tt>-&gt;end[0]</tt> için 2
+        </li><li><i><tt>yazmaçlar</tt></i><tt>-&gt;start[1]</tt> için 0, <i><tt>yazmaçlar</tt></i><tt>-&gt;end[1]</tt> için 2
+        </li><li><i><tt>yazmaçlar</tt></i><tt>-&gt;start[2]</tt> için 0, <i><tt>yazmaçlar</tt></i><tt>-&gt;end[2]</tt> için 1
+        </li><li><i><tt>yazmaçlar</tt></i><tt>-&gt;start[3]</tt> için 1, <i><tt>yazmaçlar</tt></i><tt>-&gt;end[3]</tt> için 2
+        </li></ul></li><li><div class="para">
+Şayet bir grup bir kereden fazla eşleşiyorsa (ardından bir yineleme işleci  geliyor olabilir), işlev son eşleşen grup hakkındaki bilgileri raporlar.
+      </div><div class="para">
+Örneğin, <b><tt>(a)*</tt></b> ifadesini <b><tt>aa</tt></b> dizgesi ile eşleştirirseniz şunları elde edersiniz:
+      </div><ul type="circle" class="itemizedlist"><li><i><tt>yazmaçlar</tt></i><tt>-&gt;start[0]</tt> için 0, <i><tt>yazmaçlar</tt></i><tt>-&gt;end[0]</tt> için 2
+        </li><li><i><tt>yazmaçlar</tt></i><tt>-&gt;start[1]</tt> için 1, <i><tt>yazmaçlar</tt></i><tt>-&gt;end[1]</tt> için 2
+        </li></ul></li><li><div class="para">
+Şayet <i><tt>i</tt></i>'inci grup başarılı bir eşleşmede yer almamış ise (örneğin; kullanılmamış bir VEYA işleci veya sıfır kere tekrarlamaya ayarlı bir yineleme işleci olabilir), işlev <i><tt>yazmaçlar</tt></i><tt>-&gt;start[1]</tt> ve
+<i><tt>yazmaçlar</tt></i><tt>-&gt;end[1]</tt> için -1 atar.
+      </div><div class="para">
+Örneğin, <b><tt>(a)*b</tt></b> ifadesini <b><tt>b</tt></b> dizgesi ile eşleştirirseniz şunları elde edersiniz:
+      </div><ul type="circle" class="itemizedlist"><li><i><tt>yazmaçlar</tt></i><tt>-&gt;start[0]</tt> için 0, <i><tt>yazmaçlar</tt></i><tt>-&gt;end[0]</tt> için 1
+        </li><li><i><tt>yazmaçlar</tt></i><tt>-&gt;start[1]</tt> için -1, <i><tt>yazmaçlar</tt></i><tt>-&gt;end[1]</tt> için -1
+        </li></ul></li><li><div class="para">
+Şayet <i><tt>i</tt></i>'inci grup sıfır uzunluktaki bir dizge ile eşleşirse, işlev
+<i><tt>yazmaçlar</tt></i><tt>-&gt;start[0]</tt> ve,
+<i><tt>yazmaçlar</tt></i><tt>-&gt;end[0]</tt> alanlarını sıfır uzunluktaki dizgenin hemen sonrasındaki indise ayarlar.
+      </div><div class="para">
+Örneğin, <b><tt>(a*)b</tt></b> ifadesini <b><tt>b</tt></b> dizgesi ile eşleştirirseniz şunları elde edersiniz:
+      </div><ul type="circle" class="itemizedlist"><li><i><tt>yazmaçlar</tt></i><tt>-&gt;start[0]</tt> için 0, <i><tt>yazmaçlar</tt></i><tt>-&gt;end[0]</tt> için 1
+        </li><li><i><tt>yazmaçlar</tt></i><tt>-&gt;start[0]</tt> için 0, <i><tt>yazmaçlar</tt></i><tt>-&gt;end[0]</tt> için 0
+        </li></ul></li><li><div class="para">
+Şayet <i><tt>i</tt></i>'inci grup, grup içindeki başka bir grup tarafından ihtiva edilmeyen bir <i><tt>j</tt></i>'inci gruba sahipse ve işlev <i><tt>i</tt></i>'inci grubun eşleşmesini rapor ediyorsa, <i><tt>j</tt></i>'inci grubun son eşleşmesi (şayet böyle bir eşleşme olmuş ise) <i><tt>yazmaçlar</tt></i><tt>-&gt;start[j]</tt> ve <i><tt>yazmaçlar</tt></i><tt>-&gt;end[j]</tt> içine kaydedilir.
+      </div><div class="para">
+Örneğin, <b><tt>((a*)b)*</tt></b> ifadesi <b><tt>abb</tt></b> dizgesi ile ve 2. grup bir boş dizge ile eşleşirse, evvelce yapılan eşleşme ne ise onu elde etmiş oluruz:
+      </div><ul type="circle" class="itemizedlist"><li><i><tt>yazmaçlar</tt></i><tt>-&gt;start[0]</tt> için 0, <i><tt>yazmaçlar</tt></i><tt>-&gt;end[0]</tt> için 3
+        </li><li><i><tt>yazmaçlar</tt></i><tt>-&gt;start[1]</tt> için 2, <i><tt>yazmaçlar</tt></i><tt>-&gt;end[1]</tt> için 3
+        </li><li><i><tt>yazmaçlar</tt></i><tt>-&gt;start[2]</tt> için 2, <i><tt>yazmaçlar</tt></i><tt>-&gt;end[2]</tt> için 2
+        </li></ul><div class="para">
+<b><tt>((a)*b)*</tt></b> ifadesi <b><tt>abb</tt></b> dizgesi ile ve son eşleşmede 2. grup eşleşmezse, şunları elde ederiz:
+      </div><ul type="circle" class="itemizedlist"><li><i><tt>yazmaçlar</tt></i><tt>-&gt;start[0]</tt> için 0, <i><tt>yazmaçlar</tt></i><tt>-&gt;end[0]</tt> için 3
+        </li><li><i><tt>yazmaçlar</tt></i><tt>-&gt;start[1]</tt> için 2, <i><tt>yazmaçlar</tt></i><tt>-&gt;end[1]</tt> için 3
+        </li><li><i><tt>yazmaçlar</tt></i><tt>-&gt;start[2]</tt> için 0, <i><tt>yazmaçlar</tt></i><tt>-&gt;end[2]</tt> için 1
+        </li></ul></li><li><div class="para">
+Şayet <i><tt>i</tt></i>'inci grup, grup içindeki başka bir grup tarafından ihtiva  edilmeyen bir <i><tt>j</tt></i>'inci gruba sahipse ve işlev <i><tt>yazmaçlar</tt></i><tt>-&gt;start[i]</tt> ve <i><tt>yazmaçlar</tt></i><tt>-&gt;end[i]</tt> alanların -1'e ayarlamışsa, <i><tt>yazmaçlar</tt></i><tt>-&gt;start[j]</tt> ve <i><tt>yazmaçlar</tt></i><tt>-&gt;end[j]</tt> alanları da -1'e ayarlanır.
+      </div><div class="para">
+Örneğin, <b><tt>((a)*b)*c</tt></b> ifadesini <b><tt>c</tt></b> dizgesi ile eşleştirirseniz şunları elde edersiniz:
+      </div><ul type="circle" class="itemizedlist"><li><i><tt>yazmaçlar</tt></i><tt>-&gt;start[0]</tt> için 0, <i><tt>yazmaçlar</tt></i><tt>-&gt;end[0]</tt> için 1
+        </li><li><i><tt>yazmaçlar</tt></i><tt>-&gt;start[1]</tt> için -1, <i><tt>yazmaçlar</tt></i><tt>-&gt;end[1]</tt> için -1
+        </li><li><i><tt>yazmaçlar</tt></i><tt>-&gt;start[2]</tt> için -1, <i><tt>yazmaçlar</tt></i><tt>-&gt;end[2]</tt> için -1
+        </li></ul></li></ul>
+    </dd></dl><div style="padding:5px"></div></dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../regex/regexinfo-GNU-Translate-Tables.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../regex/regexinfo-GNU-Regex-Functions.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../regex/regexinfo-Freeing-GNU-Pattern-Buffers.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">GNU Çeviri Tabloları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> GNU Şablon Tamponlarının Serbest Bırakılması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

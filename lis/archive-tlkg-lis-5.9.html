@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:30:27+03:00" /><title>Sistem Açılış Dosyaları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../lis/archive-tlkg-lis-5.html" title="Linux Sistem Yönetimi" /><link rel="previous" href="../lis/archive-tlkg-lis-5.8.html" title="Yeni Yazılımların Yüklenmesi" /><link rel="next" href="../lis/archive-tlkg-lis-5.10.html" title="Çekirdek Mesajları" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Sistem Açılış Dosyaları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-5.8.html">Önceki</a> </td><th width="60%" align="center">Linux Sistem Yönetimi</th><td width="20%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-5.10.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="archive-tlkg-lis-5.9" id="archive-tlkg-lis-5.9"></a>Sistem Açılış Dosyaları</div><dl><dd><div class="para">
+      Linux makinası açılırken onlarca dosyayı okur. Birkaç dakika
+      içinde çekirdeği hafızaya yükler, belirli dizinlerin altındaki
+      programları arkaplanda çalıştırır. Sistem uyanırken hatırı sayılır
+      nicelikte yapılandırma dosyası elden geçer. Açık bir işletim sistemini
+      diğerlerinden ayıran bir özellik de kullanıcının büyük bir kolaylıkla bu
+      yapılandırma dosyalarını değiştirebilmesidir. Sistem açılış dosyalarında,
+      özellikle ağ temelli dosyalarda değişiklik yapabilmek için TCP/IP konusunda
+      basit temelleri anlayabilmiş olmanız gerekir.
+    </div><div class="para">
+      Açılış dosyalarında, tek bir kullanıcı için veya sistemde hesabı olan
+      herkese yönelik olarak değişiklik yapmak mümkündür. Pek çok kullanıcı
+      bu açılış dosyalarıyla oynayarak Linux'u daha yakından öğrenme imkanına
+      sahip olur.
+    </div><div class="para">
+      İnternet servisi veren bir makina bu servisini daemon'lar aracılığıyla
+      yapar. Bir daemon, her makina tarafından bilinen bir port numarasını açar
+      ve dinlemeye koyulur. Eğer sorumlu olduğu port adresine istek gelirse
+      bu isteğe cevap vererek servise başlar.
+    </div><div class="para">
+      <i>Bash</i> kabuğunun anlatıldığı konu içinde sisteme girerken okunan dosyaları
+      anlatmıştım. Sistemde yeralan önemli dizinler de dosya sistemi yapısı
+      konusunda ayrıntılı olarak belirtilmişti. Bu bölümde daemonlardan kısaca
+      bahsedip açılış anında çalıştırılan programlara ve bunların yapılandırma
+      dosyalarına kısa bir giriş yapılacaktır.
+    </div> <div class="head3"><a name="id1" id="id1"></a>inetd ve /etc/inetd.conf</div><dl><dd><div class="para">
+        <i>inetd</i>, en ağır görevleri üstlenen ve en önemli İnternet
+        servislerindendir. Bu program sistem açılırken arkaplanda çalışmaya
+        bırakılır. inetd'nin görevi belirli portları dinleyerek bu portlara
+        yapılan bağlantıları denetlemektir. Bir bağlantı yapıldığı anda inetd
+        bu portla ilgilenecek olan programı çalıştırır. Örnek olarak Linux'a
+        ftp isteği geldiği anda inetd, ftp isteğine cevap verecek olan <i>wu.ftpd</i>
+        programını uyandırır ve geri kalanını bu programa bırakır.
+      </div><div class="para">
+        inetd olmasaydı her standart port numarası için bu portu dinleyecek olan
+        bir program arkaplanda çalışıyor olacaktı. Bu da sisteme normalden daha
+        fazla yükün binmesi demektir. inetd'nin kullandığı yapılandırma dosyası
+        <tt>/etc/inetd.conf</tt>'tur. Bu dosyadan bir bölüm aşağıda
+        yeralmaktadır:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# "kill -HUP &lt;pid of inetd&gt;".
+# The inetd will re-read this file whenever it gets that signal.
+#
+# &lt;service_name&gt; &lt;sock_type&gt; &lt;proto&gt; &lt;flags&gt; &lt;user&gt; &lt;server_path&gt; &lt;args&gt;
+#
+time    stream  tcp     nowait  root    internal
+time    dgram   udp     wait    root    internal
+ftp     stream  tcp     nowait  root    /usr/sbin/tcpd  wu.ftpd
+telnet  stream  tcp     nowait  root    /usr/sbin/tcpd  in.telnetd
+#nntp   stream  tcp     nowait  root    /usr/sbin/tcpd  in.nntpd
+shell   stream  tcp     nowait  root    /usr/sbin/tcpd  in.rshd -L
+login   stream  tcp     nowait  root    /usr/sbin/tcpd  in.rlogind
+ntalk   dgram   udp     wait    root    /usr/sbin/tcpd  in.talkd
+pop3    stream  tcp     nowait  root    /usr/sbin/tcpd  in.pop3d
+imap2   stream  tcp     nowait  root    /usr/sbin/tcpd  imapd
+finger  stream  tcp     nowait  nobody  /usr/sbin/tcpd  in.fingerd -w
+systat  stream  tcp     nowait  nobody  /usr/sbin/tcpd  /bin/ps -auwwx
+netstat stream  tcp     nowait  root    /usr/sbin/tcpd  /bin/netstat    -a
+# End of inetd.conf.
+</pre></div></div>
+      <div class="para">
+        <tt>/etc</tt> altında bir yapılandırma dosyasını değiştirmek
+        isterseniz, o dosyayı okuyan ve arkaplanda çalışıyor durumda bulunan
+        süreçleri bundan haberdar etmelisiniz. Çünkü bu dizindeki bazı dosyalar
+        sadece açılışta okunur. inetd, yukarıdaki <tt>inetd.conf</tt>
+        dosyasını sistem açılırken okuyacaktır. Değişiklik yaptıktan sonra
+        inetd'nin bu değişiklikten tekrar haberinin olması için bu sürecin
+        <tt>PID</tt> numarasını <tt>ps -aux</tt> komutu ile
+        bir kenara not edin ve şunları yazın.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# kill -HUP &lt;PID-inetd&gt;
+</pre></div></div>
+      <div class="para">
+        <i>PID-inetd</i> yerine not ettiğiniz süreç numarasını girmelisiniz. Bu
+        sayede inetd kendisine ait olan inetd.conf dosyasını tekrar okuyacak ve
+        değişiklikler işleme konacaktır.
+      </div><div class="para">
+        Her bilgisayar tarafından bilinen servislerin isimleri ve hangi portları
+        (portları) kullandıkları <tt>/etc/services</tt> dosyasında
+        tutulur.
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>syslogd ve /etc/syslog.conf</div><dl><dd><div class="para">
+        syslogd programı Linux'taki çeşitli olayların kayıtlarını
+        tutar. Bunlar genellikle hata mesajları veya çekirdek mesajları gibi
+        kayıtlardır. syslogd sistem açılırken arkaplanda işlemeye bırakılır.
+      </div><div class="para">
+        <tt>/etc/syslog.conf</tt>, syslogd programının yapılandırılması için
+        kullanılır. Normal olarak sistem kayıtları <tt>/usr/adm/messages</tt>
+        dosyasının sonuna eklenir. Bu dosyanın yapısı biraz karışık olmasına
+        rağmen eğer sistem yöneticiyseniz syslogd sizin en büyük yardımcınız
+        olabilir.
+      </div><div class="para">
+        Örnek bir <tt>syslog.conf</tt> dosyası aşağıda yeralıyor.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+*.info;*.notice                                 /usr/adm/messages
+*.debug                                         /usr/adm/debug
+*.warn                                          /usr/adm/syslog
+*.emerg;*.alert;*.crit                          /dev/tty8
+mail.*                                          /dev/tty9
+kern.*                                          /dev/tty10
+</pre></div></div>
+      <div class="para">
+        Bu dosyanın en solunda yeralan ve nokta ile ayrılmış olan iki kelimeden
+        ilki, kaydı yapılan program grubudur. Bu kısma kern (çekirdek mesajları),
+        mail (sendmail mesajları), login (sisteme giriş veya sistemden çıkış
+        mesajları), auth, authpriv veya security (güvenlik mesajları), cron
+        (cron mesajları), daemon (deamon'lardan gelen mesajlar),lpr (yazıcı mesajları),
+        news (haber grubu mesajları), user (kullanıcı mesajları) veya uucp (uucp
+        mesajları) yazılabilir. Noktanın sağındaki kelime ise kaydı yapılan program
+        grubunun mesaj önem sırasını belirler. Bu kısımda önem sırasına göre debug,
+        info, notice, warning, err, crit, alert ve emerg bulunur.
+      </div><div class="para">
+        Dosyanın sağında yeralan kısımda ise bu mesajların hangi dosyaya
+        yazılacağı vardır. Yukarıda verilen örnekte, syslogd'den gelen mesajlar
+        sanal konsollardan kullanılmayanlara yönlendirilmiştir. Böylece sistem
+        yöneticisi F8, F9 ve F10 tuşlarını kullanarak sistem kayıtlarına anında
+        ulaşabilir.
+      </div><div class="para">
+        Başka bir makinaya kayıt tutturmak da mümkündür. Uzak makinanın ismi
+        <tt>syslog.conf</tt> dosyasının sağ bölümüne yazılır. Böylece
+        diğer makina yerel olarak sistem kayıtlarını tutacaktır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+mail.err                     @ordek.cclub.metu.edu.tr
+</pre></div></div>
+      <div class="para">
+        Bazı kritik ve sistemin düzgün çalışmadığını haber verebilecek mesajların
+        konsola yönlendirilmesinde fayda vardır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+kern.crit                    /dev/console
+</pre></div></div>
+      <div class="para">
+        Sisteme bağlanmış olan kullanıcılar hakkında bilgiyi ise
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+/var/adm/wtmp
+</pre></div></div>
+      <div class="para">
+        dosyası tutar. Bu dosya ASCII olmadığından doğrudan okunamaz, <tt>last</tt> komutu
+        ile içeriği incelenebilir. Buna ek olarak çeşitli paketler
+        çalıştırılıyorsa onların yarattığı kayıt dosyaları da incelenmelidir.
+        Örneğin ftp çalışıyorsa <tt>/var/adm/xferlog</tt> kimin ftp ile hangi dosyaları
+        aktardığını gösterir. Bu tür dosyalar içerisinde elde edilebilecek
+        ipuçları ile sistemin çalışma performansı artırılabilir, kendisini pek
+        belli etmeyen hatalar bulunabilir.
+      </div></dd></dl> <div class="head3"><a name="id3" id="id3"></a>init ve /etc/inittab</div><dl><dd><div class="para">
+        <tt>init</tt>, sistemde ilk çalışan programdır. Neredeyse sistemin tüm
+        açılış yükünü elinde tutar. init sayesinde açılış anında hangi
+        programların çalışacağı belirlenir. Bu programları da
+        <tt>/etc/inittab</tt> dosyasından öğrenir.
+      </div><div class="para">
+        Burada <tt>/etc/inittab</tt> dosyasından alınan birkaç örnek satır
+        yeralıyor. Her satırın sonunda çalıştırılacak olan dosyalar var.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# Default runlevel.
+id:3:initdefault:
+
+# System initialization (runs when system boots).
+si:S:sysinit:/etc/rc.d/rc.S
+
+# Script to run when going single user (runlevel 1).
+su:1S:wait:/etc/rc.d/rc.K
+
+# Script to run when going multi user.
+rc:23456:wait:/etc/rc.d/rc.M
+
+# What to do at the "Three Finger Salute".
+ca::ctrlaltdel:/sbin/shutdown -t5 -rfn now
+
+# Runlevel 0 halts the system.
+l0:0:wait:/etc/rc.d/rc.0
+
+# Runlevel 6 reboots the system.
+l6:6:wait:/etc/rc.d/rc.6
+
+# What to do when power fails (shutdown to single user).
+pf::powerfail:/sbin/shutdown -f +5 "THE POWER IS FAILING"
+
+# If power is back before shutdown, cancel the running shutdown.
+pg:0123456:powerokwait:/sbin/shutdown -c "THE POWER IS BACK"
+
+# If power comes back in single user mode, return to multi user mode.
+ps:S:powerokwait:/sbin/init 5
+
+c1:1235:respawn:/sbin/agetty 38400 tty1 linux
+c2:1235:respawn:/sbin/agetty 38400 tty2 linux
+c3:1235:respawn:/sbin/agetty 38400 tty3 linux
+c4:1235:respawn:/sbin/agetty 38400 tty4 linux
+c5:1235:respawn:/sbin/agetty 38400 tty5 linux
+c6:12345:respawn:/sbin/agetty 38400 tty6 linux
+
+# Serial lines
+#s1:12345:respawn:/sbin/agetty 19200 ttyS0 vt100
+#s2:12345:respawn:/sbin/agetty 19200 ttyS1 vt100
+
+# Dialup lines
+#d1:12345:respawn:/sbin/agetty -mt60 38400,19200,9600,2400,1200 ttyS0 vt100
+#d2:12345:respawn:/sbin/agetty -mt60 38400,19200,9600,2400,1200 ttyS1 vt100
+
+x1:4:wait:/etc/rc.d/rc.4
+</pre></div></div>
+      <div class="para">
+        Bir Linux makinasının birkaç tane çalışma düzeni vardır. Bunlardan
+        birkaçı 3 (çok kullanıcılı konum), 1 (tek kullanıcılı konum) ve 4 (X Pencere
+        konumu)'tür. Her konum, bir sayı veya bu sayılara karşılık gelen tek harften
+        oluşur. Bir konum altında çalışırken diğerine geçebilmek için <tt>init</tt> veya
+        <tt>telinit</tt> komutu kullanılır.
+      </div><div class="para">
+        <tt>/etc/inittab</tt>'da yeralan dosya isimleri değiştirilebilir
+        veya kullanıcının isteği doğrultusunda her çalışma modu için farklı
+        dosyalar çalıştırilabilir.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+
+# init 1
+Switching to runlevel 1
+Sending all processes the TERM signal
+Waiting for processes to terminate........
+Turning off quota..
+Single user mode.
+</pre></div></div>
+      <div class="para">
+        <tt>init</tt> komutundan sonra açmak istediğiniz çalışma düzenine ait
+        olan sayıyı yazabilirsiniz. Örneğin init 0 komutu sistemi kapatacaktır.
+        Yukarıdaki komut çalıştıktan sonra <tt>/etc/inittab</tt> dosyasında
+        bu konuma ait olan <tt>/etc/rc.d/rc.K</tt> dosyası çalıştırılır. Bu
+        dosya çalıştıktan sonra dışarıdan yapılan bağlantılara izin verilmez.
+      </div><div class="para">
+        <tt>/etc/inittab</tt> dosyasında yapılacak her değişikliğin ardından
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# init q
+</pre></div></div>
+      <div class="para">
+        komutunu vererek init programının inittab dosyasını tekrar okuyup
+        değişikliklerden haberdar olmmasını sağlamalısınız. O an sistemin hangi
+        konumda çalıştığını bulabilmek için runlevel komutunu kullanın:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ runlevel
+N 3
+</pre></div></div>
+      <div class="para">
+        Sistem, yukarıdaki bilgilere göre 3 numaralı konumda (çok kullanıcılı konum)
+        çalışıyor.
+      </div></dd></dl> <div class="head3"><a name="id4" id="id4"></a>/etc/rc.d/* Dosyaları</div><dl><dd><div class="para">
+        İşte sistemin kalbinin attığı yer. Ne yaparsanız yapın ama bu dosyaları
+        gözünüz gibi koruyun. Sistem açılırken arkaplanda çalışmaya başlayan
+        programlar burada yazılıdır. Tüm bu dosyalar Slackware dağıtımına özgüdür.
+      </div>
+        <div class="variablelist"><dl><dt><span class="term">rc.0</span></dt><dd class="varlist"><div class="para">
+              Bu dosya, 0 (halt) çalışma düzenine geçerken okunur. Sistemin shutdown
+              veya halt komutları ile kapatılmak istenirse bu program çalıştırılır.
+              Önce sistemdeki tüm süreçler öldürülür, ardından sistemin kapandığını
+              belirten bazı satırları kayıt dosyalarına atar. Tüm dosya sistemlerini
+              umount işleminden geçirdikten sonra da sistemi dondurur.
+            </div></dd><dt><span class="term">rc.K</span></dt><dd class="varlist"><div class="para">
+              Bu dosya, init tarafından 1 numaralı çalışma düzenine (tek kullanıcılı
+              konum) geçilirken çalıştırılır. Tüm süreçler öldürülür ve sistem sadece
+              konsoldan giriş yapılacak şekilde tekrar açılır.
+            </div></dd><dt><span class="term">rc.cdrom</span></dt><dd class="varlist"><div class="para">
+              Bu dosya, bulduğu CDROM sürücüsünü /cdrom dizini altına mount
+              yardımıyla ekler.
+            </div></dd><dt><span class="term">rc.local</span></dt><dd class="varlist"><div class="para">
+              Çok kullanıcılı açılış anında çalıştırılan bu dosyaya istediğiniz
+              programları ekleyebilirsiniz.
+            </div></dd><dt><span class="term">rc.4</span></dt><dd class="varlist"><div class="para">
+            4 numaralı çalışma düzenine geçilirken bu dosya çağırılır. Tüm sanal
+            konsollara vt100 terminalleri yerine grafik tabanlı bir program
+            kullanılarak girilir.
+            </div></dd><dt><span class="term">rc.M</span></dt><dd class="varlist"><div class="para">
+              init tarafından çok kullanıcılı konuma geçmek için kullanılır.
+            </div></dd><dt><span class="term">rc.S</span></dt><dd class="varlist"><div class="para">
+            Sistem açılırken bu dosya mutlaka çalıştırılır. Takas alanı açılır, dosya
+            sisteminde hata olması halinde bunu gidermeye çalışır. Bazı kontrollerden
+            sonra kontrolü diğer rc programlarına bırakır.
+            </div></dd></dl></div>
+      </dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-5.8.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../lis/archive-tlkg-lis-5.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-5.10.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Yeni Yazılımların Yüklenmesi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Çekirdek Mesajları</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

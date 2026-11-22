@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:28+03:00" /><title>PHP ile MySQL kullanmak</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../hpm/html-php-mysql-giris_prg-php.html" title="PHP ve MySQL ile Web Programlama" /><link rel="previous" href="../hpm/html-php-mysql-giris_prg-mysql.html" title="MySQL’e Giriş" /><link rel="next" href="../hpm/html-php-mysql-giris_ek1.html" title="Ek A. Faydalı Kaynaklar" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">PHP ile MySQL kullanmak</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../hpm/html-php-mysql-giris_prg-mysql.html">Önceki</a> </td><th width="60%" align="center">PHP ve MySQL ile Web Programlama</th><td width="20%" align="right"> <a accesskey="n" href="../hpm/html-php-mysql-giris_ek1.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="html-php-mysql-giris_prg-phpmysql" id="html-php-mysql-giris_prg-phpmysql"></a>PHP ile MySQL kullanmak</div><dl><dd><div class="para">
+          Buraya kadar PHP ve MySQL’e giriş yaptım. Buradan sonra artık web
+          üzerinde akrobasi yapmaya başlayabiliriz ;).
+        </div><div class="para">
+          Aslında veritabanlarının çok çeşitli kullanımları olsa da ben genelde
+          çerez yollama, sayaç, ziyaretçi defteri, parolalı giriş ve kullanıcı
+          kaydı gibi konular üzerinde duracağım. Buradan sonra artık yeni işlev
+          kullansam bile çok nadir olarak kullandığım yeni işlevin kullanım
+          şeklini açıklayacağım (Bu belgeyi buraya kadar okumuş ve kendi çabaları
+          ile bir şeyler yapmış birisi için buna ihtiyaç olacağını da sanmıyorum
+          zaten ;)). Bu bölüm genelde yazacağım örnekler ve bu örneklerin
+          açıklamaları halinde olacaktır.
+        </div><div class="para">
+          İlk önce MySQL bölümünde kullandığım “kullanicilar” adlı tablodan PHP
+          ile veri alma, veri silme ve veri yükleme işlemlerini gerçekleştirelim.
+          Aşağıda “kullanicilar” tablosunu bir hatırlatma olsun diye tekrar verdim.
+        </div>
+<div class="para"><pre class="literallayout">
++----+--------------+---------+------------------------+-------+
+| no | Ad           | Soyad   |  eposta                | bolum |
++----+--------------+---------+------------------------+-------+
+|  1 | Fehmi Noyan  | ISI     | fni18444@gantep.edu.tr | eee   |
+|  2 | Mehmet       | Korkmaz | kormkaz@linux.org.tr   | pe    |
+|  3 | Adem         | Sarnici | a_sarnici@yahoo.com    | pe    |
+|  4 | Seckin Fatih | Solgun  | sf_solgun@freebsd.org  | me    |
++----+--------------+---------+------------------------+-------+
+</pre></div>
+        <div class="para">
+          Önce PHP ile veritabanına bağlanma ve veri alma işlemlerini ele alalım.
+          PHP ile MySQL’e bağlanmak için <b><tt>mysql_connect()</tt></b> işlevi
+          kullanılır.
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+&lt;?
+#################
+#   mysql.php   #
+#################
+
+/* mysql’e bağlanma islemi */
+@mysql_connect(“localhost”, ”kullanici”, ”parola”)
+  or die (“Veritabanına bağlanırken bir hata oluştu!”);
+
+/* mysql’de kendi veritabanimizi secim islemi */
+@mysql_select_db(“base”)
+  or die(“Veritanında bir hata oluştu!”);
+
+$sira = 0;
+while ($sira &lt; 4)
+{
+  /* mysql’e sorgu gönderiliyor ve bu sorgudan gelen degerler bir degiskene atanıyor.
+  $sorgu = mysql_query(“select * from kullanicilar”);
+  $ad = mysql_result($sorgu, $sira, ’Ad’);
+  echo “$ad &lt;br&gt;”;
+  $sira++;
+}
+?&gt;
+</pre></div></div>
+        <div class="para">
+          Yukarıdaki PHP dosyası bizim kendi sunucumuz üzerindeki MySQL sunucusuna
+          <tt>kullanici</tt> kullanıcı adı ve <tt>parola</tt>
+          parolası ile bağlanıyor. Komutların başındaki <tt>@</tt>
+          işareti komutun işletilmesinde bir hata oluşursa ekrana hata mesajının
+          basılmaması içindir. Onun yerine kendi belirlediğimiz hata mesajını
+          <tt>or die</tt> kalıbı ile verebiliyoruz. Bağlanma işleminden
+          sonra <b><tt>mysql_select_db</tt></b> (mysql’deki <tt>use base</tt> gibi)
+          işlevi ile kendi veritabanımıza geçiyoruz.
+        </div><div class="para">
+          Buradan sonra <tt>sira</tt> bir adlı bir değişkene 0(sıfır)
+          değerini atadım. Bunun amacı MySQL’de işlem yapılan satırların sıfırdan
+          itibaren bir satır sayısı almalarıdır. (Ben örneğimde <tt>while</tt>
+          döngüsünde koşulu <tt>$sira &lt; 4</tt> şeklinde tanımladım ama
+          normalde bir tabloda kaç satır olduğunu bilmeniz mümkün olmayabilir. Ben
+          satır sayısını bildiğim için böyle bir yol seçtim.)
+        </div><div class="para">
+          Döngü içerisinde  <tt>$sorgu</tt> adlı değişkene <b><tt>mysql_query()</tt></b>
+          işlevi ile SQL’den alınan bilgiler atanıyor. Daha sonra <b><tt>mysql_result()</tt></b>
+          işlevi ile bu bilgilerden istek doğrultusundan ayıklama yapılıyor.
+          <b><tt>mysql_result()</tt></b> işlevinin işleyiş tarzını bir düzleme
+          benzetirsek:
+        </div>
+          <ol class="orderedlist" start="ignore" type="1"><li><div class="listitem"><tt>$sorgu</tt> adındaki bilgilerin olduğu düzleme git.
+            </div></li><li><div class="listitem"><tt>$sira</tt> ile belirtilen satırdan
+            </div></li><li><div class="listitem"><tt>Ad</tt> sütunundaki bilgiyi al.
+            </div></li></ol>
+        <div class="para">
+          şeklinde bir yorum yapılabilir. <tt>mysql_query()</tt> sorgusu
+          ile alnan sonuçlar <tt>mysql_result()</tt> ile ayıklanır.
+          <tt>$ad</tt> değişkenine atanan değerler alt alta ekrana
+          basılıyor. Daha sonra <tt>$sira</tt> değişkeni bir arttırılıyor
+          (aksi taktirde sonsuz bir döngü içine girilir!) ve döngüden çıkılıyor.
+        </div><div class="para">
+          Şimdi de kafamızda hayali bir senaryo oluşturup bu senaryoya göre bir
+          HTML dosyası ve bu dosyadan veri alan bir PHP dosyası yapalım.
+          Kullanıcı kaydı tutan bir web formu ve bu formdan bilgi alacak PHP
+          dosyasını oluşturalım. Ama daha önce bu bilgilerin kaydedileceği SQL
+          tablosunu oluşturalım.
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+$ mysql –h localhost –u kullanici –p
+Enter Password:
+
+mysql&gt; use base;
+
+Database changed
+mysql&gt; create table kayit
+    -&gt; (no int auto_increment, kullaniciadi varchar(15),
+    -&gt; sifre(25), eposta(25), primary key(no));
+
+mysql&gt; quit
+</pre></div></div>
+        <div class="para">
+          Yukarıda komut satırından mysql’e bağlanıp <tt>kayit</tt>
+          isimli bir tablo oluşturdum. Şimdi sıra HTML form dosyamızda.
+        </div>
+<div class="para"><div align="right"><pre class="screen">
+&lt;!-- kayit.html --&gt;
+&lt;html&gt;
+&lt;body bgcolor="#FFFFFF" text="#000000"&gt;
+&lt;form action="kayit.php" method="post"&gt;
+&lt;b&gt;Kullanıcı Adınız:&lt;/b&gt;&lt;input type="text" name="u_name" size="20"&gt;&lt;br&gt;
+&lt;b&gt;Parolanız:&lt;/b&gt;&lt;input type="password" name="pass" size="20"&gt;&lt;br&gt;
+&lt;b&gt;e-posta adresiniz:&lt;/b&gt;&lt;input type="text" name="mail" size="20"&gt;&lt;br&gt;
+&lt;input type="submit" value="  Kayıt  "&gt;
+&lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre></div></div>
+        
+<div class="para"><div align="right"><pre class="screen">
+&lt;?
+/*  kayit.php */
+
+@mysql_connect("localhost", "kullanici", "parola")
+    or die("Veritabani ile baglanti kurulamadi!");
+@mysql_select_db("base")
+    or die("Veritabaninda bir hata olustu!");
+
+@mysql_query("insert into kayit values(‘’,’$u_name’,’$pass’,’$mail’)");
+echo "&lt;center&gt;&lt;b&gt;Bilgileriniz varitabanina kaydedildi.&lt;/b&gt;&lt;/center&gt;";
+require("./kayit.html");
+?&gt;
+</pre></div></div>
+        <div class="para">
+          Yukarıdaki PHP dosyası form ile gelen bilgileri veritabanındaki
+          <tt>kayit</tt> adlı tabloya kaydediyor.
+        </div><div class="para">
+          Kayıt işleminden sonra ekrana işlemin başarı ile gerçekleştirildiğine
+          dair bir mesaj geliyor ve formu içeren HTML dosyası tekrar ekrana
+          basılıyor.
+        </div><div class="para">
+          MySQL’de tablo yenileme (update) ve veri silme (delete) komutları da
+          <tt>mysql_query()</tt> işlevi ile kullanılır. Yani normal
+          olarak SQL sorgusu gönderiliyor.
+        </div><div class="para">
+          Burada sonra artık örnek uygulamalara geçiyorum.
+        </div><div class="para">
+          Yeni bölüme başlamadan önce size <tt>phpinfo()</tt>
+          işlevinden biraz söz etmek istiyorum. Yapmanız gereken tek şey bir PHP
+          dosyası için <tt>&lt;? phpinfo(); ?&gt;</tt> yazıp kaydetmek.
+          Üzerinde çalıştığınız sunucunun birçok özelliğini ve PHP ile birlikte
+          kullanabileceğiniz birçok faydalı değişkeni bu işlev altında bulabilirsiniz.
+        </div> <div class="head3"><a name="id1" id="id1"></a>Ziyaretçi Defteri Örneği</div><dl><dd><div class="para">
+            Çoğu web sitesinde gördüğümüz ziyaretçi defterlerini PHP yardımı ile
+            kendi sitenizde de kullanabilirsiniz. Gerçi internet üzerinde bu işi
+            yapan hazır betikler bulmak pek zor değil fakat bu basit uygulamaları
+            daha ileri teknikler için bir ön adım olarak kullanmanız açısından
+            faydalı olacaktır.
+          </div><div class="para">
+            Bu iş için önce bir HTML dosyası ile kullanıcıdan bilgi alınmalı. Daha
+            sonra bu bilgi bir PHP dosyası ile bir metin dosyasına yazılarak isteyen
+            kullanıcılara görüntülenmeli.
+          </div>
+<div class="para"><div align="right"><pre class="screen">
+&lt;!-- Bu dosya defter.html adı ile kaydedilecek --&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;Ziyaretçi Defteri&lt;/title&gt;
+&lt;/head&gt;
+&lt;body bgcolor="#ffffff" text="#000000"&gt;
+&lt;center&gt;
+&lt;br&gt;
+&lt;table bgcolor="#000000" border="0" cellpadding="1" cellspacing="0" width="450"&gt;
+  &lt;tr&gt;&lt;td&gt;
+    &lt;table border="0" cellpadding="0" cellspacing="0" bgcolor="#FFFFFF" width="450"&gt;
+      &lt;tr&gt;&lt;td bgcolor="#006486"&gt;
+        &lt;b&gt;&lt;center&gt;Defteri Doldurun&lt;/b&gt;
+      &lt;/td&gt;&lt;/tr&gt;
+      &lt;td&gt;
+        &lt;form action="defter.php" method="post"&gt;&lt;br&gt;
+           &lt;b&gt;Kimden :&lt;/b&gt;&lt;input type="text" name="kimden" size=30&gt;&lt;br&gt;&lt;br&gt;
+          &lt;center&gt;&lt;textarea rows="15" cols="50" name="metin"&gt;&lt;/textarea&gt;
+      &lt;/td&gt;&lt;/tr&gt;
+      &lt;tr&gt;&lt;td&gt;
+        &lt;center&gt;&lt;br&gt;
+        &lt;input type="submit" value="  Deftere ekle  "&gt; 
+        &lt;input type="reset" value="  Yazdıklarımı sil  "&gt;&lt;br&gt;&lt;br&gt;
+      &lt;/td&gt;&lt;/tr&gt;
+    &lt;/table&gt;
+  &lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre></div></div>
+          
+<div class="para"><div align="right"><pre class="screen">
+&lt;?
+/* Bu dosya defter.php adi ile kaydedilecek */
+
+if ($dosya_ac = (fopen(“./defter.txt”,”a”)))
+{
+  $tarih = date("d.m.Y");
+  $yeni_metin = "&lt;br&gt;&lt;table border='0' cellpadding='0' cellspacing='0' bgcolor='#eaeaea' width='600'&gt;
+  &lt;tr&gt;&lt;td&gt;&lt;b&gt;$kimden&lt;/b&gt; tarafından &lt;b&gt;$tarih&lt;/b&gt; tarihinde yazılmış.&lt;br&gt;&lt;br&gt;&lt;/td&gt;&lt;/tr&gt;\n
+  &lt;tr&gt;&lt;td&gt;$metin&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;br&gt;”;
+  fwrite($dosya_ac, $yeni_metin);
+  fclose($dosya_ac);
+  echo “Sayın $kimden defterimizi doldurduğunuz için teşekkürler.&lt;br&gt;”;
+  require(“./defter.txt”);
+}
+ else
+{
+ echo “&lt;center&gt;&lt;br&gt;&lt;b&gt;Dosya açmada bir hata oluştu!&lt;/b&gt;&lt;/center&gt;”;
+}
+?&gt;
+</pre></div></div>
+          <div class="para">
+            Yukarıdaki iki dosyayı yazdıktan sonra belirtilen isimler ile kaydedin.
+            Tabii bu dosyalar basitten hazırlanmış haldeler. Görünümü güzelleştirmek
+            ve geliştirmek size kalmış.
+          </div><div class="para">
+            Sanırım ilk HTML dosyasında ne yaptığımı anlatmaya gerek yok. Bir form ile
+            <tt>kimden</tt> ve <tt>metin</tt> adlı iki tane
+            değişkeni belirtilen PHP dosyasına <tt>post</tt> yöntemi ile
+            yolluyorum. Belki PHP dosyasında biraz karışıklık yaşamışsınızdır. Burada
+            yabancı olduğunuz sadece <tt>date()</tt> işlevi var. PHP’de
+            tarih almak için kullanılan <tt>date()</tt> işlevi, istenen
+            bilgi türü küçük harf olursa (benim dosyamdaki <tt>d</tt> ve
+            <tt>m</tt> gibi ) bilgi rakamla, büyük harf olursa (benim
+            dosyamdaki <tt>Y</tt> gibi) bilgi tam olarak yazılır (tabi ki
+            İngilizce).
+          </div><div class="para">
+            Ziyaretçiden gelen bilgiler <tt>defter.txt</tt> adlı bir
+            dosyada tutuluyor (dosyaya herkes için yazma yetkisi verilmelidir!)
+            ve benim PHP koşulumun sonunda bu dosya ekrana yazdırılıyor
+            (<tt>require</tt> ile). <tt>$metin</tt> değişkenini
+            bir tablo içinde yazmamın tek sebebi ziyaretçiye görünecek dosyanın daha
+            hoş olması içindir. <tt>require()</tt> işlevi ile ekrana
+            yazdrdığımız dosya bir txt dosyası olsa bile içindeki HTML kodları
+            istemci tarafından yorumlanacaktır.  Eğer sayfanızdan ayrı bir bağ verip
+            önceden yazılanların görüntülenmesini istiyorsanız, o zaman bir metin
+            değil de HTML dosyası kullanmanız gerekecektir.
+          </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Sayaç Örneği</div><dl><dd><div class="para">
+            Sayaç yapmanın birçok yolu vardır. Ben en basitinden bir uyguluma olarak,
+            dosyalara değer yazıp bu değerler üzerinde işlem yapan bir sayaç uygulaması
+            örneği verdim.
+          </div>
+<div class="para"><div align="right"><pre class="screen">
+&lt;?
+/* Bu dosya sayac.php adi ile kaydedilecek */
+
+# $REMOTE_ADDR degiskeni sunucu hafizasinda tutulan gecici degiskenlerdendir.
+$r_ip = $REMOTE_ADDR;
+
+$ip_dosya_ac = fopen(“./ip.txt”, ”r”);
+$dosyadaki_ip = fgets($ip_dosya_ac,1024);
+if ($r_ip != $dosyadaki_ip)
+{
+  $sayac_dosyasi_ac = fopen(“./sayac.txt”, ”r”);
+  $eski_deger = fgets($sayac_dosyasi_ac,1024);
+  fclose($sayac_dosyasi_ac);
+
+  $sayac_dosyasi_yaz = fopen(“./sayac.txt”,”w”);
+  $yeni_deger = ++$eski_deger;
+  fwrite($sayac_dosyasi_yaz, $yeni_deger);
+  fclose($sayac_dosyasi_yaz);
+
+  $ip_dosyasi_ac = fopen(“./ip.txt”,”w”);
+  fwrite($ip_dosyasi_ac, $r_ip);
+  fclose($ip_dosyasi_ac);
+
+  echo “Sitemiz bugüne kadar &lt;b&gt;$yeni_deger&lt;/b&gt; kere ziyaret edilmiştir.”;
+} else {
+  $sayac_dosyasi_ac = fopen(“./sayac.txt”, ”r”);
+  $eski_deger = fgets($sayac_dosyasi_ac,1024);
+  fclose($sayac_dosyasi_ac);
+  echo “Sitemiz bugüne kadar &lt;b&gt;$eski_deger&lt;/b&gt; kere ziyaret edilmiştir.”;
+}
+?&gt;
+</pre></div></div>
+          <div class="para">
+            Yukarıdaki dosyayı oluşturduktan sonra aynı dizine <tt>sayac.txt</tt>
+            ve <tt>ip.txt</tt> diye iki dosya oluşturun. Yalnız
+            <tt>sayac.txt</tt> dosyasının içine başlangıç değeri olarak
+            0(sıfır) yazmalısınız.
+          </div><div class="para">
+            Yukarıdaki PHP programı önce <tt>ip.txt</tt> dosyasını açıp
+            içindeki IP numarası ile ziyaretçinin IP numarasını karşılaştırıyor.
+            Eğer iki numara aynı değilse sayaç dosyası açılıyor ve dosyada eski
+            ziyaretçi sayısı (<tt>$eski_deger</tt>) okunuyor. Daha sonra
+            bu okunan eski değer bir arttırılıp yani bir değişkene
+            (<tt>$yeni_değer</tt>) atanıyor. Daha sonra IP değerinin
+            tutulduğu dosya açılıp ziyaretçinin IP numarası bu dosyaya yazılıyor.
+            En son olarak da ziyaretçiye sitenin bugüne kadar kaç defa ziyaret
+            edildiğini gösteren bir mesaj ekrana yazılıyor.
+          </div></dd></dl> <div class="head3"><a name="id3" id="id3"></a>Çerez Örneği</div><dl><dd><div class="para">
+            Çerezler HTTP ile kullanıcının bilgisayarına gönderdiğimiz bilgi
+            paketleridir. Bu bilgiler düz yazı dosyası halinde kullanıcıya
+            ulaşır ve kullanılan istemcinin tipine göre herhangi bir dizinde
+            belirlenen süre kadar saklı tutulur. Çerezlere gönderen bilgisayar
+            dışında başka bir bilgisayar tarafından ulaşılamaz. Windows sistemlerde
+            MS-Internet Explorer, sunucu tarafında yollanan çerezleri
+            <tt>C:\WINDOWS\Cookies</tt> dizini altında saklar. Linux altında,
+            kullanılan istemci tarafından kullanıcının kendi ev dizininde oluşturulun
+            gizli bir dizinde saklanır.
+          </div><div class="para">
+            Örneğimde bir web sitesine parola ile giriş yapmış bir kullanıcının
+            bilgisayarına yollanan çerezin kullanımı var. Tabii bu örnek için
+            kullandığım veritabanı bilgilerinin varolduğunu varsayıyorum.
+          </div>
+<div class="para"><div align="right"><pre class="screen">
+&lt;!-- Bu dosya index.html adı ile kaydedilecek --&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;Şifrenizi girin&lt;/title&gt;
+&lt;/head&gt;
+&lt;body bgcolor="#ffffff" text="#000000"&gt;
+&lt;br&gt;&lt;br&gt;
+&lt;center&gt;
+&lt;form action="login.php" method="post"&gt;
+  &lt;b&gt;Kullanıcı adınız&lt;/b&gt;&lt;input type="text" name="uid" size="20"&gt;&lt;br&gt;
+  &lt;b&gt;Parolanız&lt;/b&gt;&lt;input type="password" name="passwd" size="20"&gt;&lt;br&gt;&lt;br&gt;
+  &lt;input type="submit" value="  Giriş  "&gt;
+&lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre></div></div>
+
+<div class="para"><div align="right"><pre class="screen">
+&lt;?
+/* bu dosya login.php adi ile kaydedilecek */
+
+if (isset($uid) &amp;&amp; isset($passwd)) {
+  # Veritabanina baglaniliyor
+  @mysql_connect(“localhost”, ”kullanici”, ”parola”)
+      or die(“Veritabani ile baglanti kurulamadi!”);
+  @mysql_select_db(“base”)
+      or die(“Veritabaninda bir hata olustu!”);
+
+  $sorgu = mysql_query(“select  * from kayit”);
+  $db_passwd = mysql_result($sorgu, $uid, ’parola’);
+  if ($db_passwd == $passwd) {
+    setcookie(“identify”,”OK”, time() + 3600);
+    echo “Cerez yollandi.”;
+  } else {
+    echo “&lt;center&gt;&lt;b&gt;Kullanici adi ve sifrenizi kontrol edin!&lt;/b&gt;&lt;/center&gt;”;
+    require(“./index.html”);
+  }
+} else {
+  echo “&lt;center&gt;&lt;b&gt;Bir kullanici adi ve sifre girmelisiniz!&lt;/b&gt;&lt;/center&gt;”;
+  require(“./index.html”);
+}
+?&gt;
+</pre></div></div>
+          <div class="para">
+            Bu PHP dosyası eğer formdan <tt>$passwd</tt> ve
+            <tt>$uid</tt> değişkenleri gelirse <tt>if</tt>
+            döngüsüne giriyor. Döngü içerisinde MySQL’e bağlanılıp
+            <tt>kayit</tt> adlı tablodan kullanıcı adı
+            <tt>$uid</tt> olan satırdaki parola alınıp bir değişkene
+            (<tt>$db_passwd</tt>) atanıyor. Eğer iki şifre aynı ise
+            <tt>setcookie()</tt> işlevi ile kullanıcıya çerez yollanıyor.
+            Yollanan çerezin adı <tt>identify</tt> ve bu çerezin değeri
+            <tt>OK</tt>. Karşı tarafın bilgisayarında kalma süresi ise
+            1 saat (3600 saniye). Çerez yollandıktan sonra ekrana “Cerez yollandi.”
+            diye bir mesaj yazılıyor.
+          </div><div class="para">
+            Çerez ile yollanan bir değişkenin değerini <tt>$deger</tt>
+            adlı bir değişkene atmak için
+          </div>
+<div class="para"><pre class="literallayout">
+   $deger = $HTTP_COOKIE_VARS["<i>cerez_adi</i>"];
+</pre></div>
+          <div class="para">
+            satırı kullanılır. Ancak çerezleri kullanırken dikkat etmeniz gereken
+            önemli bir nokta var! Çerezi yolladığınız PHP dosyası ile aynı
+            çerezin değerini çağıramıyorsunuz. Bu işlemi başka bir dosya üzerinde
+            yapmak zorundasınız.
+          </div></dd></dl> <div class="head3"><a name="html-php-mysql-giris_renkler" id="html-php-mysql-giris_renkler"></a>Renk Tablosu Örneği</div><dl><dd><div class="para">
+            Bu örneğimde HTML ile kullanabileceğiniz renklerin onaltılık tabandaki
+            karşılıklarını veren bir PHP betiği var. Betik 512 tane rengin onaltılık
+            kod karşılığını vermektedir. Aynı betik üzerinde sadece bir küçük
+            değişiklik yaparak tam olarak 4096 tane rengin onaltılık karşılığını
+            almak mümkündür. Bunu için, kodun başında yorum işareti ile verilen
+            <tt>$d</tt> dizisini (16 elemanlı) yorum olmaktan çıkarıp
+            normal (8 elemanlı) olan diziyi yorum satırı haline getirmek yeterlidir.
+          </div><div class="para">
+            Fakat 4096 renk arasından kullanacağınız rengi seçmek gerçekten çok
+            güçtür ve renk tonlamalarındaki geçişler çok yumuşak olduğu için çoğu
+            renk birbirinin aynı gibi görünecektir.
+          </div>
+<div class="para"><div align="right"><pre class="screen">
+&lt;!-- Bu dosyayı renk.php adı ile kaydedin --&gt;
+&lt;html&gt;&lt;head&gt;&lt;title&gt;HTML Renk Kodları&lt;/title&gt;&lt;/head&gt;
+&lt;body bgcolor="#e8e8e8" text="#000000"&gt;
+&lt;center&gt;
+&lt;h1&gt;HTML Renk Kodları&lt;/h1&gt;
+&lt;table border="0" width="540" cellpadding="0" cellspacing="2"&gt;
+
+&lt;?
+//$d = array("0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f");
+$d = array("0","2","4","6","8","a","c","e");
+$d_c = count($d);
+// Kırmızı
+$r_i = 0;
+while($r_i &lt; $d_c) {
+  $r = $d[$r_i] . $d[$r_i];
+  // Yeşil
+  $g_i = 0;
+  while($g_i &lt; $d_c) {
+    $g = $d[$g_i] . $d[$g_i];
+    // Mavi
+    $b_i = 0;
+    echo "&lt;tr&gt;";
+    while($b_i &lt; $d_c) {
+      $b = $d[$b_i] . $d[$b_i];
+
+      // HTML Kodu ile tablonun satirlari olusturuluyor
+      $renk = "#" . $r . $g . $b;
+      echo "\n&lt;td style='background:$renk; color:white'&gt;&lt;b&gt;$renk&lt;/b&gt;&lt;/td&gt;";
+      $b_i++;
+    }
+    echo "\n&lt;/tr&gt;";
+    $g_i++;
+  }
+  $r_i++;
+}
+?&gt;
+&lt;/table&gt;&lt;/center&gt;&lt;/body&gt;&lt;/html&gt;
+</pre></div></div>
+          </dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../hpm/html-php-mysql-giris_prg-mysql.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../hpm/html-php-mysql-giris_prg-php.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../hpm/html-php-mysql-giris_ek1.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">MySQL’e Giriş </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Ek A. Faydalı Kaynaklar</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

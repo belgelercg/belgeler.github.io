@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:14+03:00" /><title>
+      fsck ile dosya sistemi bütünlüğünün sınanması
+    </title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../sag/sag_fs.html" title="Dosya Sistemleri" /><link rel="previous" href="../sag/sag_fs_mount-and-umount.html" title="Dosya sistemlerinin bağlanması ve ayrılması" /><link rel="next" href="../sag/sag_fs-badblocks.html" title="Disk hatalarının badblocks ile denetlenmesi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">
+      fsck ile dosya sistemi bütünlüğünün sınanması
+    </th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../sag/sag_fs_mount-and-umount.html">Önceki</a> </td><th width="60%" align="center">Dosya Sistemleri</th><td width="20%" align="right"> <a accesskey="n" href="../sag/sag_fs-badblocks.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="sag_fs-fsck" id="sag_fs-fsck"></a>
+      <b><tt>fsck</tt></b> ile dosya sistemi bütünlüğünün sınanması
+    </div><dl><dd><div class="para">
+      Dosya sistemleri zaman zaman hata vermeye eğilimli olan karmaşık
+      yapıdaki yaratıklardır. Bir dosya sisteminin doğruluğu ve geçerliliği
+      <b><tt>fsck</tt></b> komutu ile sınanır. Bulduğu  küçük hataları
+      onarmak ve onaramadığı daha önemli hatalar için kullanıcıyı uyarmak
+      üzere programlanabilirler. Şans eseri dosya sistemlerinin kodlarını
+      onarma işleminde oldukça etkilidirler. Bununla birlikte çok nadir
+      olarak kullanıcı, donanım veya elektrik kesintilerinden kaynaklanan
+      hatalar meydana gelir.
+    </div><div class="para">
+      Pek çok sistemde <b><tt>fsck</tt></b> komutu açılışta çalışmak
+      üzere ayarlanır. Ve bu sayede dosya sisteminde meydana gelmiş olan
+      hataların sistem kullanıma başlanmadan önce düzeltilmesi umulur.
+      Bozulmuş dosya sistemleri işleri yanlış yönlendirirler: veri
+      sistemleri karıştıysa, dosya sistemi büyük olasılıkla onları
+      daha fazla karıştıracaktır. Bununla birlikte büyük dosya
+      sistemlerinde <b><tt>fsck</tt></b> komutunun çalışması biraz
+      vakit alabilir ama sistem düzgün kapatılmış ise dosya sisteminde
+      hata meydana gelme olasılığı hemen hemen hiç yoktur. Böyle
+      durumlarda sınamanın yapılmasını önlemek için bazı hileler vardır.
+      Birincisi: şayet <tt>/etc/fastboot</tt> dosyası varsa
+      sınama işlemi yapılmaz. İkincisi ise: superbloklar içinde sistemin
+      bir önceki kapanışta düzgün kapatılıp kapatılmadığını belirten
+      işaretlerdir.  Şayet sistem düzgün bir şekilde ayrılmışsa
+      <b><tt>e2fsck</tt></b> (ext2 dosya sistemi için <b><tt>fsck</tt></b>
+      programı) komutu işleme girmez. <tt>/etc/fastboot</tt>
+      hilesi sizin açılış esnasında kullandığınız betiklere göre çalışır
+      ama ext2 hilesi <b><tt>e2fsck</tt></b> kullandığınız sürece işe
+      yarar. <b><tt>e2fsck</tt></b>'den kurtulmak için açık bir
+      şekilde seçenekler belirtilmiş olmalıdır. Ayrıntılar için
+      <b><tt>e2fsck</tt></b> kılavuz sayfasına bakınız.
+    </div><div class="para">
+      Otomatik sınama sadece açılış esnasında otomatik bağlanan dosya
+      sistemleri için geçerlidir. Disket ve benzeri aygıtlar için
+      <b><tt>fsck</tt></b> komutunu kendiniz kullanmalısınız.
+    </div><div class="para">
+      Şayet <b><tt>fsck</tt></b> tamir edemeyeceği problemler ile
+      karşılaşırsa; iyi yedekleme, dosya sistemlerinin kullanımı ve
+      bozulmuş dosya sistemlerinin türleri hakkında ayrıntılı ve derin
+      bilgiye sahip olmanız gerekecektir. Daha sonrası kolaydır,
+      genellikle de sıkıcı. Kendi kendinize yetemeyeceğiniz durumda bir
+      arkadaşınızdan, posta listelerinden, haber gruplarından veya
+      bunlara benzer bir yerlerden yardım alınabilir. Size daha
+      fazlasını anlatmak isterdim fakat bu konuda ki eğitimimim ve
+      deneyimlerim eksikliği buna engel olmaktadır. Theodore Ts'o'nun
+      <b><tt>debugfs</tt></b><sup>[<a name="id123" href="#ftn.id123" id="id123">123</a>]</sup> programı
+      bu konuda yardımcı olabilir.
+    </div><div class="para">
+      <b><tt>fsck</tt></b> mutlaka bağlı olmayan dosya sistemleri
+      üzerinde yapılmalıdır. Sadece açılış esnasında salt okunur konumdaki
+      kök dosya sistemi bu durum için istisnadır. Bunun sebebi <b><tt>fsck</tt></b>
+      komutunun  disk yüzeyine doğrudan erişerek dosya sistemi üzerinde
+      yaptığı  bazı değişikliklerin, işletim sistemi tarafından anlaşılamama
+      olasılığı bulunması ve bunun da işletim sistemi üzerinde problemler
+      yaratabilecek olmasıdır.
+    </div><div class="footnotes"><br /><hr width="100" align="left" /><div class="footnote"><div class="para"><sup>[<a name="ftn.id123" href="#id123" id="ftn.id123">123</a>] </sup><b><tt>debugfs</tt></b>
+      programı e2fsprogs paketi ile dağıtılır.)</div></div></div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../sag/sag_fs_mount-and-umount.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../sag/sag_fs.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../sag/sag_fs-badblocks.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Dosya sistemlerinin bağlanması ve ayrılması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Disk hatalarının badblocks ile denetlenmesi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

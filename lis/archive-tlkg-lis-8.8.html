@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:30:28+03:00" /><title>Linux'ta Örnek Ağ Uygulamaları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../lis/archive-tlkg-lis-8.html" title="TCP/IP" /><link rel="previous" href="../lis/archive-tlkg-lis-8.7.html" title="Uzaktan Bağlantı Kurulması" /><link rel="next" href="../lis/archive-tlkg-lis-8.9.html" title="NIS" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Linux'ta Örnek Ağ Uygulamaları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-8.7.html">Önceki</a> </td><th width="60%" align="center">TCP/IP</th><td width="20%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-8.9.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="archive-tlkg-lis-8.8" id="archive-tlkg-lis-8.8"></a>Linux'ta Örnek Ağ Uygulamaları</div><dl><dd><div class="para">
+      Aşağıda, Linux ile gerçekleştirilebilecek birkaç örnek ağ uygulamaları
+      yeralmaktadır. Her konu ile ilgili ayrıntılı bilgileri
+      <i>HOWTO</i> dosyalarından öğrenebilirsiniz.
+    </div> <div class="head3"><a name="id1" id="id1"></a>IP Accounting</div><dl><dd><div class="para">
+        <i>IP accounting</i> özelliği, çekirdeğin ağ üzerindeki trafiğin analizini yapmasını
+        sağlar. Toplanan veriler, makinanın açıldığı andan itibaren kart üzerinden geçen
+        paket ve toplam bayt sayısıdır. Bir yapılandırma dosyası yardımıyla bu bilgiler
+        belirli sınıflara ayrılabilir. Çekirdeğin derlenmesi aşamasında IP accounting
+        seçeneği kullanılmalıdır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+* Networking options
+...
+IP: accounting (CONFIG_IP_ACCT) [N/y/?] y
+</pre></div></div>
+      <div class="para">
+        Çekirdeğin derlenmesinden ve makinanın yeni çekirdekle açılmasından sonra,
+        <tt>ipfwadm</tt> komutu ile IP accounting işlemlerine başlanabilir. ipfwadm
+        paketi standart Slackware dağıtımı ile beraber gelmektedir.
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>IP Aliasing</div><dl><dd><div class="para">
+        Tek ağ arabirimi (örneğin ethernet veya seri bağlantı) kartı için birden fazla IP numarası
+        gereken durumlarda IP Aliasing kullanılır. Genellikle İnternet Servis
+        Sağlayıcıları, müşterilerinin ftp ve www sunucularını tek makina
+        üzerinde toplamak için bu yola başvururlar. Bu sayede bir makinaya atanmış
+        birden fazla www adresi ve herbirinin ayrı html dosyaları farklı makinalardaymış
+        gibi kullanılabilir.
+      </div><div class="para">
+        Bu özellikten yararlanabilmek için çekirdekte IP Aliasing desteği vermelisiniz.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+*
+* Networking options
+...
+Network aliasing (CONFIG_NET_ALIAS) [N/y/?] y
+...
+IP: aliasing support (CONFIG_IP_ALIAS) [N/y/m/?] y
+</pre></div></div>
+      <div class="para">
+        Her sanal ağ adresi için bir <i>arabirim</i> (interface) tanımlamalısınız. Bu sayede
+        aynı bilgisayarda 255 adede kadar sanal makinaya izin verilebilir. Her sanal
+        arabirim, bağlı bulunduğu gerçek arabirim üzerinden işgörür.
+      </div><div class="para">
+        Örnek olarak, elimizde kullanabileceğimiz ikinci adres (örnek olarak
+        100.100.100.101) ve tek ethernet kartı bulunsun. İnternet
+        üzerindeki diğer makinaların, bu iki adrese ulaşabilmeleri için şu satırlar
+        yeterli olacaktır:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# ifconfig eth0:0 100.100.100.101 netmask 255.255.255.0 up
+# route add -net 100.100.100.0 netmask 255.255.255.0 eth0:0
+</pre></div></div>
+      <div class="para">
+        Sanal bir arabirimi kaldırmak için ise, ismin sonuna '-' karakteri getirmek
+        yeterli olur.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# ifconfig eth0:0- 0
+</pre></div></div>
+      </dd></dl> <div class="head3"><a name="id3" id="id3"></a>IP Maskelemesi</div><dl><dd><div class="para">
+        IP Maskelemesi, bir ağın arkasındaki birden fazla makinanın bir Linux
+        üzerinden dışarıya bağlanmasıdır. Tüm makinalar dışarıdan aynı IP adresi
+        gibi görünürler.
+      </div><div class="para">
+        Örnek olarak İnternet'e bağlandınız. İnternet Servis Sağlayıcınız size
+        sadece bir IP numarası verdi ve odanızda İnternet'e bağlanmayı bekleyen
+        birden fazla bilgisayar var. Servis Sağlayıcıya her makina için para
+        ödeyip bir hesap ismi almaktansa odadaki tüm makinalar bir Linux ve telefon
+        bağlantısı yardımıyla İnternet'e erişebilirler.
+      </div><div class="para">
+        IP Maskelemesi kullanabilmek için çekirdekte bu desteğin verilmesi gerekiyor.
+        Bunun için IP Forwarding, IP Firewalling ve IP Masquerading seçeneklerini
+        açık tutmalısınız.
+      </div><div class="para">
+        IP Maskelemesi için gerekli yazılımlar Slackware dağıtımı ile birlikte
+        gelmektedir.
+      </div></dd></dl> <div class="head3"><a name="id4" id="id4"></a>SAMBA (NetBEUI ve NetBios desteği)</div><dl><dd><div class="para">
+        SMB,  Windows 3.11, NT ve 95 tarafından kullanılan ve disk ve yazıcı
+        paylaşımına olanak veren bir protokoldür. Linux, Samba desteği ile bu işletim
+        sistemleri veya kendi üzerinde bulunan disk ve yazıcıların tüm makinalar
+        tarafından paylaşılmasını sağlar.
+      </div><div class="para">
+        Samba ile 4 işlem gerçekleştirilebilir: Windows makinalarının Linux diskini
+        paylaşmaları, Linux makinalarının Windows sistemi diskini paylaşmaları, Windows
+        makinalarının Linux yazıcısını paylaşmaları ve Linux makinalarının Windows
+        yazıcısını paylaşmaları.
+      </div><div class="para">
+        Yine bu özelliği kullanabilmek için çekirdekte Samba desteği vermeniz
+        gerekecektir.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+SMB filesystem support (to mount WfW shares etc..) (CONFIG_SMB_FS) [Y/m/n/?]
+</pre></div></div>
+      <div class="para">
+        <i>smbfs</i>, SMB protokolünü tanıyan dosya sistemine verilen isimdir.
+        smbfs servisi verebilmek için smbfs.tgz paketini indirip derlemelisiniz.
+      </div><div class="para">
+        <i>smbfs.tgz</i> paketini
+        <a class="ulink" href="ftp://ftp.metu.edu.tr/pub/linux/suniste/systems/filesystems/smbfs/" target="_top">ftp.metu.edu.tr</a>
+        adresinden bulabilirsiniz.
+      </div></dd></dl> <div class="head3"><a name="id5" id="id5"></a>Novell Desteği</div><dl><dd><div class="para">
+        NCP (NetWare Core Protocol), IPX üzerinde yeralan ve Novell NetWare
+        istemcilerinin sunucularla konuşmasını sağlayan protokole verilen isimdir.
+        Bu seçenek ile, NetWare dosya sunucularına diğer Unix makinalardaki
+        gibi bağlanmak olasıdır.
+      </div><div class="para">
+        NetWare dosya sistemlerine erişebilmek için özel bir mount programı
+        (<tt>ncpmount/ncpumount</tt>) kullanmanız gerekecektir. Bu ve diğer programlar,
+        <a class="ulink" href="ftp://ftp.metu.edu.tr/pub/linux/sunsite/system/filesystems/ncpfs" target="_top">ncpfs</a>
+        paketinin içinde vardır. Bunun için çekirdekte
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+The IPX protocol (CONFIG_IPX) [Y/m/n/?]
+</pre></div></div>
+      <div class="para">ve</div>
+<div class="para"><div align="right"><pre class="screen">
+NCP filesystem support (to mount NetWare volumes) (CONFIG_NCP_FS) [Y/m/n/?]
+</pre></div></div>
+      <div class="para">
+        desteğini vermelisiniz.
+      </div><div class="para">
+        <i>lwared</i> ve <i>mars_nwe</i> paketleri, Linux İşletim Sistemi'ne Novell sunucu
+        olma özelliği verir.
+      </div></dd></dl> <div class="head3"><a name="id6" id="id6"></a>Apple Desteği</div><dl><dd><div class="para">
+        Aynı ağ üzerinde yeralan Apple Macintosh makinaları ile aynı disk ve yazıcıların
+        paylaşımını sağlayan pakete <i>netatalk</i> ismi verilir. Bu desteği kullanabilmek
+        için çekirdeğin derlenmesi sırasında
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+IP: multicasting (CONFIG_IP_MULTICAST) [Y/n/?]
+...
+The IPX protocol (CONFIG_IPX) [Y/m/n/?]
+...
+Appletalk DDP (CONFIG_ATALK) [Y/m/n/?]
+</pre></div></div>
+      <div class="para">
+        parametrelerine evet cevabı vermelisiniz. Appletalk için daha fazla bilgiye
+        ve disk ile yazıcı paylaşımı yapan pakete
+        <a class="ulink" href="http://www.umich.edu/~rsug/netatalk" target="_top">http://www.umich.edu/~rsug/netatalk</a> adresinden erişebilirsiniz.
+      </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-8.7.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../lis/archive-tlkg-lis-8.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-8.9.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Uzaktan Bağlantı Kurulması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> NIS</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

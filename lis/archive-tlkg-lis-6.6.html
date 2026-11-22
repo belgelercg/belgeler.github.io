@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:30:27+03:00" /><title>Kabuk Programlamaya Giriş</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../lis/archive-tlkg-lis-6.html" title="Bash Kabuğu" /><link rel="previous" href="../lis/archive-tlkg-lis-6.5.html" title="Sisteme Giriş Dosyaları" /><link rel="next" href="../lis/archive-tlkg-lis-6.7.html" title="Döngüler" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Kabuk Programlamaya Giriş</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-6.5.html">Önceki</a> </td><th width="60%" align="center">Bash Kabuğu</th><td width="20%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-6.7.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="archive-tlkg-lis-6.6" id="archive-tlkg-lis-6.6"></a>Kabuk Programlamaya Giriş</div><dl><dd><div class="para">
+      Her kabuğun kendine özgü programlama dili yapısı vardır. Bash kabuğu
+      ise güçlü programlama özellikleriyle karmaşık programların rahatça
+      yazılmasına izin verir. Mantıksal operatörler, döngüler, değişkenler
+      ve modern programlama dillerinde bulunan pek çok özellik bash kabuğunda
+      da vardır ve işleyiş tarzları da hemen hemen aynıdır.
+    </div><div class="para">
+      Genellikle, bir programı oluşturacak olan komutlar bir dosyaya yazılırlar
+      ve ardından bu dosya çalıştırılır. Herhangi bir editör yardımıyla yazılan
+      program, daha sonra kabuk altında çalıştırılır. Bir kabuk programı
+      diğerlerini çalıştırabilir. Bu düzende kabuk programlarını daha karmaşık
+      komutların biraraya gelmiş ve büyümüş haline benzetebiliriz.
+    </div> <div class="head3"><a name="id1" id="id1"></a>Kabuk Programları</div><dl><dd><div class="para">
+        Kabuk programları, bir veya birden fazla linux komutunu tutan dosyalardır.
+        Bu dosya yaratıldıktan sonra doğrudan dosyanın ismi girilerek veya
+        dosya isminden önce '.' karakteri getirerek çalıştırılabilir. Bir
+        kabuk programı, çalıştırma bitini 1 yapmak suretiyle "çalıştırılabilir"
+        hale getirilir. <tt>chmod</tt> komutu yardımıyla bir programı
+        çalıştırılabilir yapmak için,
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ chmod +x komut-ismi
+</pre></div></div>
+      <div class="para">
+        yazılabilir. Bundan sonra programın ismi yazılıp enter tuşuna basıldığı
+        zaman bir program Linux komutuymuş gibi çalışacaktır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ cat calistir
+echo -n "Tarih : "
+date
+$ chmod +x calistir
+$ calistir
+Tarih : Sun Dec  8 07:11:51 EET 1996
+</pre></div></div>
+      <div class="para">
+        Yukarıdaki örnekte "calistir" isimli iki satırlık bir kabuk programının
+        önce içeriği ekrana yazıldı, ardından çalıştırılacak duruma getirildi
+        ve çalıştırıldı.
+      </div><div class="para">
+        Kabuk programları yazarken dosyanın işlevini ve her satırdaki komutun
+        veya komut kümesinin ne amaçla kullanıldığını gösteren açıklama satırları
+        kullanmak işe yarar. Bir açıklama eklemek için satır başına (veya boş
+        satıra) <tt>#</tt> işareti eklenir ve ardından istenilen
+        cümle girilir. <tt>#</tt> işaretinden sonraki tüm satır
+        kabuk tarafından gözardı edilir. Aşağıdaki programda komut öncesinde
+        yeralan açıklama satırı, komut hakkında bilgi veriyor.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# gunzip komutu dosya acmak icin kullanilir.
+gunzip sistem.gz
+</pre></div></div>
+      <div class="para">
+        Yorum satırı, komutun sonuna da eklenebilir.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+ps -aux         # sistem surecleri hakkinda ayrintili bilgi..
+</pre></div></div>
+      <div class="para">
+        Bir kabuk altında çalışırken başka bir kabuk için yazılmış bir
+        programı çalıştırmak mümkündür. Örneğin tcsh altındasınız ve daha
+        evvel bash kullanarak yazdığınız bir programı çalıştırmak istiyorsunuz.
+        Önce bash yazarak kabuk değiştirmeli, ardından programı çalıştırmalı,
+        ve tekrar tcsh'a dönmelisiniz. Tüm bunları otomatik olarak
+        yaptırabilirsiniz. Programın en başına <tt>#</tt>!
+        karakterini, ardından programın çalışacağı kabuğun patikasını
+        yazın. Örneğin <tt>#!/bin/bash</tt> komutunu programın
+        en üstüne eklerseniz bu program bash kabuğu altında çalışacaktır.
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Değişkenlerin Kullanımı</div><dl><dd><div class="para">
+        Bir değişkene değer atandığı anda sistem tarafından tanınır.
+        Değişkenler alfabetik veya sayısal karakterlerden oluşabilirler
+        fakat bir değişken sayısal bir değer ile başlayamaz. Bunların
+        dışında değişken isminin içinde "_" karakteri de bulunabilir.
+        Bir değişkene değer ataması "=" işareti yardımıyla yapılır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ mesaj="aksama yemege geliyorum"
+</pre></div></div>
+      <div class="para">
+        İçeriği olan bir değişkene başına "$" işareti konularak ulaşılır.
+        Aşağıda, <tt>echo</tt> komutu yardımıyla bir değişkenin
+        içeriği ekrana basılıyor.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ echo $mesaj
+aksama yemege geliyorum
+$ echo yarin $mesaj
+yarin aksama yemege geliyorum
+</pre></div></div>
+      <div class="para">
+        Aynı mesajı değişken kullanmadan da görüntüleyebiliriz.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ echo "Aksama yemege geliyorum"
+Aksama yemege geliyorum
+</pre></div></div>
+      </dd></dl> <div class="head3"><a name="id3" id="id3"></a>Giriş/Çıkış İşlemleri</div><dl><dd><div class="para">
+        Bir kabuk programı çalışırken kullanıcıdan klavye yardımıyla bilgi
+        girmesi sağlanabilir. Bu tür işlemler için tanımlanan
+        <tt>read</tt> komutu klavyeyi okur ve aldığı bilgiyi
+        bir değişkene atar. Aşağıdaki komutları içeren program yardımıyla
+        klavyeden okunan değer ekrana yazılıyor. <tt>echo</tt>
+        komutundan sonra birden fazla değişken grubu veya hem değişken,
+        hem de dizi kullanılabilir.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+echo Bir sayi giriniz..
+read sayi
+echo Girilen sayi : $sayi
+</pre></div></div>
+      <div class="para">
+        Bazı durumlarda girilen değer özel karakterleri içerebilir. Bu durumda
+        istenmeyen bazı sonuçların doğması kaçınılmaz olur. Aşağıdaki örneği
+        bir dosya içine yazın ve dosyayı çalıştırdıktan sonra "*" tuşuna basın.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+echo Bir karakter giriniz
+read a
+echo Girdiginiz karakter: $a
+</pre></div></div>
+      </dd></dl> <div class="head3"><a name="id4" id="id4"></a>Aritmetik İşlemler</div><dl><dd><div class="para">
+        bash kabuğunda matematiksel işlemlere büyük sınırlamalar getirilmiştir.
+        Tamsayı değişkeni dışında matematiksel değişken kullanmak için bu işlemler
+        için geliştirilmiş ve kolaylıklar sağlayan awk veya bc kullanabilirsiniz.
+      </div><div class="para">
+        Aritmetik işlemler için <tt>eval</tt> komutunu veya bash kabuğu
+        altında yerleşik (builtin) komut olan <tt>let</tt> komutunu
+        kullanabilirsiniz. Aşağıda let komutunun kullanımı görülüyor.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+let "degisken=aritmetik islem"
+</pre></div></div>
+      <div class="para">
+        Bu örnekte iki sayı çarpılıp çıkan sonuç başka bir değişkene yazılıyor.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ let "carpim=2*7"
+$ echo $carpim
+</pre></div></div>
+      <div class="para">
+        Aritmetik değişken tanımlamanın diğer bir yolu da <tt>typeset</tt>
+        komutu kullanmaktır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ typeset -i sonuc      (sonuc degiskeni bir dogal sayi icerecek)
+$ a=100 ; b=56          (iki komutu ayirmak icin ; kullanilabilir)
+$ sonuc=a*b
+$ echo $sonuc
+5600
+</pre></div></div>
+      </dd></dl> <div class="head3"><a name="id5" id="id5"></a>if-else Kalıbı ve Kontrol İşlemleri</div><dl><dd><div class="para">
+        Hemen her programlama dilinde olan <tt>if</tt> kalıbı bir
+        Linux komutunun çalışmasını kontrol (<tt>test</tt>) eder.
+        <tt>if</tt> komutu yerleşik bir komuttur ve her
+        <tt>if</tt>, bir <tt>fi</tt> komutuyla bitmelidir.
+        <tt>if</tt> komutunun ardından gelen Linux komutu çalıştırılır
+        ve komutun çıkış durumu (exit status) gözönüne alınarak ardından gelen
+        <tt>then</tt> deyimiyle birlikte devamı işletilir. Genellikle
+        komutun iki türlü çıkış durumu olacağından <tt>else</tt>
+        komutunun ardından gelen komut zinciri, diğer çıkış durumunda çalıştırılır.
+        Aşağıda if-else-then komutunun örnek sözdizimi görülüyor.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+if linux komutu
+    then
+        komut1
+        komut2
+        ...
+    else
+        komut1
+        komut2
+        ...
+fi
+</pre></div></div>
+      <div class="para">
+        <tt>if</tt> komutu genellikle kendine <tt>test</tt>
+        komutu ile birlikte kullanım bulur. Bu komut yardımıyla mantıksal
+        işlemler yapılabilir, sayılar ve hatta diziler karşılaştırılabilir.
+        Anahtar sözcük olan <tt>test</tt>'ten sonra seçenekler
+        ve/veya karşılaştırılacak olan değerler yazılır. Her seçenek bir
+        mantıksal işleme karşılık gelir. Örneğin <tt>-lt</tt>
+        seçeneği ilk girilen aritmetik değişkenin ikinci değerden küçük
+        olup olmadığını denetler. Benzer şekilde <tt>=</tt>
+        seçeneği da iki karakter kümesinin eşitliğini kontrol eder.
+        Aşağıda <tt>test</tt> komutunun örnek kullanımı yeralıyor.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ test 5 -eq 3
+$ a="linux"
+$ test $a="linux"
+</pre></div></div>
+      <div class="para">
+        komutun işletilmesinin ardından kabuğa bir değer dönderilir.
+        Bu değer komut başarılı olarak işletilmişse 0, değilse 1'dir.
+        Son çalıştırılan tüm Linux komutlarının çıkış değeri $? değişkeninde
+        tutulur. test komutunun çıkış değeri de bu yolla öğrenilebilir.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ sayi=4
+$ test $sayi -eq 4
+$ echo $?
+0
+$ test $sayi -lt 2
+$ echo $?
+1
+</pre></div></div>
+      <div class="para">
+        <tt>test</tt> komutu yerine parantezler de kullanılabilir.
+        Yukarıdaki iki örnek, parantez kullanılarak şu şekilde yazılabilir:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ [ $sayi -eq 4 ]
+$ [ $sayi -lt 12 ]
+</pre></div></div>
+      <div class="para">
+        Dikkat edilmesi gereken bir nokta, köşeli parantez kullanırken araya
+        boşlukların eklenmesidir. Parantezler başlı başına bir komut olarak
+        görüldüklerinden sağında ve solunda en az bir boşluk bırakılmalıdır.
+        <tt>test</tt> komutunda sıkça kullanılan diğer seçenekler
+        şunlardır:
+      </div><div class="para">
+        Aritmetik karşılaştırmalar
+      </div>
+<div class="para"><pre class="literallayout">
+<b><tt>-gt</tt></b>  büyük
+<b><tt>-lt</tt></b>  küçük
+<b><tt>-ge</tt></b>  büyük eşit
+<b><tt>-le</tt></b>  küçük eşit
+<b><tt>-eq</tt></b>  eşit
+<b><tt>-ne</tt></b>  eşit değil
+</pre></div>
+      <div class="para">
+        Dizisel karşılaştırma
+      </div>
+<div class="para"><pre class="literallayout">
+<b><tt>-z</tt></b>  boş dizi
+<b><tt>-n</tt></b>  tanımlı dizi
+<b><tt>= </tt></b>  eşit diziler
+<b><tt>!=</tt></b>  farklı diziler
+</pre></div>
+      <div class="para">
+        Dosya karşılaştırması
+      </div>
+<div class="para"><pre class="literallayout">
+<b><tt>-f</tt></b>  dosya var
+<b><tt>-s</tt></b>  dosya boş değil
+<b><tt>-r</tt></b>  dosya okunabilir
+<b><tt>-w</tt></b>  dosyaya yazılabilir
+<b><tt>-x</tt></b>  çalıştırılabilir dosya
+<b><tt>-h</tt></b>  sembolik bağlantı
+<b><tt>-c</tt></b>  karakter aygıt
+<b><tt>-b</tt></b>  blok aygıt
+</pre></div>
+      <div class="para">
+        Mantıksal karşılaştırmalar
+      </div>
+<div class="para"><pre class="literallayout">
+<b><tt>-a</tt></b>  VE
+<b><tt>-o</tt></b>  VEYA
+<b><tt>! </tt></b>  DEĞİL
+</pre></div>
+      <div class="para">
+        <tt>if</tt> komutunun <tt>test</tt> ile birlikte
+        kullanılabildiğini daha önce belirtmiştik. Aşağıda bununla ilgili
+        küçük bir örnek yeralıyor.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+#!/bin/bash
+echo "0 ile 20 arasinda bir sayi secin"
+read sec
+if [ $sec -lt 10 ]
+   then
+        echo "Secilen sayi tek basamakli"
+   else
+        echo "Secilen sayi cift basamakli"
+fi
+</pre></div></div>
+      <div class="para">
+        Her <tt>if</tt> komutu bir <tt>fi</tt> ile son bulmalıdır.
+      </div></dd></dl> <div class="head3"><a name="id6" id="id6"></a>case Kalıbı</div><dl><dd><div class="para">
+Birkaç alternatif arasından seçim yapmak için kullanılan bir komut
+olan <tt>case</tt>, bir eşleştirme gördüğü anda belirli
+bir komut kümesini işleme sokar. case yapısı <tt>case</tt>
+komutu ile başlar, eşleştirilecek olan anahtar sözcük yazılır ve
+seçenekler alt alta, her seçeneğe ait olan komutlarla birlikte
+belirtilir. Tüm yapı <tt>esac</tt> komutu ile son bulur.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+case anahtar-sozcuk in
+        secenek1)
+                komutlar
+                ;;
+        secenek2)
+                komutlar
+                ;;
+        *)
+                komutlar
+                ;;
+esac
+</pre></div></div>
+      <div class="para">
+        Seçenekler arasında özel karakterler <i>(*, [] , ? gibi)</i>
+        kullanılabilir. Hiçbir eşleme yapılmadığı zaman *) seçeneği değerlendirilecek
+        ve buna bağlı olan komutlar işletilecektir. * kullanımı isteğe bağlıdır.
+        Aşağıda <tt>case</tt> komutuna ilişkin kısa bir örnek veriliyor.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+#!/bin/bash
+
+clear
+echo    "1. ekrani temizle"
+echo    "2. sistemdekileri goruntule"
+echo    "3. dizindeki dosyalari goster"
+
+echo -n "Secenegi giriniz : "
+read secenek
+
+case $secenek in
+        1)
+          clear
+          ;;
+        2)
+          w
+          ;;
+        3)
+          ls -al
+          ;;
+        *)
+          echo Hatali secenek
+esac
+</pre></div></div>
+      </dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-6.5.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../lis/archive-tlkg-lis-6.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-6.7.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Sisteme Giriş Dosyaları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Döngüler</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

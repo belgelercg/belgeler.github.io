@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:25:20+03:00" /><title>CREATE DATABASE</title><link rel="icon" type="image/png" href="../../images/belgeler-logo.png" /><link rel="stylesheet" href="../../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../../man/man7/man7.html" title="SQL Deyimleri, Makro Paketleri vs." /><link rel="previous" href="../../man/man7/man7-create_conversion.html" title="CREATE CONVERSION" /><link rel="next" href="../../man/man7/man7-create_domain.html" title="CREATE DOMAIN" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">CREATE DATABASE</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../../man/man7/man7-create_conversion.html">Önceki</a> </td><th width="60%" align="center">SQL Deyimleri, Makro Paketleri vs.</th><td width="20%" align="right"> <a accesskey="n" href="../../man/man7/man7-create_domain.html">Sonraki</a></td></tr></table></td></tr></table><div class="refentry"><a name="tr-man7-create_database" id="tr-man7-create_database"></a><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="25%"><b>CREATE DATABASE(7)</b></td><td class="mheadfoot" align="center" width="50%"><b>SQL - Dil Deyimleri</b> </td><td class="mheadfoot" align="right" width="25%"><b>CREATE DATABASE(7)</b></td></tr></table></div><dl><dt class="head3">İSİM</dt><dd>CREATE DATABASE — yeni bir veritabanı oluşturur<br /></dd><dd><div class="para"></div></dd><dt class="head3">KULLANIM</dt><dd><div class="para"><div class="para"><div align="center"><pre class="synopsis"><b><tt>CREATE DATABASE</tt></b> <i>isim</i>
+     [ [ <b><tt>WITH</tt></b> ] [ <b><tt>OWNER</tt></b> [=] <i>dbsahibi</i> ]
+           [ <b><tt>TEMPLATE</tt></b>   [=] <i>şablon</i> ]
+           [ <b><tt>ENCODING</tt></b>   [=] <i>kodlama</i> ]
+           [ <b><tt>TABLESPACE</tt></b> [=] <i>tablo_alanı</i> ] ]
+</pre></div></div></div></dd><dt class="head3">Açıklama</dt><dd><div class="para">
+<b><tt>CREATE DATABASE</tt></b> yeni bir PostgreSQL<sup>TM</sup> veritabanı oluşturur.
+  </div><div class="para">
+Bir veritabanını oluşturmak için ya ayrıcalıklı kullanıcı olmalısınız ya da <b><tt>CREATEDB</tt></b> izniniz olmalıdır (<tt><b>CREATE USER</b>[<a href="../../man/man7/man7-create_user.html">create_user(7)</a>]</tt> kılavuz sayfasına bakınız).
+  </div><div class="para">
+Normalde yeni bir veritabanı oluşturan aynı zamanda bu veritabanının sahibi olur. Ayrıcalıklı kullanıcılar <b><tt>OWNER</tt></b> deyimini kullanarak başka kullanıcılar adına veritabanı oluşturabilirler. Hatta özel izinleri olmayan kullanıcılar için bile bunu yapabilirler. <b><tt>CREATEDB</tt></b> yetkisi olan sıradan kullanıcılar sadece kendi veritabanlarını oluşturabilirler.
+  </div><div class="para">
+Öntanımlı olarak, yeni bir veritabanı standart sistem veritabanı olan <tt>template1</tt> veritabanının bir kopyası olarak oluşturulur. <b><tt>TEMPLATE </tt></b><i><tt>isim</tt></i> deyimi kullanılarak farklı bir şablon belirtilebilir. Özel bir durum olarak, <b><tt>TEMPLATE template0</tt></b> ile sadece PostgreSQL tarafından tanımlanmış standart nesneleri içeren bakir bir veritabanı oluşturabilirsiniz. Bu, <tt>template1</tt>'e eklenen kuruluma özgü nesnelerin veritabanınıza kopyalanmasını istemediğiniz durumlarda yararlıdır.
+  </div></dd><dt class="head3">Parametreler</dt><dd><div class="variablelist"><dl><dt><i><tt>isim</tt></i></dt><dd class="varlist"><div class="para">Oluşturulacak veritabanının ismi.
+      </div></dd><dt><i><tt>dbsahibi</tt></i></dt><dd class="varlist"><div class="para">Yeni veritabanının sahibi olacak kullanıcı. Veritabanını oluşturan kullanıcıyı belirtmek için <b><tt>DEFAULT</tt></b> kullanılır.
+      </div></dd><dt><i><tt>şablon</tt></i></dt><dd class="varlist"><div class="para">Yeni veritabanını oluştururken kullanılacak şablonun ismi. Öntanımlı şablon (<tt>template1</tt>) kullanılacaksa değer olarak <b><tt>DEFAULT</tt></b> belirtilir.
+      </div></dd><dt><i><tt>kodlama</tt></i></dt><dd class="varlist"><div class="para">Yeni veritabanında kullanılacak karakter kümesinin kodlaması. Bir dizge sabiti (<b><tt>'SQL_ASCII'</tt></b> gibi), bir tamsayı kodlama numarası ya da öntanımlı kodlamayı kullanmak için <b><tt>DEFAULT</tt></b> belirtilebilir. PostgreSQL sunucusu tarafından desteklen karakter kümeleri<br /><a class="ulink" href="http://www.postgresql.org/docs/8.0/static/multibyte.html" target="_top">http://www.postgresql.org/docs/8.0/static/multibyte.html</a> adresinde açıklanmıştır.
+      </div></dd><dt><i><tt>tablo_alanı</tt></i></dt><dd class="varlist"><div class="para">Yeni veritabanı ile ilişkilendirilecek tablo alanının ismi. Şablon veritabanının tablo alanı kullanılacaksa, <b><tt>DEFAULT</tt></b> belirtilebilir. Bu tablo alanı bu veritabanında oluşturulan neseneler için öntanımlı tablo alanı olacaktır. Daha fazla bilgi için <tt><b>CREATE TABLESPACE</b>[<a href="../../man/man7/man7-create_tablespace.html">create_tablespace(7)</a>]</tt> kılavuz sayfasına bakınız.
+      </div></dd></dl></div><div class="para">
+İsteğe bağlı parametrelerin yukarıda belirtilen sırada yazılması şart değildir, istediğiniz sırada yazabilirsiniz.
+  </div></dd><dt class="head3">Ek Bilgi</dt><dd><div class="para">
+<b><tt>CREATE DATABASE</tt></b> bir hareket kümesinin içinde bulunamaz.
+   </div><div class="para">
+"veritabanı dizini ilklendirilemedi" (could not initialize database directory) satırı bulunan hatalar çoğunlukla veri dizininde yeterli izinlerin olmaması, diskin dolmuş olması ya da diğer dosya sistemi sorunlarıyla ilgilidir.
+   </div><div class="para">
+Bir veritabanını kaldırmak için <tt><b>DROP DATABASE</b>[<a href="../../man/man7/man7-drop_database.html">drop_database(7)</a>]</tt> kullanılır.
+   </div><div class="para">
+<tt><b>creatdb(1)</b></tt> uygulaması bu komutun yerine kullanılabilir, rahatlık için sağlanmıştır.
+   </div><div class="para">
+Şablon olarak öntanımlı <tt>template1</tt> veritabanı yerine ismi belirtilerek başka bir veritabanın belirtilebilmesi, genel amaçlı olan <b><tt>COPY DATABASE</tt></b> yerine kullanılabilecekmiş gibi düşünülmemelidir; bu amaçla (henüz) tasarlanmamıştır. Şablon olarak kullanılan veritabanlarını salt okunur olarak düşünmenizi öneririz. Daha fazla bilgi için<br /><a class="ulink" href="http://www.postgresql.org/docs/8.0/static/manage-ag-templatedbs.html" target="_top">http://www.postgresql.org/docs/8.0/static/manage-ag-templatedbs.html</a> adresinde bakınız.
+  </div></dd><dt class="head3">Örnekler</dt><dd><div class="para">
+Yeni bir veritabanı oluşturmak için:
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">    CREATE DATABASE lusiadas;
+</pre></div></div>
+  <div class="para">
+Öntanımlı <tt>salesspace</tt> tablo alanlı, sahibi <tt>salesapp</tt> kullanıcısı olacak <tt>sales</tt> veritabanını oluşturmak için:
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">    CREATE DATABASE sales OWNER salesapp TABLESPACE salesspace;
+</pre></div></div>
+  <div class="para">
+ISO-8859-1 karakter kümesini destekleyen <tt>music</tt> veritabanını oluşturmak için:
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">    CREATE DATABASE music ENCODING 'LATIN1';
+</pre></div></div>
+  </dd><dt class="head3">Uyumluluk</dt><dd><div class="para">
+SQL standardında <b><tt>CREATE DATABASE</tt></b> diye bir deyim yoktur. Veritabanları, oluşturulması gerçeklenim tanımlı kataloglara eşdeğerdir.
+  </div></dd><dt class="head3">Çeviren</dt><dd><div class="para">
+Nilgün Belma Bugüner <span class="email">&lt;nilgun (at) belgeler·gen·tr&gt;</span>, Nisan 2005
+</div></dd></dl><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="30%"><b>PostgreSQL</b></td><td class="mheadfoot" align="center" width="40%"></td><td class="mheadfoot" align="right" width="30%"><b>CREATE DATABASE(7)</b></td></tr></table></div></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../../man/man7/man7-create_conversion.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../../man/man7/man7.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../../man/man7/man7-create_domain.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">CREATE CONVERSION </td><td width="20%" align="center"><a accesskey="h" href="../../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> CREATE DOMAIN</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

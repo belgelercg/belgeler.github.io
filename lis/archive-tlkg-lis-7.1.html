@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:30:28+03:00" /><title>SED (Stream editor)</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../lis/archive-tlkg-lis-7.html" title="Sed ve Vi" /><link rel="previous" href="../lis/archive-tlkg-lis-7.html" title="Sed ve Vi" /><link rel="next" href="../lis/archive-tlkg-lis-7.2.html" title="vi Editörü" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">SED (Stream editor)</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-7.html">Önceki</a> </td><th width="60%" align="center">Sed ve Vi</th><td width="20%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-7.2.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="archive-tlkg-lis-7.1" id="archive-tlkg-lis-7.1"></a>SED (Stream editor)</div><dl><dd><div class="para">
+      Metin dosyaları üzerinde sürekli işlem yapanlar için <i>sed</i> ve
+      <i>vi</i> hemen imdada yetişir. Bu iki programın yapabildiklerini
+      etkileşimli olarak bir metin editörü üzerinden gerçekleştirebilmek de
+      mümkündür. <i>sed</i> ve <i>vi</i> tam anlamıyla zaman kaybını önleyen kullanıcı
+      dostu iki uygulamadır. Yapısal olarak diğer programlama dillerinden
+      biraz farklı olduklarından öğrenmesi biraz zaman alır. Buna rağmen eğer
+      metin editörlüğü işinizin bir parçası ise <i>sed</i> ve <i>vi</i>'ı öğrenip
+      bunlardan verimli bir şekilde yararlanmanız uygun olacaktır.
+    </div> <div class="head3"><a name="id1" id="id1"></a>Sed ve Özellikleri</div><dl><dd><div class="para">
+        Sed bir dosyadan veya standart girdiden(klavyeden) bilgi okur ve
+        standart çıktıya (ekrana) okuduğu bilgileri kullanıcının belirlediği
+        düzene sokarak yazar. Bu veriyi de kullanıcı genellikle bir dosyaya
+        yerleştirir.
+      </div><div class="para">
+        Sed komut satırında iken veya bir kabuk programı içinden kullanılabilir.
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Örnekler</div><dl><dd><div class="para">
+Sed kullanırken en çok başvuracağınız işleç `<i>s</i>' işlecidir. Bir karakteri
+veya karakter kümesini başka bir diziye çevirmeye yarar. Buna basit bir örnek:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+sed 's/hapisane/hapishane/g' dosya
+</pre></div></div>
+      <div class="para">
+        Komutun sonundaki `<i>g</i>' işleci, sed'e dosyanın tamamını araştırmasını
+        söyler. Eğer bunu kaldırırsanız, sed her satırın başında bulduğu ilk
+        değiştirmeyi yapacak ve satırın geri kalanına dokunmayacaktır.
+      </div><div class="para">
+        Aşağıdaki karakterler sed tarafından kullanılan özel karakterler
+        kapsamına girer. Bu karakterlerin herbirisinin anlamı olduğundan dikkatli
+        kullanılmaları gerekir.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+.*[]^$\&amp;
+</pre></div></div>
+      <div class="para">
+        Yukarıdaki karakterleri gözönüne almadan yapılan aşağıdaki gibi bir
+        kullanım hataya yol açar.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+sed 's/[J.S. Bach]/[Bach, J.S]/' dosya
+</pre></div></div>
+      <div class="para">
+        Bunun yerine her özel karakterin başına `<i>\</i>' karakteri getirilerek
+        özel anlamlarının yitirilmesi sağlanabilir (saklama işlemi). Yukarıda
+        çalışmayan örneği yeniden düzenleyerek yazalım:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+sed 's/\[J\.S\. Bach\]/[Bach, J.S ]/' dosya
+</pre></div></div>
+      <div class="para">
+        Aynı anda birden çok değiştirme yapabilmek için ise her argüman için
+        <tt>-e</tt> kullanılır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+sed -e 's/computer/bilgisayar/g' -e 's/server/sunucu/g' dosya
+</pre></div></div>
+      <div class="para">
+        İçinde '/' karakteri olan bir diziyi değiştirmek için ne yapmalı? Bu,
+        özel karakter sınıfına girdiği için karakterin özel anlamını yitirmesi
+        sağlanır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+sed 's/\/usr\/bin/\/bin/g' dosya
+</pre></div></div>
+      </dd></dl> <div class="head3"><a name="id3" id="id3"></a>Düzenli İfadeler (Regular Expressions)</div><dl><dd><div class="para">
+        Sed, UNIX üzerinde metin işleyen birçok program gibi düzenli ifadelerden
+        yararlanır. Aşağıdaki bu duruma birkaç örnekle yer veriliyor.
+        '<i>^</i>' karakteri satır başlangıcını gösterir. Bu komut,
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+sed 's/^Pts /Pazartesi/' dosya
+</pre></div></div>
+      <div class="para">
+        bir satırın başında ``Pts'' varsa bunu ``Pazartesi'' haline getirir. Dikkat
+        ederseniz komut dahilinde `<i>g</i>' işleci kullanılmamıştır. Çünkü her satırda
+        sadece bir satır başı olabilir.
+      </div><div class="para">
+        $ karakteri satır sonunu belirtir. Aşağıdaki örnekte,
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+sed 's/ $//' dosya
+</pre></div></div>
+      <div class="para">
+        Sed komutu satır sonundaki tüm boşluk karakterlerini siler.
+        Her satır sonuna ``SATIR_SONU'' karakter kümesini getirmek için
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+sed 's/$/SATIR_SONU/' dosya
+</pre></div></div>
+      <div class="para">
+        yazılabilir. Boş bir satırı bulmak için satır başı ve satır sonu
+        belirteçleri birlikte kullanılır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+sed 's/^$/bu daha once bos bir satirdi/' dosya
+</pre></div></div>
+      <div class="para">
+        `<i>.</i>' (nokta) karakteri <i>herhangi bir karakter</i> anlamına gelir. Örneğin
+        üzerinde işlem yapacağımız dosyada bütün satırlardaki ilk iki karakteri
+        silmek için:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+sed 's/^..//' dosya
+</pre></div></div>
+      <div class="para">
+        Köşeli parantezler birden fazla sayıda karakter içinde seçim yapar.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+sed 's/[Oo]pen[Ww]in/openwin/g' dosya
+</pre></div></div>
+      <div class="para">
+        Alfabedeki iki karakterin arasındaki tüm karakterleri seçmek için köşeli
+        parantezlerin içinde `<i>-</i>' karakteri kullanılabilir. Bu karakter, sağındaki
+        ve solundaki de dahil olmak üzere aradaki tüm harfleri seçer. Örnek
+        dosyadaki tüm büyük harfleri silelim.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+sed 's/[A-Z]//g' dosya
+</pre></div></div>
+      <div class="para">
+        Bir karakter kümesinin dışında kalan karakterleri seçmek için ise
+        `<i>^</i>'
+        kullanılır. Örnek dosyada, rakamların ve küçük harflerin dışındaki tüm
+        harfleri silmek istiyoruz.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+sed 's/[^1-9a-z]//g' dosya
+</pre></div></div>
+      <div class="para">
+        '*' karakteri, <i>kendisinden bir önce gelen karakterin veya küme
+        içine alınmış karakter gruplarının <b><tt>sıfır</tt></b> veya daha fazla tekrarı</i>
+        anlamına gelir.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+sed 's/^ *//' dosya
+</pre></div></div>
+      <div class="para">
+        komutu her satır başındaki boşluk karakterlerini
+        siler. Aşağıdaki sed komutu her satırdaki son kelimeyi (boşluk
+        karakterlerinden oluşmayan karakterler grubunu) siler.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+sed 's/[^ ]*$//' dosya
+</pre></div></div>
+      <div class="para">
+        unutulmaması gereken bir nokta, `<i>*</i>' karakteri önceki grubun
+        <i>sıfır</i> kere tekrarını da gözönüne alır, bu durumda aşağıdaki satırda
+        görülen ve bir tamsayı değerini ``TAMSAYI'' sözcüğü haline getirmek için
+        kullanılan komut Linux tarafından yanlış işletilecektir.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+sed 's/ [0-9]* / TAMSAYI /g' dosya
+</pre></div></div>
+      <div class="para">
+        Bu satır aynı zamanda her boşluk karakterini ``TAMSAYI'' ya çevirir. Bunu
+        engellemek için, en azından bir haneyi arama kapsamına sokmak gerekir:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+sed 's/ [0-9][0-9]* / TAMSAYI /g' dosya
+</pre></div></div>
+      <div class="para">
+        `<i>.*</i> harf kombinasyonu <i>herhangi bir sayıda karakter grubu</i>
+        anlamındadır. Aşağıdaki örnekte, ``ku'' ve ``ik'' arasında ne olursa olsun
+        bulunan satırı değiştirecek ve bunların yerine ``kuru erik'' koyacaktır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+sed 's/ku.*ik/kuru erik/g' dosya
+</pre></div></div>
+      <div class="para">
+        Buraya kadarki bölümde eşleştirdiğimiz harf veya harf gruplarını ya
+        başka bir forma soktuk ya da tamamen sildik. Ancak sed'in kelime işleme
+        kapasitesi sadece yaptıklarımızla sınırlı değildir.  `<i>\(</i>'
+        ve `<i>\)</i>' operatörleri yardımıyla eşleştirildiği anda hafızaya
+        kaydedilen kelime grupları daha sonra tekrar çağırılabilir. Parantezler
+        özel anlamlı karakterlerin anlamlarını yitirmesini sağlamak
+        amacıyla daha önceki kullanıma uygun konulmuşlardır. İlk kullanılan
+        `<i>\(\)</i>' operatörü `<i>\1</i>' adlı alana, ikinci
+        kullanılan `<i>\(\)</i>' operatörü `<i>\2</i>' adlı alana
+        eşleştirilir (kayıt edilir). Aşağıdaki sed komutu,
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+sed 's/^\([A-Za-z][A-Za-z]*\) \([A-Za-z][A-Za-z]*\)/\2 \1/' dosya
+</pre></div></div>
+      <div class="para">
+        bir dosyadaki ``isim soyisim'' sırasını ``soyisim isim'' sırasına çevirmekte
+        kullanılabilir. Örnek olarak içeriği aşağıdaki gibi olan bir dosya
+        üzerinde bu komut çalıştırılırsa
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+Mehmet Kırk
+Biray Çift
+Gürkan Ballı
+</pre></div></div>
+      <div class="para">
+        ekranda aşağıdaki çıktı görünür:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+Kırk Mehmet
+Çift Biray
+Ballı Gürkan
+</pre></div></div>
+      <div class="para">
+        Bazı durumlarda tüm dosya üzerinde değil de bazı özellikleri sağlayan
+        satırlar üzerinde işlem yapmak isteyebilirsiniz. Bunun için 'adresleme'
+        yapmanız gerekir. Adresleme işlemi, `<i>s</i> işlecinden hemen önce yapılır. Bu
+        komut ile dosyanın sadece 1 ve 20. satırları arasında işlem yapılacaktır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+sed '1,20s/Karadeniz/Akdeniz/g' dosya
+</pre></div></div>
+      <div class="para">
+        ``Makina'' kelimesiyle başlayan tüm satırlardaki ``Endüstri'' kelimesi yerine
+        ``Elektronik'' kelimesini yerleştirelim.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+sed '/^Makina/s/Maden /Elektronik /g' dosya
+</pre></div></div>
+      <div class="para">
+        ``Makina'' kelimesiyle <i>başlamayan</i> tüm satırlara benzer işlemi
+        uygulayalım. `<i>!</i>' karakterinin yerine dikkat edin.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+sed '/^Makina/!s/Maden /Elektronik /g' dosya
+</pre></div></div>
+      </dd></dl> <div class="head3"><a name="id4" id="id4"></a>Sed Kaynak Dosyası</div><dl><dd><div class="para">
+Eğer sed kaynak satırınız bir iki satıra sığmayacak kadar büyük ise
+komutları tek dosya altında toplayabilirsiniz. Bu örnekte <tt>degistir.sed</tt>
+isimli dosyaya üç satırlık sed komutu yazalım.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+s/tiren/tren/g
+s/Pazar/Pazartesi/g
+s/1996/1997/g
+</pre></div></div>
+      <div class="para">
+        Ardından sed komutunu <tt>-f</tt> parametresiyle çalıştıralım.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+sed -f degistir.sed dosya
+</pre></div></div>
+      <div class="para">
+        Bunların yerine kendi kendine çalışan bir sed programı yazmaya ne dersiniz?
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+#!/usr/bin/sed -f
+# degistir.sed dosyasi
+s/tiren/tren/g
+s/Pazar/Pazartesi/g
+s/1996/1997/g
+</pre></div></div>
+      <div class="para">
+        Çalıştırmak için dosya izni verdikten sonra
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+chmod u+x degistir.sed
+</pre></div></div>
+      <div class="para">
+        Komut satırı üzerinden rahatlıkla çalıştırabiliriz
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ degistir.sed dosya
+</pre></div></div>
+      </dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-7.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../lis/archive-tlkg-lis-7.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-7.2.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Sed ve Vi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> vi Editörü</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

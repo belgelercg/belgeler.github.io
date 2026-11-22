@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:30:27+03:00" /><title>Kullanıcı İşlemleri</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../lis/archive-tlkg-lis-5.html" title="Linux Sistem Yönetimi" /><link rel="previous" href="../lis/archive-tlkg-lis-5.2.html" title="Sistem Kuralları" /><link rel="next" href="../lis/archive-tlkg-lis-5.4.html" title="Sistemin Yedeklenmesi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Kullanıcı İşlemleri</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-5.2.html">Önceki</a> </td><th width="60%" align="center">Linux Sistem Yönetimi</th><td width="20%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-5.4.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="archive-tlkg-lis-5.3" id="archive-tlkg-lis-5.3"></a>Kullanıcı İşlemleri</div><dl><dd><div class="para">
+      Aşağıda yeralan konularda, kullanıcı hesaplarının açılması ve kapatılması
+      anlatılıyor.
+    </div> <div class="head3"><a name="id1" id="id1"></a>Kullanıcı Hesabı Açmak (adduser)</div><dl><dd><div class="para">
+        Kullanıcı hesabı açmak iki yoldan yapılabilir. Birincisi, <tt>adduser</tt>
+        komutu yardımıyla, diğeri de bu komutun yaptığı işlemleri sırasıyla
+        elden yapmak. root olarak sisteme girin ve komutu çalıştırın :
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# adduser
+
+Login name for new user (8 characters or less) []: mehmet
+
+User id for mehmet [ defaults to next available]:
+
+Initial group for mehmet [users]:
+
+Additional groups for mehmet []:
+
+mehmet's home directory [/home/mehmet]:
+
+mehmet's shell [/bin/bash]:
+
+mehmet's account expiry date (MM/DD/YY) []:
+
+OK, I'm about to make a new account. Here's what you entered so far:
+
+New login name: mehmet
+New UID: [İleri available]
+Initial group: users
+Additional groups: [none]
+Home directory: /home/mehmet
+Shell: /bin/bash
+Expiry date: [no expiration]
+
+This is it... if you want to bail out, hit Control-C.  Otherwise, press
+ENTER to go ahead and make the account.
+
+
+Making new account...
+
+Changing the user information for mehmet
+Enter the new value, or press return for the default
+
+        Full Name []: linux kullanicisi
+        Room Number []:
+        Work Phone []:
+        Home Phone []:
+        Other []:
+
+Changing password for mehmet
+Enter the new password (minimum of 6, maximum of 8 characters)
+Please use a combination of upper and lower case letters and numbers.
+New password:
+Bad password: too simple.
+Warning: weak password (enter it again to use it anyway).
+New password:
+Re-enter new password:
+Password changed.
+Done...
+</pre></div></div>
+      <div class="para">
+        Kullanıcının isminin 3 karakterden az, 8 karakterden fazla olmamasına
+        özen gösterin. Sistem sizden kullanıcının gerçek ismini, ev dizinini,
+        (genellikle /home içinde olur), grubunu isteyecektir. <tt>adduser</tt> komutu, eğer özel
+        olarak değiştirmek istemezseniz her kullanıcının grup numarasını GID =
+        Group ID) 100 olarak tanımlayacaktır. Bu gruba karşılık gelen isim (Group
+        Name) <i>users</i> dır. Kullanıcı kimliği (UID = User ID) ise genellikle 500'den sonra
+        gelen ve kullanılmayan ilk sayı olarak atanır.
+        Eğer UID olarak 0 girerseniz sistemde sizinle beraber bir süper-kullanıcı
+        daha yaratmış olursunuz :)
+      </div><div class="para">
+        Sisteme girişte çalıştırılacak olan kabuk için seçimi ister kullanıcıya
+        bırakın, isterseniz öntanımlı olarak bash verin. Bash'in sistemdeki
+        tam patikasını (<tt>/bin/bash</tt>) yazmalısınız. Bu alana sadece kabuk ismi
+        girmek şart değildir.
+      </div><div class="para">
+        Yukarıda sistem bizi güçlü bir parola seçmediğimiz için uyardı.
+        Parola olarak, herkesin kolayca tahmin edemeyeceği zorlukta, fakat
+        kullanıcının bir yere yazmasını önleyici kolaylıkta bir kelime
+        bulun. Kullanıcı, hesabının açılmasından hemen sonra sisteme girecekse
+        ve parolasını değiştirecekse kısa ve kolay bir parola yeterli olacaktır.
+      </div><div class="para">
+        Her şeyin doğru olduğuna eminseniz, sorulan soruya "y" ile, değilseniz
+        "n" ile cevap verin. Hemen ardından <tt>/etc/skel</tt> dizini altında yeralan
+        tüm dosyalar bu kullanıcının dizinine kopyalanacaktır. Buraya, her
+        kullanıcının ev dizinine önceden yüklenmesini istediğiniz sistem
+        dosyalarını yerleştirebilirsiniz. Bu andan itibaren yeni kullanıcı
+        sisteme girebilir.
+      </div><div class="para">
+        Sisteme kullanıcı ekleme işlemini el yordamıyla yapmak isterseniz,
+        <tt>/etc/passwd</tt> ve <tt>/etc/shadow</tt>
+        dosyalarına birer satır eklemelisiniz. <tt>/etc/passwd</tt>'de
+        aralarında birer ':' karakteri olmak kaydıyla sırayla hesap ismi, "x",
+        grup kimliği, kullanıcı kimliği, kullanıcı isim ve soyadı, ev dizini ve
+        kabuk programı yeralır. <tt>/etc/passwd</tt> içine bu satırı
+        ekleyin:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+ozgur:x:100:502:Misafir Sanatci:/home/ozgur:/bin/bash
+</pre></div></div>
+      <div class="para">
+        <tt>/etc/shadow</tt> içine ise aşağıdaki satırı yerleştirin,
+        tabi diğer satırlara dokunmadan.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+ozgur::9990:0:99999:7::::
+</pre></div></div>
+      <div class="para">
+        Bu satırda yeralan ikinci girdi mirkelam kullanıcısının parolasını
+        belirtiyor. <tt>/etc/shadow</tt> dosyasına yazılacak olan
+        parolayı önce boş bırakıp, ardından <tt>passwd ozgur</tt>
+        komutuyla bir parola atayın.
+      </div><div class="para">
+        <tt>/etc/shadow</tt> dosyasında kullanılabilecek parametreler
+        için shadow(5) man dosyasına göz gezdirin.
+      </div><div class="para">
+        Ardından <tt>/home/ozgur</tt> dizinini oluşturun. Dizinin grubunu da ayarlayın. Çok gerekli olmasa da gelen e-postalar için <tt>/var/spool/mail</tt> dizininde bir dosya tanımlayın ve <tt>/etc/skel</tt> içinde yeralan dosyaları kullanıcının
+        dizinine kopyalayın.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# mkdir /home/ozgur
+# chown -R ozgur.users /home/ozgur
+# touch /var/spool/mail/ozgur
+# chown ozgur.mail /var/spool/mail/ozgur
+</pre></div></div>
+      <div class="para">
+        Yukarıda yazılan elle kullanıcı girme işlemi, shadow kullanan Linux
+        makinaları için geçerlidir. Shadow için <i>Güvenlik</i>
+        bölümüne göz atın.
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Kullanıcı Grubu</div><dl><dd><div class="para">
+        Eğer Linux makinanız birkaç yoğun görev üstlenmişse (örneğin www veya
+        ftp sunucusu olarak kullanılıyorsa) her bir işlem için birden fazla
+        grup tanımlanabilir. <i>users</i> grubuna bağlı kalmadan <i>wwwadm</i> veya
+        <i>ftpadm</i> gibi grup isimleri belirtebilir, bu grupları da bir veya
+        birkaç kullanıcıya ait olacak şekilde değiştirebilirsiniz.
+      </div><div class="para">
+        <i>users</i> grubunun dışında birden fazla grup tanımlanması, sistemin
+        denetlenmesini bir miktar güçleştirse de sistem güvenliğini artırır. Bazı
+        kullanıcıların birden fazla grubunun olmasıyla bu kullanıcılar rahatlıkla
+        sistemde <i>root</i> kullanıcısının üstlenmesi gereken işleri yapabilirler.
+      </div><div class="para">
+        Grup kimliğinin değiştirilmesi veya yeni grubun eklenmesi için
+        <tt>/etc/group</tt> dosyası kullanılır. Bu dosyaya grubun ismi,
+        numarası, grup parolası ve gruba ait kullanıcılar yazılır. Her
+        kullanıcının en az bir grubu vardır.
+      </div><div class="para">
+        <tt>/etc/group</tt> dosyasının iki satırında yeralan parametreler,
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+root::0:root
+sys::3:root,bin,sys,adm
+</pre></div></div>
+      <div class="para">
+        gibidir. Sırayla ":" karakteri ile ayrılmış her kolon,
+      </div>
+        <ol class="orderedlist" start="ignore" type="1"><li><div class="listitem">Grup ismi </div></li><li><div class="listitem">Grup parolası </div></li><li><div class="listitem">Grup numarası </div></li><li><div class="listitem">Gruba ait kullanıcılar</div></li></ol>
+      <div class="para">
+        şeklinde özetlenebilir. İlk sütun grup ismini belirtir. Grup ismi,
+        <tt>ls -l</tt> komutunu işletince kullanıcı isminin hemen sağında görülen
+        kelimedir. Grup parolası, gruba ait olmayan kullanıcıların dosyalarına
+        erişim sağlamak için kullanılır.
+      </div><div class="para">
+        Grup parolası nadiren kullanılır. Grup numarası, kullanıcının ait olduğu
+        grubun karşılığıdır. Son sütunda ise gruba ait kullanıcılar, her biri
+        birer virgülle ayrılmış olarak yazılır. Kullanıcı sisteme girdiği zaman
+        otomatik olarak <tt>/etc/passwd</tt> dosyasında yeralan grup ismi aktif olur, bu
+        yüzden her kullanıcının ismi <tt>/etc/groups</tt> dosyasına yazılmaz. Sistem ilk
+        kurulduğu anda birkaç grup halihazırda zaten vardır. Örneğin root grubunun
+        grup numarası 0'dır ve pekçok sistem dosyasının sahibidir, bin grubunun
+        numarası is 2 olup <tt>/usr/bin</tt> ve <tt>/bin</tt>
+        dizinlerindeki çoğu dosyanın grubudur.
+      </div><div class="para">
+        Hangi grubun (veya tanımlanmışsa grupların) içinde olduğunuzu öğrenmek
+        için <tt>groups</tt> komutunu kullanabilirsiniz.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ groups gorkem
+users
+</pre></div></div>
+      </dd></dl> <div class="head3"><a name="id3" id="id3"></a>Kullanıcının  Hesabının Silinmesi</div><dl><dd><div class="para">
+        Bir kullanıcıya ait hesabı silmek için <tt>/etc/passwd</tt> dosyasında bu
+        kullanıcıya ait olan satırdaki parola kolonunun başına <i>*</i> işareti
+        koyun. Bir şifrelenmiş bir parolanın içinde <i>*</i> karakteri olamayacağından
+        bu kullanıcı bir daha sisteme giremez.
+      </div><div class="para">
+        Hesabı tamamen silmek için, kullanıcının ev dizinini ve e-postalarını
+        yedekledikten sonra sistemde kullanıcıya ait olan dosyaları
+        (<tt>/tmp</tt> altında) ve ev dizinini silin.
+      </div><div class="para">
+        <tt>/etc/passwd</tt> ve <tt>/etc/group</tt>
+        dosyasından kullanıcının isminin geçtiği satırları kaldırın.
+      </div><div class="para">
+        Sistemde kullanıcıya ait olabilecek tüm dosyaları da silmeniz
+        gerekebilir. Bunun için <tt>find</tt> kullanabilirsiniz.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ find / -user gorkem -ls -exec rm {} \;
+</pre></div></div>
+      <div class="para">
+        Bu komutu <tt>/etc/passwd</tt> dosyasından kullanıcı ismine
+        ait olan satırı kaldırmadan önce yapmalısınız.
+      </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-5.2.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../lis/archive-tlkg-lis-5.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-5.4.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Sistem Kuralları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Sistemin Yedeklenmesi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

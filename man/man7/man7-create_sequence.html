@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:25:22+03:00" /><title>CREATE SEQUENCE</title><link rel="icon" type="image/png" href="../../images/belgeler-logo.png" /><link rel="stylesheet" href="../../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../../man/man7/man7.html" title="SQL Deyimleri, Makro Paketleri vs." /><link rel="previous" href="../../man/man7/man7-create_schema.html" title="CREATE SCHEMA" /><link rel="next" href="../../man/man7/man7-create_table.html" title="CREATE TABLE" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">CREATE SEQUENCE</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../../man/man7/man7-create_schema.html">Önceki</a> </td><th width="60%" align="center">SQL Deyimleri, Makro Paketleri vs.</th><td width="20%" align="right"> <a accesskey="n" href="../../man/man7/man7-create_table.html">Sonraki</a></td></tr></table></td></tr></table><div class="refentry"><a name="tr-man7-create_sequence" id="tr-man7-create_sequence"></a><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="25%"><b>CREATE SEQUENCE(7)</b></td><td class="mheadfoot" align="center" width="50%"><b>SQL - Dil Deyimleri</b> </td><td class="mheadfoot" align="right" width="25%"><b>CREATE SEQUENCE(7)</b></td></tr></table></div><dl><dt class="head3">İSİM</dt><dd>CREATE SEQUENCE — yeni bir kayıt listesi üreteci tanımlar<br /></dd><dd><div class="para"></div></dd><dt class="head3">KULLANIM</dt><dd><div class="para"><div class="para"><div align="center"><pre class="synopsis"><b><tt>CREATE</tt></b> [ <b><tt>TEMPORARY</tt></b> | <b><tt>TEMP</tt></b> ] <b><tt>SEQUENCE</tt></b> <i>isim</i> [ <b><tt>INCREMENT</tt></b> [ <b><tt>BY</tt></b> ] <i>artış</i> ]
+    [ <b><tt>MINVALUE</tt></b> <i>asgarideğer</i> | <b><tt>NO MINVALUE</tt></b> ]
+    [ <b><tt>MAXVALUE</tt></b> <i>azami_değer</i> | <b><tt>NO MAXVALUE</tt></b> ]
+    [ <b><tt>START</tt></b> [ <b><tt>WITH</tt></b> ] <i>başlangıç</i> ]
+    [ <b><tt>CACHE</tt></b> <i>kayıt_sayısı</i> ] [ [ <b><tt>NO</tt></b> ] <b><tt>CYCLE</tt></b> ]
+</pre></div></div></div></dd><dt class="head3">Açıklama</dt><dd><div class="para">
+<b><tt>CREATE SEQUENCE</tt></b> yeni bir kayıt listesi üreteci oluşturur. Bunu <i><tt>isim</tt></i> isimli yeni bir özel tek satırlık tabloyu oluşturarak ve ilklendirirerek yapar. Komutu kullanan üretecin sahibi olur.
+  </div><div class="para">
+Bir şema ismi verilmişse, kayıt listesi belirtilen şemada oluşturulur. Aksi takdirde, o anki şemada oluşturulur. Geçici kayıt listeleri özel bir şema içinde mevcuttur, dolayısıyla bir geçici kayıt listesi oluştururken bir şema ismi belirtilmemelidir. Satır listesinin ismi aynı şemadaki başka bir kayıt listesi, tablo, indeks ya da sanal tablo ile çakışmayacak şekilde seçilmelidir.
+  </div><div class="para">
+Bir kayıt listesi oluşturulduktan sonra, üzerinde <b><tt>nextval</tt></b>, <b><tt>currval</tt></b> ve <b><tt>setval</tt></b> işlevleri ile işlem yapabilirsiniz. Bu işlevlerin açıklamalarını <a class="ulink" href="http://belgeler.org.tr/uygulamalar/pgsql/pgsql-functions-sequence.html" target="_top">http://belgeler.org.tr/uygulamalar/pgsql/pgsql-functions-sequence.html</a> adresinde bulabilirsiniz.
+  </div><div class="para">
+Bir kayıt listesini doğrudan göncelleyemezsiniz, bir kayıt listesinin o anki durumunu ve parametrelerini incelemek için şöyle bir sorgu kullanabilirsiniz:
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">SELECT * FROM <i><tt>isim</tt></i>;
+</pre></div></div>
+  <div class="para">
+Kısmen, kayıt listesinin <tt>last_value</tt> alanı herhangi bir oturum tarafından ayrılmış son değeri gösterir. (Şüphesiz, başka oturumlar o an <b><tt>nextval</tt></b> çağrıları yapıyorsa, aldığınız değer atıl olmuş olabilir.)
+  </div></dd><dt class="head3">Parametreler</dt><dd><div class="variablelist"><dl><dt><b><tt>TEMPORARY</tt></b> veya <b><tt>TEMP</tt></b></dt><dd class="varlist"><div class="para">Belirtilmişse, kayıt listesi nesnesi sadece bu oturum için oluşturulur ve oturum sonunda silinir. Aynı isimdeki kalıcı kayıt listelerinin varlığı durumunda, bunlara şema nitelemeli isimlerle erişilmedikçe, geçici şemanın varlığı durumunda görünür olmazlar.
+     </div></dd><dt><i><tt>isim</tt></i></dt><dd class="varlist"><div class="para">Oluşturulacak kayıt listesinin ismi (şema nitelemeli olabilir).
+     </div></dd><dt><i><tt>artış</tt></i></dt><dd class="varlist"><div class="para">İsteğe bağlı <tt>INCREMENT BY </tt><i><tt>artış</tt></i> deyimi,  yeni değeri oluşturmak üzere o anki sıra değerine eklenecek değeri belirtmek için kullanılır. Bir pozitif değer bir artan değerli liste, negatif bir değer ise azalan değerli bir liste oluşturacaktır. Öntanımlı değer 1'dir.
+     </div></dd><dt><i><tt>asgarideğer</tt></i></dt><dt><b><tt>NO MINVALUE</tt></b></dt><dd class="varlist"><div class="para">İsteğe bağlı <b><tt>MINVALUE </tt></b><i><tt>asgarideğer</tt></i> deyimi üretilen bir kayıt listesinin asgari sıra değerini belirlemekte kullanılır. Belirtilmezse ya da <b><tt>NO MINVALUE</tt></b>  belirtilirse, öntanımlı sıra değeri kullanılır. Öntanımlı değer artan değerli bir liste için 1, azalan değerli bir liste için 2<sup><tt>63</tt></sup>-1'dir.
+     </div></dd><dt><i><tt>azami_değer</tt></i></dt><dt><b><tt>NO MAXVALUE</tt></b></dt><dd class="varlist"><div class="para">İsteğe bağlı <b><tt>MAXVALUE </tt></b><i><tt>azami_değer</tt></i> deyimi üretilen bir kayıt listesinin azami sıra değerini belirlemekte kullanılır. Belirtilmezse ya da <b><tt>NO MAXVALUE</tt></b>  belirtilirse, öntanımlı sıra değeri kullanılır. Öntanımlı değer artan değerli bir liste için 2<sup><tt>63</tt></sup>-1, azalan değerli bir liste için -1'dir.
+     </div></dd><dt><i><tt>başlangıç</tt></i></dt><dd class="varlist"><div class="para">İsteğe bağlı <b><tt>START WITH </tt></b><i><tt>başlangıç</tt></i>  deyimi kayıt listesinin başlangıcını belirtmek için kullanılır. Öntanımlı başlangıç değeri, artan değerli bir liste için <i><tt>asgarideğer</tt></i>, azalan değerli bir liste için <i><tt>azami_değer</tt></i>'dir.
+     </div></dd><dt><i><tt>satır_sayısı</tt></i></dt><dd class="varlist"><div class="para">İsteğe bağlı <b><tt>CACHE </tt></b><i><tt>satır_sayısı</tt></i> deyimi daha hızlı erişim için sıralı listeyi saklamak üzere bellekte yer ayrılmasını ve ilklendirilmesini sağlar. En az değer 1'dir ve bu ayrıca öntanımlıdır.
+     </div></dd><dt><b><tt>CYCLE</tt></b></dt><dt><b><tt>NO CYCLE</tt></b></dt><dd class="varlist"><div class="para"><b><tt>CYCLE</tt></b> seçeneği, artan bir değerli bir listede <i><tt>azami_değer</tt></i>, azalan değerli bir listede <i><tt>asgarideğer</tt></i> aşıldığında tekrar başlangıca dönülmesini sağlar.
+     </div><div class="para">
+<b><tt>NO CYCLE</tt></b> belirtilmişse, bir <b><tt>nextval</tt></b> çağrısı bir listenin sonunda yapıldığında bir hata döndürecektir. Ne <b><tt>CYCLE</tt></b> ne de <b><tt>NO CYCLE</tt></b> belirtilmişse, <b><tt>NO CYCLE</tt></b> öntanımlıdır.
+     </div></dd></dl></div></dd><dt class="head3">Ek Bilgi</dt><dd><div class="para">
+Bir kayıt listesini silmek için <b><tt>DROP SEQUENCE</tt></b> kullanın.
+  </div><div class="para">
+Satır listeleri <tt>bigint</tt> aritmetiğine tabidirler, dolayısıyla listedeki satır sayısı sekiz baytlık tamsayı genişliğini (-9223372036854775808 .. 9223372036854775807) aşamaz. Bazı eski platformlarda sekiz baytlık tamsayılara derleyici desteği olmadığından mecburen <tt>integer</tt> aritmetiği (-2147483648 .. +2147483647 aralığı) kullanılır.
+  </div><div class="para">
+Çok sayıda oturum tarafından ortaklaşa kullanılacak bir kayıt listesi için  <i><tt>kayıt_sayısı</tt></i> 1'den büyük seçilirse, umulmadık sonuçlar ortaya çıkabilir. Herhangi bir oturum bu sıralama değişkenine eriştiği her bir defa için bir dizi değere yer ayırıp, orada saklar ve sıralama nesnesine ait  <tt>last_value</tt> değerini bir artırır. Bundan sonraki <i><tt>kayıt_sayısı</tt></i>-1 defalık erişimde mevcut kayıt listesine dokunmadan değerler için önceden ayrılmış yerler kullanılır. Ayrılmış ama kullanılmamış yerler var ise bunlar boşa gider ve oturum bittiğinde kayıt listesinde boşluklar kalmış olur.
+  </div><div class="para">
+Bunun yanında farklı oturumlar için farklı sıralama değerleri belirlenmesi garanti edilmiş olmasına rağmen bütün oturumlar dikkate alındığında bunlar bir sıra takip etmeyebilir. Örneğin, <i><tt>kayıt_sayısı</tt></i> için 10 belirtilmiş olsun, A oturumu 1 den 10 a kadar sıra değeri ayırmış ve <tt>nextval</tt>=1 döndürmüş olsun. Daha sonra B oturumu da 11 den 20 ye kadar sıra değeri ayırmış olsun ve A oturumunun değer döndürmesini beklemeden <tt>nextval</tt>=11 döndürmüş olsun. Burada, <i><tt>kayıt_sayısı</tt></i>=1 değeri için döndürülen <tt>nextval</tt> değerleri bir sıra takip ederken 1'den büyük <i><tt>kayıt_sayısı</tt></i> değerleri için bu garanti edilemez, sadece üretilen değerlerin birbirinden farklı değerler olacakları garanti edilebilir. Ayrıca <tt>last_value</tt> değeri de henüz <tt>nextval</tt> tarafından döndürülmüş olmasa da herhangi bir oturum tarafından ayrılmış son değeri içerir.
+  </div><div class="para">
+Diğer bir önemli husus, ayrılarak belleğe alınmış değerler kullanılana kadar üzerinde <tt>setval</tt> uygulanan bir oturumun diğer oturumlar tarafından uyarılmayacağıdır.
+  </div></dd><dt class="head3">Örnekler</dt><dd><div class="para">
+101'den başlayacak ve artan sıralı olacak <tt>serial</tt> isimli kayıt listesininin oluşturulması:
+   </div>
+<div class="para"><div align="right"><pre class="programlisting">CREATE SEQUENCE serial START 101;
+</pre></div></div>
+  <div class="para">
+Bir kayıt listesinden sonraki kaydın seçilmesi:
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">SELECT nextval('serial');
+
+nextval
+---------
+    114
+</pre></div></div>
+  <div class="para">
+Bu kayıt listesinin bir <b><tt>INSERT</tt></b> cümlesinde kullanılması:
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">INSERT INTO distributors VALUES (nextval('serial'), 'nothing');
+</pre></div></div>
+  <div class="para">
+Kayıt listesi değerinin bir <b><tt>COPY FROM</tt></b> sonrasında güncellenmesi:
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">BEGIN;
+COPY distributors FROM 'input_file';
+SELECT setval('serial', max(id)) FROM distributors;
+END;
+</pre></div></div>
+  </dd><dt class="head3">Uyumluluk</dt><dd>
+<b><tt>CREATE SEQUENCE</tt></b>, SQL:2003'de belirtilmiştir. PostgreSQL<sup>TM</sup> aşağıdaki durumlar dışında standartla uyumludur:
+   <ul type="disc" class="itemizedlist"><li><div class="para">
+Standardın <tt>AS &lt;veri türü&gt;</tt> ifadesi desteklenmemektedir.
+   </div></li><li><div class="para">
+Sonraki değerin sağlanması, standardın <b><tt>NEXT VALUE FOR</tt></b> ifadesi yerine <tt>nextval()</tt> işlevi kullanılarak yapılır.
+   </div></li></ul>
+  </dd><dt class="head3">Çeviren</dt><dd><div class="para">
+Nilgün Belma Bugüner <span class="email">&lt;nilgun (at) belgeler·gen·tr&gt;</span>, Mart 2005
+</div></dd></dl><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="30%"><b>PostgreSQL</b></td><td class="mheadfoot" align="center" width="40%"></td><td class="mheadfoot" align="right" width="30%"><b>CREATE SEQUENCE(7)</b></td></tr></table></div></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../../man/man7/man7-create_schema.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../../man/man7/man7.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../../man/man7/man7-create_table.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">CREATE SCHEMA </td><td width="20%" align="center"><a accesskey="h" href="../../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> CREATE TABLE</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

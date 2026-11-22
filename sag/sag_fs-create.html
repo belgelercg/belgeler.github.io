@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:14+03:00" /><title>Bir dosya sisteminin oluşturulması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../sag/sag_fs.html" title="Dosya Sistemleri" /><link rel="previous" href="../sag/sag_fs-whose.html" title="Hangi dosya sistemi kullanılmalı?" /><link rel="next" href="../sag/sag_fs_mount-and-umount.html" title="Dosya sistemlerinin bağlanması ve ayrılması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Bir dosya sisteminin oluşturulması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../sag/sag_fs-whose.html">Önceki</a> </td><th width="60%" align="center">Dosya Sistemleri</th><td width="20%" align="right"> <a accesskey="n" href="../sag/sag_fs_mount-and-umount.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="sag_fs-create" id="sag_fs-create"></a>Bir dosya sisteminin oluşturulması</div><dl><dd><div class="para">
+      Dosya sistemleri <b><tt>mkfs</tt></b> komutu ile oluşturulur.
+      Her dosya sistemi türü için ayrı bir program kullanılır.
+      <b><tt>mkfs</tt></b> istenen dosya sistemi türüne göre ayrı
+      bir program çalıştırır. Türü <tt>-t fstype</tt> seçeneği
+      ile seçilir. Genel ve en önemli seçenekler aşağıda belirtilmiştir.
+      Ayrıntılı bilgi için komutun kılavuz sayfasına bakılabilir.
+    </div>
+      <div class="variablelist"><dl><dt><span class="term"><tt>-t dstürü</tt></span></dt><dd class="varlist"><div class="para">
+            Dosya sisteminin türü seçilir.
+          </div></dd><dt><span class="term"><tt>-c</tt></span></dt><dd class="varlist"><div class="para">
+            Bozuk bloklar için tarama yapar ve bozuk blok listesini
+            hazırlar.
+          </div></dd><dt><span class="term">-l DOSYA</span></dt><dd class="varlist"><div class="para">
+            Daha önceki bozuk blok listesini DOSYA isimli
+            dosyadan okur.
+          </div></dd></dl></div>
+    <div class="para">
+      Disket üzerinde ext2 dosya sistemi oluşturmak için aşağıdaki komutları
+      uygulamak gerekir:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>fdformat -n /dev/fd0u1440</tt></b>
+Çift-yüzlü, 80 iz, 18 sektör/iz. Toplam 1440 kB.
+Biçemlendiriliyor...tamam
+
+<tt>#</tt> <b><tt>badblocks /dev/fd0u1440 1440 $&gt;$ bad-blocks</tt></b>
+<tt>#</tt> <b><tt>mkfs -t ext2 -l bad-blocks /dev/fd0u1440</tt></b>
+mke2fs 1.25 (20-Sep-2001)
+Dosya sistemi ismi =
+İşl. Sist. türü: Linux
+Blok boyu = 1024 (günlük kaydı = 0)
+Adımlama boyu = 1024 (günlük kaydı = 0)
+184 düğüm, 1440 blok
+72 blok (%5.00) süper kullanıcı için ayrıldı
+İlk veri bloğu = 1
+1 blok grubu
+Grup başına 8192 blok ve 8192 sekme
+grup başına 184 düğüm
+
+Düğüm tabloları yazılıyor: bitti
+Süperblokların ve dosya sisteminin hesap bilgileri yazılıyor: bitti
+
+Bu dosya sistemi her 30 bağlamada bir ya da 180 günde bir, hangisi önce
+gerçekleşirse, otomatik olarak denetlenecektir. Bu değerleri değiştirmek
+için tune2fs'yi -c veya -i seçeneği ile çalıştırınız.
+<tt>#</tt>
+</pre></div></div>
+    <div class="para">
+      İlk önce disket biçemleniyor ( <tt>-n</tt> seçeneği bozuk
+      sektör taraması gibi ek faaliyetlerin yapılmasını önler). Daha
+      sonra bozuk sektör taraması, sonuçları <tt>bad-blocks</tt>
+      isimli bir dosyaya yönlendirilecek şekilde <b><tt>badblocks</tt></b>
+      ile yapılıyor. En sonunda, <b><tt>badblocks</tt></b>  komutu ile
+      bulunan bozuk sektör listesi okutularak bir dosya sistemi
+      oluşturuluyor.
+    </div><div class="para">
+      <b><tt>mkfs</tt></b>  ile <tt>-c</tt> seçeneği
+      ayrı bir dosya ve <b><tt>badblocks</tt></b> komutu yerine
+      kullanılabilirdi.  Aşağıda buna bir örnek görmekteyiz.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+<tt>#</tt> <b><tt>mkfs -t ext2 -c /dev/fd0u1440</tt></b>
+mke2fs 1.25 (20-Sep-2001)
+Dosya sistemi ismi =
+İşl. Sist. türü: Linux
+Blok boyu = 1024 (günlük kaydı = 0)
+Adımlama boyu = 1024 (günlük kaydı = 0)
+184 düğüm, 1440 blok
+72 blok (%5.00) süper kullanıcı için ayrıldı
+İlk veri bloğu = 1
+1 blok grubu
+Grup başına 8192 blok ve 8192 sekme
+grup başına 184 düğüm
+
+Hatalı bloklar için denetleniyor (salt-oku testi): bitti
+Düğüm tabloları yazılıyor: bitti
+Süperblokların ve dosya sisteminin hesap bilgileri yazılıyor: bitti
+
+Bu dosya sistemi her 30 bağlamada bir ya da 180 günde bir, hangisi önce
+gerçekleşirse, otomatik olarak denetlenecektir. Bu değerleri değiştirmek
+için tune2fs'yi -c veya -i seçeneği ile çalıştırınız.
+<tt>#</tt>
+</pre></div></div>
+    <div class="para">
+      <tt>-c</tt> seçeneği başka bir dosya ile birlikte
+      <b><tt>badblocks</tt></b>  komutunu kullanmaktan daha uygun
+      bir kullanım şeklidir. Ama daha sonra bozuk blokları bulmak için
+      <b><tt>badblocks</tt></b> komutu yeniden kullanılmak zorundadır.
+      Sabit disk veya bir bölüm üzerinde dosya sistemi hazırlamak
+      disketler için yapılan işlemler ile benzerlik gösterir. Sadece
+      biçemlemek mecburi değildir.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../sag/sag_fs-whose.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../sag/sag_fs.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../sag/sag_fs_mount-and-umount.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Hangi dosya sistemi kullanılmalı? </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Dosya sistemlerinin bağlanması ve ayrılması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

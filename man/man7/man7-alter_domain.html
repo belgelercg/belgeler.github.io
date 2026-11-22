@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:25:14+03:00" /><title>ALTER DOMAIN</title><link rel="icon" type="image/png" href="../../images/belgeler-logo.png" /><link rel="stylesheet" href="../../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../../man/man7/man7.html" title="SQL Deyimleri, Makro Paketleri vs." /><link rel="previous" href="../../man/man7/man7-alter_database.html" title="ALTER DATABASE" /><link rel="next" href="../../man/man7/man7-alter_function.html" title="ALTER FUNCTION" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">ALTER DOMAIN</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../../man/man7/man7-alter_database.html">Önceki</a> </td><th width="60%" align="center">SQL Deyimleri, Makro Paketleri vs.</th><td width="20%" align="right"> <a accesskey="n" href="../../man/man7/man7-alter_function.html">Sonraki</a></td></tr></table></td></tr></table><div class="refentry"><a name="tr-man7-alter_domain" id="tr-man7-alter_domain"></a><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="25%"><b>ALTER DOMAIN(7)</b></td><td class="mheadfoot" align="center" width="50%"><b>SQL - Dil Deyimleri</b> </td><td class="mheadfoot" align="right" width="25%"><b>ALTER DOMAIN(7)</b></td></tr></table></div><dl><dt class="head3">İSİM</dt><dd>ALTER DOMAIN — bir veri alanının tanımını değiştirir<br /></dd><dd><div class="para"></div></dd><dt class="head3">KULLANIM</dt><dd><div class="para"><div class="para"><div align="center"><pre class="synopsis"><b><tt>ALTER DOMAIN</tt></b> <i>isim</i>
+    { <b><tt>SET DEFAULT</tt></b> <i>ifade</i> | <b><tt>DROP DEFAULT</tt></b> }
+<b><tt>ALTER DOMAIN</tt></b> <i>isim</i>
+    { <b><tt>SET</tt></b> | <b><tt>DROP</tt></b> } <b><tt>NOT NULL</tt></b>
+<b><tt>ALTER DOMAIN</tt></b> <i>isim</i>
+    <b><tt>ADD</tt></b> <i>alan-kısıtı</i>
+<b><tt>ALTER DOMAIN</tt></b> <i>isim</i>
+    <b><tt>DROP CONSTRAINT</tt></b> <i>kısıt-ismi</i> [ <b><tt>RESTRICT</tt></b> | <b><tt>CASCADE</tt></b> ]
+<b><tt>ALTER DOMAIN</tt></b> <i>isim</i>
+    <b><tt>OWNER TO</tt></b> <i>yeni-aidiyet</i>
+</pre></div></div></div></dd><dt class="head3">Açıklama</dt><dd><div class="para">
+<b><tt>ALTER DOMAIN</tt></b> mevcut bir veri alanının tanımını değiştirir. Çeşitli alt biçimleri vardır:
+  </div><div class="variablelist"><dl><dt><b><tt>SET/DROP DEFAULT</tt></b></dt><dd class="varlist"><div class="para">Bu biçim bir alanın öntanımlı değerini belirlemek ya da silmek için kullanılır. Burada belirlenen öntanımlılar sadece bu cümleden sonraki  <b><tt>INSERT</tt></b> cümlelerine uygulanır; bu veri alanının kullanıldığı bir tablodaki mevcut satırlar etkilenmezler.
+     </div></dd><dt><b><tt>SET/DROP NOT NULL</tt></b></dt><dd class="varlist"><div class="para">Bu biçim bir veri alanının NULL değerlere izin verip vermeyeceğini belirlemek için kullanılır. Sadece, bu veri alanını kullanıldığı sütunlar NULL değer içermediği takdirde <b><tt>SET NOT NULL</tt></b> yapabilirsiniz.
+     </div></dd><dt><b><tt>ADD </tt></b><i><tt>alan-kısıtı</tt></i></dt><dd class="varlist"><div class="para">Bu biçim <tt><b>CREATE DOMAIN</b>[<a href="../../man/man7/man7-create_domain.html">create_domain(7)</a>]</tt> ile aynı sözdizimini kullanarak bir veri alanına yeni bir kısıt eklemek için kullanılır. Bu sadece veri alanının kullanıldığı tüm sütunlar yeni kısıtı yerine getirebiliyorsa başarılı olacaktır.
+     </div></dd><dt><b><tt>DROP CONSTRAINT</tt></b></dt><dd class="varlist"><div class="para">Bu biçim bir veri alanındaki kısıtları siler.
+     </div></dd><dt><b><tt>OWNER</tt></b></dt><dd class="varlist"><div class="para">Bu biçim belirtilen kullanıcıyı veri alanının sahibi yapar.
+     </div></dd></dl></div>
+  <div class="para">
+Sadece ayrıcalıklı kullanıcı tarafından kullanılabilen <b><tt>ALTER DOMAIN OWNER</tt></b> biçimi dışında, <b><tt>ALTER DOMAIN</tt></b> kullanmak için veri alanının sahibi olmalısınız.
+  </div></dd><dt class="head3">Parametreler</dt><dd>
+    <dl><dt><span class="glossterm"><i><tt>name</tt></i></span></dt><dd class="halfpara"><div class="para">Değiştirilecek mevcut bir veri alanının ismi (şema nitelemeli olabilir).
+       </div></dd><dt><span class="glossterm"><i><tt>alan-kısıtı</tt></i></span></dt><dd class="halfpara"><div class="para">Veri alanı için yeni alan kısıtı.
+       </div></dd><dt><span class="glossterm"><i><tt>kısıt-ismi</tt></i></span></dt><dd class="halfpara"><div class="para">Silinecek mevcut bir kısıtın ismi.
+       </div></dd><dt><span class="glossterm"><b><tt>CASCADE</tt></b></span></dt><dd class="halfpara"><div class="para">Kısıta bağımlı nesneleri özdevimli siler.
+       </div></dd><dt><span class="glossterm"><b><tt>RESTRICT</tt></b></span></dt><dd class="halfpara"><div class="para">Kısıta bağımlı bir nesne varsa, kısıtın silinmesini önler. Bu davranış öntanımlıdır.
+       </div></dd><dt><span class="glossterm"><i><tt>yeni-aidiyet</tt></i></span></dt><dd class="halfpara"><div class="para">Veri alanının yeni sahibinin kullanıcı ismi.
+       </div></dd></dl>
+   </dd><dt class="head3">Örnekler</dt><dd><div class="para">
+Bir veri alanına bir <b><tt>NOT NULL</tt></b> kısıtı eklemek için:
+   </div>
+<div class="para"><div align="right"><pre class="programlisting">ALTER DOMAIN zipcode SET NOT NULL;
+</pre></div></div>
+   <div class="para">
+Bir veri alanında bir <b><tt>NOT NULL</tt></b> kısıtını kaldırmak için:
+   </div>
+<div class="para"><div align="right"><pre class="programlisting">ALTER DOMAIN zipcode DROP NOT NULL;
+</pre></div></div>
+  <div class="para">
+Bir veri alanına bir sınama kısıtı eklemek için:
+   </div>
+<div class="para"><div align="right"><pre class="programlisting">ALTER DOMAIN zipcode
+    ADD CONSTRAINT zipchk CHECK (char_length(VALUE) = 5);
+</pre></div></div>
+  <div class="para">
+Bir veri alanından bir sınama kısıtını kaldırmak için:
+   </div>
+<div class="para"><div align="right"><pre class="programlisting">ALTER DOMAIN zipcode DROP CONSTRAINT zipchk;
+</pre></div></div>
+  </dd><dt class="head3">Uyumluluk</dt><dd><div class="para">
+Bir PostgreSQL<sup>TM</sup> oluşumu olarak <b><tt>OWNER</tt></b>'lı biçim dışında <b><tt>ALTER DOMAIN</tt></b> cümleleri SQL:1999 ile uyumludur.
+ </div></dd><dt class="head3">İlgili Belgeler</dt><dd><div class="para">
+<tt><b>CREATE DOMAIN</b>[<a href="../../man/man7/man7-create_domain.html">create_domain(7)</a>]</tt>,
+<tt><b>DROP DOMAIN</b>[<a href="../../man/man7/man7-drop_domain.html">drop_domain(7)</a>]</tt>.
+ </div></dd><dt class="head3">Çeviren</dt><dd><div class="para">
+Nilgün Belma Bugüner <span class="email">&lt;nilgun (at) belgeler·gen·tr&gt;</span>, Mart 2005
+</div></dd></dl><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="30%"><b>PostgreSQL</b></td><td class="mheadfoot" align="center" width="40%"></td><td class="mheadfoot" align="right" width="30%"><b>ALTER DOMAIN(7)</b></td></tr></table></div></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../../man/man7/man7-alter_database.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../../man/man7/man7.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../../man/man7/man7-alter_function.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">ALTER DATABASE </td><td width="20%" align="center"><a accesskey="h" href="../../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> ALTER FUNCTION</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

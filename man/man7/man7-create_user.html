@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:25:23+03:00" /><title>CREATE USER</title><link rel="icon" type="image/png" href="../../images/belgeler-logo.png" /><link rel="stylesheet" href="../../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../../man/man7/man7.html" title="SQL Deyimleri, Makro Paketleri vs." /><link rel="previous" href="../../man/man7/man7-create_type.html" title="CREATE TYPE" /><link rel="next" href="../../man/man7/man7-create_view.html" title="CREATE VIEW" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">CREATE USER</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../../man/man7/man7-create_type.html">Önceki</a> </td><th width="60%" align="center">SQL Deyimleri, Makro Paketleri vs.</th><td width="20%" align="right"> <a accesskey="n" href="../../man/man7/man7-create_view.html">Sonraki</a></td></tr></table></td></tr></table><div class="refentry"><a name="tr-man7-create_user" id="tr-man7-create_user"></a><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="25%"><b>CREATE USER(7)</b></td><td class="mheadfoot" align="center" width="50%"><b>SQL - Dil Deyimleri</b> </td><td class="mheadfoot" align="right" width="25%"><b>CREATE USER(7)</b></td></tr></table></div><dl><dt class="head3">İSİM</dt><dd>CREATE USER — yeni bir veritabanı kullanıcısı hesabı tanımlar<br /></dd><dd><div class="para"></div></dd><dt class="head3">KULLANIM</dt><dd><div class="para"><div class="para"><div align="center"><pre class="synopsis"><b><tt>CREATE USER</tt></b> <i>isim</i> [ [ <b><tt>WITH</tt></b> ] <i>seçenek</i> [ ... ] ]
+
+burada <i>seçenek</i>:
+
+      <b><tt>SYSID</tt></b> <i>uid</i>
+    | <b><tt>CREATEDB</tt></b> | <b><tt>NOCREATEDB</tt></b>
+    | <b><tt>CREATEUSER</tt></b> | <b><tt>NOCREATEUSER</tt></b>
+    | <b><tt>IN GROUP</tt></b> <i>grup_ismi</i> [, ...]
+    | [ <b><tt>ENCRYPTED</tt></b> | <b><tt>UNENCRYPTED</tt></b> ] <b><tt>PASSWORD</tt></b> '<i>parola</i>'
+    | <b><tt>VALID UNTIL</tt></b> '<i>mutlak_zaman</i>'
+</pre></div></div></div></dd><dt class="head3">Açıklama</dt><dd><div class="para">
+<b><tt>CREATE USER</tt></b> bir PostgreSQL veritabanı kümesine yeni bir kullanıcı ekler. Bu komutu kullanmak için bir veritabanı ayrıcalıklı kullanıcısı olmalısınız. Kullanıcı ve kimlik kanıtlama işlemleri hakkında bilgi edinmek için:<br />
+<a class="ulink" href="http://www.postgresql.org/docs/8.0/static/user-manag.html" target="_top">http://www.postgresql.org/docs/8.0/static/user-manag.html</a><br />
+<a class="ulink" href="http://www.postgresql.org/docs/8.0/static/client-authentication.html" target="_top">http://www.postgresql.org/docs/8.0/static/client-authentication.html</a>
+  </div></dd><dt class="head3">Parametreler</dt><dd><div class="variablelist"><dl><dt><i><tt>isim</tt></i></dt><dd class="varlist"><div class="para">Yeni kullanıcının ismi.
+      </div></dd><dt><i><tt>uid</tt></i></dt><dd class="varlist"><div class="para"><b><tt>SYSID</tt></b> deyimi yeni kullanıcının PostgreSQL kullanıcı kimliğini seçmekte kullanılabilir. Bu normalde gerekmez, ama eğer öksüz kalmış bir nesneyi yeniden oluşturuyorsanız yararlı olabilir.
+       </div><div class="para">
+Eğer belirtilmezse, yeni kullanıcı kimliği öntanımlı olarak atanmış en büyük kullanıcı kimliğine (alt sınır 100) bir eklenerek oluşturulur.
+      </div></dd><dt><b><tt>CREATEDB</tt></b></dt><dt><b><tt>NOCREATEDB</tt></b></dt><dd class="varlist"><div class="para">Bu deyimler yeni kullanıcının veritabanı oluşturabilme yeterliliğini belirler. Eğer <b><tt>CREATEDB</tt></b> belirtilmişse, kullanıcı kendi veritabanını oluşturabilir olarak tanımlanmış olur. <b><tt>NOCREATEDB</tt></b> kullanıcıya veritabanı oluşturma yeterliliğini vermeyecektir. Hiçbiri belirtilmezse, <b><tt>NOCREATEDB</tt></b> öntanımlıdır.
+      </div></dd><dt><b><tt>CREATEUSER</tt></b></dt><dt><b><tt>NOCREATEUSER</tt></b></dt><dd class="varlist"><div class="para">Bu deyimler yeni kullanıcıya, yeni kullanıcılar oluşturabilme izni verilmesi ile ilgilidir. <b><tt>CREATEUSER</tt></b> ayrıca, kullanıcıyı tüm erişim izinlerini düzenleyebilme yetkisi olan bir ayrıcalıklı kullanıcı haline getirir. Hiçbiri belirtilmezse, <b><tt>NOCREATEUSER</tt></b> öntanımlıdır.
+      </div></dd><dt><i><tt>grup_ismi</tt></i></dt><dd class="varlist"><div class="para">Yeni kullanıcının üyesi yapılacağı mevcut gruplardan birinin ismi. Çok sayıda grup ismi listelenebilir.
+      </div></dd><dt><i><tt>parola</tt></i></dt><dd class="varlist"><div class="para">Kullanıcının parolası. Parolalı kimlik kanıtlaması kullanmayı planlamıyorsanız, bu seçeneği atlayabilirsiniz, ama daha sonra kararınızı değiştirirseniz, kullanıcı bağlanamayabilecektir. Parola <tt><b>ALTER USER</b>[<a href="../../man/man7/man7-alter_user.html">alter_user(7)</a>]</tt> kullanarak sonradan atanabilir veya değiştirilebilir.
+      </div></dd><dt><b><tt>ENCRYPTED</tt></b></dt><dt><b><tt>UNENCRYPTED</tt></b></dt><dd class="varlist"><div class="para">Bu sözcükler parolanın sistem kataloğunda şifreli saklanıp saklanmayacağı ile ilgilidir. Hiçbiri belirtilmezse, öntanımlı davranış  <tt>password_encryption</tt> yapılandırma parametresine göre saptanır. Eğer mevcut parola zaten MD-5 şifreli biçimdeyse, bu sözcüklerden hangisi belirtilmiş olursa olsun, olduğu gibi saklanır (zaten, şifreli bir parolayı sistem çözemez). Bu, veritabanı dökümlenirken veya yerine konurken de böyledir.
+       </div><div class="para">
+Çok eski istemcilerin, parolaların şifreli saklanmasını gerektiren MD-5 kimlik kanıtlama mekanizması için destekten yoksun olabileceğini unutmayın.
+      </div></dd><dt><i><tt>mutlak_zaman</tt></i></dt><dd class="varlist"><div class="para">Kullanıcının parolasının geçerliliğini yitireceği zamanı belirtmek için kullanılır. <b><tt>VALID UNTIL</tt></b> deyimi atlanırsa, parola daima geçerli olacaktır.
+      </div></dd></dl></div></dd><dt class="head3">Ek Bilgi</dt><dd><div class="para">
+Bir kullanıcının özniteliklerine değiştirmek için <tt><b>ALTER USER</b>[<a href="../../man/man7/man7-alter_user.html">alter_user(7)</a>]</tt>, bir kullanıcıyı silmek için de <tt><b>DROP USER</b>[<a href="../../man/man7/man7-drop_user.html">drop_user(7)</a>]</tt> kullanın. Bir kullanıcıyı bir gruba eklemek ya da gruptan çıkarmak için <tt><b>ALTER GROUP</b>[<a href="../../man/man7/man7-alter_group.html">alter_group(7)</a>]</tt> kullanın.
+  </div><div class="para">
+PostgreSQL<sup>TM</sup>, <b><tt>CREATE USER</tt></b> ile aynı işlevselliğe sahip olan <tt><b>createuser(1)</b></tt> diye bir uygulama içerir (Aslında o da bu komutu kullanır), fakat o komut satırından çalışır.
+  </div><div class="para">
+<b><tt>VALID UNTIL</tt></b> deyimi kullanıcının hesabı için değil sadece kullanıcının parolası için son geçerlilik tarihini belirler. Parolasız kimlik kanıtlama yöntemi kullanılırken, bu değerin bir hükmü olmayacaktır.
+  </div></dd><dt class="head3">Örnekler</dt><dd><div class="para">
+Parolasız bir kullanıcı tanımlamak için:
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">CREATE USER jonathan;</pre></div></div>
+  <div class="para">
+Parolalı bir kullanıcı tanımlamak için:
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">CREATE USER davide WITH PASSWORD 'jw8s0F4';</pre></div></div>
+  <div class="para">
+Parolasının son kullanma tarihi 2004 olan bir kullanıcı tanımlamak için:
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">CREATE USER miriam WITH PASSWORD 'jw8s0F4' VALID UNTIL '2005-01-01';
+</pre></div></div>
+  <div class="para">
+Burada parola 2005'in ilk saniyesinde geçersiz olacaktır.
+  </div><div class="para">
+Veritabanı oluşturabilme yetkisi olan bir kullanıcı oluşturmak için:
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">CREATE USER manuel WITH PASSWORD 'jw8s0F4' CREATEDB;
+</pre></div></div>
+  </dd><dt class="head3">Uyumluluk</dt><dd><div class="para">
+<b><tt>CREATE USER</tt></b> cümlesi bir PostgreSQL<sup>TM</sup> oluşumudur.  SQL standardı kullanıcı tanımlamayı gerçeklemeye bırakmıştır.
+  </div></dd><dt class="head3">İigili Belgeler</dt><dd><div class="para">
+<tt><b>ALTER USER</b>[<a href="../../man/man7/man7-alter_user.html">alter_user(7)</a>]</tt>,
+<tt><b>DROP USER</b>[<a href="../../man/man7/man7-drop_user.html">drop_user(7)</a>]</tt>,
+<tt><b>createuser(1)</b></tt>.
+  </div></dd><dt class="head3">Çeviren</dt><dd><div class="para">
+Nilgün Belma Bugüner <span class="email">&lt;nilgun (at) belgeler·gen·tr&gt;</span>, Nisan 2005
+</div></dd></dl><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="30%"><b>PostgreSQL</b></td><td class="mheadfoot" align="center" width="40%"></td><td class="mheadfoot" align="right" width="30%"><b>CREATE USER(7)</b></td></tr></table></div></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../../man/man7/man7-create_type.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../../man/man7/man7.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../../man/man7/man7-create_view.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">CREATE TYPE </td><td width="20%" align="center"><a accesskey="h" href="../../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> CREATE VIEW</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

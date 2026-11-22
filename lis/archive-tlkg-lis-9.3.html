@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:30:28+03:00" /><title>BIND Yapılandırması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../lis/archive-tlkg-lis-9.html" title="DNS (Alan İsimlendirme Sistemi)" /><link rel="previous" href="../lis/archive-tlkg-lis-9.2.html" title="TCP/IP uygulamaları ve DNS" /><link rel="next" href="../lis/archive-tlkg-lis-9.4.html" title="host ve nslookup Programlarının Kullanımı" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">BIND Yapılandırması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-9.2.html">Önceki</a> </td><th width="60%" align="center">DNS (Alan İsimlendirme Sistemi)</th><td width="20%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-9.4.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="archive-tlkg-lis-9.3" id="archive-tlkg-lis-9.3"></a>BIND Yapılandırması</div><dl><dd><div class="para">
+      BIND, Linux dağıtımlarının hepsi ile gelen ve
+      alan adı sorgularına yanıt veren yazılım paketidir.
+      Açılımı Berkley Internet Domain Name şeklindedir.
+    </div><div class="para">
+      Doğrudan Linux kurulu olan bir sunucu üzerindeki BIND
+      yapılandırmasına  geçmeden  DNS  ile  ilgili  temel birkaç konudan
+      bahsetmekte fayda var.   DNS  ile  ilgili
+      yazılımları   <i>istemci</i> ve <i>sunucu</i> olarak ikiye
+      ayırmak daha doğru  olur:
+    </div><div class="para">
+      Sunucu, istemciden gelen sorgulara yanıt veren ve sürekli çalışan
+      bir  işlem  olup  BIND  paketinden  çıkan <tt> named </tt> yazılımı bu işi
+      görür. İstemcilerse Linux dağıtımlarıyla  gelen  <tt>host</tt>,  <tt>nslookup</tt>
+      vb. programlar olup  sorguyu  yapan  yazılımlardır.  Bununla  birlikte BIND
+      yapılandırmasında sıklıkla karşımıza çıkacak olan  birkaç  kavram
+      aşağıda açıklanmaktadır. Yeri  geldikçe  diğer  kavramlara da
+      değinilecektir.
+    </div>
+      <div class="variablelist"><dl></dl></div>
+    <div class="para">
+      BIND paketi bütün Linux dağıtımları ile gelir. BIND'ın yeni versiyonuna
+      ihtiyaç duyduğunuzda
+      <a class="ulink" href="ftp://ftp.metu.edu.tr/sunsite/system/daemons/dns/" target="_top">ftp.metu.edu.tr</a> adresinden paketi transfer edebilirsiniz.
+      Gerekli  kurulumları  yaptığınızda <tt>/usr/sbin</tt> dizini
+      altına <tt>named</tt> binary dosyasını koyacaktır.
+    </div><div class="para">
+      <tt>named</tt>  yapılandırması  ile  ilgili dosyalar  ve işlevleri
+      aşağıda yeralıyor.
+    </div>
+      <div class="variablelist"><dl></dl></div>
+    <div class="para">
+      Yukarıda belirtilen dosya isimlerinden named.boot dışındaki dosya
+      isimleri  genelde karşılaşılan isimler olduğu için kullanılmıştır.
+      Bu dosya isimlerini istediğiniz gibi değiştirebilirsiniz.
+    </div><div class="para">
+      ``named''  yapılandırmasıyla ilgili kullanılan örnek dosyalar
+      <tt>linux.org.tr</tt> alanının alan adı sunuculuğunu yapan
+      <tt>metu.linux.org.tr</tt> makinasından alınmıştır
+      (<tt>linux.org.tr</tt> ve
+      <tt>metu.linux.org.tr</tt> aynı sunuculardır).
+    </div> <div class="head3"><a name="id1" id="id1"></a>named.boot Dosyası</div><dl><dd><div class="para">
+        <tt>named.boot</tt> dosyası <tt>named</tt> programı çalıştığı  zaman
+        baktığı  ilk yapılandırma dosyasıdır ve <tt>/etc</tt> dizini
+        altındadır. <tt>named</tt>, bu yapılandırma dosyası ile diğer
+        dosyalara veya  DNS  tanımlarının tutulduğu  diğer  dosyalara  nasıl
+        ulaşacağını öğrenir. Aşağıda <tt>linux.org.tr</tt> sunucusuna ait
+        <tt>named.boot</tt> dosyasını göreceksiniz.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+;
+;    boot file for name server
+;
+directory /etc/namedb
+
+;type           domain                source host/file          backup file
+
+cache           .                                               root.cache
+primary         linux.org.tr                                    named.hosts
+primary         0.0.127.IN-ADDR.ARPA                            named.local
+forwarders      144.122.199.20
+</pre></div></div>
+      <div class="para">
+        <tt>named.boot</tt> dosyasında yer alan satırlara kısaca
+        göz atacak olursak,
+      </div>
+        <div class="variablelist"><dl></dl></div>
+      </dd></dl> <div class="head3"><a name="id2" id="id2"></a>Caching Only Alan Adı Sunucu Yapılandırması</div><dl><dd><div class="para">
+        <tt>linux.org.tr</tt> sunucusu üzerindeki alan adı sunucu sadece
+        <i>caching only</i> olarak  çalışacak  olsaydı,  yukarıda belirtilen
+        yapılandırma satırı aşağıdaki hale gelirdi.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+named.boot
+-----------
+;
+;    boot file for name server
+;
+;type           domain                source host/file          backup file
+
+cache           .                                               root.cache
+primary         0.0.127.IN-ADDR.ARPA                            named.local
+</pre></div></div>
+      <div class="para">
+Bu yapılandırmayla çalışan alan adı sunucusu, <tt>named.cache</tt> dosyasında yer
+alan  root  sunucuları  kullanarak  gelen  sorgulara  yanıt verip,
+sorguların yanıtlarını cache'te tutmaktadır.
+      </div></dd></dl> <div class="head3"><a name="id3" id="id3"></a>Birincil ve İkincil Alan Adı Sunucusu Yapılandırması</div><dl><dd><div class="para">
+        Yine <tt>linux.org.tr named.boot</tt> dosyasına bakacak olursak,
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+primary         linux.org.tr            named.hosts
+</pre></div></div>
+      <div class="para">
+        satırıyla  <tt>linux.org.tr</tt> makinası <tt>linux.org.tr</tt>  alanı   için
+        primary sunucu ve bu domain ile ilgili bilgilerin tutulduğu dosya
+        ise <tt>named.hosts</tt> dosyasıdır.
+      </div><div class="para">
+        Yukarıdaki satırı named.boot  dosyasına   yazmamızla   aslında
+        işimiz  bitmiyor.
+      </div><div class="para">
+        <tt>linux.org.tr</tt> sunucusu   <tt>linux.org.tr</tt>  alanı için
+        primary  olduğunu, Türkiye için root sunucu olan <tt>knidos.cc.metu.edu.tr</tt> sunucusunun da bilmesi gerekiyor. Bunun için de
+        <tt>http://www.metu.edu.tr/~dnsadmin</tt> adresinden gerekli form
+        doldurup tanımların ODTÜ'deki yöneticiler tarafından yapılması
+        gerekiyor. Bu form doğrultusunda da <tt>knidos.cc.metu.edu.tr</tt>
+        sunucusunda aşağıdaki satırların girilmesi şarttır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+linux.org.tr.           IN      NS      metu.linux.org.tr.
+metu.linux.org.tr.      IN      A       144.122.199.199
+</pre></div></div>
+      <div class="para">
+        Şu an bu işlemler zaten yapılmış olup sadece bilginiz olması için
+        bu satırlar yazılmıştır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+primary         0.0.127.IN-ADDR.ARPA    named.local
+</pre></div></div>
+      <div class="para">
+        satırıyla <tt>linux.org.tr</tt> makinasında 127.0.0.1 IP adresine karşılık
+        gelen  <i>loopback</i> isminin  tanımlarının  yer  alacağı  dosya  adı
+        verilmiştir.
+        Eğer Türkiye Linux Kullanıcıları Grubunun  kendine  ait  bir  IP
+        adres  bloğu, örneğin şu an ODTÜ'de kullanılan 144.122.199.0 bloğu
+        verilmiş ve bu blok kendi alt gruplarına dağıtılmış
+        olsaydı bu  adreslere  ait  reverse  tanımlar  yine  <tt>linux.org.tr</tt>
+        makinasında  tutulacaktı. Böyle bir durumda <tt>named.boot</tt> dosyasına
+        aşağıdaki satır benzeri bir satır daha  eklemek  gerekecekti.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+primary         199.122.144.IN-ADDR.ARPA    named.144.122.199
+</pre></div></div>
+      <div class="para">
+        Türkiye Linux Kullanıcıları Grubu için kullanılan IP adresine ait
+        gerekli reverse tanımı ilgili üniversitenin alan adı sunucusunda
+        girilmiş durumdadır. Örneğin, <tt>metu.linux.org.tr</tt>
+        için <tt>knidos.cc.metu.edu.tr</tt> sunucusunda aşağıdaki
+        satır tanımlanmıştır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+199.199.122.144         IN      PTR     metu.linux.org.tr.
+</pre></div></div>
+      <div class="para">
+        Bazı programların reverse tanımlarını kullanıyor olması nedeniyle
+        (örneğin tcpd) bu tür tanımların girilmesi önemlidir. Bir veya daha fazla
+        C sınıfı şeklinde IP adres blokları aldığınız zaman IP adresi aldığınız
+        kurumdan,
+        bu adres aralığının reverse tanımlarını sizin alan adı sunucunuza
+        yönlendirilmesini isteyebilirsiniz.   Bir C sınıfından az sayıdaki IP adresleri
+        içinse yine IP adresini aldığınız kurum gerekli reverse tanımları sizin
+        için yapmak zorundadır.
+      </div><div class="para">
+        Şu an <tt>linux.org.tr</tt> makinası herhangi bir başka primary sunucunun
+        secondary  sunucusu olmadığı için <tt>named.boot</tt> dosyasında secondary
+        geçen bir satıra rastlamadık. Örneğin <tt>linux.org.tr</tt> sunucusu
+        <tt>linux.org</tt> sunucusunun secondary  alan adı sunucusu  olduğunu
+        varsayalım, bu durumda aşağıdaki satırı <tt>named.boot</tt> dosyasına
+        eklemememiz gerekecek.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+secondary         linux.org     198.182.196.49    SEC.linux.org
+</pre></div></div>
+      <div class="para">
+Bu satırı eklediğimiz andan itibaren  <i>named</i>  belirli  aralıklarla
+gidip linux.org sunucusundan  DNS dosyalarının bir kopyasını
+linux.org.tr sunucusuna aktaracak. linux.org alanının secondary
+sunucusu oldugumuza dair bilginin de ayrıca linux.org alanının primary
+tanımlarını tutan sunucuda belirtilmesi gerekir.
+      </div></dd></dl> <div class="head3"><a name="id4" id="id4"></a>named Yapılandırma Dosyası</div><dl><dd><div class="para">
+        named  yapılandırma dosyalarında (<tt>named.hosts, named.local,
+        named.cache, named.rev</tt>) karşılaşılan yapılandırma
+        parametreleri ve ne anlama geldikleri aşağıda yeralmaktadır.
+      </div>
+        <div class="variablelist"><dl></dl></div>
+      <div class="para">
+        <tt>named.hosts, named.local</tt> vb. dosyalara girilen standart  bir  DNS
+        kaydı aşağıdaki yapıda karşımıza çıkar.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+[name] [ttl] IN type data
+</pre></div></div>
+      <div class="para">
+        [ ] içerisinde belirtilen değerler isteğe bağlı olup
+        gerekmediği durumlarda yazılmayabilir.
+      </div>
+        <div class="variablelist"><dl></dl></div>
+      <div class="para">
+        Şimdi de  bu  kısaltmaların  bulunduğu  <tt>named.cache,  named.hosts,
+        named.local</tt>  gibi  dosyalardan  birer  kesit alıp içeriklerine göz
+        atalım.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+metu:/etc/namedb# more named.cache
+;       last update:    Nov 8, 1995
+;       related version of root zone:   1995110800
+;
+;
+; formerly NS.INTERNIC.NET
+;
+.                        3600000  IN  NS    A.ROOT-SERVERS.NET.
+A.ROOT-SERVERS.NET.      3600000      A     198.41.0.4
+;
+; formerly NS1.ISI.EDU
+;
+.                        3600000      NS    B.ROOT-SERVERS.NET.
+B.ROOT-SERVERS.NET.      3600000      A     128.9.0.107
+;
+;
+</pre></div></div>
+      <div class="para">
+        Yukarıdaki dosya, root name server'ların listesinin yer aldığı
+        dosyadır. Süregelen değişiklikler doğrultusunda bu dosyada  yer
+        alan kayıtlar da değişebilirler. Sürekli güncel tutmak
+        amacıyla <tt>ftp://nic.ddn.mil/netinfo/root-servers.txt</tt>    adresinden
+        dosyanın yeni halini belirli aralıklarla almakta fayda vardır.
+      </div><div class="para">
+        <i>ttl</i> süresi  ise  olabildiğince büyük verilerek root sunucuların
+        herhangi bir şekilde cache'ten silinmesi önlenmiş olur.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+metu:/etc/namedb# more named.local
+;
+;       @(#)named.local 1.1     (Berkeley)      86/01/21
+;
+$ORIGIN 0.0.127.in-addr.arpa.
+@       IN      SOA     metu.linux.org.tr. root.metu.linux.org.tr.  (
+                                1996012201 ; Serial
+                                3600    ; Refresh
+                                300     ; Retry
+                                3600000 ; Expire
+                                14400 )  ; Minimum
+        IN      NS      metu.linux.org.tr.
+1       IN      PTR     localhost.
+</pre></div></div>
+      <div class="para">
+        <tt>IN SOA</tt> ile başlayan satırda <tt>metu.linux.org.tr</tt> adresi
+        ilgili domain konusunda yetkili sunucuyu,
+        <tt>root.metu.linux.org.tr</tt> ise herhangi bir şekilde sorun
+        olduğunda bağlantı kurulacak e-posta adresini
+        (<i>root@metu.linux.org.tr</i>) belirtir.
+      </div><div class="para">
+        Diğer bilgilerse sırayla <tt>metu.linux.org.tr</tt>'ın ``primary name server''
+        olduğunu ve 127.0.0.1 IP adresine localhost isminin karşılık geldiğini
+        belirtir.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+metu:/etc/namedb# more named.hosts
+; Authoritative data for Berkeley.EDU (ORIGIN assumed Berkeley.EDU)
+;
+$ORIGIN linux.org.tr.
+@               IN      SOA     metu.linux.org.tr. root.metu.linux.org.tr. (
+                                1997072902      ; Serial
+                                10800   ; Refresh 3 hours
+                                3600    ; Retry   1 hour
+                                3600000 ; Expire  1000 hours
+                                86400 ) ; Minimum 24 hours
+                IN      MX          10 metu
+                IN      NS          metu
+                IN      HINFO       "i486" "Linux 2.0.27"
+localhost.      IN      A           127.1
+metu            IN      A           144.122.199.199
+                IN      A           144.122.199.199
+www             IN      CNAME       metu
+ftp             IN      CNAME       metu
+gopher          IN      CNAME       metu
+listproc        IN      CNAME       metu
+ege             IN      A           155.223.97.31
+www.ege         IN      CNAME       ege
+</pre></div></div>
+      <div class="para">
+        burada diğer <tt>named.local</tt> dosyasından farklı olarak makina ismi - IP
+        adresi eşlemesi yapılmış olup <tt>MX</tt> ve <tt>CNAME</tt>
+        kavramları kullanılmıştır.
+      </div><div class="para">
+        <b><tt>MX</tt></b> tanımın bulunduğu satırda
+        <tt>linux.org.tr</tt> domaini için e-postaları alabilecek sunucu
+        <tt>metu.linux.org.tr</tt> olarak tanımlanmış. 10 rakamı ise
+        <tt>metu.linux.org.tr</tt>'nin <tt>linux.org.tr</tt> olarak gelmesi
+        gereken mesajlardaki önceliğini belirtir. Sayı ne kadar küçük
+        verilirse önceliği o kadar fazladır.
+      </div><div class="para">
+        <b><tt>HINFO</tt></b> tanımının bulunduğu satır <tt>metu.linux.org.tr</tt>'ın
+        donanım, işletim sistemi ve sürüm bilgilerini tutuyor.
+      </div><div class="para">
+        <b><tt>CNAME</tt></b> geçen satırlar ise <tt>metu.linux.org.tr</tt> makinasının
+        olması düşünülen diğer isimlerini tanımlamak için kullanıldı. Örneğin,
+        <tt>www.linux.org.tr</tt> ile <tt>metu.linux.org.tr</tt> aynı sunucular
+        olup <tt>www.linux.org.tr</tt>, <tt>metu.linux.org.tr</tt>'ın bir diğer
+        adı (alias'ı) olarak gözükmektedir.
+      </div><div class="para">
+        Bütün bu yapılandırma işlemleri bittikten sonra,
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+metu:/etc/namedb# named
+</pre></div></div>
+      <div class="para">
+        komutunu çalıştırıp <tt>nslookup</tt> veya <tt>host</tt> gibi programlar
+        yardımıyla name server'ımızın çalışıp çalışmadığını denemek kalıyor.
+        Çalıştırdığımızda verilen hata mesajları <tt>/usr/adm/mesages</tt>
+        dosyasına yazılır.
+      </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-9.2.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../lis/archive-tlkg-lis-9.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-9.4.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">TCP/IP uygulamaları ve DNS </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> host ve nslookup Programlarının Kullanımı</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

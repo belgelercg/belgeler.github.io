@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:30:26+03:00" /><title>LILO Yapılandırması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../lis/archive-tlkg-lis-2.html" title="Linux Kurulumu ve Başlangıç" /><link rel="previous" href="../lis/archive-tlkg-lis-2.4.html" title="Bilgisayarın Linux ile Açılması" /><link rel="next" href="../lis/archive-tlkg-lis-2.6.html" title="Sorun Çıktığında" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">LILO Yapılandırması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-2.4.html">Önceki</a> </td><th width="60%" align="center">Linux Kurulumu ve Başlangıç</th><td width="20%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-2.6.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="archive-tlkg-lis-2.5" id="archive-tlkg-lis-2.5"></a>LILO Yapılandırması</div><dl><dd><div class="para">
+      Eğer linux ve OS/2 ile birlikte aynı disk üzerinde çalışmayacaksanız,
+      LILO'yu öncelikli yükleyici olarak diskinizdeki diğer işletim
+      sistemlerinin açılışında rahatlıkla kullanabilirsiniz. Daha önce
+      de belirttiğim gibi OS/2'nin kendine özgü önyükleyicisi olduğundan
+      birincil önyükleyici olarak bunu kullanın, LILO'yu ise linux açmak
+      için çalıştırın.
+    </div><div class="para">
+      Slackware LILO kurulum işlemi, bazı özel durumlar için yetersiz
+      kalmaktadır. Bu gibi durumlarda dosyanın el yardımıyla yapılandırılması
+      gereklidir.
+    </div><div class="para">
+      LILO'yu değiştirmek için <tt>/etc/lilo.conf</tt> dosyası üzerinde
+      değişiklikler yapmalısınız. Aşağıda bir LILO yapılandırma örneği
+      görülüyor. Burada Linux bölümü <tt>/dev/hda2</tt>'de , MS-DOS bölümü
+      ise <tt>/dev/hdb1</tt>'de (ikinci sabit diskin ilk bölümü) bulunuyor.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+# LILO, /dev/hda uzerinde kurulacak.
+boot = /dev/hda
+
+# Linux yuklemek icin
+image = /vmlinuz      =&gt; Cekirdegin diskteki ismi /vmlinuz
+  label = linux       =&gt; Buna "linux" ismini ver. Acilis aninda
+                         ekranda "linux" yazisi gorunur
+  root = /dev/hda2    =&gt; Kok dosya sistemi olarak /dev/hda2 kullan
+  vga = ask           =&gt; (VGA ekran modu icin kullanicidan komut bekle
+
+# MS-DOS yuklemek icin
+other = /dev/hdb1     =&gt; MS-DOS bolumu
+  label = msdos       =&gt; "msdos" ismini ver
+  table = /dev/hdb    =&gt; ikinci surucu icin bolumlendirme tablosu)
+</pre></div></div>
+    <div class="para">
+      Yukarıda bir örneği görülen <tt>/etc/lilo.conf</tt> dosyasında gerekli
+      değişiklik veya düzeltmeleri yaptıktan sonra <tt>/sbin/lilo</tt> dosyasını
+      root olarak çalıştırın. Bu komut LILO önyükleyicisini sabit diske
+      kuracaktır. Bundan sonra her yeni çekirdek derlemenin ardından dosyada
+      uygun değişiklikleri yapıp aynı komutu çalıştırmalısınız.
+    </div><div class="para">
+      Şimdi sistemi sabit disten tekrar açabilirsiniz. LILO,
+      <tt>/etc/lilo.conf</tt> dosyasındaki ilk işletim sistemini
+      yükleyecektir. Başka bir sistemle açmak için önyükleme menüsünü ekrana
+      getirmelisiniz. Bunun için makina açılırken shift veya kontrol tuşlarına
+      basılı tutun. Ekrana bir açılış istemcisi gelecektir:
+    </div>
+      <div class="para"><div align="right"><pre class="screen">Boot:</pre></div></div>
+    <div class="para">
+      Burada ya açılmasını istediğiniz işletim sisteminin ismini yazın (ilk
+      kurulum sırasında MS-DOS veya linux) ya da tab tuşuna basarak listeyi
+      ekrana getirin.
+    </div><div class="para">
+      OS/2 kullanabilmek için Linux önyükleyicisini ikincil kullanmanız
+      gerekecektir. Linux'u OS/2 önyükleyicisinden açmalısınız. Bunu yapmak
+      için Linux sabit disk bölümünü OS/2 fdisk kullanarak yaratın. Ardından
+      sözkonusu bölümü FAT veya HPFS olarak biçemleyin ki OS/2 tanıyabilsin.
+    </div><div class="para">
+      Bundan sonra LILO'yu linux dosya sisteminin olduğu bölüme
+      kurun. (yukarıdaki örnekte <tt>/dev/hda2</tt>).
+      <tt>/etc/lilo.conf</tt> dosyasının linux
+      için kullanılan satırlarının son durumu şu şekilde olacaktır:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+ boot = /dev/hda2
+
+ image = /vmlinuz
+   label = linux
+   root = /dev/hda2
+</pre></div></div>
+    <div class="para">
+      <tt>/sbin/lilo</tt> dosyasının çalıştırılmasının ardından
+      OS/2 önyükleyicisine linux bölümünü tanıtın. Benzer yordamları, sorun
+      çıkaran işletim sistemleri için de kullanabilirsiniz.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-2.4.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../lis/archive-tlkg-lis-2.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-2.6.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Bilgisayarın Linux ile Açılması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Sorun Çıktığında</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

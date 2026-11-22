@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:25:16+03:00" /><title>ALTER TABLE</title><link rel="icon" type="image/png" href="../../images/belgeler-logo.png" /><link rel="stylesheet" href="../../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../../man/man7/man7.html" title="SQL Deyimleri, Makro Paketleri vs." /><link rel="previous" href="../../man/man7/man7-alter_sequence.html" title="ALTER SEQUENCE" /><link rel="next" href="../../man/man7/man7-alter_tablespace.html" title="ALTER TABLESPACE" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">ALTER TABLE</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../../man/man7/man7-alter_sequence.html">Önceki</a> </td><th width="60%" align="center">SQL Deyimleri, Makro Paketleri vs.</th><td width="20%" align="right"> <a accesskey="n" href="../../man/man7/man7-alter_tablespace.html">Sonraki</a></td></tr></table></td></tr></table><div class="refentry"><a name="tr-man7-alter_table" id="tr-man7-alter_table"></a><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="25%"><b>ALTER TABLE(7)</b></td><td class="mheadfoot" align="center" width="50%"><b>SQL - Dil Deyimleri</b> </td><td class="mheadfoot" align="right" width="25%"><b>ALTER TABLE(7)</b></td></tr></table></div><dl><dt class="head3">İSİM</dt><dd>ALTER TABLE — bir tablonun tanımını değiştirir<br /></dd><dd><div class="para"></div></dd><dt class="head3">KULLANIM</dt><dd><div class="para"><div class="para"><div align="center"><pre class="synopsis"><b><tt>ALTER TABLE</tt></b> [ ONLY ] <i>isim</i> [ * ]
+    <i>eylem</i> [, ... ]
+<b><tt>ALTER TABLE</tt></b> [ <b><tt>ONLY</tt></b> ] <i>isim</i> [ * ]
+    <b><tt>RENAME</tt></b> [ <b><tt>COLUMN</tt></b> ] <i>sütun</i> <b><tt>TO</tt></b> <i>yeni_sütun</i>
+<b><tt>ALTER TABLE</tt></b> <i>isim</i>
+    <b><tt>RENAME TO</tt></b> <i>yeni_isim</i>
+
+<i>eylem</i> şunlardan biri olabilir:
+
+    <b><tt>ADD</tt></b> [ <b><tt>COLUMN</tt></b> ] <i>sütun</i> <i>tür</i> [ <i>sütun_kısıtı</i> [ ... ] ]
+    <b><tt>DROP</tt></b> [ <b><tt>COLUMN</tt></b> ] <i>sütun</i> [ <b><tt>RESTRICT</tt></b> | <b><tt>CASCADE</tt></b> ]
+    <b><tt>ALTER</tt></b> [ <b><tt>COLUMN</tt></b> ] <i>sütun</i> <b><tt>TYPE</tt></b> <i>tür</i> [ <b><tt>USING</tt></b> <i>ifade</i> ]
+    <b><tt>ALTER</tt></b> [ <b><tt>COLUMN</tt></b> ] <i>sütun</i> <b><tt>SET DEFAULT</tt></b> <i>ifade</i>
+    <b><tt>ALTER</tt></b> [ <b><tt>COLUMN</tt></b> ] <i>sütun</i> <b><tt>DROP DEFAULT</tt></b>
+    <b><tt>ALTER</tt></b> [ <b><tt>COLUMN</tt></b> ] <i>sütun</i> { <b><tt>SET</tt></b> | <b><tt>DROP</tt></b> } <b><tt>NOT NULL</tt></b>
+    <b><tt>ALTER</tt></b> [ <b><tt>COLUMN</tt></b> ] <i>sütun</i> <b><tt>SET STATISTICS</tt></b> <i>tamsayı</i>
+    <b><tt>ALTER</tt></b> [ <b><tt>COLUMN</tt></b> ] <i>sütun</i>
+        <b><tt>SET STORAGE</tt></b> { <b><tt>PLAIN</tt></b> | <b><tt>EXTERNAL</tt></b> | <b><tt>EXTENDED</tt></b> | <b><tt>MAIN</tt></b> }
+    <b><tt>ADD</tt></b> <i>tablo_kısıtı</i>
+    <b><tt>DROP CONSTRAINT</tt></b> <i>kısıt_ismi</i> [ <b><tt>RESTRICT</tt></b> | <b><tt>CASCADE</tt></b> ]
+    <b><tt>CLUSTER ON</tt></b> <i>indeks_ismi</i>
+    <b><tt>SET WITHOUT CLUSTER</tt></b>
+    <b><tt>SET WITHOUT OIDS</tt></b>
+    <b><tt>OWNER TO</tt></b> <i>yeni_aidiyet</i>
+    <b><tt>SET TABLESPACE</tt></b> <i>tabloalanı_ismi</i>
+</pre></div></div></div></dd><dt class="head3">Açıklama</dt><dd><div class="para">
+<b><tt>ALTER TABLE</tt></b> mevcut bir tablonun tanımını değiştirir. Çeşitli alt biçimleri vardır:
+  </div><div class="variablelist"><dl><dt><b><tt>ADD COLUMN</tt></b></dt><dd class="varlist"><div class="para"><tt><b>CREATE TABLE</b>[<a href="../../man/man7/man7-create_table.html">create_table(7)</a>]</tt> ile aynı sözdizimini kullanarak tabloya yeni bir sütun eklemekte kullanılır.
+     </div></dd><dt><b><tt>DROP COLUMN</tt></b></dt><dd class="varlist"><div class="para">Bir tablodan bir sütunu kaldırmak için kullanılır. Sütunla ilgili indeksler ve tablo kısıtları özdevimli olarak kaldırılır. Anahtar başvuruları ve sanal tablolar gibi sütuna tablo dışında bağımlı herşeyin buna dahil olmasını istiyorsanız, <b><tt>CASCADE</tt></b>'a da ihtiyacınız var demektir.
+     </div></dd><dt><b><tt>ALTER COLUMN TYPE</tt></b></dt><dd class="varlist"><div class="para">Bir tablo sütununun türünü değiştirmekte kullanılır. Sütunla ilgili indeksler ve tablo kısıtları yeni sütun türünü kullanacak şekilde, özgün olarak sağlanmış ifadelerle yeniden çözümlerek özdevimli olarak değiştirilir. İsteğe bağlı <b><tt>USING</tt></b> deyimiyle yeni sütun değerlerinin eski değerlerden nasıl hesaplanacağı belirtilir; kullanılmadığı takdirde, öntanımlı dönüşüm, eski veri türünden yeni veri türüne atama dönüşümü şeklinde yapılır. Eski türden yeni türe dönüşüm için bir örtük dönüşüm ya da atama dönüşümü yoksa, bir <b><tt>USING</tt></b> deyimi kullanılmak zorundadır.
+     </div></dd><dt><b><tt>SET</tt></b>/<b><tt>DROP DEFAULT</tt></b></dt><dd class="varlist"><div class="para">Bir sütunun öntanımlı değerini belirlemek ya da kaldırmak için kullanılır. Öntanımlı değerler, sadece sonraki <b><tt>INSERT</tt></b> cümlelerine uygulanır; tablodaki mevcut satırları etkilemez. Öntanımlılar, ayrıca sanal tablolar için de oluşturulmuş olabilir, bu durumda sadece, sanal tabloya <b><tt>ON INSERT</tt></b> uygulanmadan önce <b><tt>INSERT</tt></b> deyimiyle yerleştirilir.
+     </div></dd><dt><b><tt>SET</tt></b>/<b><tt>DROP NOT NULL</tt></b></dt><dd class="varlist"><div class="para">Bir sütunun NULL değerlere izin verip vermeyeceğini belirlemek için kullanılır. Sadece, sütun bir NULL değer içermediği takdirde, <b><tt>SET NOT NULL</tt></b> kullanabilirsiniz.
+     </div></dd><dt><b><tt>SET STATISTICS</tt></b></dt><dd class="varlist"><div class="para">Sonraki <tt><b>ANALYZE</b>[<a href="../../man/man7/man7-analyze.html">analyze(7)</a>]</tt> işlemleri için sütun başına istatistik toplama hedefini belirlemek için kullanılır. Hedef 0-1000 aralığında ya da sistem öntanımlı istatistik hedefininin (bir yapılandırma parametresi olan <tt>default_statistics_target</tt>'in değerinin) kullanılması için -1 olarak belirtilebilir. PostgreSQL<sup>TM</sup> sorgu planlamacısı tarafından istatistiklerin kullanımı hakkında daha fazla bilgi edinmek için<br /><a class="ulink" href="http://www.postgresql.org/docs/8.0/static/planner-stats.html" target="_top">http://www.postgresql.org/docs/8.0/static/planner-stats.html</a> adresine bakınız.
+     </div></dd><dt><b><tt>SET STORAGE</tt></b></dt><dd class="varlist"><div class="para">Bir sütunun saklama kipini belirlemek için kullanılır. Bu, sütunun içerde mi yoksa ek bir tabloda mı tutulacağını ve verinin sıkıştılacağını mı yoksa sıkıştılmayacağını mı denetler. <tt>integer</tt> gibi sabit genişlikli değerlerin için içerde ve sıkıştırılmış olması için <b><tt>PLAIN</tt></b> kullanılmalıdır. İçerde ve sıkıştırılmış değerler için <b><tt>MAIN</tt></b>, harici ve sıkıştırılmamış değerler için  <b><tt>EXTERNAL</tt></b>, harici ve sıkıştırılmış değerler için <b><tt>EXTENDED</tt></b> kullanılır. <b><tt>EXTENDED</tt></b>, <b><tt>PLAIN</tt></b> kipini desteklemeyen çoğu veri türü için öntanımlıdır. <b><tt>EXTERNAL</tt></b> kullanımı <tt>text</tt> ve <tt>bytea</tt> türündeki sütunlar için saklama alanını büyütmesine karşın altdizge işlemlerinin, daha hızlı yapılmasını sağlar. <b><tt>SET STORAGE</tt></b> tablo üzerindeki hiçbir şeyi kendisi değiştirmez, sadece gelecekteki tablo güncellemeleri sırasında izlenecek stratejiyi belirler. Daha fazla bilgi için<br /><a class="ulink" href="http://www.postgresql.org/docs/8.0/static/storage-toast.html" target="_top">http://www.postgresql.org/docs/8.0/static/storage-toast.html</a> adresine bakınız.
+     </div></dd><dt><b><tt>ADD <i><tt>tablo_kısıtı</tt></i></tt></b></dt><dd class="varlist"><div class="para"><tt><b>CREATE TABLE</b>[<a href="../../man/man7/man7-create_table.html">create_table(7)</a>]</tt> ile aynı sözdizimini kullanarak tabloya yeni bir kısıt eklemekte kullanılır.
+     </div></dd><dt><b><tt>DROP CONSTRAINT</tt></b></dt><dd class="varlist"><div class="para">Bir tablodaki kısıtları kaldırmak için kullanılır. Şimdilik, tablolardaki kısıtların eşsiz isimlere sahip olması gerekmemektedir, dolayısıyla belirtilen isimle eşleşen birden fazla kısıt olabilir. Eşleşen tüm kısıtlar kaldırılacaktır.
+     </div></dd><dt><b><tt>CLUSTER</tt></b></dt><dd class="varlist"><div class="para">Sonraki <tt><b>CLUSTER</b>[<a href="../../man/man7/man7-cluster.html">cluster(7)</a>]</tt> işlemleri için öntanımlı indeksi seçmekte kullanılır. Gerçekte tabloyu yeniden kümelemez.
+     </div></dd><dt><b><tt>SET WITHOUT CLUSTER</tt></b></dt><dd class="varlist"><div class="para">Tabloda en son kullanılan <tt><b>CLUSTER</b>[<a href="../../man/man7/man7-cluster.html">cluster(7)</a>]</tt> indeks belirtimini kaldırmak için kullanılır. Bu, gelecekteki bir indeks belirtmeyen tüm kümeleme işlemlerini etkileyecektir.
+     </div></dd><dt><b><tt>SET WITHOUT OIDS</tt></b></dt><dd class="varlist"><div class="para">Tablodan <tt>oid</tt> sistem sütununu kaldırmak için kullanılır. Zaten bir <tt>oid</tt> sütununun bulunmadığından şikayet etmesi dışında, <b><tt>DROP COLUMN oid RESTRICT</tt></b> deyimine tamamen eşdeğerdir.
+     </div><div class="para">
+Kaldırılmış bir <tt>oid</tt> sütununun tekrar yerine konulmasını sağlayacak bir <b><tt>ALTER TABLE</tt></b> alt biçimi olmadığına dikkat edin.
+     </div></dd><dt><b><tt>OWNER</tt></b></dt><dd class="varlist"><div class="para">Tablonun, kayıt listesinin veya sanal tablonun sahibini belirtilen kullanıcı yapar.
+     </div></dd><dt><b><tt>SET TABLESPACE</tt></b></dt><dd class="varlist"><div class="para">Tablonun tablo alanını değiştirmek için kullanılır. Tablo ile ilişkili tüm veri dosyalarının yani tablo alanına taşınmasını sağlar. İndeksler eğer varsa yani alana taşınmaz; taşınması isteniyorsa, ayrı bir cümle olarak bir <b><tt>SET TABLESPACE</tt></b> cümlesi ile yapılabilir. Ayrıca <tt><b>CREATE TABLESPACE</b>[<a href="../../man/man7/man7-create_tablespace.html">create_tablespace(7)</a>]</tt> kılavuz sayfasına de bakınız.
+     </div></dd><dt><b><tt>RENAME</tt></b></dt><dd class="varlist"><div class="para">Bir tablo (veya indeks, kayıt listesi ya da sanal tablo) ismini ya da bir tablonun tek bir sütununun ismini değiştirmekte kullanılır. Saklanmış veriler etkilenmez.
+     </div></dd></dl></div>
+  <div class="para">
+<b><tt>RENAME</tt></b> dışında tüm eylemler çeşitli değişikliklerin birlikte uygulanması için aynı cümlede kullanılabilir. Örneğin, bazı sütunların isimleri değiştirilirken, bazı sütunların eklenmesi mümkündür. Bu işlem genellikle, tüm değişikliklerin tek bir geçişte yapılması zorunlu dev tablolarda kullanışlıdır.
+  </div><div class="para">
+Çalıştırılması için ayrıcalıklı kullanıcı olmanın gerekli olduğu <b><tt>ALTER TABLE OWNER</tt></b> dışında, <b><tt>ALTER TABLE</tt></b> kullanabilmek için tablonun sahibi olmalısınız.
+  </div></dd><dt class="head3">Parametreler</dt><dd><div class="variablelist"><dl><dt><i><tt>isim</tt></i></dt><dd class="varlist"><div class="para">Değiştirilecek tablonun ismi (şema nitelemeli olabilir). Eğer <b><tt>ONLY</tt></b> belirtilmişse sadece bu tablo değiştirilir, belirtilmemişse bu tablo ve onun çocukları olan tablolar (varsa) değiştirilir. Çocuk tablolarında değiştirileceğini belirtmek üzere tablo isminin sonuna bir <b><tt>*</tt></b> eklenebilirse de, bu artık öntanımlıdır. (7.1 sürümünden önce, <b><tt>ONLY</tt></b> öntanımlı davranıştır. Öntanımlı davranış <tt>sql_inheritance</tt> yapılandırma parametresi ile değiştirilebilir.)
+     </div></dd><dt><i><tt>sütun</tt></i></dt><dd class="varlist"><div class="para">Yeni ya da mevcut bir sütunun ismi.
+     </div></dd><dt><i><tt>yeni_sütun</tt></i></dt><dd class="varlist"><div class="para">Yeni ya da mevcut bir sütunun yeni ismi.
+     </div></dd><dt><i><tt>yeni_isim</tt></i></dt><dd class="varlist"><div class="para">Tablonun yeni ismi.
+     </div></dd><dt><i><tt>tür</tt></i></dt><dd class="varlist"><div class="para">Mevcut bir sütun için yeni veri türü ya da yeni bir sütunun veri türü.
+     </div></dd><dt><i><tt>tablo_kısıtı</tt></i></dt><dd class="varlist"><div class="para">Tablo için yeni tablo kısıtı.
+     </div></dd><dt><i><tt>kısıt_ismi</tt></i></dt><dd class="varlist"><div class="para">Kaldırılacak mevcut bir kısıtın ismi.
+     </div></dd><dt><b><tt>CASCADE</tt></b></dt><dd class="varlist"><div class="para">Kaldırılan kısıt veya sütuna bağımlı nesnelerin (örneğin, bu sütuna başvuran sanal tabloların) özdevimli olarak kaldırılmasını sağlar.
+     </div></dd><dt><b><tt>RESTRICT</tt></b></dt><dd class="varlist"><div class="para">Bağımlı nesneleri olan kısıt veya sütunun kaldırılmasını engeller. Bu davranış öntanımlıdır.
+     </div></dd><dt><i><tt>indeks_ismi</tt></i></dt><dd class="varlist"><div class="para">Tablonun kümeleme için imleyeceği indeks ismi.
+     </div></dd><dt><i><tt>yeni_aidiyet</tt></i></dt><dd class="varlist"><div class="para">Tablonun yeni sahibinin kullanıcı ismi.
+     </div></dd><dt><i><tt>tabloalanı_ismi</tt></i></dt><dd class="varlist"><div class="para">Tablonun taşınacağı yeni tablo alanı ismi.
+     </div></dd></dl></div></dd><dt class="head3">Ek Bilgi</dt><dd><div class="para">
+<b><tt>COLUMN</tt></b> anahtar sözcüğü kuru gürültüdür ve atlanabilir.
+   </div><div class="para">
+Bir sütun <b><tt>ADD COLUMN</tt></b> ile eklendiğinde, tablodaki mevcut satırların tümü  sütunun öntanımlı değeriyle ilklendirilir (bir <b><tt>DEFAULT</tt></b> deyimi belirtilmemişse NULL ile).
+   </div><div class="para">
+Bir sütunun boş olmayan bir öntanımlı ile eklenmesi veya mevcut bir sütunun türünün değiştirilmesi tablonun tamamının yeniden yazılmasına sebep olur. Bu çok büyük tablolarda önemli sayılabilecek bir süre alır; ayrıca, geçici olarak büyüklüğünün iki katı kadar bir disk alanı gerektirecektir.
+   </div><div class="para">
+Bir <b><tt>CHECK</tt></b> veya <b><tt>NOT NULL</tt></b> kısıtının eklenmesi mevcut satırların kısıtı yerine getirip getirmediğinin sınanması için tablonun taranmasını gerektirir.
+   </div><div class="para">
+Tek bir <b><tt>ALTER TABLE</tt></b> cümlesinde çok sayıda değişikliğin belirtilebilmesi seçeneğinin sağlanmasının ana sebebi çok sayıda tablonun taranmasını ya da tablonun yeniden yazılmasının gerektiği durumlarda tüm değişikliklerin tek bir geçişte yapılmasınını sağlamaktır.
+   </div><div class="para">
+<b><tt>DROP COLUMN</tt></b> sütunu fiziksel olarak silmez, sadece SQL işlemleri için görünmez yapar. Tablo üzerindeki sonraki veri girme ve güncelleme işlemleri sütunda boş değer saklanmasına sebep olur. Bu, bir sütunun kaldırılmasını hızlandırsa da tablonun diskte kapladığı alan, kaldırılan sütunun kapladığı alan geri alınmadığından hemen düşmeyecektir. Mevcut satırlar güncellendikçe bu alan geri kazanılacaktır ama bu çok uzun zaman alabilir.
+   </div><div class="para">
+Aslında <b><tt>ALTER TABLE</tt></b> cümlesinin bir tablonun tümünün yeniden yazılmasını gerektirdiği durumda bir getirisi de vardır, yeniden yazma işlemi tablodaki ölü alanların elenmesini sağlar. Örneğin, kaldırılan bir sütun nedeniyle tabloda tutulan alanı hemen geri kazanmak için en hızlı yol,
+   </div>
+<div class="para"><div align="right"><pre class="programlisting">ALTER TABLE tablo ALTER COLUMN birsütun TYPE birtür;
+</pre></div></div>
+   <div class="para">
+yazmaktır. Burada <tt>birsütun</tt> ile mevcut bir sütunu, <tt>birtür</tt> ile ise o sütunun kendi türünü belirtiyoruz. Aslında tabloda bir değişiklik yapılmıyor ama bu cümle tablonun yeniden yazılmasını sağlıyor, böylece faydasız veri temizlenmiş oluyor.
+   </div><div class="para">
+<b><tt>ALTER TYPE</tt></b> alt cümlesinin <b><tt>USING</tt></b> seçeneği aslında satırın eski değerleriyle ilişkili bir ifadeyi belirtebilir; yani, bit yandan diğer sütunlara başvururken birini dönüştürüyor olabilir. Bu, <b><tt>ALTER TYPE</tt></b> sözdizimi ile çok genel dönüşümler yapılmasını mümkün kılar. Bu esneklikten dolayı, <b><tt>USING</tt></b> ifadesi sütunun öntanımlı değerine (varsa) uygulanmaz; sonuç bir öntanımlı için gerekli olan bir sabit ifade olmayabilir. Bu, eski türden yeni türe örtük ya da atamalı tür dönüşümünün bulunmadığında, <b><tt>USING</tt></b> seçeneği kullanıldığında bile <b><tt>ALTER TYPE</tt></b> alt cümlesinin dönüşümde başarısız olacağı anlamına gelir. Böyle durumlarda, öntanımlı <b><tt>DROP DEFAULT</tt></b> ile kaldırılarak <b><tt>ALTER TYPE</tt></b> uygulanır ve bunun ardından <b><tt>SET DEFAULT</tt></b> kullanılarak uygun yeni öntanımlı değer eklenir. Sütünla ilgili indekslere ve kısıtlara da benzer şeyler uygulanır.
+   </div><div class="para">
+Eğer bir tablonun bir çocuk tablosu varsa, çocuk tablolarda aynı değişklikler yapılmaksızın bu tablonun bir sütununun türünün ya da isminin değiştirilmesine ve bir sütun eklenmesine izin verilmez. Yani, <b><tt>ALTER TABLE ONLY</tt></b> reddedilir. Bu, bir tablonun çocuklarının daima ana tablonun sütunlarını içermesini sağlamak içindir.
+   </div><div class="para">
+Hem ana tabloya hem de çocuk tablolara uygulanan bir <b><tt>DROP COLUMN</tt></b> işlemi ile sadece, çocuk tablonun ilgili sütunu aynı zamanda başka bir tablodan miras alınmamışsa ve sütun bağımsız olarak tanımlanmamışsa kaldırılacaktır. Sadece ana tabloya uygulanan <b><tt>DROP COLUMN</tt></b> işlemi (<b><tt>ALTER TABLE ONLY ... DROP COLUMN</tt></b> gibi), çocuk tablolardan bu sütunları asla kaldırmayacak, onları miras alınmış değil, bağımsız sütunlar olarak imleyecektir.
+   </div><div class="para">
+Sistem katalog tablosunda herhangi bir değişikliğe izin verilmez.
+   </div><div class="para">
+Geçerli parametrelerin açıklamaları için <tt><b>CREATE TABLE</b>[<a href="../../man/man7/man7-create_table.html">create_table(7)</a>]</tt> kılavuz sayfasına bakınız. Kalıtım ile ilgili bilgileri ise<br /><a class="ulink" href="http://www.postgresql.org/docs/8.0/static/ddl.html" target="_top">http://www.postgresql.org/docs/8.0/static/ddl.html</a> bölümünde bulabilirsiniz.
+   </div></dd><dt class="head3">Örnekler</dt><dd><div class="para">
+Bir tabloya <tt>varchar</tt> türünde bir sütun eklemek için:
+   </div>
+<div class="para"><div align="right"><pre class="programlisting">ALTER TABLE distributors ADD COLUMN address varchar(30);
+</pre></div></div>
+   <div class="para">
+Bir tablodan bir sütunu kaldırmak için:
+   </div>
+<div class="para"><div align="right"><pre class="programlisting">ALTER TABLE distributors DROP COLUMN address RESTRICT;
+</pre></div></div>
+   <div class="para">
+Mevcut iki sütunun türünü tek bir işlemle değiştirmek için:
+   </div>
+<div class="para"><div align="right"><pre class="programlisting">ALTER TABLE distributors
+    ALTER COLUMN address TYPE varchar(80),
+    ALTER COLUMN name TYPE varchar(100);
+</pre></div></div>
+   <div class="para">
+UNIX zaman değerini içeren bir sütunun türünü <b><tt>USING</tt></b> seçeneğini kullanarak <tt>timestamp with time zone</tt> (zaman dilimli zaman gösterimi) türüne dönüştürmek için:
+   </div>
+<div class="para"><div align="right"><pre class="programlisting">ALTER TABLE foo
+    ALTER COLUMN foo_timestamp TYPE timestamp with time zone
+    USING timestamp with time zone
+        'epoch' + foo_timestamp * interval '1 second';
+</pre></div></div>
+   <div class="para">Mevcut bir sütunun ismini değiştirmek için:
+   </div>
+<div class="para"><div align="right"><pre class="programlisting">ALTER TABLE distributors RENAME COLUMN address TO city;
+</pre></div></div>
+   <div class="para">Mevcut bir tablonun ismini değiştirmek için:
+   </div>
+<div class="para"><div align="right"><pre class="programlisting">ALTER TABLE distributors RENAME TO suppliers;
+</pre></div></div>
+   <div class="para">Bir sütuna boş değer içermeme kısıtı eklemek için:
+   </div>
+<div class="para"><div align="right"><pre class="programlisting">ALTER TABLE distributors ALTER COLUMN street SET NOT NULL;
+</pre></div></div>
+   <div class="para">Bir sütundan boş değer içermeme kısıtını kaldırmak için:
+   </div>
+<div class="para"><div align="right"><pre class="programlisting">ALTER TABLE distributors ALTER COLUMN street DROP NOT NULL;
+</pre></div></div>
+   <div class="para">Bir tabloya bir sınama kısıtı eklemek için:
+   </div>
+<div class="para"><div align="right"><pre class="programlisting">ALTER TABLE distributors
+    ADD CONSTRAINT zipchk CHECK (char_length(zipcode) = 5);
+</pre></div></div>
+   <div class="para">Bir tablodan ve çocuklarından bir sınama kısıtını kaldırmak için:
+   </div>
+<div class="para"><div align="right"><pre class="programlisting">ALTER TABLE distributors DROP CONSTRAINT zipchk;
+</pre></div></div>
+   <div class="para">Bir tabloya bir anahtar kısıtı eklemek için:
+   </div>
+<div class="para"><div align="right"><pre class="programlisting">ALTER TABLE distributors
+    ADD CONSTRAINT distfk FOREIGN KEY (address)
+    REFERENCES addresses (address) MATCH FULL;
+</pre></div></div>
+   <div class="para">Bir tabloya (çoksütunlu) bir eşsizlik kısıtı eklemek için:
+   </div>
+<div class="para"><div align="right"><pre class="programlisting">ALTER TABLE distributors
+    ADD CONSTRAINT dist_id_zipcode_key UNIQUE (dist_id, zipcode);
+</pre></div></div>
+   <div class="para">
+Bir tabloya bir birincil anahtarı olmasa bile, özdevimli isimlenen bir birincil anahtar kısıtı eklemek için:
+   </div>
+<div class="para"><div align="right"><pre class="programlisting">ALTER TABLE distributors ADD PRIMARY KEY (dist_id);
+</pre></div></div>
+   <div class="para">Bir tabloyu başka bir tablo alanına taşımak için:
+   </div>
+<div class="para"><div align="right"><pre class="programlisting">ALTER TABLE distributors SET TABLESPACE fasttablespace;
+</pre></div></div>
+  </dd><dt class="head3">Uyumluluk</dt><dd><div class="para">
+<b><tt>ADD</tt></b>, <b><tt>DROP</tt></b> ve <b><tt>SET DEFAULT</tt></b> alt biçimleri SQL standardıyla uyumludur. Diğer alt biçimler birer PostgreSQL<sup>TM</sup> oluşumudur. Ayrıca, tek bir <b><tt>ALTER TABLE</tt></b> cümlesinde birden fazla değişikliğin belirtilebilmesi özelliği de bir PostgreSQL<sup>TM</sup> oluşumudur.
+   </div><div class="para">
+<b><tt>ALTER TABLE DROP COLUMN</tt></b> ile geriye bir sıfır sütunlu tablo kalmak üzere bir tablonun tek sütunu kaldırılabilir.  SQL standardı sıfır sütunluk tablolara izin vermediğinden bu da bir PostgreSQL<sup>TM</sup> oluşumudur.
+  </div></dd><dt class="head3">Çeviren</dt><dd><div class="para">
+Nilgün Belma Bugüner <span class="email">&lt;nilgun (at) belgeler·gen·tr&gt;</span>, Mart 2005
+</div></dd></dl><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="30%"><b>PostgreSQL</b></td><td class="mheadfoot" align="center" width="40%"></td><td class="mheadfoot" align="right" width="30%"><b>ALTER TABLE(7)</b></td></tr></table></div></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../../man/man7/man7-alter_sequence.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../../man/man7/man7.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../../man/man7/man7-alter_tablespace.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">ALTER SEQUENCE </td><td width="20%" align="center"><a accesskey="h" href="../../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> ALTER TABLESPACE</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

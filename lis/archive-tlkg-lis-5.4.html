@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:30:27+03:00" /><title>Sistemin Yedeklenmesi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../lis/archive-tlkg-lis-5.html" title="Linux Sistem Yönetimi" /><link rel="previous" href="../lis/archive-tlkg-lis-5.3.html" title="Kullanıcı İşlemleri" /><link rel="next" href="../lis/archive-tlkg-lis-5.5.html" title="Sistemin Güncellenmesi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Sistemin Yedeklenmesi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-5.3.html">Önceki</a> </td><th width="60%" align="center">Linux Sistem Yönetimi</th><td width="20%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-5.5.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="archive-tlkg-lis-5.4" id="archive-tlkg-lis-5.4"></a>Sistemin Yedeklenmesi</div><dl><dd><div class="para">
+      Makinanızın belirli aralıklarla yedeklenmesi, sistem güvenliğinin
+      bir parçası sayılabilir. Donanımdan meydana gelen bir hata
+      sonucu veya yanlışlıkla girilen bir komut, sistemi açılamaz hale
+      getirebilir. Ancak yedekleme ile bu tür kullanıcı hatalarının önüne
+      geçebilirsiniz. Yedekleme genellikle tüm sistem üzerinde yapılmaz. Sadece
+      önemli sistem bilgilerini içeren dizinler yedekleme aşamasına girmelidir.
+    </div><div class="para">
+      Yedekleme üniteleri olarak teyp, disket veya başka diskler
+      kullanılabilir. Teypler, büyük miktarda yedekleme işlemleri için ön
+      plana çıksa da birkaç dosyadan oluşan paketlerin korunması söz konusu olacaksa
+      disketler daha pratiktir. İnternet üzerinde ise bağımsız bir makina,
+      kendi rutin görevi dışında yerel ağda bulunan makinaların yedeklerini
+      belirli gün ve saatlerde almak üzere programlanabilir.
+    </div><div class="para">
+      Sistemde fazla miktarda kullanıcı varsa yedekleme işlemi ciddi bir düzene
+      oturtulmalıdır. Sistemdeki hayati dosyalar örneğin her hafta, üzerinde
+      kullanıcıların bulunmadığı akşam saatlerinde yedeklemeye sokulabilir.
+    </div><div class="para">
+      Yedekleme için birkaç yol önerilebilir. Kullanışlı olması için
+      yedeklemeyi yapan program, yedeklenen dosyalar arasındaki belirli bir
+      dosyayı kolayca açabilmelidir. Bunun yanında, yedek bilginin de bozulması
+      ihtimali vardır. Yedeğin içindeki tek baytın bozulması, bazı durumlarda
+      tüm yedeğin çöp yığını haline gelmesine yol açabilir. Doğru yedekleme
+      programının kullanılması bu anda önem kazanır.
+    </div><div class="para">
+      Yedeklenecek olan dizinlerden en önemlileri, sistem yaplandırma
+      dosyalarının yeraldığı <tt>/etc</tt>, kullanıcı dizinlerinin yeraldığı /home,
+      bazı X Pencere dosyalarının bulunduğu /usr/X11/lib/X11 dizini altındaki
+      bazı dosya ve dizinler,
+      <tt>/usr</tt> ve <tt>/usr/local</tt> dizinde yeralan bazı dizin
+      ve dosyalar ile <tt>/root</tt> dizinidir. Şart olmasa da yedekleme için yeriniz
+      bolsa <tt>/tmp</tt> dizinini de koyabilirsiniz.
+    </div><div class="para">
+      Elektronik postaları ( <tt>/var/spool/mail</tt>) da unutmamak gerekir. Yoksa,
+      çok meşhur olan "e-meyılım cyber-space'de kayboldu" cümlesini sıkça
+      duymaya başlarsınız.
+    </div><div class="para">
+      Aşağıdaki komut, <tt>/usr</tt> ve <tt>/home</tt>
+      dizinlerini diskete yedekler.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+$ tar cvMf /dev/fd0 /usr /home
+</pre></div></div>
+    <div class="para">
+      <tt>tar</tt> komutununa verilen M parametresi yardımıyla bir disket dolduğu
+      zaman başka bir diskete devam etmenizi sağlar. Dizinleri sıkıştırarak
+      atmak için z seçeneğini vermek yeterli olur. Sıkıştırarak yedekleme
+      disket ya da teyp'te yer kazandıracaktır, ancak hata olduğunda verilerin
+      kurtarılması daha zor olacaktır. Açmak için
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+$ tar xf /dev/fd0
+</pre></div></div>
+    <div class="para">
+      komutu yeterlidir. Sıkıştırılarak diskete atılan yedekler için açarken
+      de "z" kullanın. Disketleri sıra ile numaralandırmayı ihmal etmeyin,
+      yoksa bir disketten fazla yer kaplayan arşivleri açamazdınız.
+    </div><div class="para">
+      Linux'ta gerek SCSI, gerek floppy teyp desteği vardır. Özellikle çok
+      veri yedekleyecekseniz teypler kaçınılmaz olur. Teyplere yedek alırken
+      de yukarıdaki floppy orneklerindeki gibi <tt>tar</tt> kullanabilirsiniz.
+      <tt>tar</tt>'ın yanı sıra sıkça kullanılan yedekleme komutları arasında
+      <tt>dump ve restore</tt>, <tt>cpio</tt> ve <tt>dd</tt> gösterilebilir. Linux'ta
+      ilk SCSI teyp sürücüye <tt>/dev/st0</tt>, ikinciye <tt>/dev/st1</tt> ...
+      kullanarak, PC'lerde sıkça kullanılan ``floppy teyp''lere de
+      <tt>/dev/ftape</tt> üzerinden erişebilirsiniz. Piyasada bulacağınız
+      ortalama floppy teyplerin kapasiteleri 120M, 4mm SCSI teyplerin 4G, 8mm
+      SCSI teyplerin ise 7G kadar olacaktır. Teybin kapasitesi kullandığınız
+      sürücünün yeteneğine ve teybinizin uzunluğuna göre değişir. Örnek olarak,
+      bütün sistemin tar kullanarak ilk SCSI teybe yedeklemek için,
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+# tar cvf /dev/st0 /
+</pre></div></div>
+    <div class="para">
+      Bir TCP/IP ağınız varsa ve birden fazla Linux ya da UNIX makinası
+      kullanıyorsanız, tek bir teyp sürücü ile bütün makinalarınızın, hatta
+      Windows makinalarınızın bile (Linux'un yardımıyla) yedeğini
+      alabilirsiniz. Bu iş için <i>amanda</i> gibi daha özelleşmiş ve yedekleme
+      işlemini otomatikleştiren bir program kullanabileceğiniz gibi, <tt>GNU
+      tar</tt>'dan da yararlanabilirsiniz. Örneğin <tt>tar</tt> ile, <i>cclub.metu.edu.tr</i>
+      makinasından, <i>linux.org.tr</i> makinasındaki floppy teybe yedek almak için,
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+cclub:~# tar cvf linux.org.tr:/dev/ftape /home
+</pre></div></div>
+    <div class="para">
+      yukarıdaki komutun çalışması için linux.org.tr makinasının
+      <tt>root</tt>'unun <tt>.rhosts</tt> dosyasında
+      cclub makinasının <tt>root</tt>'una
+      izin verilmiş olması gerekir. Bu işlem güvenlik için sakıncalı
+      olduğundan, bu iş için özel bir kullanıcı açmak gibi bir yönteme
+      başvurulabilir. Örneğin linux.org.tr'da <tt>yedek</tt>
+      adlı bir kullanıcı
+      açtığımızı düşünelim. Bu durumda yukarıdaki komutu,
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+cclub:~# tar cvf yedek@linux.org.tr:/dev/ftape /home
+</pre></div></div>
+    <div class="para">
+      şeklinde yazabiliriz.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-5.3.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../lis/archive-tlkg-lis-5.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-5.5.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Kullanıcı İşlemleri </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Sistemin Güncellenmesi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

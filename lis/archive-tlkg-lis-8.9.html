@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:30:28+03:00" /><title>NIS</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../lis/archive-tlkg-lis-8.html" title="TCP/IP" /><link rel="previous" href="../lis/archive-tlkg-lis-8.8.html" title="Linux'ta Örnek Ağ Uygulamaları" /><link rel="next" href="../lis/archive-tlkg-lis-9.html" title="DNS (Alan İsimlendirme Sistemi)" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">NIS</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-8.8.html">Önceki</a> </td><th width="60%" align="center">TCP/IP</th><td width="20%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-9.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="archive-tlkg-lis-8.9" id="archive-tlkg-lis-8.9"></a>NIS</div><dl><dd><div class="para">
+      NIS Network Information Service kelimelerinin baş harflerinden
+      oluşmaktadır. Amacı bir ağ üzerindeki bütün makinalara, bütün ağ
+      tarafından bilinmek kaydıyla bilgi akışı sağlamaktır. NIS tarafından
+      dağıtılacak bilgiler, hesap isimleri, parolalar, kullanıcı dizinleri
+      ve grup bilgileri olabilir.
+    </div><div class="para">
+      NIS yardımıyla, örneğin size ait parola NIS veri tabanında kayıtlı ise,
+      ağ üzerinde NIS istemci programlarını çalıştıran bütün makinalara
+      girebilirsiniz.
+    </div><div class="para">
+      NIS'in biraz daha gelişmiş bir sürümü olan NIS+ , verileri korumak
+      amacıyla şifreleme yöntemi kullanır. Bu avantajına rağmen NIS+ 'ın
+      kurulumu ve kullanımı daha zordur.
+    </div> <div class="head3"><a name="id1" id="id1"></a>NIS'in Çalışma Prensipleri</div><dl><dd><div class="para">
+        Bir ağ üzerinde en az bir makina NIS sunucusu olmak
+        zorundadır. İster herbiri farklı NIS ``domain'' lerine hizmet eden çoklu NIS
+        sunucularına sahip olabilirsiniz ya da beraber çalışan NIS sunucularınız
+        olur. Bu durumda sunuculardan biri ana NIS sunucusu, diğerleri ise
+        ikincil (slave) NIS sunucusu olabilirler.
+      </div><div class="para">
+        İkincil sunucular sadece NIS veritabanının kopyalarına sahiptirler ve bu
+        kopyaları ana NIS sunucusunda bulunan veri tabanlarında değişiklik yapıldığı
+        zaman ana sunucudan alırlar. Ağ üzerinde bulunan makina sayısına ve
+        ağ güvenliğine bağlı olarak bir veya daha fazla ikincil sunucu
+        kurulabilir. Bir NIS sunucusu kapandığında veya çok yavaş cevap
+        verdiğinde, diğer NIS istemcileri çalışan veya daha hızlı bir
+        sunucu bulmaya çalışacaktır.
+      </div><div class="para">
+        NIS veritabanları DBM adı verilen yapıdadır ve bu yapı ASCII
+        veritabanlarından çıkarılır.
+        Ana NIS sunucusu hem ASCII veritabanlarını hemde DBM
+        veritabanlarını içermelidir. NIS sunucusu, ASCII yapıdaki <tt>/etc/passwd</tt>
+        gibi veri tabanlarını DBM veri tabanına çevirerek <tt>/var/yp</tt> dizini
+        altında tutar.
+      </div><div class="para">
+        İkincil sunucular NIS haritalarında oluşacak değişikliklerden <tt>yppush</tt>
+        programı aracılığıyla haberdar edilecek ve veritabanlarını senkronize
+        etmek için otomatik olarak gereken değişiklikleri alacaklardır. NIS
+        istemcilerinin bunu yapmasına gerek yoktur çünkü sunucudaki DBM
+        veritabanlarında bulunan bilgileri okumak için devamlı olarak NIS sunucusu
+        ile bağlantı kurmaktadır. İkincil sunuculara gayet büyük ağlar üzerinde
+        ihtiyaç duyulur.
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>NIS İstemcisi</div><dl><dd><div class="para">
+        NIS'i kurmak için herşeyden önce <tt>/usr/sbin/rpc.portmap</tt>
+        programını çalıştırmanız gerekir. Bazı Linux dağıtımları (örneğin
+        Slackware) bu daemon'u çalıştırmak için gereken kodu <tt>/etc/rc.d/rc.inet2</tt>
+        dosyasında barındırırlar.
+      </div><div class="para">
+        RPC portmapper (<tt>man 8 portmap</tt>) programı bir sunucu olup RPC program
+        numaralarını TCP/IP (veya UDP/IP) protokol port numaralarına çevirir. RPC
+        portmapper o makina üzerinde RPC çağrılarını (NIS istemci yazılımının
+        yaptığı iş) RPC sunucularına (NIS sunucuları gibi) yapılabilmesi için
+        çalışıyor olmalıdır. Bir RPC sunucusu başladığı zaman, portmap'a hangi
+        port numarasını dinlediğini ve hangi RPC program numaralarına hizmet
+        edeceğini bildirir. Bir istemci verilen bir program numarasına RPC
+        çağrısı yapmak istediği zaman, ilk önce sunucu makina üzerindeki portmap
+        ile bağlantı kurarak RPC paketlerinin nereye gönderileceğini belirler.
+      </div><div class="para">
+        Normal olarak, bazı RPC sunucuları <i>inetd(8)</i> tarafından başlatılır,
+        bu yüzden portmap, inetd'den önce çalıştırılmalıdır.
+      </div><div class="para">
+        NIS kurmadan önce, yukarıda da belirtildiği gibi iki durumu değerlendirmek
+        zorundasınız. Ya sizin makinanız halihazırdaki NIS sunucularının
+        bulunduğu bir ağın parçası olacaktır ya da henüz ağınızda herhangi bir
+        NIS sunucusu yoktur.
+      </div><div class="para">
+        Birinci durumda, sadece istemci programlara (<tt>ypbind, ypwhich, ypcat,
+        yppoll, ypmatch</tt>) ihtiyacınız vardır.  En önemli program
+        <tt>ypbind</tt>'dır. Bu programı her zaman çalıştırıyor olmalısınız.
+        <tt>ypbind</tt> çalışır çalışmaz, makinanız bir NIS
+        istemcisi durumuna gelir.
+      </div><div class="para">
+        İkinci durumda, eğer NIS sunucularınız yoksa, bir de NIS sunucu programına
+        (<tt>ypserv</tt>) ihtiyacınız vardır.
+      </div></dd></dl> <div class="head3"><a name="id3" id="id3"></a>NIS İstemcisi Kurulması</div><dl><dd><div class="para">
+        Slackware dağıtımıyla gelen NIS yazılımını daha önce kurmamışsanız,
+        sisteminize yükleyin. NIS istemcisi için <tt>ypbind</tt> dışındaki
+        çalıştırılabilir dosyalar (<tt>ypwhich, yppoll, ypmatch</tt>)
+        bütün kullanıcılar tarafından erişilebilir bir dizinde bulunmalıdır.
+        Öncelikle yapılması gereken <tt>ypbind</tt>'ı test etmektir. Bunun için,
+      </div>
+        <ul type="disc" class="itemizedlist"><li><div class="para">
+            Domain adınızı belirlediğinizden emin olun. Bunun için,
+          </div>
+<div class="para"><div align="right"><pre class="screen">
+/bin/domainname-yp nis.domain
+/bin/domainname-yp &gt; /etc/defaultdomain
+</pre></div></div>
+          <div class="para">
+            komutunu girin. İkinci satırda, sistemde daha sonra kullanılmak üzere
+            <tt>/etc/defaultdomain</tt> dosyasına domain adı yazılır. Yukarıdaki komutta
+            <i>nis.domain</i> herhangi bir kelime olabilir.
+          </div></li><li><div class="para">
+            Eğer çalışmıyorsa <tt>/usr/sbin/rpc.portmap</tt> programını çalıştırın.
+          </div></li><li><div class="para">
+            <tt>/usr/sbin/ypbind</tt> programını çalıştırın.
+          </div></li><li><div class="para">
+            <tt>rpcinfo -p localhost</tt> komutunu kullanarak <tt>ypbind</tt>
+            programının <tt>portmapper</tt>'da servislerini kayıt ettirdiğini kontrol
+            edin. <tt>rpcinfo</tt> şöyle bir çıktı üretmelidir:
+          </div>
+<div class="para"><div align="right"><pre class="screen">
+program vers    proto   port
+100000  2       tcp     111     portmapper
+100000  2       udp     111     portmapper
+100007  2       udp     637     ypbind
+100007  2       tcp     639     ypbind
+300019  1       udp     660
+</pre></div></div>
+          </li><li><div class="para">
+            Ayrıca <tt>rpcinfo -u localhost ypbind</tt> komutunu da
+            çalıştırabilirsiniz. Bu komut ise şöyle bir çıktı verir:
+          </div>
+<div class="para"><div align="right"><pre class="screen">
+program 100007 version 2 ready and waiting
+</pre></div></div>
+          </li><li><div class="para">
+            En son olarak, makina isim taramaları (host lookup) için
+            <tt>/etc/host.conf</tt>
+            dosyasında lookup sırasına nis bilgisini ekleyin. Bu dosyada yeralan
+            <i>order</i> satırını istediğiniz gibi düzenleyebilirsiniz.
+            Daha fazla bilgi için <i>resolv(8)</i> man sayfasına bakın.
+          </div>
+<div class="para"><div align="right"><pre class="screen">
+$ cat /etc/host.conf
+order nis, bind, hosts
+multi on
+</pre></div></div>
+          </li></ul>
+      <div class="para">
+        Bu noktadan sonra <tt>ypcat</tt>, vb gibi NIS istemci programları
+        kullanılabilir. Örneğin, <tt>ypcat passwd</tt> komutu bütün NIS
+        parola veritabanını gösterir.
+      </div><div class="para">
+        Şimdi sistemde bulunan <tt>/etc/rc.d/rc.inet2</tt> dosyasını ypbind
+        programının sistem açılırken çalışması ve sisteminizin bir NIS istemcisi olarak görev yapması için değiştirmek gerekir. Ayrıca, <tt>/etc/rc.d/rc.inet2</tt> dosyasını açın ve <tt>ypbind</tt>'ı çalıştıran ve
+        domain adını belirleyen satırların başındaki # işaretini kaldırın.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# domainname
+
+if [ -r /etc/defaultdomain ] ; then
+domainname-yp `cat /etc/defaultdomain`
+fi
+
+# Start the ypbind daemon
+
+if [ -f ${NET}/ypbind -a -d /var/yp ]; then
+  echo -n " ypbind"
+  ${NET}/ypbind
+fi
+</pre></div></div>
+      <div class="para">
+        NIS'i çalıştırmak için <tt>/etc/passwd</tt> ve <tt>/etc/group</tt>
+        dosyalarının sonuna ``+:*:0:0:::'' satırını ekleyin. <tt>ypbind</tt>'ı
+        öldürüp yeniden çalıştırın.
+      </div></dd></dl> <div class="head3"><a name="id4" id="id4"></a>NIS Sunucusu Kurulması</div><dl><dd><div class="para">
+        NIS aracılığı ile kullanıma açık olacak dosyalardan ihtiyacınız
+        olanların belirlenmesi gerekir. <tt>/var/yp/Makefile/</tt> dosyasında
+        gerekli ekleme/çıkartmaları yapın.
+
+        NIS veri tabanını aşağıdaki satırı yazarak oluşturun:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ cd /var/yp; make
+</pre></div></div>
+      <div class="para">
+        Bu programın çalıştırılmasından sonra <tt>/var/yp</tt> dizini
+        altında NIS domain adıyla bir dizin yaratılır ve tüm veri tabanları
+        burada tutulur. <tt>portmapper</tt> programının (<tt>rpc.portmap</tt>) çalıştığından emin olduktan sonra <tt>ypserv</tt> sunucusunu çalıştırın. <tt>rpcinfo</tt> komutu
+        ile <tt>ypserv</tt>'in çalışmasını kontrol edin.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ rpcinfo -u localhost ypserv
+program 100004 version 2 ready and waiting
+</pre></div></div>
+      <div class="para">
+        Artık sunucu çalışmaktadır.
+      </div></dd></dl> <div class="head3"><a name="id5" id="id5"></a>yppasswdd Programı</div><dl><dd><div class="para">
+        NIS parola veritabanının güvenilir olması için ``yppasswd daemon'' gereklidir.
+        Kullanıcılar <tt>yppasswd</tt> komutu yardımıyla sunucu üzerindeki parolalarını
+        değiştirebilirler. <tt>yppasswd daemon</tt> (kısaca <tt>yppasswdd</tt>) bu
+        değişikliklerin doğru bir şekilde yapılmasını ve bu parola değiştirme
+        sürecini kontrol eden sunucudur.
+      </div></dd></dl> <div class="head3"><a name="id6" id="id6"></a>NIS'in Kontrol Edilmesi</div><dl><dd><div class="para">
+        NIS, birkaç basit komut ile kontrol edilebilir.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ ypwhich
+</pre></div></div>
+      <div class="para">
+        <tt>ypwhich</tt> NIS sunucusunun hangi makina olduğunu söyleyecektir.
+        Bu komut ise
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ ypmatch userid passwd
+</pre></div></div>
+      <div class="para">
+        (<i>userid</i> herhangi bir kullanıcının login adı olmak kaydıyla) size bu
+        kullanıcının NIS parola dosyasındaki bilgilerini verir. <tt>ypwhich</tt> ve
+        <tt>ypmatch</tt> programları NIS dağıtımı içinde gelirler.
+
+        Bir NIS sunucusu kapandığı ve tekrar başladığı zaman <tt>ypbind</tt> aşağıdaki
+        gibi bir mesaj ile başlayabilir:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+yp_match: clnt_call:RPC: Unable to receive; errno = Connection refused
+</pre></div></div>
+      <div class="para">
+ve NIS veritabanında kayıtlı olanlar sisteme giremezler. root olarak
+sisteme girmeyi deneyin ve başarılı olursanız <tt>ypbind</tt> işlemini
+öldürüp yeniden başlatın.
+      </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-8.8.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../lis/archive-tlkg-lis-8.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-9.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Linux'ta Örnek Ağ Uygulamaları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> DNS (Alan İsimlendirme Sistemi)</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

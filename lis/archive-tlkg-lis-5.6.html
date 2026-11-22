@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:30:27+03:00" /><title>Çekirdeğin Derlenmesi</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../lis/archive-tlkg-lis-5.html" title="Linux Sistem Yönetimi" /><link rel="previous" href="../lis/archive-tlkg-lis-5.5.html" title="Sistemin Güncellenmesi" /><link rel="next" href="../lis/archive-tlkg-lis-5.7.html" title="Modüller (Yüklenebilir Çekirdek Parçaları)" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Çekirdeğin Derlenmesi</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-5.5.html">Önceki</a> </td><th width="60%" align="center">Linux Sistem Yönetimi</th><td width="20%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-5.7.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="archive-tlkg-lis-5.6" id="archive-tlkg-lis-5.6"></a>Çekirdeğin Derlenmesi</div><dl><dd><div class="para">
+      Bu bölümde, çekirdeğin yapılandırması ve derlenmesi için gerekli
+      bilgiler vardır. Çekirdek derleme uzun ve zahmetli bir işlemdir. Derleme
+      aşamasını en kısa zamanda ve en uygun yoldan gerçekleştirmek gerekir.
+      Derleme işlemi, kullanıcının önüne kafasını karıştıracak kadar çok seçenek
+      sunar.
+    </div><div class="para">
+      Nedir bu çekirdek? Genel anlamda çekirdek, yazılımın ve donanımın arasında
+      bekleyerek iletişimi sağlayan bir arabirimdir. Çalışan tüm programların
+      ve süreçlerin hafıza ile olan ilişkilerini düzenler. İşlemcinin gücünün
+      tüm bu programlar arasında adil bir şekilde dağıtımını üzerine alır. Bu
+      işlemleri kullanıcının haberi olmadan her an durmaksızın yapar.
+    </div><div class="para">
+      Çekirdek kaynak dosyaları diskte hatırı sayılır bir alan tutar. Örneğin sürüm 2.0.20 yaklaşık 6Mb disk alanı kaplar. Açıldığı zaman ise toplam kapladığı
+      alan 24 Mb olur. Derleme aşamasından sonra bu rakam 30 Mb'yi geçer. Her
+      eklenen  aygıt sürücü desteği bir miktar daha yer alır.
+    </div><div class="para">
+      Kullandığınız sisteme göre çekirdeğin derlenme süresi değişkenlik
+      gösterir. 12 Mb 486DX4/100 makinasında, 5 dosya sistemi desteği,
+      ağ desteği ve ses kartı sürücüsü ile yaklaşık 30 dakika sürer. Aynı
+      yapılandırmayı içeren çekirdeğin derlenmesi ise daha güçsüz bir makina
+      olan 8Mb 386DX/40 altında 1.5 saati bulur. Derlerken gidip çayınızı için,
+      biraz televizyon seyredin. Makinaniz 386 ise bir banyo alıp dışarı çıkın,
+      alışveriş yapın. Çok ümitsiz bir durumdaysanız, yapılacak en iyi şey en
+      yakın bilgisayar satıcısına uğrayarak yeni fiyatları sormak :-)
+    </div><div class="para">
+      Çekirdek kaynak kodu ,
+      <a class="ulink" href="ftp://ftp.metu.edu.tr/pub/linux/tsx/sources/system" target="_top">ODTÜ ftp arşivindeki</a> adresinden veya tsx-11.mit.edu adresinin
+      yansısını tutan herhangi bir adresten alınabilir. Bu dizin altındaki
+      Linux sürümlerinin bir tanesini (v1.2, v2.0, v2.1 gibi) seçtikten
+      sonra altındaki dosyayı alabilirsiniz. Dosyanın ismi linux-x.y.z.tar.gz
+      yapısındadır.
+    </div><div class="para">
+      Aşağıdaki örnekte ODTÜ ftp arşivinden 2.0.20 sürümünün alınışı gösterilmektedir:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+$ ftp ftp.metu.edu.tr
+Connected to ephesus.cc.metu.edu.tr.
+220-
+220-Welcome to METU Ftp Site !
+220-
+220-All logins and transfers are logged with your hostname.
+220-If you do not agree with this policy, please cancel now.
+220-
+220 ephesus FTP server (Version wu-2.4(5) Wed Jan 10 18:06:56 EET 1996) ready.
+Name (ftp.metu.edu.tr:gorkem): ftp
+331 Guest login ok, send your complete e-mail address as password.
+Password:
+230-##########################################################################
+230-##    Welcome to the Middle East Technical University Ftp Archive       ##
+230-##########################################################################
+230-
+230-
+230-Hello ftp@compclup.ceng.metu.edu.tr !
+230-You are the 19. anonymous user.
+230-Maximum number of users allowed is 100.
+230-Local Time is Tue Nov  5 12:19:41 1996.
+230-
+230-Mirrored sites are placed under the directory /pub
+230-This archive is maintained by ftpload@ftp.metu.edu.tr
+230-You can reach this archive via FSP at port 21.
+230-
+230-You can reach public directories via "cd dirname"
+230-command independent of your current location;
+230-e.g. "cd linux" instead of "cd /pub/linux"
+230-
+230 Guest login ok, access restrictions apply.
+ftp&gt; cd /pub/linux/tsx/sources/system/
+250-Please read the file README
+250-  it was last modified on Mon Sep 16 11:36:00 1996 - 50 days ago
+250 CWD command successful.
+ftp&gt; dir
+200 PORT command successful.
+150 Opening ASCII mode data connection for /bin/ls.
+total 66
+-rw-r--r--  1 ftpload  ftp-adm     36981 Sep 16 12:36 CREDITS
+drwxr-xr-x  3 ftpload  ftp-adm       512 Oct 13 15:59 Historic
+-rw-r--r--  1 ftpload  ftp-adm     12056 Sep 16 12:36 README
+drwxr-xr-x  2 ftpload  ftp-adm       512 Oct 14 11:47 SillySounds
+drwxr-xr-x  2 ftpload  ftp-adm       512 Oct 13 18:17 testing
+drwxr-xr-x  2 ftpload  ftp-adm       512 Oct 14 11:47 v1.0
+drwxr-xr-x  2 ftpload  ftp-adm      2048 Oct 31 21:55 v1.1
+drwxr-xr-x  2 ftpload  ftp-adm      1024 Jun 25 11:34 v1.2
+drwxr-xr-x  2 ftpload  ftp-adm      6656 Sep 27 04:24 v1.3
+drwxr-xr-x  2 ftpload  ftp-adm      1536 Nov  2 00:05 v2.0
+drwxr-xr-x  2 ftpload  ftp-adm       512 Nov  2 21:33 v2.1
+226 Transfer complete.
+ftp&gt; cd v2.0
+250 CWD command successful.
+ftp&gt; bin
+200 Type set to I.
+ftp&gt; dir linux*
+200 PORT command successful.
+150 Opening ASCII mode data connection for /bin/ls.
+total 141009
+-rw-r--r--  1 ftpload  ftp-adm   5859566 Jul  3 11:22 linux-2.0.1.tar.gz
+-rw-r--r--  1 ftpload  ftp-adm   5940281 Jul 27 06:39 linux-2.0.10.tar.gz
+-rw-r--r--  1 ftpload  ftp-adm   5952403 Aug  5 03:01 linux-2.0.11.tar.gz
+-rw-r--r--  1 ftpload  ftp-adm   5954278 Aug  9 12:53 linux-2.0.12.tar.gz
+-rw-r--r--  1 ftpload  ftp-adm   5981780 Aug 16 06:19 linux-2.0.13.tar.gz
+-rw-r--r--  1 ftpload  ftp-adm   5984960 Aug 20 11:52 linux-2.0.14.tar.gz
+-rw-r--r--  1 ftpload  ftp-adm   5986368 Aug 25 06:20 linux-2.0.15.tar.gz
+-rw-r--r--  1 ftpload  ftp-adm   5990228 Aug 31 14:03 linux-2.0.16.tar.gz
+-rw-r--r--  1 ftpload  ftp-adm   5991606 Sep  2 06:37 linux-2.0.17.tar.gz
+-rw-r--r--  1 ftpload  ftp-adm   5993351 Sep  5 10:38 linux-2.0.18.tar.gz
+-rw-r--r--  1 ftpload  ftp-adm   5997342 Sep 11 10:21 linux-2.0.19.tar.gz
+-rw-r--r--  1 ftpload  ftp-adm   5861789 Jul  5 12:09 linux-2.0.2.tar.gz
+-rw-r--r--  1 ftpload  ftp-adm   5997693 Sep 13 08:53 linux-2.0.20.tar.gz
+-rw-r--r--  1 ftpload  ftp-adm   5999162 Sep 20 09:51 linux-2.0.21.tar.gz
+-rw-r--r--  1 ftpload  ftp-adm   6009488 Oct  8 13:02 linux-2.0.22.tar.gz
+-rw-r--r--  1 ftpload  ftp-adm   6010694 Oct 18 08:20 linux-2.0.23.tar.gz
+-rw-r--r--  1 ftpload  ftp-adm   5931967 Jul  6 07:53 linux-2.0.3.tar.gz
+-rw-r--r--  1 ftpload  ftp-adm   5926911 Jul  8 08:48 linux-2.0.4.tar.gz
+-rw-r--r--  1 ftpload  ftp-adm   5927899 Jul 10 08:23 linux-2.0.5.tar.gz
+-rw-r--r--  1 ftpload  ftp-adm   5929807 Jul 12 07:22 linux-2.0.6.tar.gz
+-rw-r--r--  1 ftpload  ftp-adm   5931378 Jul 15 07:38 linux-2.0.7.tar.gz
+-rw-r--r--  1 ftpload  ftp-adm   5936467 Jul 20 02:52 linux-2.0.8.tar.gz
+-rw-r--r--  1 ftpload  ftp-adm   5939510 Jul 26 04:09 linux-2.0.9.tar.gz
+-rw-r--r--  1 ftpload  ftp-adm   5843677 Jun  9 23:36 linux-2.0.tar.gz
+226 Transfer complete.
+ftp&gt; get linux-2.0.20.tar.gz
+200 PORT command successful.
+150 Opening BINARY mode data connection for linux-2.0.20.tar.gz (5997693 bytes).
+226 Transfer complete.
+5997693 bytes received in 136 secs (43 Kbytes/sec)
+ftp&gt; quit
+221 Goodbye.
+</pre></div></div>
+    <div class="para">
+      Sisteme root olarak giriş yapın ve <tt>/usr/src</tt> dizinine geçin. Linux'un
+      kurulması aşamasında çekirdekleri de kurmuş iseniz bu dizinde 'linux'
+      isminde ve eski çekirdeğin kaynak kodlarını kapsayan bir alt dizin
+      göreceksiniz. Genellikle her kullanıcının yaptığı, bu dizinin ismini o
+      an çalışan çekirdeğin sürümüne göre değiştirmektir. Çekirdek sürümünü
+      bulmak için ise <tt>uname -r</tt> komutunu kullanabilirsiniz.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+$ uname -r
+  2.0.23
+</pre></div></div>
+    <div class="para">
+      Bu komuttan çekirdeğin 2.0.23 sürümü olduğunu anlayabiliriz.
+    </div><div class="para">
+      Çekirdek kodunu içeren paketi açmadan önce <tt>/usr/src</tt> dizinine
+      kopyalayın ve açmadan önce bu dizinde 'linux' isimli bir dizinin
+      olmadığına emin olun. Şimdi <tt>/usr/src</tt> içinde iken sıkıştırılmış
+      çekirdek kodunu 'tar' komutu yardımıyla açın.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+# tar -zxf linux-x.y.z.tar.gz
+</pre></div></div>
+    <div class="para">
+      Komutun işletimi bitince 'linux' dizini oluşur. İlk defa derleme işlemi
+      yapacaksanız aşağıdaki komutları sırasıyla yazın.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+# cd /usr/include
+# rm -rf asm linux scsi
+# ln -s /usr/src/linux/include/asm-i386 asm
+# ln -s /usr/src/linux/include/linux linux
+# ln -s /usr/src/linux/include/scsi scsi
+# cd /usr/src/linux
+# make mrproper
+</pre></div></div>
+     <div class="head3"><a name="id1" id="id1"></a>Çekirdeğin Yapılandırılması</div><dl><dd><div class="para">
+        <tt>/usr/src/linux</tt> dizini altinda iken <tt>make config</tt> yazın. Bu
+        komut, bir yapılandırma dosyası yaratmak amacıyla sorular sorar.
+      </div><div class="para">
+        Karşınıza çıkan sorulara 'y' (evet) veya 'n' (hayır) ile cevap vermeniz
+        gerekir. Bazı aygıt sürücülerde 'm' seçeneği de olabilir. Bunun anlamı,
+        sistem o programı <i>modül</i> olarak derleyecek ve çekirdeğe dahil etmeyecek
+        demektir. Kullanıcı derleme aşamasından sonra istediği zaman bu modülü
+        çekirdeğe dahil edebilir, işini bitirdikten sonra da çıkarabilir.
+      </div><div class="para">
+        2.0.x ve daha yukarı sürümlerde '?' tuşuna basmakla daha ayrıntılı
+        bilgi alabilirsiniz. Aşağıda bazı yapılandırma parametreleri verilmiştir.
+      </div>
+        <div class="variablelist"><dl><dt><span class="term">Matematik işlemci emülasyonu (Kernel math emulation)</span></dt><dd class="varlist"><div class="para">
+              Kullandığınız makinanın işlemcisi yardımcı matematik işlemcisine sahip değilse (486SX,
+              386SX veya daha düşük makinalar) bu seçeneğe evet cevabını vermelisiniz.
+            </div></dd><dt><span class="term">Normal (MFM/RLL) disk ve IDE disk/cdrom desteği (Normal disk and
+            IDE disk/cdrom support)</span></dt><dd class="varlist"><div class="para">
+              Hemen herkesin kullandığı PC sabit
+              disklerinin standart olması sebebiyle bu seçenege 'y' cevabı
+              verilebilir. Daha ileride SCSI sabit disk ve cdrom desteği de
+              sorulacaktır.  Ardından gelecek olan 'old disks-only' ve 'new IDE'
+              sürücülerinden birini seçerken, aralarındaki farkın ilkinde tek
+              arabirim üzerinden iki adet diski desteklemesi, diğerinde ise ikinci
+              arabirim ile birlikte IDE/ATAPI cdrom'ları desteklemesidir.
+            </div></dd><dt><span class="term">Ağ desteği (Networking support)</span></dt><dd class="varlist"><div class="para">
+              Makinanız herhangi bir ağ üzerinde
+              ise (İnternet gibi) veya İnternet'e bağlanmak için SLIP, PPP
+              gibi programları kullanmak istiyorsanız bu bölüme 'y' cevabı
+              vermelisiniz. Fakat, ağ üzerinde olmasanız bile her geçen gün yeni yeni
+              uygulama programlarının ve paketlerin ağ desteğine ihtiyacı olduğunu
+              düşünürsek (X Pencere gibi) bu bölüme 'y' cevabı vermeniz şart görünüyor.
+            </div></dd><dt><span class="term">En fazla 16Mb hafıza (Limit memory to low 16Mb)</span></dt><dd class="varlist"><div class="para">
+              Bazı hatalı 386 DMA
+              denetleyicileri hafızanın 16Mb'tan yüksek bölümlerine ulaşamazlar. Çok
+              nadir görülen bu durum makinanızda varsa bu seçeneği 'y' ile geçin.
+            </div></dd><dt><span class="term">System V IPC (System V IPC):</span></dt><dd class="varlist"><div class="para">
+              IPC (Interprocess Communication) desteği
+              verir. Bazı Perl programları ve oyunlar (DOOM gibi) bu seçenek olmadan
+              çalışamazlar. Bu durumda ne yaptığınızı iyi bilmiyorsanız bu seçeneğe
+              'y' -evet- cevabı verin.
+            </div></dd><dt><span class="term">İşlemci tipi (386, 486, Pentium, PPro):</span></dt><dd class="varlist"><div class="para">
+              Burada, çekirdeğinizi hangi
+              tür makina için derliyorsanız, o makinanın tipini giriniz.
+            </div></dd><dt><span class="term">SCSI desteği (SCSI Support):</span></dt><dd class="varlist"><div class="para">
+              SCSI aygıtlarınız var ise bu seçenek için
+              'evet' deyin. Daha sonra da karşınıza gelecek SCSI aygıtlar arasından
+              size uygun olanları alın.
+            </div></dd><dt><span class="term">Ağ kartı desteği (Network Device Support):</span></dt><dd class="varlist"><div class="para">
+              Ağa bağlanmak için bir kart
+              kullanacaksanız veya SLIP, PPP bağlantıları ya da paralel port üzerinden
+              yapacağınız her türlü işlemler için bu seçeneği işaretleyin. Ardından
+              ekrana gelen kart tiplerinden uygun olanlarını seçin.
+            </div></dd><dt><span class="term">Dosya sistemleri (Filesystems):</span></dt><dd class="varlist"><div class="para">
+              Burada, aşağıdaki dosya sistemlerinden
+              kullanmak istediklerinizi seçebilirsiniz.
+            </div>
+              <div class="variablelist"><dl><dt><span class="term">minix</span></dt><dd class="varlist"><div class="para">
+                    Yeni dağıtımlar , artik tarih olmaya başlayan bu dosya
+                    sistemini desteklememekte. Bazı kurtarma disketleri yaratmak
+                    için daha yaygın, fakat daha az kararlı olan ext2 dosya
+                    sistemine tercih edilirler.
+                  </div></dd><dt><span class="term">Extended file system (ext)</span></dt><dd class="varlist"><div class="para">
+                    Bu da artık kullanımı olmayan bir dosya
+                    sistemi. Desteğini ekleyip eklememek size kalmış.
+                  </div></dd><dt><span class="term">Second extended file system (ext2)</span></dt><dd class="varlist"><div class="para">
+                    Linux'un kullandığı en önemli dosya sistemi. Alınması şart.
+                  </div></dd><dt><span class="term">xiafs</span></dt><dd class="varlist"><div class="para">
+                    Artık kullanılmıyor.
+                  </div></dd><dt><span class="term">msdos</span></dt><dd class="varlist"><div class="para">
+                    Sabit diskinizde DOS bölümü varsa ya da DOS disketi kullanmak
+                    istiyorsanız, alın.
+                  </div></dd><dt><span class="term">umsdos</span></dt><dd class="varlist"><div class="para">
+                    MS-DOS dosya sistemine bazı yenilikler (uzun dosya isimleri
+                    gibi) getirilerek oluşturulan bir teknoloji. MS-DOS desteği
+                    almadıysanız buna da gerek yok.
+                  </div></dd><dt><span class="term">proc</span></dt><dd class="varlist"><div class="para">
+                    Bu aslında gerçek bir dosya sistemi değil, çekirdek
+                    görüntüsüdür. `y' cevabını vermezseniz ileride başınız
+                    çok ağrır.
+                  </div></dd><dt><span class="term">NFS</span></dt><dd class="varlist"><div class="para">
+                    Linux makinaniz bir ağ üzerinde kurulu iken ağ üzerindeki
+                    diğer makinaların dosya sistemlerini kullanabilmenizi sağlar.
+                  </div></dd><dt><span class="term">ISO9660</span></dt><dd class="varlist"><div class="para">
+                    CD-ROM sürücünüzü Linux altında kullanabilmek için 'y' cevabı
+                    verin.
+                  </div></dd><dt><span class="term">OS/2 HPFS</span></dt><dd class="varlist"><div class="para">
+                    OS/2 dosya sistemlerini okuyabilmek için 'y' cevabı verin.
+                  </div></dd><dt><span class="term">System V</span></dt><dd class="varlist"><div class="para">
+                    Bir UN*X sürümü olan System V makinalarının dosya sistemleri
+                    üzerinde çalışabilmeyi sağlar.
+                  </div></dd></dl></div>
+            </dd><dt><span class="term">Karakter aygıtlar (Character devices)</span></dt><dd class="varlist"><div class="para">
+              Bu bölümde yazıcı, fare ve bazı teyp yedekleme sürücüleri gibi
+              karakter aygıtları (iletişimini karakter karakter sağlayan aygıtlar)
+              için sürücüleri ekleyebilirsiniz.
+            </div></dd><dt><span class="term">Ses kartı (Sound Card Support)</span></dt><dd class="varlist"><div class="para">
+              Linux'un ses kapasitesini "duyabilmek" için bu desteği ekleyin.
+            </div></dd><dt><span class="term">Çekirdek işlemleri (Kernel Hacking)</span></dt><dd class="varlist"><div class="para">
+              Çekirdekten doğan hataların bulunmasını kolaylaştıran bu seçenek, programcılara yönelik.
+            </div></dd></dl></div>
+      <div class="para">
+        Tüm bu işlemlerin ardından <tt>make config</tt> komutunun
+        görevi bitmiş olur.
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Temizlik</div><dl><dd><div class="para">
+        Fazla dosyaları temizlemek, gerekli olan dosyaların da yerinde olup
+        olmadığını kontrol etmek için , sırasıyla
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# make dep
+# make clean
+</pre></div></div>
+      <div class="para">
+        yazın. Ardından tüm nesne dosyaları ve eski sürümden arta kalan dosyalar
+        silinecektir. Bu adımı es geçmemelisiniz.
+      </div><div class="para">
+        Temizlik işleminden sonra,
+      </div>
+        <div class="para"><div align="right"><pre class="screen"># make zImage</pre></div></div>
+      <div class="para">
+        veya
+      </div>
+        <div class="para"><div align="right"><pre class="screen"># make zdisk</pre></div></div>
+      <div class="para">
+        yazın. Eğer bir kişisel bilgisayarda çalışıyorsanız, ilk seçenekte
+        çekirdek derlenip <tt>/usr/src/linux/arch/i386/boot</tt>
+        dizini altına <tt>zImage</tt> adıyla yerleştirilecektir.
+        Buraya yerleştirilmeden önce yerden kazanmak için çekirdek
+        sıkıştırılır. Diğer durumda ise yeni çekirdek sabit disk yerine
+        <tt>A:</tt> disket sürücüsüne yazılır. Disket üzerine
+        yazmanın bir avantajı, kararlı olmayan ve sistemi açmayan çekirdek
+        ile karşılaşılması halinde, sistemi sabit disk üzerindeki eski
+        çekirdekten açabilme imkanı bırakmasıdır.
+      </div></dd></dl> <div class="head3"><a name="id3" id="id3"></a>Çekirdeğin Kurulması</div><dl><dd><div class="para">
+        LILO, bilgisayarın açılışı anında çekirdek ile ilgili düzenlemeleri
+        okur, buna göre hangi çekirdekten açması gerektiğini anlar.
+        Yapılandırma dosyası biraz karmaşık olmasına rağmen kullanım
+        aşamasında büyük yararlar sağlar. <tt>/etc/lilo.conf</tt> dosyasının
+        içinde gerekli olan kurulum bilgileri vardır. Bu dosyanın bir bölüm
+        aşağıda görülüyor.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+image = /vmlinuz
+  label = linux
+  root = /dev/hda1
+
+other = /dev/hda1
+  label = dos
+  table = /dev/hda
+</pre></div></div>
+      <div class="para">
+        <tt>image =</tt> ibaresi kurulu olan çekirdeğe işaret eder. Çoğu kullanıcı bu
+        kısma <tt>vmlinuz</tt> yazar. <tt>label =</tt> bölümünde hangi işletim sistemi veya
+        çekirdek sürümünun açılışta kullanılacağı yazılır. Hemen altındaki <tt>root</tt>
+        bölümünde ise <tt>label =</tt> kısmında seçilen işletim sisteminin hiyerarşik
+        sırada en üst dizin yapısı yazılır. Eski çekirdeğin bir yedeğini alın
+        ve yeni derlediğiniz çekirdeği <tt>image =</tt> satırında belirtilen yere
+        kopyalayın.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# cp zImage /vmlinuz
+</pre></div></div>
+      <div class="para">
+Şimdi LILO programını çalıştırın. Komut satırında <tt>lilo</tt> yazmak
+yeterlidir. `*' karakteri, çalıştırılacak ilk çekirdeği veya sistemi gösterir.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# lilo
+Added linux *
+Added dos
+</pre></div></div>
+      <div class="para">
+        LILO ve yapılandırılması hakkında , daha fazla bilgi
+        <a class="ulink" href="http://www.linux.org.tr/tr-ldp/lilo/" target="_top">LILO-NASIL çevirisinden</a> alınabilir.
+      </div><div class="para">
+        Yeni bir çekirdeği derledikten sonra LILO üzerinden ekleme yapmak ve
+        açılış anında kullanmak için
+        <tt>/etc/lilo.conf</tt> dosyasındaki
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+image = /vmlinuz
+  label = Linux
+  root = /dev/hda1
+</pre></div></div>
+      <div class="para">
+        satırlarının kopyasını çıkarın, <tt>image</tt>,
+        <tt>label</tt> ve <tt>root</tt> yerine
+        sırasıyla yeni derlenen çekirdeğin sabit disk üzerindeki yerini, ismini
+        ve Linux işletim sisteminizin kök dizinini yazın. Bunlara ek olarak,
+        açılış anında bekleme sağlamak ve seçim yapabilmek için yapılandırma
+        dosyasının başına <tt>delay = xxx</tt> ekleyebilirsiniz.
+        <i>xxx</i> sayısı, gecikme
+        zamanı saniyenin onda biri olarak verilir. Bu sayede açılış anında,
+        örneğin <i>shift</i> tuşuna basılarak istenen çekirdeğin
+        ismi (<tt>label =</tt>
+        satırında yazılan isim) seçilir ve çalıştırılır.
+      </div></dd></dl> <div class="head3"><a name="id4" id="id4"></a>Çekirdeğin Yamanması (patch)</div><dl><dd><div class="para">
+        Çekirdeğin her yeni sürümüyle birlikte bir önceki sürümünun yaması
+        da gelir. Yamayı uygulamak, tüm çekirdeğin tekrar derlenmesinden daha
+        kolaydır. Örnek olarak, elinizde 2.0.10 çekirdeği var ve ftp adresinde
+        2.0.11 sürümü bekliyor. Halihazırdaki çekirdeği 2.0.11 sürümüne
+        yükseltelim:
+      </div><div class="para">
+        Yamayı önce <tt>/usr/src</tt> dizinine kopyalayın. Bu dizin
+        altında iken
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# zcat patch-2.0.11.gz | patch -p0
+</pre></div></div>
+      <div class="para">
+        veya eğer sıkıştırılmış değilse
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# patch -p0 &lt; patch-2.0.11
+</pre></div></div>
+      <div class="para">
+        yazın. Bu komutun ardından satırlar ekrandan kaymaya başlayacak ve
+        yama işlemi tamamlanacaktır. Satırlar bazen o kadar hızlı kayar ki
+        neler yazdığını bile göremeyebilirsiniz. Yamanın başarılı bir şekilde
+        tamamlandığından emin olmak amacıyla, <tt>/usr/src/linux</tt> dizini
+        altında <tt>.rej</tt> uzantılı dosyalara bakın.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# find . -name '*.rej' -print
+</pre></div></div>
+      <div class="para">
+        Komut, <tt>.rej</tt> uzantılı dosyalar bulursa yama işlemi tamamlanamamış
+        demektir. Eğer yama işlemi tamamlanırsa, sırasıyla
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# make clean
+# make config
+# make dep
+</pre></div></div>
+      <div class="para">
+        komutlarını yazın. Bu komutlarla ilgili ayrıntılı bilgi önceki konuda
+        anlatılmıştır.
+      </div><div class="para">
+        <tt>patch</tt> komutunun alabildiği bazı seçenekler vardır.
+        <tt>patch -s</tt> komutu
+        oluşabilecek tüm hata mesajlarını ekrana yazar. Diğer yama seçenekleri
+        <tt>man patch</tt> yazarak görülebilir.
+      </div><div class="para">
+        Birkaç yamanın ardından, .orig uzantılı dosyalar etrafta dolaşmaya
+        başlar. Bu dosyalar gereksizdir, büyük yer kapladıkları için silinmeleri
+        gerekir. Aşağıdaki komut yardımıyla <tt>/usr/src/linux</tt> dizini altında
+        <tt>.orig</tt> uzantılı dosyaları silebilirsiniz.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# find /usr/src/linux  -name '*.orig' -exec rm -f {} ';'
+</pre></div></div>
+      </dd></dl> <div class="head3"><a name="id5" id="id5"></a>Çıkabilecek Sorunlar</div><dl><dd><div class="para">
+        Eger rutin bir çekirdek güncellemesinden sonra yeni çekirdeğiniz gerçekten
+        garip şeyler yapıyorsa, büyük ihtimalle yeni çekirdeğinizi derlemeden önce
+        "make clean" komutunu kullanmayı unutmuşsunuzdur.
+      </div><div class="para">
+        Eğer çekirdek çok fazla hafıza harcıyorsa, çok büyükse veya yeni
+        786DX6/440 makinanızda bile derlenmesi sonsuza kadar sürüyorsa, büyük ihtimalle
+        ayarlanmış bir çok gereksiz parça (aygıt sürücüleri, dosya sistemleri, vb.)
+        vardır. Büyük çekirdeklerin en belirgin özelliği sürekli hafızadan diske ve
+        diskten hafızaya takas yapmalarıdır.
+      </div><div class="para">
+        Çekirdeğinizin ne kadar hafıza kullandığını makinanın toplam
+        hafızasından <tt>/proc/meminfo</tt> dosyasındaki
+        <tt>total mem</tt>
+        değerini çıkararak veya <tt>free</tt> komutunun çıktısından
+        öğrenebilirsiniz. Ayrıca <tt>dmesg</tt> komutunu kullanarak
+        (veya çekirdek kayıt dosyasına bakarak) da bu değere ulaşabilirsiniz.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+Memory: 15124k/16384k available (552k kernel code, 384k reserved, 324k data)
+</pre></div></div>
+      <div class="para">
+        LILO'yu çalışıtırmayı unuttunuz veya sistem hiç açılmıyorsa bu durumda
+        yapacağınız en iyi şey disketten açılış yapmak ve daha sonra açılış
+        yapabilen başka bir disket hazırlamaktır.
+      </div><div class="para">
+        Eğer eski çekirdek 1.2.X ve daha düşükse ve bunu 2.0.x sürümüne
+        yükseltmek istiyorsanız, 2.0.x çekirdek kurulumunda getirilen bazı
+        değişiklikler sorun çıkartabilir.
+        <tt>/usr/src/linux/Documentation/Changes</tt> dosyasında yapmanız
+        gereken değişklik listesi vardır. <tt>gcc</tt>, <tt>libc</tt>
+        gibi birkaç paketi yeniden kurmanız gerekebilir.
+      </div><div class="para">
+        Aynı anda birkaç çekirdek kaynak kodunu sistemde bulundurmayı
+        düşünüyorsanız, izlenecek en güvenilir yol, her birine
+        <tt>/usr/src/linux-x.y.z</tt> ismini vermektir (<i>x.y.z</i>
+        halihazırdaki çekirdek sürümünü gösterir). Ardından sembolik bir
+        bağlantı yardımıyla istediğiniz kaynak dizinini seçebilirsiniz, örneğin
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# ln -sf linux-2.0.2 /usr/src/linux
+</pre></div></div>
+      <div class="para">
+        komutu, <tt>linux-2.0.2</tt> dizinini aktif hale getirir.
+        Artık kaynak dosyalarının
+        bulunduğu yer <tt>linux-2.0.2</tt> dizinidir.
+      </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-5.5.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../lis/archive-tlkg-lis-5.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-5.7.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Sistemin Güncellenmesi </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Modüller (Yüklenebilir Çekirdek Parçaları)</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:25:11+03:00" /><title>lilo.conf</title><link rel="icon" type="image/png" href="../../images/belgeler-logo.png" /><link rel="stylesheet" href="../../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../../man/man5/man5.html" title="Dosya Biçimleri ve Dosya Dönüşümleri" /><link rel="previous" href="../../man/man5/man5-inittab.html" title="inittab" /><link rel="next" href="../../man/man5/man5-nologin.html" title="nologin" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">lilo.conf</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../../man/man5/man5-inittab.html">Önceki</a> </td><th width="60%" align="center">Dosya Biçimleri ve Dosya Dönüşümleri</th><td width="20%" align="right"> <a accesskey="n" href="../../man/man5/man5-nologin.html">Sonraki</a></td></tr></table></td></tr></table><div class="refentry"><a name="tr-man5-lilo.conf" id="tr-man5-lilo.conf"></a><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="25%"><b>lilo.conf(5)</b></td><td class="mheadfoot" align="center" width="50%"> </td><td class="mheadfoot" align="right" width="25%"><b>lilo.conf(5)</b></td></tr></table></div><dl><dt class="head3">İSİM</dt><dd>lilo.conf — <b><tt>lilo</tt></b> için yapılandırma dosyası<br /></dd><dt class="head3">AÇIKLAMA</dt><dd><div class="para">
+Bu dosya, varsayılan olarak <b><tt>/etc/lilo.conf</tt></b>, bir önyükleyici olan <b><tt>lilo</tt></b> tarafından okunur. Ayrıntılı bilgi <tt><b>lilo(8)</b></tt>’da bulunabilir.
+    </div><div class="para">Bu dosya aşağıdaki örneğe benzer:
+    </div><div class="para"><div align="right"><pre class="screen">
+boot = /dev/hda
+delay = 40
+compact
+vga = normal
+root = /dev/hda1
+read-only
+image = /zImage-2.5.99
+    label = try
+image = /zImage-1.0.9
+    label = 1.0.9
+image = /tamu/vmlinuz
+    label = tamu
+    root = /dev/hdb2
+    vga = ask
+other = /dev/hda3
+    label = dos
+    table = /dev/hda
+</pre></div></div><div class="para">
+Bu ayar dosyası, <b><tt>lilo</tt></b>’nun <tt>/dev/hda</tt> üzerindeki MBR’yi kullandığını belirtmektedir. (<b><tt>lilo</tt></b> kullanmanın çeşitli yolları ve diğer işletim sistemleri ile etkileşimi için <b><tt>lilo</tt></b> kılavuzlarından <tt>user.tex</tt> dosyasına bakınız.)
+    </div><div class="para">
+Açılış esnasında, önyükleyici, sizin &lt;<b>shift</b>&gt; tuşuna basmanız için 4 saniye (40 desisaniye) kadar bekleyecektir. Şayet bunu yapmazsanız, ilk çekirdek yüklenecektir. Şayet &lt;<b>shift</b>&gt; tuşuna basarsanız, önyükleyici hangi çekirdeği yüklemek istediğinizi soracaktır. Şayet muhtemel seçenekleri unutmuşsanız, &lt;<b>TAB</b>&gt; tuşuna basarak (US klavye için “?” tuşuna) bir menü açabilirsiniz. Şimdi yeni bir çekirdek ile eskisi arasında veya başka bir kök dosya sistemindeki bir çekirdek (her zaman kullandığınız kök dosya sistemine salakça bir şeyler yapmış olabilirisiniz) arasında seçim yapma şansına sahipsiniz. Bu noktada başka bir işletim sistemini (tabii ki bilgisayarınızda yüklü olmak koşulu ile) açabilirsiniz. <b><tt>lilo.conf</tt></b> içinde tanımlı 16 çekirdek biteşlemi bulunabilir.
+    </div><div class="para">
+Aşağıda görebileceğiniz gibi, bir ayar dosyası, bir miktar genel
+seçenek ile başlar (örneğimizdeki ilk altı satır gibi). Daha sonra çeşitli biteşlemler için seçenekler tanımlanır. Bir biteşlem için tanımlı bir seçenek varsa, genel tanımlı seçenek göz ardı edilir.
+    </div></dd><dt class="head3">GENEL SEÇENEKLER</dt><dd><div class="para">
+Pek çok anahtar sözcük mevcuttur. Aşağıdaki tanımlamalar tamamen <tt>user.tex</tt> dosyasından alınmıştır (sadece birazcık kısaltılmışlardır).
+    </div><dl><dt><span class="glossterm">
+      <b><tt>backup=</tt></b><i><tt>yedekleme_dosyası</tt></i>
+      </span></dt><dd class="halfpara"><div class="para">Orjinal önyükleme sektörünü  <i><tt>yedekleme_dosyası</tt></i>na kopyalar. Bu dosya
+<tt>/boot/boot.NNNN</tt> gibi normal bir dosya olabileceği gibi <tt>/dev/null</tt> gibi bir aygıt da olabilir.
+      </div></dd><dt><span class="glossterm">
+      <b><tt>boot=</tt></b><i><tt>önyükleme_aygıtı</tt></i>
+      </span></dt><dd class="halfpara"><div class="para">Önyükleme sektörünün içinde bulunduğu aygıt (mesela bir sabit disk bölümü). Şayet bu anahtar sözcük atlanırsa, kök olarak bağlanmış olan aygıttaki önyükleme sektörü okunur (veya muhtemelen yazılır).
+      </div></dd><dt><span class="glossterm"><b><tt>change-rules</tt></b></span></dt><dd class="halfpara"><div class="para">Önyükleme zamanı değişikliklerini disk bölümü türü  numaralarına (‘hiding’) tanımlar. Ayrıntılı bilgi için <tt>user.tex</tt>’in “<i>Disk bölümü türü değişiklik kurallarını</i> bölümünü okuyunuz.
+      </div></dd><dt><span class="glossterm"><b><tt>compact</tt></b></span></dt><dd class="halfpara"><div class="para">Okuma isteklerini tek bir okuma isteği haline getirebilmek için bitişik sektörleri okuma isteklerini birleştirmeye çalışır. Bu yükleme zamanını epeyce kısaltır ve biteşlemi mümkün mertebe küçük tutar. Bir disket sürücüden açılış yapılıyorsa, bu seçeneği kullanmanız şiddetle tavsiye edilir.
+      </div></dd><dt><span class="glossterm">
+      <b><tt>default=</tt></b><i><tt>isim</tt></i>
+      </span></dt><dd class="halfpara"><div class="para"><i><tt>isim</tt></i> ile belirtilen biteşlem dosyasını öntanımlı önyükleme biteşlemi olarak kabul eder. Şayet bu seçenek atlanmışsa, ayar dosyasında rastlanan ilk biteşlem kullanılır.
+      </div></dd><dt><span class="glossterm">
+      <b><tt>delay=</tt></b><i><tt>desisaniyeler</tt></i>
+      </span></dt><dd class="halfpara"><div class="para">Önyükleyicinin, biteşlemi yüklemeden önce beklemesi istenen süreyi tanımlar. İstenen sürenin saniye cinsinden değerinin on katı yazılır. Bu seçenek, klavye etkin hale geldikten hemen sonra doğrudan sabit diskten açılan sistemler için uygundur. Şayet <b><tt>delay</tt></b> seçeneğine sıfır atanmışsa veya bu seçenek kullanılmamışsa, önyükleyici açılış esnasında beklemez.
+      </div></dd><dt><span class="glossterm">
+      <b><tt>disk=</tt></b><i><tt>aygıt-ismi</tt></i>
+      </span></dt><dd class="halfpara"><div class="para">Belirtilen disk için standart dışı parametreleri tanımlar. Ayrıntıli bilgi için <tt>user.tex</tt>’in “<i>Disk geometrisi</i>” bölümüne bakınız. Genellikle <b><tt>bios=</tt></b> parametresi oldukça kullanışlıdır. BIOS, diskinizi 0x80, 0x81, 0x82 şeklinde numaralandırır ve hangi bölümün Linux bölümü olduğu bilinemez. Alışılmamış bir yüklemeniz varsa, BIOS bölümü ile Linux bölümünü eşleştirmeniz gerekebilir. Örneğin:
+      </div><div class="para"><div align="right"><pre class="screen">
+disk=/dev/sda
+        bios=0x80
+disk=/dev/hda
+        bios=0x81
+</pre></div></div><div class="para">
+Burada, SCSI diskin ilk BIOS diski olduğu ve birinci IDE girişine takılı master konumlu IDE diskin ikinci BIOS diski olduğu belirtilmiştir.
+      </div></dd><dt><span class="glossterm">
+      <b><tt>disktab=</tt></b><i><tt>disktab_dosyası</tt></i>
+      </span></dt><dd class="halfpara"><div class="para">Disk parametreleri tablosunun adını verir. Şayet bu seçenek atlanmışsa, ilk olarak <tt>/etc/disktab</tt> dosyasına bakılır. <tt>disktab</tt>’ların kullanımı oldukça cesaret kırıcı olabilir.
+      </div></dd><dt><span class="glossterm"><b><tt>fix-table</tt></b></span></dt><dd class="halfpara"><div class="para">Bu seçenek, <b><tt>lilo</tt></b>’nun, disk bölümleme tablolarındaki 3D adresleri ayarlamasını sağlar. Her disk bölümü girdisi bir 3D adrese (sektör/kafa/silindir) ve bölümün ilk ve son sektörlerinin adresinden oluşan düz bir adrese sahiptir. Eğer bir disk bölümü iz-hizalı değilse ve eğer aynı diski başka bir işletim sistemi ile birlikte kullanıyorsanız, bu işletim sistemleri 3D adresleri değiştirebilir. <b><tt>lilo</tt></b>, kendi önyükleme sektörünü sadece her iki adresin karşılığı olan yere yükleyebilir. Şayet <b><tt>fix-table</tt></b> belirtilmiş ise, lilo hatalı 3D adreslerini tekrar ayarlayabilir.
+      </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../../images/xsl/warning.png" /></td><th class="admon">UYARI</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+Diğer işletim sistemlerinin, sonradan bu ayarları sıfırlamamasının bir garantisi yoktur. Bu değişikliğin beklenmedik etkileri olabilir. Doğru olan yöntem; diski iz-hizalı bölümleme yapabilen bir uygulama ile bölümlemektir. Ayrıca, bazı disklerde (mesela adres dönüşüm tablosu etkin olan bazı EIDE disklerde), bazı durumlarda, karmakarışık disk bölümleme tablosu girdilerine sahip olmak kaçınılmaz olabilir.
+      </div></td></tr></table></div></dd><dt><span class="glossterm">
+      <b><tt>force-backup=</tt></b><i><tt>yedekleme_dosyası </tt></i>
+      </span></dt><dd class="halfpara"><div class="para"><b><tt>backup</tt></b> seçeneği ile aynıdır, fakat eski bir yedekleme dosyası varsa üzerine yazmaya zorlar.
+      </div></dd><dt><span class="glossterm"><b><tt>ignore-table</tt></b></span></dt><dd class="halfpara"><div class="para"><b><tt>lilo</tt></b>’ya bozuk bölüm tablosunu gözardı etmesini söyler.
+      </div></dd><dt><span class="glossterm">
+      <b><tt>install=</tt></b><i><tt>önyükleme_sektörü </tt></i>
+      </span></dt><dd class="halfpara"><div class="para">Belirtilen dosyayı, yeni önyükleme sektörü olarak yükler. Bu seçenek atlanırsa, <tt>/boot/boot.b</tt> öntanımlı olarak kullanılır.
+      </div></dd><dt><span class="glossterm"><b><tt>linear</tt></b></span></dt><dd class="halfpara"><div class="para">3D adresleme yerine doğrusal adresler üretir. Doğrusal
+adresler çalışma zamanında kullanılır ve disk geometrisine dayanmaz. Unutmayın ki, açılış disketleri, bu seçenek kullanıldığı durumlarda taşınabilir olmayabilirler. Çünkü disk geometrisini belirleyen BIOS servisi disketler için güvenilir çalışmayabilir.  Büyük diskler ile “doğrusal” adresleme kullanıldığı durumlarda, <b><tt>/sbin/lilo</tt></b>, disk alanına ulaşılamadığını söyleyebilir. Çünkü 3D adresleme açılış zamanından önce bilinemez.
+      </div></dd><dt><span class="glossterm"><b><tt>lba32</tt></b></span></dt><dd class="halfpara"><div class="para">
+Sektör/kafa/silindir adreslemesi yerine 32 bitlik mantıksal blok adreslemesi (LBA) üretilir. Şayet BIOS paket adreslemeyi destekliyorsa, diske erişebilmek için paket çağrıları kullanılır. Böylece 8.4 GB’den daha büyük disklerde herhangi bir bölümden açılış yapabilirsiniz. 3D adreslemeden kaynaklanan sınır böylece aşılmış olur. Şayet BIOS paket adreslemeyi desteklemiyorsa, lba32 adresler tıpkı doğrusal adreslemede olduğu gibi 3D’ye çevrilir. Disketlerde, lba32 kullanımında, adresler 3D olarak saklanır.
+      </div></dd><dt><span class="glossterm"><b><tt>lock</tt></b></span></dt><dd class="halfpara"><div class="para">Daha sonraki açılışlar için, önyükleme komut satırının özdevinimli kaydedilmesini etkinleştirir. Bu yolla, elle müdahale edilmediği sürece, lilo belli bir tercih üzerinde “kilitli” kalır.
+      </div></dd><dt><span class="glossterm">
+      <b><tt>map=</tt></b><i><tt>map_dosyası</tt></i>
+      </span></dt><dd class="halfpara"><div class="para"><tt>map</tt> dosyasının yerini tanımlar. Şayet bu seçenek atlanmış ise, <tt>/boot/map</tt> dosyası kullanılır.
+      </div></dd><dt><span class="glossterm">
+      <b><tt>message=</tt></b><i><tt>ileti_dosyası</tt></i>
+      </span></dt><dd class="halfpara"><div class="para">Önyükleme ekranından önce gösterilmek üzere bir ileti içeren dosyanın adını belirtir. <tt>LILO</tt> yazdıktan sonra &lt;<b>shift</b>&gt; tuşuna basmak için beklenirken herhangi bir ileti görünmez.  İletideki FF karakteri (&lt;<b>Ctrl  L</b>&gt;) yerel ekranı temizler. İletinin boyu 65535 bayt ile sınırlıdır. İleti dosyası değiştirilirse veya taşınırsa <i><tt>map_dosyası</tt></i> yeniden düzenlenmek zorundadır.
+      </div></dd><dt><span class="glossterm"><b><tt>nowarn</tt></b></span></dt><dd class="halfpara"><div class="para">Muhtemel tehlikeler hakkındaki uyarıyı kapatır.
+      </div></dd><dt><span class="glossterm"><b><tt>optional</tt></b></span></dt><dd class="halfpara"><div class="para">İsteğe bağlı bir seçenek belirtmek için biteşlem tanımlarında kullanılır. Aşağıya bakınız.
+      </div></dd><dt><span class="glossterm">
+      <b><tt>password=</tt></b><i><tt>parola</tt></i>
+      </span></dt><dd class="halfpara"><div class="para">Parola belirtmek için biteşlem tanımlarında kullanılır. Aşağıya bakınız.
+      </div></dd><dt><span class="glossterm"><b><tt>prompt</tt></b></span></dt><dd class="halfpara"><div class="para">Herhangi bir tuşa basılmasını beklemeksizin, önyükleme ekranına girmeye zorlar. <b><tt>prompt</tt></b> belirtilmiş ve <b><tt>tiemout</tt></b> belirtilmemişse sistemin başıboş bir biçimde yeniden açılması imkansızdır.
+      </div></dd><dt><span class="glossterm"><b><tt>restricted</tt></b></span></dt><dd class="halfpara"><div class="para">Biteşlem tanımlarında kullanılır. Aşağıya bakınız.
+      </div></dd><dt><span class="glossterm">
+      <b><tt>serial=</tt></b><i><tt>parametreler</tt></i>
+      </span></dt><dd class="halfpara"><div class="para">Seri port üzerinden kontrolü olanaklı kılar. Tanımlanmış seri port üzerinden ilklendirilme yapılır ve önyükleyici buradan ve klavyeden girdi kabul eder. Seri hat üzerinden <b><tt>break</tt></b> göndermek  konsoldan &lt;<b>shift</b>&gt; tuşuna basmak ile aynı şeydir. Şayet seri bağlantının güvenliğinden tam emin değilseniz, bütün önyükleme biteşlemleri parola korumalı olmalıdır. Parametreler dizgesi aşağıdaki söz dizimine sahiptir:
+      </div><dl><dd class="halfpara">
+<div class="para"><div align="center"><pre class="synopsis">
+<i>port</i>[,<i>hız</i>[<i>eşlikbiti</i>[<i>genişlik</i>]]]
+</pre></div></div>
+      </dd><dt><span class="glossterm"><i><tt>port</tt></i></span></dt><dd class="halfpara"><div class="para">Sıfırdan başlamak üzere,  seri hatların numarası. 0 (sıfır) <tt>COM1</tt> yani <tt>/dev/ttyS0</tt>'a karşılık gelir. Şayet varsa, dört portun tamamı da kullanılabilir.
+      </div></dd><dt><span class="glossterm"><i><tt>hız</tt></i></span></dt><dd class="halfpara"><div class="para">Seri portun saniyedeki bit sayısı cinsinden iletişim hızı. Şu hızlar desteklenmektedir: 110, 150, 300, 600, 1200, 2400, 4800 ve 9600 b/s.  Öntanımlı değer 2400 b/s’dir.
+      </div></dd><dt><span class="glossterm"><i><tt>eşlikbiti</tt></i></span></dt><dd class="halfpara"><div class="para">Seri hat üzerinde kullanılan eşlik biti.Önyükleyici girdi olarak eşlik bitini yoksayar ve 8. biti ayırır. Eşlik bitini tanımlamakta şu karakterler kullanılır (büyük veya küçük harf olabilir): eşlik bitinin olmaması  n (none), tek eşlik biti için o (odd), çift eşlik biti için e (even).
+      </div></dd><dt><span class="glossterm"><i><tt>genişlik</tt></i></span></dt><dd class="halfpara"><div class="para">Bir karakteri oluşturan bit sayısı. Sadece 7 ve 8 bit desteklenmektedir. Öntanımlı değeri eşlik bitinin olmdığı durumda 8, eşlik bitinin tek veya çift olması durumunda ise 7’dir.
+      </div></dd></dl><div class="para">
+Şayet ‘serial’ tanımlı ise, ‘delay’ın değeri özdevinimli olarak 20’ye yükseltilir.
+      </div><div class="para">
+ÖRNEK:  serial=0,2400n8  COM1’i öntanımlı değerlerle ilklendirir.
+      </div></dd><dt><span class="glossterm">
+      <b><tt>timeout=</tt></b><i><tt>desisaniyeler</tt></i>
+      </span></dt><dd class="halfpara"><div class="para">Klavye girdisi bekleme zamanaşımı süresi tanımlar. İstenen süre, saniye cinsinin on katı şeklinde belirtilir. Belirtilen süre içinde bir tuşa basılmazsa, ilk biteşlem öntanımlı olarak yüklenir. Aynı şekilde, kullanıcı uzun süre hareketsiz kalırsa, parola girdisi başarısız sayılır. Öntanımlı değer sonsuzdur.
+      </div></dd><dt><span class="glossterm">
+      <b><tt>verbose=</tt></b><i><tt>seviye</tt></i>
+      </span></dt><dd class="halfpara"><div class="para">Çoğu işlemin raporlama yapmasını etkinleştirir. Yüksek numaralar daha fazla ayrıntı elde edilmesini sağlar. Şayet <b><tt>lilo</tt></b> komut satırında <b><tt>–v</tt></b> belirtilmişse, buna uygun olarak seviye yükseltilir. En yüksek değer 5 olabilir.
+      </div></dd></dl><div class="para">
+Ayrıca, çekirdek ayar parametreleri olan <b><tt>append</tt></b>, <b><tt>ramdisk</tt></b>, <b><tt>read-only</tt></b>, <b><tt>read-write</tt></b>, <b><tt>root</tt></b> ve <b><tt>vga</tt></b> genel seçenekler içinde tanımlanabilir. Çekirdek biteşlemi yapılandırma bölümlerinde belirtilmemişse, bu değerler onlar için öntanımlı olarak kullanılırlar.
+    </div></dd><dt class="head3">image BÖLÜMLERİNDEKİ SEÇENEKLER</dt><dd><div class="para">
+<b><tt>image</tt></b> bölümleri ya Linux çekirdeğinin biteşleminin bulunduğu bir dosya ya da aygıtı belirten bir
+    </div><div class="blockquote"><div class="para">
+<b><tt>image</tt></b>=<i><tt>dosyayolu</tt></i>
+    </div></div><div class="para">
+satırı ile ya da herhangi bir sistem açılışını belirten
+    </div><div class="blockquote"><div class="para">
+<b><tt>other</tt></b>=<i><tt>dosyayolu</tt></i>
+    </div></div><div class="para">
+satırı ile başlar.
+    </div><div class="para">
+Birinci durumda, <b><tt>image</tt></b> satırında önyükleme için bir aygıt belirtilmişse,
+    </div><div class="blockquote"><div class="para">
+<b><tt>range</tt></b>=<i><tt>başlangıç-bitiş</tt></i>
+    </div></div><div class="para">
+satırı ile önyüklemenin yapılacağı bölümü gösteren sektör aralığı belirtilmelidir.
+    </div><div class="para">
+İkinci durumda (başka bir sistemin yüklenmesi), üç seçenek sözkonusudur:
+    </div><dl><dt><span class="glossterm">
+      <b><tt>loader=</tt></b><i><tt>zincir-yükleyici</tt></i>
+      </span></dt><dd class="halfpara"><div class="para">Kullanılması istenen zincir yükleyiciyi tanımlar. Öntanımlı olarak <tt>/boot/chain.b</tt> kullanılır. Önyüklemenin ilk disk veya disket dışında bir yerden yapılması gerekiyorsa, zincir yükleyici mutlaka tanımlanmalıdır.
+      </div></dd><dt><span class="glossterm">
+      <b><tt>table=</tt></b><i><tt>aygıt</tt></i>
+      </span></dt><dd class="halfpara"><div class="para">Bölümleme tablosunu içeren aygıt belirtilir. Bu seçenek atlanmış ise, önyükleyici bölümleme bilgilerini yüklenen işletim sistemine bildirmeyecektir. (Bazı işletim sistemleri, nereden yüklendiklerini saptamak için değişik yöntemler kullanırlar. Örneğin; MS-DOS genellikle disk  veya bölümünün açılış sektöründe geometri bilgisini saklar.) Önemli: ’table’ seçeneği ile gösterilen bir bölüm tablosunda bir değişiklik söz konusu ise <b><tt>/sbin/lilo</tt></b> yeniden çalıştırılmalıdır.
+      </div></dd><dt><span class="glossterm">
+      <b><tt>unsafe</tt></b>
+      </span></dt><dd class="halfpara"><div class="para">Eşlem oluşturulması sırasında açılış sektörüne erişilmez. Bu seçenekle, bazı sağlık kontrolleri (mesela bölümleme tablosu kontrolü) yapılmaz. Şayet açılış sektörü sabit biçimli bir disket aygıtı üzerinde ise, <b><tt>unsafe</tt></b> seçeneği, eşlem yükleyicinin çalıştırılması esnasında, sürücüye okunabilir bir disk koyma ihtiyacını ortadan kaldırır. <b><tt>unsafe</tt></b> ve <b><tt>table</tt></b> seçenekleri birbirleriyle uyumsuzdur, her ikisi birden belirtilemez.
+      </div></dd></dl><div class="para">
+Her iki durum için ortak olan seçenekler şunlardır:
+    </div><dl><dt><span class="glossterm">
+      <b><tt>label=</tt></b><i><tt>isim</tt></i>
+      </span></dt><dd class="halfpara"><div class="para">Önyükleyici, biteşlemi tanımlamak için her bir biteşlemin ana dosya adını (yol tanımlaması gerekmez) kullanır. Bu seçenekle değişik isimler tanımlamak da mümkündür.
+      </div></dd><dt><span class="glossterm">
+      <b><tt>alias=</tt></b><i><tt>isim</tt></i>
+      </span></dt><dd class="halfpara"><div class="para">Aynı girdi için ikinci bir isim kullanma imkanı verir.
+      </div></dd><dt><span class="glossterm">
+      <b><tt>lock</tt></b>
+      </span></dt><dd class="halfpara"><div class="para">(Yukarıya bakınız.)
+      </div></dd><dt><span class="glossterm">
+      <b><tt>optional</tt></b>
+      </span></dt><dd class="halfpara"><div class="para">Şayet eşlem oluşturma sırasında kullanılabilir durumda değilse, biteşlemi atlar. Test çekirdekleri tanımlamak için oldukça kullanışlı bir seçenektir.
+      </div></dd><dt><span class="glossterm">
+      <b><tt>password=</tt></b><i><tt>parola</tt></i>
+      </span></dt><dd class="halfpara"><div class="para">Biteşleme parola koruması sağlar.
+      </div></dd><dt><span class="glossterm">
+      <b><tt>restricted</tt></b>
+      </span></dt><dd class="halfpara"><div class="para">Sadece, komut satırında bir parametre belirtildiğinde parola sorulmasını sağlar (örneğin, komut satırından tek kullanıcılı kipe geçilmek istendiğinde).
+      </div></dd></dl></dd><dt class="head3">ÇEKİRDEK SEÇENEKLERİ</dt><dd><div class="para">
+Şayet yüklenen çekirdek bir Linux çekirdeği ise, komut satırından çekirdeğe parametre aktarmak mümkündür.
+    </div><dl><dt><span class="glossterm">
+      <b><tt>append=</tt></b><i><tt>dizge</tt></i>
+      </span></dt><dd class="halfpara"><div class="para">Dizge içinde boşluklarla ayrılarak belirtilen seçenekleri çekirdeğe ilave eder. Genellikle, tespit edilmesi tehlikeli olabilecek ve özellikleri özdevinimli olarak saptanamayan donanım parçalarının parametrelerini tanımlamak için kullanılır. Örneğin:
+      </div><div class="para"><pre class="literallayout">append="hdc=ide-scsi hdd=ide-scsi"</pre></div></dd><dt><span class="glossterm">
+      <b><tt>literal=</tt></b><i><tt>dizge</tt></i>
+      </span></dt><dd class="halfpara"><div class="para"><b><tt>append</tt></b>’e benzer ama diğer bütün seçenekleri iptal eder (mesela kök aygıt ayarları gibi). Çok önemli seçenekler farkına varılmaksızın kaldırılabileceği için, bu seçeneği genel seçenekler bölümünde kullanmamak daha mantıklı olacaktır.
+      </div></dd><dt><span class="glossterm">
+      <b><tt>ramdisk=</tt></b><i><tt>boyut</tt></i>
+      </span></dt><dd class="halfpara"><div class="para">İsteğe bağlı olan RAM diskin boyutunu tanımlar. Değer 0 ise, RAM disk oluşturulmaz. Bu seçenek atlanmış ise, RAM disk önyükleme biteşlemi içindeki ayarlara göre oluşturulur.
+      </div></dd><dt><span class="glossterm">
+      <b><tt>read-only</tt></b>
+      </span></dt><dd class="halfpara"><div class="para">Bu seçenek kök dosya sisteminin salt okunur kipte bağlanmasını sağlar. Genel olarak, sistem açılış işlemleri, daha sonra, kök dosya sistemini oku-yaz kipinde tekrar bağlar (mesela <b><tt>fsck</tt></b> yapıldıktan sonra).
+      </div></dd><dt><span class="glossterm">
+      <b><tt>read-write</tt></b>
+      </span></dt><dd class="halfpara"><div class="para">Kök dosya sisteminin oku-yaz kipinde bağlanmasını sağlar.
+      </div></dd><dt><span class="glossterm">
+      <b><tt>root=</tt></b><i><tt>kök_aygıtı</tt></i>
+      </span></dt><dd class="halfpara"><div class="para">Kök bölümü olarak bağlanacak aygıtı belirtir. Şayet özel bir isim belirtilmişse, kök aygıtı, kök dosya sisteminin o an bağlı olduğu aygıta göre düzenlenir. Şayet <b><tt>–r</tt></b> ile kök değiştirilmişse, belirtilen aygıt kullanılır. Şayet bu seçenek kullanılmamışsa,  çekirdek biteşlemi içindeki kök ayarları kullanılır. (Derleme sırasında, çekirdek Makefile’ında <tt>ROOT_DEV</tt> değişkeni ile ayarlanabilir ve daha sonra <b><tt>rdev</tt></b>(8) ile değiştirilebilir.)
+      </div></dd><dt><span class="glossterm">
+      <b><tt>vga=</tt></b><i><tt>kip</tt></i>
+      </span></dt><dd class="halfpara"><div class="para">Önyükleme esnasındaki kullanılacak vga metin kipini tanımlar. Şu değerler geçerlidir (harf büyüklüğüne bakılmaz):
+      </div><div class="para">
+<b><tt>normal</tt></b>: normal 80x25 metin kipi.
+      </div><div class="para">
+<b><tt>extended</tt></b> (veya <b><tt>ext</tt></b>): 80x50 metin kipi.
+      </div><div class="para">
+<b><tt>ask</tt></b>: dur ve kullanıcı girdisi için bekle (önyükleme esnasında).
+      </div><div class="para">
+<i><tt>numara</tt></i>: bu sayıya karşılık gelen metin kipini kullan. Olası kiplerin bir listesi vga=ask kullanarak ve önyükleme sırasında [Enter] tuşuna basarak elde edilebilir.
+      </div><div class="para">
+Şayet bu değişken kullanılmazsa, çekirdek biteşleminde bulunan VGA kip ayarları kullanılır. (Derleme sırasında, çekirdek Makefile’ında <tt>SVGA_MODE</tt> değişkeni ile ayarlanabilir ve daha sonra <tt><a href="../../man/man8/man8-rdev.html"><b>rdev(8)</b></a></tt> ile değiştirilebilir.)
+      </div></dd></dl></dd><dt class="head3">İLGİLİ BELGELER</dt><dd><div class="para">
+<tt><b>lilo(8)</b></tt>, <tt><a href="../../man/man8/man8-rdev.html"><b>rdev(8)</b></a></tt>.
+    </div><div class="para">
+<b><tt>lilo</tt></b> dağıtımı, yukarıdaki bilgilerin elde edildiği oldukça geniş bir belgeleme içermektedir.
+    </div></dd><dt class="head3">ÇEVİREN</dt><dd><div class="para">Yalçın Kolukısa <span class="email">&lt;yalcink01 (at) yahoo.com&gt;</span>, Ocak 2004</div></dd></dl><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="30%"></td><td class="mheadfoot" align="center" width="40%"><b>20 Mart 2000</b></td><td class="mheadfoot" align="right" width="30%"><b>lilo.conf(5)</b></td></tr></table></div></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../../man/man5/man5-inittab.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../../man/man5/man5.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../../man/man5/man5-nologin.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">inittab </td><td width="20%" align="center"><a accesskey="h" href="../../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> nologin</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

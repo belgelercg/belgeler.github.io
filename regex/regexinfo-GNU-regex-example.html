@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:29:06+03:00" /><title>Bir Arama ve Değiştirme Örneği</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../regex/regexinfo-GNU-Regex-Functions.html" title="GNU Regex İşlevleri" /><link rel="previous" href="../regex/regexinfo-Freeing-GNU-Pattern-Buffers.html" title="GNU Şablon Tamponlarının Serbest Bırakılması" /><link rel="next" href="../regex/regexinfo-POSIX-Regex-Functions.html" title="POSIX Regex işlevleri" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Bir Arama ve Değiştirme Örneği</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../regex/regexinfo-Freeing-GNU-Pattern-Buffers.html">Önceki</a> </td><th width="60%" align="center">GNU Regex İşlevleri</th><td width="20%" align="right"> <a accesskey="n" href="../regex/regexinfo-POSIX-Regex-Functions.html">Sonraki</a></td></tr></table></td></tr></table> <div class="head3"><a name="regexinfo-GNU-regex-example" id="regexinfo-GNU-regex-example"></a>Bir Arama ve Değiştirme Örneği</div><dl><dd><div class="para">
+Bu örnek, bu kitapçığın özgün kopyasında bulunmamaktadır. Tam bir uygulama örneği olarak yararlı olabileceği düşünülerek bu çeviriye eklenmiştir.
+    </div><div class="para">
+Örnek kodun yaptığı iş bir dizgeyi &lt;b&gt;, &lt;/b&gt; ve &lt;i&gt;, &lt;/i&gt; etiketlerinden arındırmaktır. İşlemi hızlandırmak için özel bir hızlı eşlem (fastmap) kullanılmıştır. Bu özel fastmap sayesinde eşleşme araması "/&lt;&gt;bi" dizgesindeki karakterlerden birine rastlanığında başlatılacağından işlemin beklenenden daha çabuk biteceği düşünülmüştür. <tt>SET_FASTMAP()</tt> makrosu bu hızlı eşlem dizisini ilklendirmek içindir.
+    </div><div class="para">
+<tt>unformat</tt> işlevi argümanı olan <i><tt>string</tt></i> dizgesini bu etiketlerden arındırır ve bunu ek bir tampon kullanmadan doğrudan bu dizge üzerinde yapar. Arama işleminin her yinelenişinde dizge giderek etiketlerden arındığından ve özel bir hızlı eşlem kullanıldığından, dizge içinde aramanın başlatılacağı konumun ilerletilmesine gerek duyulmamıştır.
+    </div>
+<div class="para"><div align="right"><pre class="screen">void
+get_regerror(int errcode, re_pattern_buffer *compiled, char *func) {
+
+    size_t length = regerror (errcode, compiled, NULL, 0);
+    char *buffer = xmalloc (length);
+
+    regerror (errcode, compiled, buffer, length);
+    fprintf(stderr, "%s: %s\n", func, buffer);
+    free(buffer);
+}
+
+#define SET_FASTMAP() \
+{ \
+  unsigned this_char; \
+  \
+  memset (fastmap, invert, (1 &lt;&lt; BYTEWIDTH)); \
+  \
+  for (this_char = 0; this_char &lt; strlen (fastmap_string); this_char++)\
+    fastmap[fastmap_string[this_char]] = !invert; \
+  fastmap['\n'] = match_newline; \
+}
+
+void
+unformat (char *string) {
+  char *pattern;
+  struct re_pattern_buffer compiled;
+  char fastmap[1 &lt;&lt; BYTEWIDTH];
+  const char *comperr;
+  char *fastmap_string;
+  unsigned invert, match_newline;
+  struct re_registers *matches;
+  int execerr, len, prelen, postlen, slen;
+
+  re_set_syntax (RE_NO_BK_PARENS | RE_NO_BK_VBAR);
+  pattern = "(&lt;.&gt;|&lt;/.&gt;)";
+  invert = 0;
+  match_newline = 0;
+  fastmap_string = "/&lt;&gt;bi";
+  SET_FASTMAP ();
+
+  memset (&amp;compiled, 0, sizeof (compiled));
+  comperr = re_compile_pattern(pattern, strlen(pattern), &amp;compiled);
+  if (comperr)
+    get_regerror((int)*comperr, &amp;compiled, "re_compile_pattern");
+
+  /* Şablon derlendi. Biçim arıtmasına başlayabiliriz. */
+  slen = strlen(string);
+  compiled.fastmap = fastmap;
+  matches = alloca (sizeof(matches) * (compiled.re_nsub + 1));
+  while (1) {
+    memset (matches, 0, sizeof (matches));
+    execerr = re_search (&amp;compiled, string, slen, 0, slen, matches);
+    if (execerr == - 1) {
+      /* puts ("Eşleşme bulunamadı"); */
+      break;
+    }
+    if (execerr &gt;= 0) {
+      len = matches-&gt;end[0] - matches-&gt;start[0];
+      postlen = slen - matches-&gt;end[0];
+      prelen = matches-&gt;start[0];
+      strncpy(string + prelen, string + matches-&gt;end[0], postlen);
+      slen = prelen + postlen;
+      string[slen] = '\0';
+    } else {
+      get_regerror(comperr, &amp;compiled, "re_search");
+    }
+  }
+}
+</pre></div></div>
+    </dd></dl><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../regex/regexinfo-Freeing-GNU-Pattern-Buffers.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../regex/regexinfo-GNU-Regex-Functions.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../regex/regexinfo-POSIX-Regex-Functions.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">GNU Şablon Tamponlarının Serbest Bırakılması </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> POSIX Regex işlevleri</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

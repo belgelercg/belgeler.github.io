@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:30:28+03:00" /><title>Internet'e Bağlanma</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../lis/archive-tlkg-lis-8.html" title="TCP/IP" /><link rel="previous" href="../lis/archive-tlkg-lis-8.3.html" title="Protokoller" /><link rel="next" href="../lis/archive-tlkg-lis-8.5.html" title="Yönlendirme" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Internet'e Bağlanma</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-8.3.html">Önceki</a> </td><th width="60%" align="center">TCP/IP</th><td width="20%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-8.5.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="archive-tlkg-lis-8.4" id="archive-tlkg-lis-8.4"></a>Internet'e Bağlanma</div><dl><dd><div class="para">
+      Linux'u İnternet'e bağlamak ilk aşamada biraz zor görünse de biraz teori,
+      biraz pratik yardımıyla mantık kolayca anlaşılabiliyor.
+      Ağlar, bilgisayar sistemlerinde hata olma olasılığı en yüksek, en çok
+      sorunun çıktığı alandır. Bu bölüm, özelde bir ethernet kartı ile
+      bağlantı yapıldığı varsayılarak anlatılmıştır. Ancak anlatılan birçok
+      kavram herhangi bir yapıdaki İnternet bağlantısı için geçerli olacaktır.
+    </div><div class="para">
+      Öncelikle çekirdeği -daha önce yapmamışsanız- ağ bağlantısına destek
+      verecek şekilde tekrar derleyin. Bunun için gerekli birkaç soruya "y"
+      cevabı vermek yeterli olacaktır:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+CONFIG NET ? [Y/n] y
+...
+TCP/IP networking (CONFIG_INET) [Y/n/?] y
+...
+Network device support (CONFIG_NETDEVICES) [Y/n/?]
+...
+Ethernet (10 or 100Mbit) (CONFIG_NET_ETHERNET) [N/y/?] y
+...
+Other ISA cards (CONFIG_NET_ISA) [N/y/?] y
+...
+NE2000/NE1000 support (CONFIG_NE2000) [N/y/m/?] y
+</pre></div></div>
+    <div class="para">
+      Yukarıdaki örnekte ethernet kartınızın ne2000/ne1000 ya da uyumlu bir kart
+      olduğu var sayılıyor. Kartınızın marka/modeline uygun seçeneneğe `y'
+      cevabı vermelisiniz. Ethernet kartlarının dışında bağlanma yönteminize
+      bağlı olarak çekirdeği <i>PPP</i>, <i>SLIP</i>,
+      <i>Token Ring</i> gibi bir destekle derlemeniz gerekebilir.
+      Bunları <i>modül</i> olarak derlemeniz
+      de mümkün. Çekirdek derlemek konusunda daha ayrıntılı bilgiyi bu kitabın
+      ilgili bölümünde bulabilirsiniz.
+    </div><div class="para">
+      Tabi ki çekirdeği derlemek yetmiyor, derleme aşamasından sonra ağ
+      desteğine sahip olan çekirdek ile makinanın açılması gerekir.
+    </div><div class="para">
+      Bağlantıyı gerçekleştirmek için ağ sorumlusundan bazı önemli bilgileri
+      almalısınız. Makinanızın <i>IP adresi</i> bunların başında gelir. Diğer
+      gerekli bilgiler de <i>subnet mask</i> ve <i>broadcast adresi</i>dir.
+    </div><div class="para">
+      DNS adres çözümleyici olarak çalışan DNS makinası ve makinanızı İnternet'e
+      bağlayacak olan yönlendiricinin IP adreslerini de biliyor olmalısınız.
+    </div><div class="para">
+      Bu aşamadan sonra yapılandırma işlemlerine geçilebilir.
+    </div> <div class="head3"><a name="id1" id="id1"></a>Ağ Yapılandırması</div><dl><dd><div class="para">
+        Bu bölümde anlatılan <tt>rc.*</tt> yapılandırma dosyaları <i>Slackware</i>
+        dağıtımına özeldir. Diğer dağıtımlarda da açılışta çalışan benzeri
+        <i>rc</i> dosyaları değiştirilerek ya da sistemle birlikte gelen sistem
+        yönetim araçları kullanılarak istediğiniz yapılandırmayı gerçekleştirebilirsiniz.
+      </div><div class="para">
+        Linux, açılırken bazı dosyalara bakarak düzgün çalışması için gerekli
+        yapılandırmayı yapar ve bazı yazılımları çalıştırır. Bu dosyalar
+        <tt>/etc/rc.d</tt> dizini altında yeralır. İnternet bağlantısı için
+        sadece iki dosyaya gerek duyulur. Slackware dağıtımı içinde bunlar,
+        yapılandırmayı gerçekleştiren <tt>/etc/rc.d/rc.inet1</tt> ve temel ağ programlarını
+        çalıştıran <tt>/etc/rc.d/rc.inet2</tt> dosyalarıdır.
+      </div><div class="para">
+        Bu dosyadaki değerleri gerektiği şekilde düzenleyerek İnternet'e bağlanacağız.
+        Öncelikle rc.inet1 dosyasının içeriğine göz atalım:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+HOSTNAME=`cat /etc/HOSTNAME`
+
+/sbin/ifconfig lo 127.0.0.1
+/sbin/route add -net 127.0.0.0
+
+IPADDR="144.122.71.55"
+NETMASK="255.255.255.0"
+NETWORK="144.122.71.0"
+BROADCAST="144.122.71.255"
+GATEWAY="144.122.71.1"
+
+/sbin/ifconfig eth0 $IPADDR broadcast $BROADCAST netmask $NETMASK
+/sbin/route add -net $NETWORK netmask $NETMASK
+/sbin/route add default gw $GATEWAY metric 1
+</pre></div></div>
+      <div class="para">
+        ifconfig komutu, ağ bağlantısı yapan kartın belirli parametreler ile
+        yapılandırılmasını sağlar. Kart kimliğini bilgisayara tanıtmak için bu
+        komut kullanılır.
+      </div><div class="para">
+        İlk satırdaki ifconfig programı, makinanın kendisiyle haberleşmesini
+        sağlamak amacıyla kendi ağ adresini (loopback device) 127.0.0.1 olarak
+        tanıtmıştır. İnternet üzerindeki her makinanın loopback adresi 127.0.0.1
+        'dir. 127 ile başlayan hiç bir adres, İnternet üzerinde gerçek bir adres
+        olarak kullanılamaz.
+      </div><div class="para">
+        Her paket, gönderileceği adrese gitmeden önce bir tabloya bakar. Bu
+        tablo, paketin muhtemel rotasını içerir. route komutu yardımıyla bu
+        tablo oluşturulur veya kontrol edilir. Genellikle bir kart için bir
+        <tt>ifconfig</tt> kullanılırken, paketin yollanacağı birden fazla rotanın
+        olması durumunda <tt>rc.inet1</tt> dosyasında birden fazla route komut
+        girdisi yapılacaktır.
+      </div><div class="para">
+        Kullanılan her ağ kartının bir veya birden fazla internet adresi
+        olabilir. Linux'a takılan birinci kart <tt>eth0</tt> ismini alırken ikinci karta
+        eth1, üçüncüye eth2 ... denir. Loopback cihazının ismi <tt>lo</tt> dur. ifconfig
+        komutunu parametre vermeden kullanırsanız, Linux'a tanıtılan çevresel
+        birimlerin listesi ekrana gelir.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ ifconfig
+lo        Link encap:Local Loopback
+          inet addr:127.0.0.1  Bcast:127.255.255.255  Mask:255.0.0.0
+          UP BROADCAST LOOPBACK RUNNING  MTU:3584  Metric:1
+          RX packets:493 errors:0 dropped:0 overruns:0
+          TX packets:493 errors:0 dropped:0 overruns:0
+
+eth0      Link encap:10Mbps Ethernet  HWaddr 48:54:33:00:E8:3A
+          inet addr:144.122.71.55  Bcast:144.122.71.255 Mask:255.255.255.0
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:171956 errors:0 dropped:0 overruns:0
+          TX packets:113212 errors:3 dropped:0 overruns:0
+          Interrupt:3 Base address:0x300
+</pre></div></div>
+      <div class="para">
+        <i>cclub.metu.edu.tr</i> makinasının ifconfig bilgisi yukarıdaki şekildedir. Bu
+        makina üzerinde tek ethernet kartı olup, ifconfig bilgisinde ikinci sırada
+        yeralıyor. Kartla ilgili ayrıntılı bilgi (her kart özgü donanım numarası,
+        alınan ve verilen paket sayısı gibi) ifconfig çıktısında var.
+      </div><div class="para">
+        <tt>route</tt> komutunun genel kullanımı şu şekildedir:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+route [add | del] [-net | -host] varis_adresi [gw yonlendirici] secenekler...
+</pre></div></div>
+      <div class="para">
+        <b><tt>host:</tt></b> paketin gideceği yer başka bir makina
+      </div><div class="para">
+        <b><tt>net:</tt></b> paketin gideceği yer başka bir ağ
+      </div><div class="para">
+        <b><tt>varış_adresi:</tt></b> paketin gideceği yer
+      </div><div class="para">
+        <b><tt>yönlendirici:</tt></b> bu paketin gidebilmesi için geçmesi
+        gereken yönlendirici
+      </div><div class="para">
+        <b><tt>add:</tt></b> tabloya ekle
+      </div><div class="para">
+        <b><tt>del:</tt></b> tablodan sil
+      </div><div class="para">
+        Tablonun genel durumunu kontrol etmek için <tt>route</tt> komutuna
+        parametre vermeden komut satırından yazın:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+cclub:~# route
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+localnet        *               255.255.255.0   U     0      0       67 eth0
+loopback        *               255.0.0.0       U     0      0        3 lo
+default         router71.ceng.m 0.0.0.0         UG    1      0      404 eth0
+</pre></div></div>
+      <div class="para">
+        Örnek tabloda üç ayrı yönlendirme girişi vardır. Birincisi, makinanın
+        kendisi ile haberleşmesini sağlayacak olan loopback. İkinci satırda,
+        yerel ağa gidecek olan tüm paketlerin yönlendiriciye verilmeden ağa
+        yönlendirilmesi söylenmiş. Son sırada ise (default) paket ilk iki
+        satırda yeralan varış adresinden farklı bir adrese gidecekse, önce
+        yönlendiriciden geçip sonra dış dünyaya açılacağından yönlendiricinin
+        IP adresi yazılmıştır.
+      </div><div class="para">
+        <tt>ifconfig</tt>, biraz karmaşık bir komuttur. Sistem yöneticisinden öğrenmeniz
+        gereken subnet maskesi, broadcast adresi ve IP adresini kullanıp kartları
+        yapılandırır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+ifconfig eth0 144.122.71.55 netmask 255.255.255.0 broadcast 144.122.71.255
+</pre></div></div>
+      <div class="para">
+        Yukarıda <tt>ifconfig</tt> yardımıyla eth0 kartına hem bir IP adresi verilmiş,
+        hem de bilgisayarın bulunduğu ağın özellikleri tanıtılmıştır.
+      </div><div class="para">
+        Bu andan sonra istendiği kadar <tt>route</tt> komutu ile makinadan çıkacak
+        paketler için yeni yollar tanımlanabilir.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+route add -net ...
+route add -host ...
+</pre></div></div>
+      <div class="para">
+        Dosyanın içeriğini sistem görevlisinin verdiği bilgiler doğrultusunda
+        değiştirdikten sonra komut satırından çalıştırmanız, İnternet'e bağlantı
+        için yeterli olacaktır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# /etc/rc.d/rc.inet1
+</pre></div></div>
+      <div class="para">
+        Bağlantıyı kontrol etmek İnternet adresini bilip çalıştığından emin
+        olduğunuz bir makinaya telnet ile bağlantı yapmaya çalışın:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ telnet orca.cc.metu.edu.tr
+Connected to orca.cc.metu.edu.tr
+Escape character is ^]
+</pre></div></div>
+      <div class="para">
+        Ethernet kartının bağlantısını yazılım yoluyla kesmenin yolu <tt>ifconfig</tt>
+        'in down seçeneğidir. Örneğin tek ethernet kartı üzerinden İnternet
+        bağlantınız var ve bunu hemen kesmek için aşağıdaki satırı yazın.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# ifconfig eth0 down
+</pre></div></div>
+      <div class="para">
+        ethernet bağlantısını yeniden açmak için
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# ifconfig eth0 up
+</pre></div></div>
+      <div class="para">
+        komutunu girmelisiniz. Bu işlem sonrasında yönlendirme bilgilerini
+        yeniden girmeniz gerekebilir.
+      </div><div class="para">
+        <tt>ping</tt> komutu, bağlantıları ve aynı zamanda bağlantı hızını ölçmek
+        için kullanılan bir komuttur. Ping, ICMP protokolü yardımıyla hedef
+        makinaya belirli uzunlukta paketler gönderir. Karşıdaki makina bunları
+        aldığı anda bekletmeden geri yollar. Arada geçen zaman farklı, iki makina
+        arasındaki bağlantı hızı hakkında fikir verir.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+cclub:~# ping knidos.cc.metu.edu.tr
+PING knidos.cc.metu.edu.tr (144.122.199.20): 56 data bytes
+64 bytes from 144.122.199.20: icmp_seq=0 ttl=253 time=34.0 ms
+64 bytes from 144.122.199.20: icmp_seq=1 ttl=253 time=487.7 ms
+64 bytes from 144.122.199.20: icmp_seq=2 ttl=253 time=3.6 ms
+
+--- knidos.cc.metu.edu.tr ping statistics ---
+3 packets transmitted, 3 packets received, 0% packet loss
+round-trip min/avg/max = 3.6/175.1/487.7 ms
+</pre></div></div>
+      <div class="para">
+        <tt>netstat</tt> komutu, makinanın ağ kartı üzerinden yapılan
+        bağlantıların dökümünü çıkarır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+cclub:~# netstat
+Active Internet connections (w/o servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State
+tcp        0      0 cclub.metu.edu.tr:1947  ftp02.quicktime.appl:20 ESTABLISHED
+tcp        0      0 cclub.metu.edu.tr:1943  despair.thebandit.c:ftp ESTABLISHED
+tcp        0      0 cclub.metu.edu.tr:1424  despair.thebandit.co:20 ESTABLISHED
+tcp        0      0 cclub.metu.edu.tr:1932  ftp02.quicktime.app:ftp ESTABLISHED
+tcp        0      0 cclub.metu.edu.tr:1407  165.113.58.253:20       ESTABLISHED
+tcp        0      0 cclub.metu.edu.tr:1392  165.113.58.253:ftp      ESTABLISHED
+tcp        0      0 cclub.metu.edu.tr:1377  ppp23.cc.metu.ed:telnet ESTABLISHED
+tcp        0      0 cclub.metu.edu.t:telnet pclabI_23.feas.met:7075 ESTABLISHED
+tcp        1      0 cclub.metu.edu.t:telnet ppp23.cc.metu.edu.:1054 TIME_WAIT
+tcp        0      0 cclub.metu.edu.t:telnet labmonitor.feas.m:10345 ESTABLISHED
+tcp        0   9495 cclub.metu.edu.t:telnet a5-03-asy27.bil-ro:1026 ESTABLISHED
+tcp        0      0 cclub.metu.edu.t:telnet pclabI_14.feas.me:15694 ESTABLISHED
+tcp        0      0 cclub.metu.edu.t:telnet stu21.math.metu.e:16158 ESTABLISHED
+Active UNIX domain sockets (w/o servers)
+Proto RefCnt Flags       Type       State         I-Node Path
+unix  1      [ ]         STREAM     CONNECTED     232
+unix  1      [ ]         STREAM     CONNECTED     299
+unix  1      [ ]         STREAM     CONNECTED     327
+unix  1      [ ]         STREAM                   591
+</pre></div></div>
+      <div class="para">
+        İkinci önemli dosya olan <tt>/etc/rc.d/rc.inet2</tt>, belli başlı tüm
+        İnternet sunucularını çalıştırır. Aşağıda bu dosyanın bir kısmı görülüyor.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+#!/bin/sh
+
+NET="/usr/sbin"
+IN_SERV="lpd"
+LPSPOOL="/var/spool/lpd"
+
+echo -n "Starting daemons:"
+
+# inetd calistiriliyor.
+if [ -f ${NET}/inetd ]; then
+  echo -n " inetd"
+  ${NET}/inetd
+else
+  echo "no INETD found.  INET cancelled!"
+  exit 1
+fi
+
+# degisik internet servisleri sirasiyla calistiriliyor.
+for server in ${IN_SERV} ; do
+  if [ -f ${NET}/${server} ]; then
+    echo -n " ${server}"
+    ${NET}/${server}
+  fi
+done
+</pre></div></div>
+      <div class="para">
+        Bu açılış dosyası, ağ üzerinden servs veren bir dizi sunucu programı
+        çalıştırıyor ve hataları engellemek için programların yerinde olup olmadığına
+        da bakıyor.
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Kontrol Dosyaları</div><dl><dd><div class="para">
+        Yapılandırmayı tamamlamak için <tt>/etc</tt> dizini altında yeralan bazı
+        dosyaların elden geçirilmesi gerekir. Bu dosyalar sistemin daha güvenli
+        ve verimli çalışmasına yardım eder. Bu dosyaların belli başlı olanları
+        ve ne işe yaradıklarını görelim.
+
+        <tt>/etc/hosts</tt> dosyasında makinaların IP numaraları ve İnternet
+        adresleri yazılır. Buraya sürekli kullanılan belli başlı önemli
+        makinaların girişi yapılabilir. Her makinanın uzun isimleri yerine
+        kısa bir kelime yazılarak sözkonusu makinaya ulaşılabilir. Örnek bir
+        <tt>/etc/hosts</tt> dosyası:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+127.0.0.1               localhost
+144.122.199.20     knidos.cc.metu.edu.tr knidos
+</pre></div></div>
+      <div class="para">
+        İlk satırda loopback IP numarası ve buna karşılık gelen makina ismi
+        vardır. Bu satırı silmemelisiniz. İkinci satırda ise knidos.cc.metu.edu.tr
+        makinasının IP numarasını 144.122.199.20 olarak belirtilmiş ve bu
+        bilgisayara "knidos" ismi ile de ulaşılabilmesi sağlanmıştır.
+      </div><div class="para">
+        <tt>/etc/hosts.allow</tt> ve <tt>/etc/hosts.deny</tt> yapılandırma
+        dosyaları, başka bir makinadan Linux'unuza yapılan bağlantıları
+        denetler. <tt>/etc/hosts.deny</tt> içine, sınırlandırılma getirmek istediğiniz
+        İnternet servislerini ve hangi makinalar için sınırlandırma istediğinizi
+        yazabilirsiniz.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ cat /etc/hosts.deny
+#
+
+in.fingerd: ALL except localhost, localhost : \
+        echo "request from %d@%h" &gt;&gt; /tmp/req;
+in.telnetd : .net.tr
+</pre></div></div>
+      <div class="para">
+        Yukarıdaki <tt>hosts.deny</tt> dosyasında dışarıdan gelebilecek finger
+        istekleri filtreleniyor ve bu istekler hakkında ayrıntılı bilgi (hangi
+        kullanıcı, hangi makinadan) <tt>/tmp/req</tt> dosyasına ekleniyor.
+      </div><div class="para">
+        Sonraki satır <tt>in.telnetd</tt> yazılımını çalıştıran
+        isteklerin *.net.tr adreslerinden gelmesi halinde bunların gözardı
+        edileceğini belirtir.
+      </div><div class="para">
+        <tt>hosts.allow</tt> dosyasında, genellikle <tt>hosts.deny</tt> dosyasına
+        gruplanan makina isimlerinin sınırlandırma istenmeyen bir veya birkaç
+        tanesi yazılır. Eğer bir makina ismi ve karşılık gelen İnternet adresi
+        her iki dosyada da varsa, sözkonusu servise izin verilir.
+      </div><div class="para">
+        Daha fazla bilgiyi <tt>hosts_access(5)</tt> man sayfalarından
+        bulabilirsiniz.
+      </div><div class="para">
+        <tt>/etc/resolv.conf</tt> dosyasında alan adı ve alan adı
+        sunucusunun IP numarası yazılır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ cat /etc/resolv.conf
+domain linux.org.tr
+nameserver 144.122.199.20
+</pre></div></div>
+      <div class="para">
+        Yukarıdaki satırlardan üzerinde bulunduğum makinanın alan adının (domain
+        name) linux.org.tr, alan adı sunucusunun ise 144.122.199.20 IP numaralı
+        knidos makinası olduğu anlaşılıyor.
+      </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-8.3.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../lis/archive-tlkg-lis-8.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-8.5.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Protokoller </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Yönlendirme</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

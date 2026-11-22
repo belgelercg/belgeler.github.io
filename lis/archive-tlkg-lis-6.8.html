@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:30:27+03:00" /><title>Örnek Kabuk Programı</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../lis/archive-tlkg-lis-6.html" title="Bash Kabuğu" /><link rel="previous" href="../lis/archive-tlkg-lis-6.7.html" title="Döngüler" /><link rel="next" href="../lis/archive-tlkg-lis-7.html" title="Sed ve Vi" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Örnek Kabuk Programı</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-6.7.html">Önceki</a> </td><th width="60%" align="center">Bash Kabuğu</th><td width="20%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-7.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="archive-tlkg-lis-6.8" id="archive-tlkg-lis-6.8"></a>Örnek Kabuk Programı</div><dl><dd><div class="para">
+      Sistem görevlisinin en çok kullandığım komutlardan birisi
+      <tt>ps -aux | grep -i xxx</tt> komutudur. Bu satır
+      yardımıyla çalışan <i>xxx</i> isimli program
+      hakkında daha ayrıntılı bilgi elde edilebilir.
+      <tt>ps</tt> komutu ayrıntılı bir süreç listesini
+      ekrana verirken çıktı doğrudan grep komutuna yönlendirilir ve
+      sadece istediğimiz bilgi monitörde görünür. Fakat her zaman aynı
+      uzun satırı tekrar tekrar yazmaktansa bu satırı bir dosyaya gönderip,
+      dosya adını komut satırından çalıştırmak zamandan tasarruf sağlayacaktır.
+      Biz de öyle yapalım ve aşağıdaki satırları "p" isimli dosyaya yazalım.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+#!/bin/bash
+if [ $# = 1 ]
+  then
+  ps -ax | grep -i $1
+else
+  ps -ax
+fi
+</pre></div></div>
+    <div class="para">
+      Ardından dosyayı PATH değişkeninin işaret ettiği dizinlerden
+      <tt>/usr/local/bin</tt> altına yerleştirip çalıştırılabilir
+      olması için <tt>chmod +x /usr/local/bin/p</tt> komutunu
+      uygulayın. Kendi yazdığınız dosyaları <tt>/usr/local</tt>
+      veya <tt>~/bin</tt> dizini altına kopyalamanız bunların derli
+      toplu olarak tek bir dizinde her an erişilebilir şekilde durmaları
+      açısından önem taşır.
+    </div><div class="para">
+      <tt>grep</tt> komutu, bir dosyadaki veya standart girişteki
+      satırlar içinden belirli bir kelime, harf veya harf grubunu bulmaya yarar.
+      Aşağıdaki birkaç örnek <tt>grep</tt>'i özetlemeye yeter.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+$ grep while sort.c
+sort.c dosyasinda while kelimesini iceren tum satirlari ekrana yazar.
+$ w | grep demir
+sistemde demir isimli kullanici var mi?
+$ ls -al | grep "^d"
+</pre></div></div>
+    <div class="para">
+      Son örnek, <tt>ls -al</tt> çıktısında satır başında ``d''
+      varsa ekrana getirir. Sadece dizin isimlerinin başında ``d'' harfi
+      bulunur. Şapka isareti, satır başlangıcını gösterir.
+    </div><div class="para">
+      Dosyaya biraz daha yakından bakalım. İlk satır, bu dosyanın
+      <tt>/bin/bash</tt> programı tarafından çalıştırılacağını gösterir.
+      İkinci satır yardımıyla komut satırı üzerinde kaç tane seçenek olduğu
+      bulunur. $# çevresel değişkeni her biri TAB veya boşluk karakteri ile ayrılmış
+      komut satırı seçeneklerinin sayısını verir. Aşağıdaki komutta toplam 3
+      seçenek vardır.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+$ ls --8bit  -F -b
+</pre></div></div>
+    <div class="para">
+      <tt>$#</tt> komutuna benzer şekilde $1, $2, $3...
+      değişkenleri de seçenekleri verir. Yukarıdaki komutta $1, $2, $2
+      değişkenleri sırasıyla
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+--8bit
+-F
+-b
+</pre></div></div>
+    <div class="para">
+      değerlerini alırlar. Komut satırından çalıştırılan komut ise $0
+      değişkenine atılır. Yukarıdaki örnekte $0 değişkeni
+      <tt>ls</tt> değerini tutacaktır.
+    </div><div class="para">
+      <tt>p</tt> dosyasına tek seçenek yollayacağız. Bu seçenek de
+      hakkında ayrıntılı bilgi alacağımız süreç olacaktır. Dosya içinde
+      $1 değişkenini <tt>ps</tt> komutuna yerleştirmek için:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+ps -ax | grep -i $1;
+</pre></div></div>
+    <div class="para">
+      yazılır. Bundan sonra komut satırında, örneğin:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+$ p bash
+</pre></div></div>
+    <div class="para">
+      girilirse $1 değişkeni <tt>bash</tt> e eşit olacak ve bu da
+      <tt>ps -ax | grep -i bash</tt> eşdeğer komutunu çalıştıracaktır.
+      Komut olarak sadece <tt>p</tt> girilirse $# değişkeni 0'a
+      eşit olacağından dosyada yeralan ve hiç bir filtreleme yapmayan
+      <tt>ps -ax</tt> komutu çalışır.
+    </div><div class="para">
+      Linux'u yüklerken <i>HOWTO</i> dökümanlarını da eklemeyi
+      ihmal etmediniz, değil mi? Aşağıdaki kısa program, bu dosyalara en hızlı
+      şekilde ulaşmanıza yarıyor. Tüm HOWTO'lar kurulum aşamasında
+      <tt>/usr/doc/faq/howto</tt> dizini altına kopyalanır ve sıkıştırılır.
+    </div><div class="para">
+      Bu programı herhangi bir isimle kaydedin. Ardından komut satırından
+      programın ismi ile birlikte ekranda görüntülemek istediğiniz
+      <i>HOWTO</i> dökümanının ismini yazın (örneğin PPP).
+      Bir parametre girilmez ise <tt>/usr/doc/faq/howto</tt>
+      dizinindeki dosyalar ekrana gelir.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+#!/bin/bash
+if [ "$1" = "" ]; then
+    ls /usr/doc/faq/howto | less
+else
+    gunzip -c /usr/doc/faq/howto/$1-HOWTO.gz | less
+fi
+</pre></div></div>
+    </dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-6.7.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../lis/archive-tlkg-lis-6.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-7.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Döngüler </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Sed ve Vi</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

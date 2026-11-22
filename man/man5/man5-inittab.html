@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:25:11+03:00" /><title>inittab</title><link rel="icon" type="image/png" href="../../images/belgeler-logo.png" /><link rel="stylesheet" href="../../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../../man/man5/man5.html" title="Dosya Biçimleri ve Dosya Dönüşümleri" /><link rel="previous" href="../../man/man5/man5-initscript.html" title="initscript" /><link rel="next" href="../../man/man5/man5-lilo.conf.html" title="lilo.conf" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">inittab</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../../man/man5/man5-initscript.html">Önceki</a> </td><th width="60%" align="center">Dosya Biçimleri ve Dosya Dönüşümleri</th><td width="20%" align="right"> <a accesskey="n" href="../../man/man5/man5-lilo.conf.html">Sonraki</a></td></tr></table></td></tr></table><div class="refentry"><a name="tr-man5-inittab" id="tr-man5-inittab"></a><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="25%"><b>inittab(5)</b></td><td class="mheadfoot" align="center" width="50%"><b>Linux Sistem Yöneticisinin Kılavuzu</b> </td><td class="mheadfoot" align="right" width="25%"><b>inittab(5)</b></td></tr></table></div><dl><dt class="head3">İSİM</dt><dd>inittab — sysv uyumlu init süreci tarafından kullanılan inittab dosyasının biçimi<br /></dd><dt class="head3">AÇIKLAMA</dt><dd><div class="para">
+<b><tt>inittab</tt></b> dosyasında, sistem açılışında ve normal çalışma sırasında hangi süreçlerin başlatılacağı belirtilir (örneğin, <tt>/etc/init.d/boot</tt>, <tt>/etc/init.d/rc</tt>, getty, ...). <b><tt>init</tt></b>(8), her birinin başlatılacak kendi süreç kümesi olan çalışma seviyelerinden birini seçebilir. Geçerli çalışma seviyeleri <b><tt>0</tt></b> dan <b><tt>6</tt></b> ya kadar olan normal seviyeler ile <b><tt>A</tt></b>, <b><tt>B</tt></b> ve <b><tt>C</tt></b> isteğe bağlı seviyeleridir. <b><tt>inittab</tt></b> dosyası içindeki bir girdinin biçimi şöyledir:
+    </div><dl><dd class="halfpara"><div class="para">
+<tt><i>kimlik</i>:<i>çalışma_seviyeleri</i>:<i>eylem</i>:<i>süreç</i></tt>
+      </div></dd></dl><div class="para">
+`#' karakteri ile başlayan satırlar yoksayılır.
+    </div><dl><dt><span class="glossterm"><i><tt>kimlik</tt></i></span></dt><dd class="halfpara"><div class="para"><b><tt>inittab</tt></b> içindeki bir girdiyi tanımlayan 1-4 karakterlik eşsiz bir dizilimdir (a.out kütüphaneleri ya da sürümü 5.2.18 den küçük kütüpanelerle derlenmiş sysvinit sürümleri için bu sınır 2 karakterdir.).
+      </div><div class="para">
+Not: getty ve diğer login süreçleri için <i><tt>kimlik</tt></i> alanı ilgili tty'nin numarası (örn, tty1 için 1) olmalıdır. Aksi takdirde login hesapları düzgün çalışmayabilir.
+      </div></dd><dt><span class="glossterm"><i><tt>çalışma_seviyeleri</tt></i></span></dt><dd class="halfpara"><div class="para">Belirtilen eylemi gerçekleştirecek çalışma seviyelerinin listesidir.
+      </div></dd><dt><span class="glossterm"><i><tt>eylem</tt></i></span></dt><dd class="halfpara"><div class="para">Gerçekleştirilecek eylem belirtilir.
+      </div></dd><dt><span class="glossterm"><i><tt>süreç</tt></i></span></dt><dd class="halfpara"><div class="para">Çalıştırılacak süreç belirtilir. Süreç alanı bir '+' karakteri ile başlıyorsa, init, süreç için utmp ve wtmp hesabı oluşturmayacaktır. Bu, kendi utmp/wtmp yönetimini yapmakta ısrar eden getty için gereklidir. Bu ayrıca tarihsel bir hatadır.
+      </div></dd></dl><div class="para">
+<i><tt>çalışma_seviyeleri</tt></i> alanı, farklı çalışma seviyelerini belirtmek için çok sayıda karakter içerebilir. Örneğin; <b><tt>123</tt></b>, sürecin 1, 2 ve 3. çalışma seviyelerinde başlatılacağını belirtir. <i><tt>çalışma_seviyeleri</tt></i> alanı  <b><tt>ondemand</tt></b> girdileri için <b><tt>A</tt></b>, <b><tt>B</tt></b> veya <b><tt>C</tt></b> içerebilir. <b><tt>sysinit</tt></b>, <b><tt>boot</tt></b> ve <b><tt>bootwait</tt></b>
+girdilerinin <i><tt>çalışma_seviyeleri</tt></i> alanı gözardı edilir.
+    </div><div class="para">
+Sistem çalışma seviyesinin değiştirilmesi halinde, çalışmakta olan ancak yeni çalışma seviyesinde belirtilmeyen süreçler bir <tt>SIGTERM</tt> sinyalinin ardından bir <tt>SIGKILL</tt> sinyali gönderilerek öldürülür.
+    </div><div class="para">
+<i><tt>eylem</tt></i> alanında belirtilebilecek eylemler şunlardır:
+    </div><dl><dt><span class="glossterm"><b><tt>respawn</tt></b></span></dt><dd class="halfpara"><div class="para">Süreç her sonlandırılışında yeniden başlatılacaktır (örn, <tt>getty</tt>)
+      </div></dd><dt><span class="glossterm"><b><tt>wait</tt></b></span></dt><dd class="halfpara"><div class="para">Süreç belirtilen çalışma seviyesine girildiğinde bir defalık çalıştırılacak ve <b><tt>init</tt></b> sonlanmasını bekleyecektir.
+      </div></dd><dt><span class="glossterm"><b><tt>once</tt></b></span></dt><dd class="halfpara"><div class="para">Süreç belirtilen çalışma seviyesine girildiğinde bir defalık çalıştırılacaktır.
+      </div></dd><dt><span class="glossterm"><b><tt>boot</tt></b></span></dt><dd class="halfpara"><div class="para">Süreç sistem açılışı sırasında çalıştırılacaktır. <i><tt>çalışma_seviyeleri</tt></i> alanı yoksayılır.
+      </div></dd><dt><span class="glossterm"><b><tt>bootwait</tt></b></span></dt><dd class="halfpara"><div class="para">Süreç sistem açılışı sırasında çalıştırılacak ve <b><tt>init</tt></b> sonlanmasını bekleyecektir (örn, <tt>/etc/rc</tt>) <i><tt>çalışma_seviyeleri</tt></i> alanı yoksayılır.
+      </div></dd><dt><span class="glossterm"><b><tt>off</tt></b></span></dt><dd class="halfpara"><div class="para">Hiçbir şey yapmaz.
+      </div></dd><dt><span class="glossterm"><b><tt>ondemand</tt></b></span></dt><dd class="halfpara"><div class="para"><b><tt>ondemand</tt></b> çalışma seviyesi ile işaretlenmiş bir süreç belirtilen <b><tt>ondemand</tt></b> çalışma seviyesinin her çağrılışında çalıştırılacaktır. Bu durumda, çalışma seviyesi değiştirilmez. (<b><tt>ondemand</tt></b> çalışma seviyeleri `a', `b', ve `c' dir.)
+      </div></dd><dt><span class="glossterm"><b><tt>initdefault</tt></b></span></dt><dd class="halfpara"><div class="para">Bir <b><tt>initdefault</tt></b> girdisi, sistem açılışından sonra girilecek çalışma seviyesini belirtmek için kullanılır. Eğer yoksa, init girilecek çalışma seviyesini konsolda soracaktır. <i><tt>süreç</tt></i> alanı gözardı edilir.
+      </div></dd><dt><span class="glossterm"><b><tt>sysinit</tt></b></span></dt><dd class="halfpara"><div class="para"><i><tt>süreç</tt></i> sistem açılışı sırasında bir <b><tt>boot</tt></b> veya <b><tt>bootwait</tt></b> girdisinden önce çalıştırılır. <i><tt>çalışma_seviyeleri</tt></i> alanı yoksayılır.
+      </div></dd><dt><span class="glossterm"><b><tt>powerwait</tt></b></span></dt><dd class="halfpara"><div class="para"><i><tt>süreç</tt></i> sistem kapanışı sırasında çalıştırılır. <b><tt>init</tt></b>, makinaya bağlı bir kesintisiz güç kaynağı ile haberleşen bir süreç tarafından bu durum hakkında bilgilendirilir. <b><tt>init</tt></b> kapanışı bitirmeden önce süreci bekleyecektir.
+      </div></dd><dt><span class="glossterm"><b><tt>powerfail</tt></b></span></dt><dd class="halfpara"><div class="para"><b><tt>init</tt></b>'in sürecin sonlanmasını beklememesi dışında <b><tt>powerwait</tt></b> gibidir.
+      </div></dd><dt><span class="glossterm"><b><tt>powerokwait</tt></b></span></dt><dd class="halfpara"><div class="para">Süreç, gücün tekrar geri gelmesi olasılığı gözönünde tutularak mümkün olduğunca çalıştırılır.
+      </div></dd><dt><span class="glossterm"><b><tt>powerfailnow</tt></b></span></dt><dd class="halfpara"><div class="para">KGK boşalmaya yaklaşıncaya kadar süreç çalıştırılır (bu bilgi KGK tarafından kendisi ile haberleşen sürece veriliyorsa)
+      </div></dd><dt><span class="glossterm"><b><tt>ctrlaltdel</tt></b></span></dt><dd class="halfpara"><div class="para">Süreç, <b><tt>init</tt></b> bir <tt>SIGINT</tt> sinyali alınca çalıştırılır. Bu durum konsoldan CTRL-ALT-DEL tuşlarına aynı anda basıldığında oluşur. Genellikle, kapanma sırasında tek kullanıcılı seviyeye geçmek ya da makinayı yeniden başlatmak için kullanılır.
+      </div></dd><dt><span class="glossterm"><b><tt>kbrequest</tt></b></span></dt><dd class="halfpara"><div class="para">Konsol klavyesinden özel olarak belirlenmiş bir tuş grubuna aynı anda basıldığında <b><tt>init</tt></b> bir sinyal alarak bu süreci başlatabilir.
+      </div><div class="para">
+Bu işlev için belgelendirme henüz yeterli değildir. kbd-x.xx paketlerinde daha fazla bilgi bulunabilir (bu sayfa yazılırken son sürüm kbd-0.94 idi). Temel olarak, tuşlar "KeyboardSignal" eylemine eşlenir. Örneğin, Alt+Yukarı_ok için klavye dosyanıza aşağıdaki girdiyi yazabilirsiniz:
+      </div><div class="para"></div>
+<div class="para"><div align="right"><pre class="screen">alt keycode 103 = KeyboardSignal</pre></div></div>
+      </dd></dl></dd><dt class="head3">ÖRNEKLER</dt><dd><div class="para">
+Eski Linux inittab'ını andıran bir inittab örneği:
+    </div><dl><dd class="halfpara">
+<div class="para"><div align="right"><pre class="screen"># linux için inittab
+id:1:initdefault:
+rc::bootwait:/etc/rc
+1:1:respawn:/etc/getty 9600 tty1
+2:1:respawn:/etc/getty 9600 tty2
+3:1:respawn:/etc/getty 9600 tty3
+4:1:respawn:/etc/getty 9600 tty4
+</pre></div></div>
+    </dd></dl><div class="para">
+Bu inittab dosyası, açılış sırasında <b><tt>/etc/rc</tt></b> betiğini ve ardından tty1-tty4 üzerinde getty'leri çalıştırır.
+    </div><div class="para">
+Biraz daha özenilmiş bir inittab (açıklamalar içindedir)
+    </div><dl><dd class="halfpara">
+<div class="para"><div align="right"><pre class="screen"># içinde çalışılacak seviye
+id:2:initdefault:
+
+# herşeyden önce sistemi ilkendirelim.
+si::sysinit:/etc/rc.d/bcheckrc
+
+# 0 kapanma, 6 yeniden başlatma, 1 onarım kipi.
+l0:0:wait:/etc/rc.d/rc.halt
+l1:1:wait:/etc/rc.d/rc.single
+l2:2345:wait:/etc/rc.d/rc.multi
+l6:6:wait:/etc/rc.d/rc.reboot
+
+# 3 parmak selamında yapılacak olan.
+ca::ctrlaltdel:/sbin/shutdown -t5 -rf now
+
+# 2 ve 3. çalışma seviyeleri: konsolda getty,
+# 3 ise ayrıca modem portunda getty
+1:23:respawn:/sbin/getty tty1 VC linux
+2:23:respawn:/sbin/getty tty2 VC linux
+3:23:respawn:/sbin/getty tty3 VC linux
+4:23:respawn:/sbin/getty tty4 VC linux
+S2:3:respawn:/sbin/uugetty ttyS2 M19200
+</pre></div></div>
+      </dd></dl></dd><dt class="head3">İLGİLİ DOSYALAR</dt><dd><div class="para"><tt>/etc/inittab</tt></div></dd><dt class="head3">YAZAN</dt><dd><div class="para">
+<b><tt>init</tt></b> Miquel van Smoorenburg <span class="email">&lt;miquels (at) cistron.nl&gt;</span> tarafından yazılmıştır. Bu kılavuz sayfası Sebastian Lederer <span class="email">&lt;lederer (at) francium.informatik.uni-bonn.de&gt;</span> tarafından yazılmış ve Michael Haardt  <span class="email">&lt;u31b3hs (at) pool.informatik.rwth-aachen.de&gt;</span> tarafından geliştirilmiştir.
+    </div></dd><dt class="head3">İLGİLİ BELGELER</dt><dd><div class="para">
+<tt><a href="../../man/man8/man8-init.html"><b>init(8)</b></a></tt>, <tt><b>telinit(1)</b></tt>.
+    </div></dd><dt class="head3">ÇEVİREN</dt><dd><div class="para">Nilgün Belma Bugüner <span class="email">&lt;nilgun (at) belgeler·gen·tr&gt;</span>, Ocak 2004</div></dd></dl><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="30%"></td><td class="mheadfoot" align="center" width="40%"><b>19 Mayıs 1998</b></td><td class="mheadfoot" align="right" width="30%"><b>inittab(5)</b></td></tr></table></div></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../../man/man5/man5-initscript.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../../man/man5/man5.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../../man/man5/man5-lilo.conf.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">initscript </td><td width="20%" align="center"><a accesskey="h" href="../../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> lilo.conf</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:30:27+03:00" /><title>Erişim Hakları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../lis/archive-tlkg-lis-4.html" title="Dosya ve Dizin İşlemleri" /><link rel="previous" href="../lis/archive-tlkg-lis-4g.html" title="Giriş" /><link rel="next" href="../lis/archive-tlkg-lis-4.2.html" title="Diğer Dosya Sistemlerinin Kullanılması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Erişim Hakları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-4g.html">Önceki</a> </td><th width="60%" align="center">Dosya ve Dizin İşlemleri</th><td width="20%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-4.2.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="archive-tlkg-lis-4.1" id="archive-tlkg-lis-4.1"></a>Erişim Hakları</div><dl><dd><div class="para">
+      Erişim hakları, Linux dosya sistemi güvenliğinin belkemiğini
+      oluşturur. Her dosyaya ayrı verilebilen erişim izinleri sayesinde çok
+      daha rahat bir sistem yönetimi gerçekleştirilebilir. Bu, konuya sadece
+      sistem görevlisi tarafından yaklaşıldığı zaman çıkartılabilecek bir
+      sonuçtur. Kullanıcı bazında erişim hakları bazen daha da anlamlı
+      olabilir. Yanlış kullanıldığında hoş olmayan süprizlere yol
+      açabilir. Linux altında üç çeşit erişim hakkı vardır:
+    </div>
+      <div class="variablelist"><dl><dt><span class="term">Okuma izni</span></dt><dd class="varlist"><div class="para">
+            Dosyanın okuma izni varsa içeriği görülebilir, dizinin okuma izni
+            varsa içerdiği dosyaların listesi alınabilir.
+          </div></dd><dt><span class="term">Yazma izni</span></dt><dd class="varlist"><div class="para">
+            Dosyanın yazma izni varsa dosyayı değiştirebilir veya silebilirsiniz.
+            Dizine yazma izni verildiğinde dizin altındaki dosyalar yazılabilir
+            veya silinebilir.
+          </div></dd><dt><span class="term">Çalıştırma izni</span></dt><dd class="varlist"><div class="para">
+            Dosyayı çalıştırma hakkını verir.
+          </div></dd></dl></div>
+    <div class="para">
+      Bir dosya veya dizin ilk yaratıldığı anda Linux tarafından öntanımlı
+      bazı izinler verilir. Genellikle bu izin çalıştırma ve okumadır. Dosyanın
+      oluşma anında verilen izini değiştirmek için erişim yetki kalıbı olarak
+      da bilinen <tt>umask</tt> komutu kullanılır. Daha fazla bilgi için komuta
+      ait man dosyasına bakın.
+    </div><div class="para">
+      Erişim haklarının dışında bir dosyanın üç izin düzeyi daha vardır. Bunlar,
+      dosyanın sahibi, dosyanın grubu ve diğer kullanıcılardır. Dosyanın sahibi,
+      o dosyayı oluşturan kişidir. Her kullanıcının bir grubu da olduğu için,
+      dosya oluşturulurken kullanıcı hangi grupta ise dosya da o gruba ait
+      olacaktır. Dosyanın sahibi olmayan ve grubu da dosyanın grubuyla uyuşmayan
+      sistemdeki kullanıcılar ``diğer'' sınıfına girerler. Gruplar hakkında daha
+      fazla bilgi için <i>Linux Sistem Yönetimi</i> konusuna bakın.
+    </div> <div class="head3"><a name="id1" id="id1"></a>Dosya İzinlerinin Değiştirilmesi</div><dl><dd><div class="para">
+        Dosya izin bilgilerini görebilmek için <tt>ls</tt> komutu, <tt>-l</tt>
+        parametresiyle kullanılır. Aşağıdaki dosya üzerindeki erişim haklarına
+        göz atalım:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+-rwxr-xr-x   2 gorkem   users          182 Feb 12 03:58 deneme
+</pre></div></div>
+      <div class="para">
+        Dosya bilgisinin en sol kısmında izin hakları yeralır. En baştaki ``-''
+        işareti bunun düz dosya olduğunu belirtir. ``gorkem'', dosyanın sahibi;
+        ``users'' ise grubudur. Ardından sırayla uzunluk, son değiştirilme tarihi ve
+        dosya ismi gibi bilgiler gelir. Son harf kümesine dosyanın modu da denir.
+      </div><div class="para">
+        Solda yeralan r,w ve x karakterleri sırayla okuma, çalıştırma ve yazma
+        haklarını belirtir. En soldaki ``-'' işaretini ayırdığımız zaman geri
+        kalan harfleri üç adet üçlü grup haline getirelim:
+      </div>
+        <div class="para"><div align="right"><pre class="screen">rwx     r-x    r-x</pre></div></div>
+      <div class="para">
+        Sırayla birinci harf kümesi dosya sahibinin izinlerini, ikinci harf
+        kümesi grup izinleri ve son küme de diğer kullanıcıların izinlerini
+        belirtir. Buna göre yukarıdaki dosyada
+      </div>
+        <div class="variablelist"><dl><dt><span class="term">rwx</span></dt><dd class="varlist"><div class="para">
+              kullanıcı okuyabilir, yazabilir, çalıştırabilir
+            </div></dd><dt><span class="term">r-x</span></dt><dd class="varlist"><div class="para">
+              grup okuyabilir, çalıştırabilir fakat yazamaz.
+            </div></dd><dt><span class="term">r-x</span></dt><dd class="varlist"><div class="para">
+              diğerleri okuyabilir, çalıştırabilir fakat yazamaz.
+            </div></dd></dl></div>
+      <div class="para">
+        Sol baştaki karakter ``d'' olsaydı, bir dizini inceliyor olacaktık.
+      </div><div class="para">
+        Dosyanın izinlerini değiştirmek için <tt>chmod</tt> komutu kullanılır. Bu
+        komutu kullanırken hangi izin düzeyine (kullanıcı, grup veya diğerleri)
+        hangi izinlerin verileceği veya kaldırılacağı yazılır.
+      </div><div class="para">
+        Örnek olarak yukarıdaki dosyanın okuma iznini kaldırmak için
+      </div>
+        <div class="para"><div align="right"><pre class="screen">$ chmod -r deneme</pre></div></div>
+      <div class="para">
+        kullanılabilir. "-" işareti, iznin kaldırılacağını belirtir. İzin vermek
+        için ise "+" yazın. Dosyanın yeni görüntüsü şöyle olur:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+--wx--x--x   2 gorkem   users          182 Feb 12 03:58 deneme
+</pre></div></div>
+      <div class="para">
+        Sadece grubun, sadece kullanıcının veya sadece diğerlerinin erişim
+        hakkını değiştirebilmek için her izin düzeyi için bir harf tanımlanmıştır.
+        Kullanıcı için "u", grup için "g" ve diğerleri için "o" yazarak belirli
+        bir izin düzeyi için erişim hakkını değiştirmek mümkün olur. Bu üç harf,
+        izinden hemen önce yazılır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ chmod u+x deneme              <i>(dosyanin sahibi calistirabilir)</i>
+$ chmod o+r t2sac               <i>(digerleri okuyabilir)</i>
+$ chmod g-w deneme              <i>(dosyanin grubu yazamaz)</i>
+</pre></div></div>
+      <div class="para">
+        Her izin için aynı zamanda sayılar da tanımlanmıştır. Dosyanın erişim
+        izinlerinideğiştirmek için her izne ait sayıları kullanabilirsiniz.
+        Aşağıdaki tabloda, her izin düzeyi (dosyanın sahibi, grubu ve diğerleri)
+        için üçer tane olmak üzere toplam 9 sayıdan oluşan izin numaralarını
+        görebilirsiniz. Bir izni vermek için sırayla numaraları toplayın.
+        Örneğin sahibinin okuması (400), yazması (200), çalıştırması (100),
+        grubun okuması (40), çalıştırması (10) ve diğerlerinin okuması (4)
+        ve çalıştırması (1) için kullanılan rakamların toplamı 755'tir.
+      </div>
+        <div class="para"><div align="right"><pre class="screen">$ chmod 755 deneme</pre></div></div>
+      
+<div class="para"><pre class="literallayout">
+400      sahibi okur
+200      sahibi yazar
+100      sahibi çalıştırır
+
+040      grubu okur
+020      grubu yazar
+010      grubu çalıştırır
+
+004      diğerleri okur
+002      diğerleri yazar
+001      diğerleri çalıştırır
+</pre></div>
+      <div class="para">
+        Başka bir değişiklikle konuyu pekiştirelim. Sahibinin okuması (400),
+        yazması (100), grubun okuması (40), diğerlerinin okuması (4) için izin
+        numarasını bulmak için bu cümlede parantez içinde yeralan sayıları
+        toplarsak 644 yapacaktır.
+      </div>
+        <div class="para"><div align="right"><pre class="screen">$ chmod 644 deneme</pre></div></div>
+      <div class="para">
+        Aynen dosyalarda olduğu gibi, bir dizinin de sahibi ve grubu vardır.
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Dosyanın Sahibinin ve Grubunun Değiştirilmesi</div><dl><dd><div class="para">
+        Bir dosyanın sahibini sadece sistemdeki <i>root</i>
+        kullanıcı değiştirebilme yetkisine sahiptir. Dosya sahibinin
+        değiştirilmesi için <tt>chown</tt> komutu kullanılabilir.
+        Yukarıdaki dosyanın sahibini <i>ozgur</i> isimli
+        kullanıcı yapalım.
+      </div>
+        <div class="para"><div align="right"><pre class="screen"># chown ozgur deneme</pre></div></div>
+      <div class="para">
+        Dosyanın yeni hali şöyle olur:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+-rwxr-xr-x   2 ozgur   users          182 Feb 12 03:58 deneme
+</pre></div></div>
+      <div class="para">
+        <tt>chgrp</tt> komutu yardımıyla da dosyanın grubunu
+        değiştirilebilir. Yukarıdaki dosyanın grubunu www yapmak için
+      </div>
+        <div class="para"><div align="right"><pre class="screen"># chgrp www deneme</pre></div></div>
+      <div class="para">
+        komutu kullanılabilir. <tt>chown</tt> komutu, dosyanın hem
+        kullanıcısını, hem de grubunu değiştirme özelliğine sahiptir. <tt>chown</tt>
+        komutundan sonra kullanıcı ve grup isimlerini aralarında bir nokta
+        kalacak şekilde yazın.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+$ chown ozgur.www deneme
+$ ls -l deneme
+-rwxr-xr-x   2 ozgur   www          182 Feb 12 03:58 deneme
+</pre></div></div>
+      </dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-4g.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../lis/archive-tlkg-lis-4.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-4.2.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Giriş </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Diğer Dosya Sistemlerinin Kullanılması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

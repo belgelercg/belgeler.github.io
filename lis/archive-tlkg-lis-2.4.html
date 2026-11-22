@@ -1,0 +1,852 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:30:26+03:00" /><title>Bilgisayarın Linux ile Açılması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../lis/archive-tlkg-lis-2.html" title="Linux Kurulumu ve Başlangıç" /><link rel="previous" href="../lis/archive-tlkg-lis-2.3.html" title="Sabit Disk Üzerinde Linux İçin Yer Açmak" /><link rel="next" href="../lis/archive-tlkg-lis-2.5.html" title="LILO Yapılandırması" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Bilgisayarın Linux ile Açılması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-2.3.html">Önceki</a> </td><th width="60%" align="center">Linux Kurulumu ve Başlangıç</th><td width="20%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-2.5.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="archive-tlkg-lis-2.4" id="archive-tlkg-lis-2.4"></a>Bilgisayarın Linux ile Açılması</div><dl><dd><div class="para">
+      Bilgisayarın sabit diski üzerinde yer ayırdıktan, bir Linux dağıtımı
+      bulduktan sonra artık Linux yüklemek için yapılması gereken, yükleme
+      yapmanıza yardımcı olmaya yetecek şekilde bilgisayarınızı Linux altında
+      çalıştırmaktır. Bu amaçla <i>boot</i> ve <i>root disketi</i> adı verilen iki disket
+      kullanılması yeterlidir.Bu disketlerden boot disketi bilgisayarınız
+      üzerindeki donanıma uygun bir Linux çekirdeği (kernel) içerir ve
+      bilgisayarın Linux ile açılmasını sağlar, root disketi adı verilen diğeri
+      ise makinanız Linux olarak açıldığı zaman çalıştıracağı yazılımları içeren
+      ve Linux' un çalışması için gereken sistem programlarını içerir. Bu
+      iki disketi, MS-DOS altındaki sistem disketine benzetmek mümkündür.
+    </div><div class="para">
+      Boot ve root disketleri, Linux dağıtımı ile birlikte gelirler. Eğer
+      bir CD-ROM dağıtımı ullanıyorsanız, büyük ihtimal disketler CD-ROM
+      ile beraber geleceklerdir. Eğer dağıtımı Internet'ten alıyorsanız bu
+      disketler bir disket görüntüsü olarak bulunacaklardır. Yapmanız gereken
+      bu disket görüntülerini normal disketlere bu amaç için yazılmış bir
+      yazılımla aktarmak ve açılış disketlerini oluşturmaktır. Bunun için
+      <tt>RAWRITE.EXE</tt> programını kullanabilirsiniz.
+    </div><div class="para">
+      Root disketi için genelde bir veya iki seçenek bulunmaktadır. Genelde
+      kullanılan disket <tt>color.gz</tt> adını alır.
+    </div><div class="para">
+      Boot disketi için aynı şeyi söylemek mümkün değildir. Zira boot disketi
+      Linux çekirdeğini içermektedir. Her işletim sistemi, o işletim sistemi
+      altında çalışacak olan bilgisayar üzerindeki donanıma erişebilmek için
+      bazı destekler içerir. Ne var ki her donanım kendisine göre bir takım
+      farklılıklar gösterir. Linux bilgisayarınız üzerinde bulunan birçok
+      donanım için destek verebilir, ne var ki tüm donanım desteğini tek bir
+      çekirdekte toplamak çekirdeğin gereksiz yere büyümesine ve hantallaşmasına
+      neden olacaktı (Bilgisayarınızda ses kartı donanımı yoksa çekirdeğin
+      ses kartı desteğine ihtiyacınız olmayacaktır, yapılan sadece gereken
+      destekleri ekleyerek çekirdeğin verimini artırmak demektir). Linux
+      çekirdeği gerektiğinde destek verdiği donanımları destekleyecek şekilde
+      güncellenebilir. Ancak Linux yükleyebilmek için, seçeceğiniz yükleme
+      yöntemine göre bazı donanımlara destek vermesi gereklidir. Örnek vermek
+      gerekirse, NFS üzerinden Linux yüklemek için çekirdek içerisinde mutlaka
+      ağ (network) desteğinin olması gerekmektedir ama ses kartı desteğinin
+      olmasına gerek yoktur. Linux yükledikten sonra derleyeceğiniz bir
+      çekirdeğe ses kartı desteği vermesini sağlayabilirsiniz.
+    </div><div class="para">
+      Bir işletim sisteminin sabit diske yüklenme aşamasında kullanıcıya
+      sağlayacağı en büyük kolaylık, deneyimli kullanıcılar için tüm paketleri
+      kurmadan önce sormak, Linux'u bilmeyen ve sabit diskine Linux kurmak
+      isteyen yeni kullanıcılar için ise kurulum aşamasını mümkün olan en az
+      soru ile bitirip daha önceden belirlenmiş birtakım paketleri otomatik
+      olarak yüklemektir.
+    </div><div class="para">
+      Çok farklı donanımların olması Linux yükleyebilmek için bir dizi boot
+      disketinin oluşmasına neden olmuştur. Güncel bir Linux dağıtımında hangi
+      boot disketlerinin hangi donanımlara destek verebildiğini görmek için
+      ilgili dağıtımla gelen <tt>README</tt> dosyalarına bakmak gerekecektir. Şu anki
+      Slackware dağıtımı ile gelen boot disketlerinden bazıları
+    </div>
+      <div class="variablelist"><dl><dt><span class="term">bare.i</span></dt><dd class="varlist"><div class="para">
+            IDE sabit disklere, sabit disk veya IDE/ATAPI CD-ROM'lardan yükleme
+            yapmak için
+          </div></dd><dt><span class="term">net.i</span></dt><dd class="varlist"><div class="para">
+            IDE sabit disklere, NFS üzerinden yükleme yapmak için
+          </div></dd><dt><span class="term">scsinet.s</span></dt><dd class="varlist"><div class="para">
+            SCSI sabit disklere, NFS üzerinden yükleme yapmak için. Buna ek
+            olarak değişik SCSI denetçileri için 25 kadar değişik boot disketi
+            bulunmaktadır.
+          </div></dd><dt><span class="term">xt.i</span></dt><dd class="varlist"><div class="para">
+            Bu açılış disketinde sadece IDE ve XT sabit disk sürücüleri vardır.
+          </div></dd></dl></div>
+    <div class="para">
+      Boot disketleri hakkında geniş bilgi için <i>Bootdisk-HOWTO</i> belgesinden
+      yararlanabilirsiniz.
+    </div><div class="para">
+      Boot ve root disketlerinizi de elde ettikten sonra artık bilgisayar ilk
+      defa Linux altında çalışmak için hazırdır. Boot disketini takarak sistemi
+      açın (PC'nin açılma sırasının A:,C: olmasına dikkat edin). Disket açılır
+      açılmaz yaklaşık bir sayfalık bir mesaj verecek ve kullanıcıdan ek bir
+      parametre isteyip istemediğini soracaktır. Bu noktada çalışacak olan
+      çekirdeğe birçok ek parametre verilebilir. Eğer herşey yolunda giderse
+      bu noktada özel bir parametre belirtmeye gerek kalmayacaktır. Boot
+      disketi parametreleri hakkında <i>BootPrompt-HOWTO</i> içerisinde ayrıntılı bilgi
+      bulabilirsiniz. Bu aşamayı geçtikten sonra çekirdek yüklenmeye başlayacak
+      ve bir dizi mesaj geçecektir. Bu mesajlar çekirdeğinizin bilgisayar
+      üzerindeki donanımları tanıması ve çeşitli hizmetleri çalıştırması
+      ile ilgili mesajlardır. Çekirdeğin donanımınızı ne şekilde tanıdığı bu
+      mesajlardan anlaşılır. Yükleme yapabilmek için çekirdeğin sabit diskinizi
+      ve ağ bağlantısı kullanacaksanız ethernet kartınızı doğru olarak tanımış
+      olması gerekecektir.
+    </div><div class="para">
+      Daha sonra kullanıcıdan root disketini yüklemesi için bir mesaj
+      çıkacaktır. Bu aşamada boot disketi yerine root disketi takılmalıdır. Kısa
+      bir yüklemeden sonra bir mesaj çıkacak ve ardından
+    </div>
+      <div class="para"><div align="right"><pre class="screen">login:</pre></div></div>
+    <div class="para">
+      mesajı ile karşılaşılacaktır. Tebrikler! Artık Linux altında çalışmaya
+      başlayabilirsiniz. Bilgisayar şu anda sizden bir kullanıcı ismi
+      beklemektedir. 'root' yazarak sisteme girin.
+    </div> <div class="head3"><a name="id1" id="id1"></a>Ön Hazırlıklar</div><dl><dd><div class="para">
+        Slackware dağıtımında yükleme işi için <tt>setup</tt>
+        isimli bir yazılım bulunmaktadır. Yüklemenin her aşaması bu yazılım
+        tarafından yürütülebilir. Ancak ilk olarak Linux için disk alanlarının
+        tanımlanması gerekmektedir. Bu amaçla <tt>fdisk</tt> programı
+        kullanılır. Linux altında bir bilgisayara bağlı her türlü cihaza bir
+        dosya gibi erişmek mümkündür. Her cihaza karşılık gelen bir sistem
+        dosyası mevcuttur. Cihazlarla ilgili dosyalar <tt>/dev</tt>
+        dizini altında yer alırlar. Burada IDE sabit diskler "hd" SCSI sabit
+        diskler "sd" olarak isimlendirilirler. Aynı anda bir bilgisayarda
+        birden fazla disk bağlanmış olabilir. Diskler sırayla a b c d olarak
+        isimlendirilirler. Her disk üzerinde birden fazla bölüm yer alabilir.
+        Bu bölümler ise 1 2 3 4 olarak numaralandırılırlar. Örnek olarak
+      </div>
+        <ul type="disc" class="itemizedlist"><li><tt>/dev/hda</tt>, bir numaralı IDE (Primary Master) diski
+          </li><li><tt>/dev/hda1</tt>, bir numaralı IDE diskin ilk bölümü
+            (DOS altında C:)
+          </li><li><tt>/dev/hda2</tt>, bir numaralı IDE diskin ikinci bölümünü
+          </li><li><tt>/dev/hdb</tt>, iki numaralı IDE (Primary Slave) diski
+          </li><li><tt>/dev/hdc</tt>, üç numaralı IDE (Secondary Master) diski
+          </li><li><tt>/dev/hdd</tt>, dört numaralı IDE (Secondary Slave) diski
+          </li><li><tt>/dev/sdb3</tt>, ikinci SCSI sabit diskin üçüncü bölümünü
+          </li></ul>
+      <div class="para">
+        göstermektedir. Birden fazla sabit diskiniz varsa hangi sabit disk'le
+        ilgileneceğinizi belirtmeniz gerekir. Eğer iki sabit diskiniz varsa
+        fdisk'i kullanırken dikkat edin, her an yanlış bir diski biçemleme
+        şansınız var.
+      </div>
+        <div class="para"><div align="right"><pre class="screen"># fdisk /dev/hda</pre></div></div>
+      <div class="para">
+        Bu noktadan sonra artık fdisk ile istediğiniz bölümleri tanımlamanız
+        mümkündür.
+      </div><div class="para">
+        fdisk komutu harddisk bölümlerinin düzenlenmesi için kullanılan
+        bir yazılımdır. Komut satırından genelde tek harflik komutlarla
+        kullanılır. Eğer komut satırında bir parametre verilmezse fdisk ilk
+        bulduğu disk üzerinde işlem yapacaktır. Birden fazla disk mevcutsa komut
+        satırında istenilen diskin belirtilmesi gerekecektir. Aşağıdaki örnekte
+        fdisk herhangi bir parametre ile çağrılmamış ve sistemde bulunan öncelikli
+        disk olarak bir numaralı SCSI disk (<tt>/dev/sda</tt>) seçilmiştir.
+      </div><div class="para">
+        fdisk, komutunun yanında bazı parameteler alır:
+      </div>
+        <div class="variablelist"><dl><dt><span class="term">/fdisk -v</span></dt><dd class="varlist"><div class="para">Fdisk programının sürümü ekrana gelir.</div></dd><dt><span class="term">fdisk -l</span></dt><dd class="varlist"><div class="para">
+              <tt>/dev/hda, /dev/hdb, /dev/sda, /dev/sdb, /dev/sdc, /dev/sdd, /dev/sde,
+              /dev/sdf, /dev/sdg</tt> ve <tt>/dev/sdh</tt>
+              disklerinin (varsa) bölümlendirme tablosunu ekrana yazar ve çıkar.
+            </div></dd><dt><span class="term">fdisk -s &lt;disk-bölümü&gt;</span></dt><dd class="varlist"><div class="para">
+              Eğer bir DOS bölümü değilse (bölüm numarası 10'dan büyük) , sözkonusu disk
+              bölümünün büyüklüğü bayt cinsinden ekrana yazılır.
+            </div></dd></dl></div>
+      <div class="para">
+        Aşağıda, fdisk yazılımının kullanımı hakkında örnek bir fdisk çalışması
+        yeralıyor.
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Örnek FDISK Çalışması</div><dl><dd><div class="para">
+        Bu örnek içerisinde 1 Gbyte'lık SCSI sabit disk'e sahip bir makine
+        üzerinde LINUX için gerekli kısımların ayrılması adım adım incelenmiştir.
+        Sözkonusu sabit disk üzerinde kullanıcı önceden 400 Mbyte'lık bir
+        kullanıcı alanı tanımlamış ve geri kalan alanı LINUX için ayırmıştı.
+        Düşünülen dağılım:
+      </div>
+        <ul type="disc" class="itemizedlist"><li>400 Mbyte DOS</li><li>250 Mbyte LINUX işletim sistemi</li><li>60 Mbyte Takas alanı</li></ul>
+      <div class="para">
+        ve geri kalan alan LINUX altında kullanıcı alanı.
+      </div><div class="para">
+        <tt>fdisk</tt> programı çalışır çalışmaz ilk iş olarak mevcut
+        bölümler hakkında bilgi almak için <tt>p</tt> komutunu ( Print
+        Partition Info) kullanıyoruz.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+Command (m for help): p
+
+Disk /dev/sda: 34 heads, 61 sectors, 1017 cylinders
+Units = cylinders of 2074 * 512 bytes
+
+   Device Boot   Begin    Start      End   Blocks   Id  System
+/dev/sda1   *        1        1      395   409584+   6  DOS 16-bit &gt;=32M
+</pre></div></div>
+      <div class="para">
+        Bu tablo bize sadece tek bölüm ayrıldığını, ayrılan alanın DOS
+        biçeminde olduğunu, boot edecek bölüm olduğunu belirtiyor.
+        Bölümün adı <tt>/dev/sda1</tt>, yani ilk SCSI sabit disk
+        üzerinde tanımlanan ilk bölüm. İlk iş olarak LINUX işletim sistemi
+        için yeni bir bölüm yaratmalıyız.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+Command (m for help): n
+Command action
+   e   extended
+   p   primary partition (1-4)
+p
+Partition number (1-4): 2
+First cylinder (396-1017): 396
+Last cylinder or +size or +sizeM or +sizeK ([396]-1017): +250M
+</pre></div></div>
+      <div class="para">
+        n komutu ile kendimize yeni bir bölüm yarattık. İlk seçenek temel bir
+        disk bölümümü yoksa gelişmiş bir disk bölümü üzerinde mi işlem
+        yapacağımızı sordu. Temel bir bölüm için p komutunu girdik. Daha
+        sonra hangi bölümü yaratacağımızı sordu. Halen mevcut 1 bölüm var,
+        bu bölüm ikinci bölüm olacak bu yüzden 2 yazdık.
+      </div><div class="para">
+        Bölümün başlangıç adresini giriyoruz. Bu değer otomatik olarak bir
+        önceki bölümün bitiş değerinden hesaplanmaktadır. Sadece onaylıyoruz.
+        Daha sonra istediğimiz boyutu belirtiyoruz. +250M tanımı 250 Mbyte'lık
+        bir kısım istediğimizi belirtiyor. Yarattığımız bu bölümü p komutu ile
+        inceliyoruz
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+Command (m for help): p
+
+Disk /dev/sda: 34 heads, 61 sectors, 1017 cylinders
+Units = cylinders of 2074 * 512 bytes
+
+   Device Boot   Begin    Start      End   Blocks   Id  System
+/dev/sda1   *        1        1      395   409584+   6  DOS 16-bit &gt;=32M
+/dev/sda2          396      396      642   256139   83  Linux native
+</pre></div></div>
+      <div class="para">
+        fdisk yaratılan her bölümü otomatik olarak (LINUX native) olarak yaratmaktadır.
+        Şimdi takas alanı için 60 Mbyte'lık 3. temel bölümü tanımlayalım:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+Command (m for help): n
+Command action
+   e   extended
+   p   primary partition (1-4)
+p
+Partition number (1-4): 3
+First cylinder (643-1017): 643
+Last cylinder or +size or +sizeM or +sizeK ([643]-1017): +60M
+
+Command (m for help): p
+
+Disk /dev/sda: 34 heads, 61 sectors, 1017 cylinders
+Units = cylinders of 2074 * 512 bytes
+
+   Device Boot   Begin    Start      End   Blocks   Id  System
+/dev/sda1   *        1        1      395   409584+   6  DOS 16-bit &gt;=32M
+/dev/sda2          396      396      642   256139   83  Linux native
+/dev/sda3          643      643      702    62220   83  Linux native
+</pre></div></div>
+      <div class="para">
+        Dikkat edilecek olursa bu bölüm de <i>LINUX native</i>
+        olarak tanımlandı. LINUX tarafından takas bölümü olarak kullanılacak
+        olan bölümler farklı bir yapıya sahiptirler ve ayrıca tanımlanmaları
+        gerekmektedir. Bu amaçla t komutu ile herhangi bir bölümün tipini
+        değiştirmek mümkündür. (Tip değiştirmekle o  bölümün yapısı (biçemi)
+        değişmiş olmuyor, biçemleme sonradan yapılan bir işlemdir)
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+Command (m for help): t
+Partition number (1-4): 3
+Hex code (type L to list codes): 82
+Changed system type of partition 3 to 82 (Linux swap)
+
+Command (m for help): p
+
+Disk /dev/sda: 34 heads, 61 sectors, 1017 cylinders
+Units = cylinders of 2074 * 512 bytes
+
+   Device Boot   Begin    Start      End   Blocks   Id  System
+/dev/sda1   *        1        1      395   409584+   6  DOS 16-bit &gt;=32M
+/dev/sda2          396      396      642   256139   83  Linux native
+/dev/sda3          643      643      702    62220   82  Linux swap
+</pre></div></div>
+      <div class="para">
+        Yukarıda yapılan işlemle 3 numaralı bölümün tipini
+        <tt>Linux swap</tt> olarak değiştirmiş olduk. Şu anda üç
+        farklı türden alanımız mevcut. Son bölümü de yine n komutu ile ekleriz.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+Command (m for help): n
+Command action
+   e   extended
+   p   primary partition (1-4)
+p
+Partition number (1-4): 4
+First cylinder (703-1017): 703
+Last cylinder or +size or +sizeM or +sizeK ([703]-1017): 1017
+
+Command (m for help): p
+
+Disk /dev/sda: 34 heads, 61 sectors, 1017 cylinders
+Units = cylinders of 2074 * 512 bytes
+
+   Device Boot   Begin    Start      End   Blocks   Id  System
+/dev/sda1   *        1        1      395   409584+   6  DOS 16-bit &gt;=32M
+/dev/sda2          396      396      642   256139   83  Linux native
+/dev/sda3          643      643      702    62220   82  Linux swap
+/dev/sda4          703      703     1017   326655   83  Linux native
+</pre></div></div>
+      <div class="para">
+        Bu örnekte boyut Mbyte cinsinden verilmedi. Zaten amaç kalan alanı tümüyle
+        kullanıcı alanı olarak ayırmaktı. Bu nedenle son silindirin numarasının
+        girilmesi yeterli oldu. Artık yapılması gereken bu bilginin diske
+        yazılmasıdır. Şu ana kadar yapılan hiç bir değişiklik sistem üzerinde
+        herhangi bir etki yapmamıştır. Ancak bölümleme bilgisi diske yazıldıktan
+        sonra geri dönüş yoktur. <b><tt>Lütfen  yaptığınız değişiklikleri bir kez
+        daha gözden geçirin!</tt></b>
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+Command (m for help): w
+The partition table has been altered!
+
+Calling ioctl() to re-read partition table.
+(Reboot to ensure the partition table has been updated.)
+Syncing disks.
+Reboot your system to ensure the partition table is updated.
+</pre></div></div>
+      <div class="para">
+        Sabit diski bölümleme esnasında karşılaşılan bazı sorunlar vardır.
+        Bunlarn en önemlisi Linux'un nasıl çalıştırılacağı ile ilgilidir.
+        Linux açmak için belli başlı üç yöntem vardır:
+      </div>
+        <ul type="disc" class="itemizedlist"><li>LILO ile bir boot menüsünden </li><li>DOS altından <tt>LOADLIN</tt> isimli bir yazılımla</li><li>Yüklemek için yapıldığı gibi bir boot diskiyle </li></ul>
+      <div class="para">
+        Son iki yöntem herhangi bir sınırlama getirmezken ilk yöntemin bir
+        sınırlaması vardır. LILO isimli yazılım ile kullanıldığı zaman
+        bilgisayar açıldığı zaman minik bir yazılım çalıştırır ve gerektiğinde
+        Linux çekirdeğini yükler. Ancak çekirdek yüklenmesine kadar geçen süre
+        içerisinde sistemin BIOS komutları çalışır. Bu komutların önemli bir
+        sınırlaması bir disk üzerindeki bir yazılımı belirleyen üç parametreden
+        (silindir sayısı, kafa numarası, sektör numarası) silindir sayısının
+        en fazla 1024 ile sınırlı olmasıdır. Bu bakımdan LILO kullanılacaksa
+        Linux çekirdeğinin yer alacağı bölüm bu 1024 numaralı silindir sınırının
+        altında kalmalıdır. Bu sınırlama tamamıyla DOS'un kullandığı BIOS'un
+        bir sınırlamasıdır. Yeni BIOS'lar bu sınırlamadan kurtulmak için LBA
+        adı verilen bir yöntem kullanırlar. Bu yöntemin temelinde BIOS'ta kafa
+        sayısı için gereksiz yere ayrılan kısımların silindir sayısını belirtmek
+        için kullanılmasıdır. (BIOS, bir sabit disk için 64'e kadar kafa kabul
+        edebilmektedir. Pratik olarak 15 kafadan fazla sabit diskin üretilmesi
+        çok zor olduğu için yapılan kafa sayısını iki veya dört ile çarparak,
+        silindir sayısını iki veya dörde bölmektir.) Böylelikle 1654 silindirli
+        16 kafalı bir sabit disk, LBA olarak 827 silindirli ve 32 kafalı olarak
+        tanımlanabilmektedir. İkinci durumda bu disk üzerinde tanımlanabilecek
+        her bölümün yukarıda belirtilen sınırlama içerisinde kalacağına dikkat
+        ediniz.
+      </div></dd></dl> <div class="head3"><a name="id3" id="id3"></a>Setup Programı</div><dl><dd><div class="para">
+      Disk üzerindeki tanımlamaları da bitirdikten sonra artık setup yazılımı
+      çalıştırılabilir. Setup Linux yüklemek için gereken temel birçok
+      işlemi yapabilir. Ok tuşları yardımı ile menüler arasında gezerek
+      işlemleri tamamlayabilirsiniz. Burada yukarıdan aşağıya doğru bir sıra
+      izleyebilirsiniz.
+      </div><div class="para">
+      Şu anki güncel Slackware dağıtımının setup komutu çalıştırılınca ekrana
+      gelen menüleri aşağıdadır.
+      </div>
+<div class="para"><pre class="literallayout">
+              Welcome to Slackware Linux Setup.
+
+ Hint: If you have trouble using the arrow keys on your keyboard,
+ you can use ''+'', ''-'', and TAB instead. Which option would you like?
+
+       HELP       Read the Slackware Setup HELP file
+       KEYMAP     Remap your keyboard
+       MAKE TAGS  Tagfile customization program
+       TARGET     Select target directory [now: /]
+       SOURCE     Select source media
+       DISK SETS  Decide which disk sets you wish to install
+       INSTALL    Install selected disk sets
+       CONFIGURE  Reconfigure your Linux system
+       PKGTOOL    Install or remove packages with Pkgtool
+       EXIT       Exit Slackware Linux Setup
+
+                        &lt;  OK  &gt;      &lt;Cancel&gt;
+</pre></div>
+      
+        <div class="variablelist"><dl><dt><span class="term">HELP Menüsü</span></dt><dd class="varlist"><div class="para">
+              Setup programı hakkında bazı ipuçları verecektir.
+            </div></dd><dt><span class="term">KEYMAP Menüsü</span></dt><dd class="varlist"><div class="para">
+              Bu menü ile  Amerikan klavye dışında bir klavye tanımlamak mümkün olacaktır.
+              Henüz türkçe q veya f klavye desteği bulunmamaktadır.
+            </div></dd><dt><span class="term">MAKE TAGS Menüsü</span></dt><dd class="varlist"><div class="para">
+              Bu menü yardımı ile dağıtım disketlerinde özel uzantılı dosyalar
+              hazırlayarak hangi paketlerin yükleneceğini otomatik olarak
+              belirlemek mümkündür. Bu sayede eğer benzer makinalar yüklenecekse
+              yüklenecek paketler bir kere belirlenir ve bir daha menülerden
+              ekstradan paketlerin seçilmesine gerek kalmaz.
+            </div></dd><dt><span class="term">ADDSWAP Menüsü</span></dt><dd class="varlist"><div class="para">
+              fdisk ile ayırdığınız takas bölümünü uygun şekilde biçemler ve bu
+              bölümü kullanıma açar. Setup yazılımı hangi disk bölümünün takas
+              bölümü olarak ayrıldığını otomatik olarak bulacaktır. Daha sonra
+              sözkonusu alanları biçemleyecek ve bu takas alanını sistem
+              belleğine ekleyecektir. (Her adımda bir onay isteyecektir)
+            </div></dd><dt><span class="term">TARGET Menüsü</span></dt><dd class="varlist"><div class="para">
+              Linux'un hangi bölüme yükleneceğini belirler. Bu menüye girildiği
+              zaman Linux'un disk biçemine (ext2) sahip (sabit disk bölümü
+              numarası 83 olan) tüm disk bölümleri gösterilecek ve içerlerinden
+              hangisine Linux kurulması istenileceği sorulacaktır. Bu aşamadan
+              sonra o disk bölümü kullanıcı isterse biçemlenecektir. Burada iki
+              biçemleme seçeneği vardır. Bu seçeneklerin ikincisinde disk önce
+              hatalar için taranacak daha sonra biçemlencecektir. Eğer Linux disk
+              biçeminde başka bölümler varsa bu bölümlerin kullanılmasının istenip
+              istenmediği sorulacaktır. Bu sayede disk hiyerarşisinin herhangi bir
+              kısmını bu ek disk bölümleri üzerine kurmak mümkündür. Son olarak
+              Linux tarafından desteklenen başka disk bölümleri varsa (Örneğin DOS)
+              bu bölümlere Linux altından erişim yapılmasının istenip istenmediği
+              sorulacak ve bu bölümler için hiyerarşi içerisinde bir dizin atanması
+              istenecektir.
+            </div></dd><dt><span class="term">SOURCE Menüsü</span></dt><dd class="varlist"><div class="para">
+                Bu menü Linux dağıtımının nerede aranması gerektiğini belirler.
+                Buradaki seçenekler
+              </div>
+<div class="para"><pre class="literallayout">
+       SOURCE MEDIA SELECTION
+
+ Where do you plan to install Slackware Linux from?
+
+
+        1 Install from a hard drive partition
+        2 Install from floppy disks
+        3 Install via NFS
+        4 Install from a pre-mounted directory
+        5 Install from CD-ROM
+</pre></div>
+              
+                <div class="variablelist"><dl><dt><span class="term">1 Numaralı seçenek</span></dt><dd class="varlist"><div class="para">
+                      Linux dağıtımını bir sabit disk bölümünde aramak için
+                      kullanılacaktır. Bu seçenekle örnek olarak DOS kısmında
+                      bulunan dağıtım disketlerinden yükleme yapılabilir.
+                    </div></dd><dt><span class="term">2 Numaralı seçenek</span></dt><dd class="varlist"><div class="para">
+                      Disketlerden yükleme yapmaktır. Çalışır bir sistemi birkaç
+                      disketle oluşturmak mümkündür. Ancak günümüzde pek tercih
+                      edilen bir yöntem değildir.
+                    </div></dd><dt><span class="term">3 Numaralı seçenek</span></dt><dd class="varlist"><div class="para">
+                      NFS üzerinden yükleme yapmak için kullanılmaktadır. Burada
+                      bilgisayarın bir yerel bilgisayar ağına bağlı olması, bu
+                      bilgisayar ağı üzerindeki bir sunucu üzerinde erişim izni
+                      bulunan bir dizin altında dağıtım disketlerinin bulunması
+                      gerekmektedir. Bu seçenekle yükleme yapmak için boot disketi
+                      içerisinde yer alan diskette ağ desteğinin bulunması
+                      gerekmektedir. Bu seçeneğin ardından bilgisayarın (geçici)
+                      IP numarası varsa ağ üzerindeki yönlendirici'nin
+                      (router-gateway) IP numarası, ağ maskesi (subnet mask),
+                      NFS sunucusu IP numarası ve sunucu üstünde dağıtım
+                      disketlerinin bulunduğu hiyerarşi gibi ağ ile ilgili
+                      parametreler sorulacaktır. Bu soruların cevabını sistem
+                      yetkilisinden öğrenmeniz ve onun onayını almanız gerekecektir.
+                    </div></dd><dt><span class="term">4 Numaralı seçenek</span></dt><dd class="varlist"><div class="para">
+                      Aslında 1 numaralı seçeneğe çok benzemektedir. Aradaki fark
+                      bu durumda sistem hiyerarşisine bağlanmış (mounted) bir
+                      dizin içerisinde dağıtım disketlerinin bulunmasıdır.
+                    </div></dd><dt><span class="term">5 Numaralı seçenek</span></dt><dd class="varlist"><div class="para">
+                      CD-ROM'dan yükleme yapmak içindir.
+                    </div></dd></dl></div>
+              </dd><b><tt>DISKSETS Menüsü</tt></b><dd class="varlist"><div class="para">
+                Artık nereye ve nereden yükleyeceğiniz belirlenmiştir. Sıra yüklemek
+                istediğiniz disket serilerini seçmeye gelmiştir. Disk serileri:
+              </div>
+<div class="para"><pre class="literallayout">
+    CUS         Also prompt for CUSTOM disk sets
+    A           Base Linux system
+    AP          Various Applications that do not need X
+    D           Program Development (C, C++, Lisp, Perl, etc.)
+    E           GNU Emacs
+    F           FAQ lists, HOWTO documentation
+    K           Linux kernel source
+    N           Networking (TCP/IP, UUCP, Mail, News)
+    T           TeX typesetting software
+    TCL         Tcl/Tk script languages
+    X           XFree86 X Pencere System
+    XAP         X Applications
+    XD          X Server development kit
+    XV          XView (OpenLook Window Manager, apps)
+    Y           Games (that do not require X)
+</pre></div>
+              
+                <div class="variablelist"><dl><dt><span class="term">A Serisi (8 disket)</span></dt><dd class="varlist"><div class="para">
+                      Temel işletim sistemi bu disketlerde yer alır. Temel disk
+                      hiyerarşisi yaratılır, sistemin çalışması için hayati olan
+                      yazılımlar, terminal yazılımları, kabuklar (shell), disk
+                      düzenleme yazılımları, kütüphaneler, Linux çalıştırmak
+                      için LILO ve LOADLIN bu disketlerdedir.
+                    </div></dd><dt><span class="term">AP Serisi (5 disket)</span></dt><dd class="varlist"><div class="para">
+                      X Pencere ortamı gerektirmeyen uygulama yazılımlar. Metin
+                      editörleri, ghostscript, man sayfaları, midnight commander
+                      (Norton commander benzeri bir yazılım) bu disketlerde yer
+                      alır.
+                    </div></dd><dt><span class="term">D Serisi (13 disket)</span></dt><dd class="varlist"><div class="para">
+                      Tüm programlama dilleri ve destek yazılımları bu disketlerde
+                      yer alır. Eğer kendinize yeni bir Linux çekirdeği derlemeyi
+                      düşünüyorsanız bu seriye ihtiyacınız var.
+                    </div></dd><dt><span class="term">E Serisi (8 disket)</span></dt><dd class="varlist"><div class="para">
+                      EMACS editörü.
+                    </div></dd><dt><span class="term">F Serisi (2 disket)</span></dt><dd class="varlist"><div class="para">
+                        Linux hakkında birçok belge ve açıklama bu disketlerde yer
+                        almaktadır. Yeni başlayan birisinin bu disketleri mutlaka
+                        yüklemesi gerekir. Söz konusu belgeler sıkıştırılmış halde
+                      </div>
+<div class="para"><pre class="literallayout">
+  /usr/doc
+  /usr/doc/faq
+  /usr/doc/faq/HOWTO
+</pre></div>
+                      <div class="para">
+                        dizinlerine yüklenecektir. Birçok kullanıcı cevap aradığı
+                        soruların birçoğunun zaten makinelerinde yazılı olduğunu
+                        sonradan öğrenince çok şaşırmaktadır. Belgeler
+                        sıkıştırılmış olduklarından <tt>zless</tt>
+                        gibi sıkıştırılmış dosyaları destekleyen bir yazılımla
+                        okunmaları gerekir.
+                      </div></dd><dt><span class="term">K Serisi (6 disket)</span></dt><dd class="varlist"><div class="para">
+                      Çekirdeğin kaynak kodu burada bulunur. Eğer kendi
+                      donanımınıza uygun bir çekirdek derlemek istiyorsanız
+                      bu seriye muhakkak ihtiyaç duyacaksınız. FTP arşivlerinden
+                      kaynak kodu olarak bulacağınız bazı yazılımlar da bu
+                      hiyerarşi altında yer alan bazı dosyalara ihtiyaç
+                      duyacaklardır.
+                    </div></dd><dt><span class="term">N Serisi (6 disket)</span></dt><dd class="varlist"><div class="para">
+                      Ağ desteği bu disketler ile sağlanmaktadır. E-posta okuma
+                      yazılımları, lynx, www sunucusu, haber grubu okuma
+                      yazılımları bu disketlerin içerisinde yer alan yazılımlardır.
+                    </div></dd><dt><span class="term">T Serisi (9 disket)</span></dt><dd class="varlist"><div class="para">
+                      TeX. TeX yüklerken üç temel seçenekle karşılaşacaksınız.
+                      İlk seri seçenek hangi TeX yardımcı paketlerini
+                      isteyeceğinizi sorar, ikinci seçenekler hangi dil için
+                      makro tanımları istediğinizi sorar, son seçenek ise yazı
+                      tipleri hakkında tercihlerinizi sorar. (Burada gerçekten
+                      çok fazla seçenek var)
+                    </div></dd><dt><span class="term">TCL Serisi (2 disket)</span></dt><dd class="varlist"><div class="para">
+                      X Pencere altında kullanımı basit bir programlama dili ve
+                      bu dili ile yazılmış bazı uygulama yazılımları (tkdesk)
+                    </div></dd><dt><span class="term">X Serisi (16 disket)</span></dt><dd class="varlist"><div class="para">
+                      X Pencere desteği. Bu disketlerin büyük kısmı değişik grafik
+                      kartları için X window sunucuları ve yazı karakterlerinden
+                      oluşmaktadır. Linux yüklediğiniz bilgisayar üzerindeki
+                      grafik kartını bilmeniz ve buna uygun bir sunucu seçmeniz
+                      gerekmektedir.
+                    </div></dd><dt><span class="term">XAP Serisi (4 disket)</span></dt><dd class="varlist"><div class="para">
+                      X window altında çeşitli uygulamalar: satranç, gnuplot, xv,
+                      xfileman, windows95 benzeri X Pencere arayüzü bu seriler
+                      içerisinde yer almaktadır.
+                    </div></dd><dt><span class="term">XD Serisi (3 disket)</span></dt><dd class="varlist"><div class="para">
+                      Xserver geliştirmek için kütüphaneler ve uygulama
+                      yazılımları
+                    </div></dd><dt><span class="term">XV Serisi (3 disket)</span></dt><dd class="varlist"><div class="para">
+                      OpenLook desteği veren yazılımlar. Bu sayede X Pencere
+                      altında Sun bilgisayarlarda yer alan OpenWindows benzeri
+                      bir ortam kullanılabilir.
+                    </div></dd><dt><span class="term">Y Serisi (1 disket)</span></dt><dd class="varlist"><div class="para">
+                      Minik birkaç oyun. (özellikle bog) Seçtiğiniz disk serileri
+                      ilgi alanınızı genel olarak belirler. Her seri içerisinde
+                      birçok yazılım pakedi yer almaktadır. Bu paketlerden
+                      istediklerinizi yükleyebilirsiniz.
+                    </div></dd></dl></div>
+              </dd><dt><span class="term">INSTALL Menüsü</span></dt><dd class="varlist"><div class="para">
+              Seçtiğiniz disk serilerini belirlediğiniz kaynaktan, belirtilen
+              hedef disk bölümüne aktarır. Disk serileri içerisinde yer alan
+              paketleri ne şekilde yüklemek istediğiniz konusunda birtakım
+              seçenekleriniz olacaktır. Bunlar:
+            </div>
+<div class="para"><pre class="literallayout">
+          NORMAL         Use the default tagfiles for verbose prompting
+          MENU           Choose package subsystems from interactive menus
+          CUSTOM         Use custom tagfiles in the package directories
+          PATH           Use tagfiles in the subdirectories of a custom path
+          EXPERT         Choose individual packages from interactive menus
+          NONE           Use no tagfiles - install everything
+</pre></div>
+            
+              <div class="variablelist"><dl><dt><span class="term">NORMAL</span></dt><dd class="varlist"><div class="para">
+                    Sistem her disk serisi içerisindeki paketleri 'gerekli
+                    (required)', 'olsa iyi olur (recommended)' ve 'seçime
+                    bağlı (optional)' olarak sınıflar. Bu seçenek ile
+                    gerekli paketler yüklenir, diğer paketler için kısa bir
+                    açıklama yazılır ve kullanıcının fikri sorulur. İlk
+                    yüklemeler için tavsiye edilen bir seçenektir. Ancak
+                    özellikle T serisi insanın sabrını taşıracak derecede
+                    çok ufak tefek paket yüklemekte ve her paketi sormaktadır
+                    (mesela klingon fontlarını yüklemek isteyip istemediğinizi
+                    soruyor, bilmeyenler için klingonlar uzay yolu dizisindeki
+                    kötü uzaylı yaratıklardır :) )
+                  </div></dd><dt><span class="term">MENU ve EXPERT</span></dt><dd class="varlist"><div class="para">
+                    Bu seçeneklerde her disk serisi yüklenmeye başlanırken o
+                    seride yer alan tüm paketler bir menü içerisinde görülür.
+                    Kullanıcı istediği paketleri işaretler ve bunların
+                    yüklenmesini sağlar.
+                  </div></dd><dt><span class="term">CUSTOM ve PATH</span></dt><dd class="varlist"><div class="para">
+                    Daha önce belirtilen TAGFILE dosyaları yardımıyla yükleme
+                    yapmak için kullanılır. Bu durumda belirli bir uzantıya
+                    sahip dosyalar içerisinde (TAGFILE) yüklenmesi gereken
+                    yazılımlar belirtilir. Bu seçenek ile TAGFILE' ların
+                    uzantısı belirtilir ve o uzantılı dosyalarda bulunan
+                    paketler yüklenir.
+                  </div></dd><dt><span class="term">NONE</span></dt><dd class="varlist"><div class="para">
+                    Tembellerin seçeneği. Her şeyi kuracaktır. Sadece belirli
+                    paketler için anlamlıdır. Zira birçok paket içerisinde
+                    içinden seçilmesi gereken seçenekler mevcuttur. (Mesela
+                    Xserver 10 seçenek arasından seçilecektir)
+                  </div></dd></dl></div>
+              Bu noktadan sonra artık yükleme başlayacaktır.
+            </dd></dl></div>
+      </dd></dl> <div class="head3"><a name="id4" id="id4"></a>Yapılandırma</div><dl><dd><div class="para">
+        Yükleme bittikten sonra yapılacak iş artık sisteminiz için tanıtımlarınızı
+        yapmaktır. Bu işlemin ilk aşaması sistemi açacak bir çekirdek
+        belirlemektir. Bu konuda üç seçeneğiniz var:
+      </div>
+<div class="para"><pre class="literallayout">
+  bootdisk    Use the kernel from the installation bootdisk
+  cdrom       Use a kernel from the Slackware CD
+  floppy      Install a zimage or bzimage file from a DOS floppy
+</pre></div>
+      
+        <div class="variablelist"><dl><dt><span class="term">Bootdisk</span></dt><dd class="varlist"><div class="para">
+              Bu seçenekte yüklemede kullandığınız çekirdek boot disketinden
+              kopyalanacaktır. Sisteminizi yükleyebildiğinize göre bu çekirdek
+              ile çalışabilirsiniz. Eğer bir değişiklik yapmamışsanız bu anda
+              sürücü içerisinde boot disketi değil root disketi bulunuyor olmalı,
+              değiştirmeyi unutmayın!
+            </div></dd><dt><span class="term">CD-ROM</span></dt><dd class="varlist"><div class="para">
+              Slackware CD-ROM'unda bulunan önceden derlenmiş çekirdeklerden
+              herhangi birini seçebilirsiniz.
+            </div></dd><dt><span class="term">Floppy</span></dt><dd class="varlist"><div class="para">
+              Herhangi bir DOS disketinde yer alan çekirdeği yüklemenizi sağlar.
+            </div></dd></dl></div>
+      <div class="para">
+        Daha sonra sisteminiz için bir boot disketi yaratmak isteyip istemediğiniz
+        sorulacaktır. Ne olursa olsun, elinizin altında her zaman bir boot ve root disketi
+        bulundurmak zorundasınız. Herhangi bir sorun olduğunda sisteminizi açmak
+        için bir boot disketi bulmanız gerekecektir. Bunun için yükleme sırasında
+        kullandığınız boot ve root disketlerini de kullanabilirsiniz.
+      </div><div class="para">
+        Ardından setup size modem, mouse, CD-ROM, bulunduğunuz zaman dilimini
+        soracak ve <tt>liloconfig</tt> yazılımı çalışacaktır.
+        <i>LILO</i>, Linux Loader (Linux yükleyicisi)
+        kelimelerinden meydana gelir. LILO Linux yüklemek için kullanılan
+        çok pratik ve etkili bir yazılımdır. Bilgisayar açılır açılmaz,
+        boot eden ilk sabit diskin üzerinde (boot partition) kendini yazar,
+        bilgisayar açılır açılmaz, birden fazla işletim sistemi için seçenek
+        sunabilir. Yapılandırma sırasında LILO kendisinin nereye yazılacağını
+        sorar, bu seçenekler arasında
+      </div>
+<div class="para"><pre class="literallayout">
+  1. The Master Boot Record of your first hard drive
+  2. The superblock of your root Linux partition
+  3. A formatted floppy disk
+</pre></div>
+      <div class="para">
+        yer alır.
+      </div>
+        <div class="variablelist"><dl><dt><span class="term">1 numaralı seçenek</span></dt><dd class="varlist"><div class="para">
+              birçok uygulamada kullanılacak olan seçenektir. MBR bir bilgisayar
+              açarken ilk bakılan yerdir.
+            </div></dd><dt><span class="term">2 numaralı seçenek</span></dt><dd class="varlist"><div class="para">
+              MBR'yi kullanmamaktadır. Bunun sebebi, MBR üzerinde bir başka
+              işletim sisteminin benzer bir yazılımının bulunması olabilir.
+              (örneğin OS/2 Bootmanager)
+            </div></dd><dt><span class="term">3 numaralı seçenek</span></dt><dd class="varlist"><div class="para">
+              LILO kendisini bir diskete yükleyecektir. Bu disketten açıldığı
+              zaman menü ortaya çıkacaktır.
+            </div></dd></dl></div>
+      <div class="para">
+        Daha sonra boot işlemi sırasında çekirdeğe gönderilecek ekstra
+        parametreler belirtilebilir. Birçok sistem için bu tür bir parametre
+        gereksizdir. Bu parametre boot diski ile açıldığı zaman sorulan
+        parametrenin aynısıdır. Sonraki seçenek LILO'nun yükleme sırasındaki
+        davranışını belirler. LILO yapılandırması sırasında birden fazla boot
+        edebilecek sabit disk bölümü tanımlanabilir. Shift tuşuna basıldığı
+        zaman LILO mevcut bölümler için bir liste çıkaracaktır. LILO için tanımlı
+        dört davranış vardır:
+      </div>
+<div class="para"><pre class="literallayout">
+  1 -- None, don't wait at all - boot straight into the first OS
+  2 -- 5 seconds
+  3 -- 30 seconds
+  4 -- Present a prompt and wait until a choice is made without timing out
+</pre></div>
+      
+        <div class="variablelist"><dl><dt><span class="term">1 numaralı seçenek</span></dt><dd class="varlist"><div class="para">
+              Hiç beklemeden doğrudan listede belirtilen ilk işletim sistemini
+              yükleyecektir. Sadece Linux bulunan bilgisayarlar için kullanılan
+              seçenek budur.
+            </div></dd><dt><span class="term">2 ve 3 numaralı seçenek</span></dt><dd class="varlist"><div class="para">
+              Sırasıyla 5 ve  30 saniye beklerler, eğer bu süre içerisinde Shift
+              tuşuna basılmazsa ilk sırada yer alan işletim sistemini yüklerler.
+            </div></dd><dt><span class="term">4 numaralı seçenek</span></dt><dd class="varlist"><div class="para">
+              Bir işletim sistemi seçilene kadar bekler.
+            </div></dd></dl></div>
+      <div class="para">
+        Daha sonra sırasıyla yüklenmesini tercih ettiğiniz disk bölümlerini
+        tanıtabilirsiniz. LILO her bölüm için sizden ayıredici bir kelime
+        isteyecektir. LILO yükleme anında sizden komut beklerken bu kelimeye
+        göre işletim sistemi yükleyecetir.
+      </div><div class="para">
+        LILO hakkında bazı örnekler için <i>LILO-NASIL</i>
+        belgesinden yararlanabilirsiniz.
+      </div></dd></dl> <div class="head3"><a name="id5" id="id5"></a>Makinayı Açmak</div><dl><dd><div class="para">
+        Linux yükleme işlemi sona erdi. Artık bundan sonra sıra makinanızı Linux
+        çalışacak şekilde çalışmasını sağlamaktır. Bunun için temel olarak iki
+        değişik yöntem mevcuttur:
+      </div>
+        <div class="variablelist"><dl><dt><span class="term">LILO</span></dt><dd class="varlist"><div class="para">
+              En çok kullanılan en pratik açılış şekli. Burada bilgisayar
+              açıldığı zaman isteğe göre bir süre bekler ve bu esnada shift,
+              tab veya control tuşuna basılırsa birden fazla işletim sistemi
+              ile çalıştırma seçeneği sunar.
+            </div></dd><dt><span class="term">LOADLIN</span></dt><dd class="varlist"><div class="para">
+              Dos altından çalışan bir yazılımdır. DOS altında çalışırken Linux
+              yüklemenize yarar. Eğer kurulum aşamasında <tt>LOADLIN</tt>
+              pakedini (A serisi disketler içinde ) seçmişseniz bu paket
+              <tt>/root</tt> dizini altında <tt>LOADLIN.ZIP</tt>
+              ismi ile kaydedilmiş olacaktır. Yapmanız gereken bu yazılımı ve mevcut
+              çekirdeğinizi (<tt>/vmlinuz</tt> ) DOS kısmına aktarmaktır.
+            </div></dd></dl></div>
+      <div class="para">
+        Aşağıda yer alan örnekte,
+      </div>
+      <ol class="orderedlist" start="ignore" type="1"><li><div class="listitem">IDE bir sabit disk kullanıldığı</div></li><li><div class="listitem"><tt>/dev/hda1</tt>'in DOS olduğu</div></li><li><div class="listitem"><tt>/dev/hda3</tt> üzerine Linux yüklendiği </div></li><li><div class="listitem">DOS kısmına (henüz) Linux altından erişilemediği </div></li><li><div class="listitem">Makinanın Linux olarak açılmış olduğu </div></li></ol>
+      <div class="para">
+        varsayılmıştır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+linux:~# ls /root
+lodlin16.txt  lodlin16.zip
+linux:~# mkdir /dos
+linux:~# mount -t msdos /dev/hda1 /dos
+linux:~# cd /dos
+linux:/dos# unzip /root/lodlin16.zip
+Archive:  lodlin16.zip
+ creating: loadlin/
+  inflating: loadlin/readme.1st
+  inflating: loadlin/loadlin.exe
+  inflating: loadlin/copying
+  inflating: loadlin/test.par
+  inflating: loadlin/linux.bat
+ extracting: loadlin/initrd.tgz
+  inflating: loadlin/files
+   creating: loadlin/doc/
+  inflating: loadlin/doc/changes
+  inflating: loadlin/doc/announce.txt
+  inflating: loadlin/doc/lodlin16.lsm
+  inflating: loadlin/doc/quicksta.rt
+  inflating: loadlin/doc/initrd.txt
+  inflating: loadlin/doc/manual.txt
+  inflating: loadlin/doc/params.doc
+   creating: loadlin/src/
+  inflating: loadlin/src/loadlin.asm
+  inflating: loadlin/src/loadlina.asm
+  inflating: loadlin/src/loadlini.asm
+  inflating: loadlin/src/loadlinj.asm
+  inflating: loadlin/src/loadlinm.asm
+  inflating: loadlin/src/makefile
+ extracting: loadlin/src/srclinux.tgz
+  inflating: loadlin/src/pgadjust.asm
+linux:/dos# cp /vmlinuz /dos/loadlin/zimage
+linux:/dos# cd loadlin
+linux:/dos/loadlin# ls
+copying*      files*        linux.bat*    readme.1st*   test.par*
+doc/          initrd.tgz*   loadlin.exe*  src/          zimage
+linux:/dos/loadlin# cat linux.bat
+
+rem  First, ensure any unwritten disk buffers are flushed:
+smartdrv /C
+rem  Start the LOADLIN process:
+c:\loadlin\loadlin  c:\loadlin\zimage  root=/dev/hda3  ro  vga=3
+linux:/dos/loadlin# cp linux.bat /dos
+</pre></div></div>
+      <div class="para">
+        Burada verilen örnekte yapılan sırasıyla
+      </div>
+        <ul type="disc" class="itemizedlist"><li><div class="para">Sabit diskin DOS kısmını Linux altından ulaşılır yapmak</div></li><li><div class="para">
+            <tt>/root</tt> altında yer alan
+            <tt>lodlin16.zip</tt> isimli dosyayı DOS diski altında
+            açmak. Bu işlem <tt>C:\LOADLIN</tt> isimli bir dizin
+            yaratıp içerisine gereken dosyaları yerleştirmektedir.
+          </div></li><li><div class="para">
+            Çalışan çekirdeği (<tt>/vmlinuz</tt>) bu dizine kopyalamak
+            ve <tt>LINUX.BAT</tt> dosyasını kendimize uygun hale
+            getirmek. Bu dosya <tt>C:\LOADLIN\ZIMAGE</tt> isimli bir
+            çekirdeği kullanarak <tt>/dev/hda3</tt> bölümünde Linux
+            çalıştırmak için kullanılır.
+          </div></li><li><div class="para">
+            <tt>LINUX.BAT</tt> dosyasını PATH içinde tanımlı bir yere
+            kopyalamak, mesela <tt>C:\DOS</tt>.
+          </div></li></ul>
+      <div class="para">
+        Artık bilgisayar DOS açıldıktan sonra <tt>linux</tt> komutu
+        ile tekrar Linux çalıştırmak mümkün olacaktır.
+      </div><div class="para">
+        Bilgisayarınıza Linux yüklediğiniz disketlerle her zaman bilgisayarınızı
+        Linux olarak açıp çalışabilirsiniz.
+      </div><div class="para">
+        Tavsiye edilen mümkünse LILO kullanmaktır. LOADLIN ise bir ikinci
+        alternatif olarak çokça kullanılır. Boot disketlerine ise genelde
+        son çare olarak başvurulur.
+      </div><div class="para">
+        Bütün bu adımlardan sonra artık elinizde çalışmaya hazır bir Linux
+        makine vardır. Makinayı kapatıp tekrar açın. Ekranda çekirdek mesajları
+        geçtikten sonra
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+login:
+</pre></div></div>
+      <div class="para">
+        belirecektir. Buraya <tt>root</tt> yazın ve sisteme girin.
+        İlk denemeniz için
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# shutdown -rf now
+</pre></div></div>
+      <div class="para">
+        yazabilirsiniz. Linux bir makine çalıştığı sürece hafıza içerisinde birçok
+        tampon bellek açar. Mümkün olduğu kadar makineyi kapama tuşuna basarak
+        kapatmayın. Shutdown komutu işletim sisteminin tampon belleklerde tuttuğu
+        bilgileri güncellemesini sağlayacaktır. <tt>-r</tt> parametresi sistemin
+        reboot etmesini sağlayacaktır. Bilgisayarı kapatmak için
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# shutdown -hf now
+</pre></div></div>
+      <div class="para">
+        komutunu kullanabilirsiniz. Burada yer alan h parametresi sistemin "halt"
+        edeceğini (tamamen kilitlenme) ve bir daha açılmayacağını belirtecektir.
+      </div><div class="para">
+        Eğer herşey yolunda giderse makinanızın başında oturup çalışmaya
+        başlayabilirsiniz.
+      </div><div class="para">
+        Sistemde çalışmaya başlamak üzere ilk iş olarak kendinize çalışmak
+        amacıyla bir kullanıcı tanmlayın. Sistemde başka kullanıc olacaksa,
+        onlar için de hesap açacaksınız. Kullanıcı hesabı açmak için
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# adduser
+</pre></div></div>
+      <div class="para">
+        komutu size bu konuda yardımcı olacaktır. <tt>adduser</tt> (veya <tt>useradd</tt>)
+        komutu , kullanıcı ismi, isim ve soyad, GID (grup kimliği), UID (kullanıcı
+        kimliği) gibi birtakım sorular soracaktır. Bu komut hakkında ayrıntılı
+        bilgiyi <i>Sistem Yönetimi</i> bölümü altında bulabilirsiniz. root kullanıcısı
+        sistem üzerinde sınırsız yetkiye sahip olduğundan sistem dosyalarını
+        kazara değiştirmenize veya silmenize sebep olabilir.
+      </div><div class="para">
+        Şimdi yeni hesabınızla sisteme girebilirsiniz. Alt F1 'den Alt F6
+        'ya kadar olan tuşlarla birden çok ekranda (sanal ekranlar) aynı anda
+        çalışabilirsiniz.
+      </div><div class="para">
+        Bu noktadan sonra bazı uygulamaların ayarlamalarını yapmanız
+        gerekecektir. Artık Linux yüklemek ile ilgili bir sorunuzunun kalmamış
+        olmasını umuyorum. DOS kullanıcılarına Linux hakkında bilgi veren
+        sevimli bir belge için <i>DOS2Linux Mini-HOWTO</i> iyi bir başlangıç
+        olabilir.
+      </div><div class="para">
+        Açılış esnasında makinanızın ismi <tt>/etc/rc.d/rc.M</tt> dosyasında
+        belirlenir. Bu dosyayı uygun şekilde değiştirerek makinanızın ismini
+        de yeniden tanımlayabilirsiniz. Makinanızın ilk ismi <tt>darkstar</tt>
+        olacaktır. Eğer TCP/IP ağ üzerinde çalışıyorsanız, <tt>/etc/HOSTNAME</tt>
+        dosyasının içeriğini değiştirerek veya hostname komutu kullanılara makina
+        ismi de değiştirilebilir.
+      </div><div class="para">
+        Bunların dışında yapılandırma gerektiren birçok durum vardır. Bunlar
+        için <i>NET-3 HOWTO</i> dosyasını iyice okumalısınız.
+      </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-2.3.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../lis/archive-tlkg-lis-2.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-2.5.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Sabit Disk Üzerinde Linux İçin Yer Açmak </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> LILO Yapılandırması</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

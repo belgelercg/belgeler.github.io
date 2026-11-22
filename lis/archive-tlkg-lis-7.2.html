@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:30:28+03:00" /><title>vi Editörü</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../lis/archive-tlkg-lis-7.html" title="Sed ve Vi" /><link rel="previous" href="../lis/archive-tlkg-lis-7.1.html" title="SED (Stream editor)" /><link rel="next" href="../lis/archive-tlkg-lis-8.html" title="TCP/IP" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">vi Editörü</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-7.1.html">Önceki</a> </td><th width="60%" align="center">Sed ve Vi</th><td width="20%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-8.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="archive-tlkg-lis-7.2" id="archive-tlkg-lis-7.2"></a>vi Editörü</div><dl><dd><div class="para">
+      Bir linux sistemde her kullanıcının zevkine hitap eden çeşitli metin
+      editörler vardır. Bunların arasında en çok kullanılan ve standart olan
+      ed ve vi, UNIX sistemler için özel olarak tasarlanmış editörlerdir. vi
+      kadar çok kullanılmasa da ed, pico ve joe da büyük bir taraftar kitlesine
+      sahiptir. vi ilk başta karmaşık görünse de hızı ve verimi ile her
+      kullanıcının işini büyük ölçüde kolaylaştıracak bir editördür. En çok
+      kullanılan komut takımlarını öğrendikten sonra vi ile aynı dili konuşuyor
+      olduğunuzu göreceksiniz.
+    </div> <div class="head3"><a name="id1" id="id1"></a>vi'a Başlangıç</div><dl><dd><div class="para">
+        PC editörlerin büyük çoğunluğunda klavye, editör komutlarını
+        almak ve basılan tuşları ekrana göndermek için kullanılan iki
+        gruba ayrılmıştır. Kullanıcı aynı anda hem komut işletip hem de
+        yazı yazabilir. Bu tip editörler geniş bir klavye haritasına sahip
+        oldukları için, örneğin fonksiyon tuşlarını veya klavyenin en sağındaki
+        sayısal tuşları da kullanıyor olabilirler. vi' ın tasarım aşamasında bu
+        durumdan kaçınılmış, standart dışı klavyesi olan bilgisayarların da var
+        olabileceği düşünülerek klavye üzerinde kullanılması gereken tuşların
+        sayısını mümkün olduğunca indirilmesine çalışılmıştır. Burada karşımıza
+        vi editörünün çalışma aşamasında üç ayrı işlev geliyor. Birincisi,
+        bilgisayara komutların girdisi sırasında kullanılan <i>komut modu</i>, ikincisi
+        yazı yazarken kullanılan <i>yazı modu</i> ve <i>satır modu</i>.
+      </div><div class="para">
+        Komut modunda klavye üzerinde görevi olan tüm tuşlar, bilgisayar komut
+        vermek için kullanılıyor. Yazı modunda ise diğer editörlerdekine benzer
+        şekilde yazı yazmak mümkün oluyor. Klavye modunu değiştirdiğinizde
+        klavye tuşlarının işlevleri de hemen değişiyor. vi editörünü ilk
+        çalıştırdığınız anda komut moduna girersiniz. Bu anda her tuşa ait
+        bir komut çalıştırılmaya hazırdır (örneğin `<i>j</i>' bir karakter aşağı,
+        `<i>k</i>' bir karakter yukarı gider). Bu anda kullanıcı yazı moduna geçmek
+        isterse `<i>i</i>' tuşuna basabilir.
+      </div><div class="para">
+        Yazı moduna iken klavyeden girilen her karakter ekranda görünür. Bundan
+        sonrası daktilo kullanmaya benzer. Tekrar komut moduna geçmek için <i>ESC</i>
+        tuşu yardımcı olur. Bir dosya yazarken veya düzeltmede bulunurken her
+        iki yazım stili arasında sürekli gidip geldiğinizi farkedeksiniz.
+      </div><div class="para">
+        Bunlara ek olarak dosya işlemleri veya eşleme (substitution) yaparken
+        iki mod da kullanılmaz. Linux kullanıcısı vi üzerinde çalışırken en alt
+        satırda vi mesajlarını görür ve gerektiği zaman satır modunda komutları
+        girer. Satır moduna geçmek için `<i>:</i>' (iki nokta üstüste) karakteri
+        kullanılır. Bu tuşa basıldığında ekranın en altında bir satır açılır
+        ve vi sizden bir komut girmenizi bekler. vi komutunu yazdıp enter'a
+        bastıktan sonra tekrar editör komut moduna geçersiniz.
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Dosya İşlemleri</div><dl><dd><div class="para">
+        Sisteme girip ekrana <tt>vi telefon</tt> yazdığınızda aşağıdakine benzer bir
+        metin üzerinde arama ve değiştirme görüntüsü monitörde belirecek ve
+        program çalıştırılacaktır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+_
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+ "telefon" [NEW FILE]  1 line, 1 char
+</pre></div></div>
+      <div class="para">
+        vi'a ilk girdiğiniz anda komut modunda olursunuz. Yazı moduna geçmek için
+        `<i>i</i>' veya `<i>a</i>' tuşuna basın. Bu andan itibaren zamanınızın büyük
+        bir kısmını geçireceğiniz yazı moduna atlarsınız. Bıkana kadar yazıp
+        önce <i>ESC</i> tuşuna, ardından iki kere `<i>Z</i>' tuşuna basın. Bu komut dizisi
+        önce dosyayı kaydedecek, sonra da vi editörden çıkmanızı ve kabuğa
+        dönmenizi sağlayacaktır.
+      </div><div class="para">
+        vi' a yeni başlayanların yaptıkları en sık hatalardan biri yazı
+        modundan komut moduna geçerken <i>ESC</i> tuşuna basmamalarıdır. `<i>w</i>' komutu
+        `<i>ZZ</i>' komutuna benzer çalışır, hafızada halihazırda bulunan dosyayı,
+        editörden çıkmadan diske kaydeder. Eğer isimsiz bir dosyada üzerinde
+        çalışıyorsanız (örneğin vi telefon yerine sadece vi yazarak editöre
+        girmişseniz) dosyayı sabit diske yazmak için `<i>w</i>' satır komutunu
+        kullanmalısınız. Bunun için daha önce de belirtildiği gibi
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+:w telefon
+</pre></div></div>
+      <div class="para">
+        yazıp satır moduna geçerek komutu girmelisiniz
+      </div><div class="para">
+        vi editörden çıkmak için `<i>:q</i>' yazın.
+      </div></dd></dl> <div class="head3"><a name="id3" id="id3"></a>vi' da Yazma</div><dl><dd><div class="para">
+        Şimdi vi yardımıyla bir dosya üzerinde denemeler yapalım. Aşağıdaki
+        satırları kabuk satırında iken yazın ve <i>ENTER</i>'a basın.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+metu:~$ vi deneme
+</pre></div></div>
+      <div class="para">
+        Ekran silinecek ve yukarıdakine benzer bir görüntüyle
+        karşılaşacaksınız. Yazı moduna geçmek için `<i>i</i>' tuşuna basın. Hemen
+        ardından bir zamanlar İnternet üzerinde görüp kaydettiğim birkaç satırı
+        yazın.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+Arada sırada kitapta bir şeyler ararken /'e basasım gelmiyor değil.
+~
+~
+~
+~
+~
+~
+</pre></div></div>
+      <div class="para">
+        Ekranın en sonuna geldiğinizde vi, alttaki satır başına
+        geçmeyecektir. Bunun için <i>ENTER</i> tuşuna basarak yazmaya devam edin.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+Arada sırada kitapta bir şeyler ararken /'e basasım gelmiyor değil.
+Fazla vi kullanmaktan tembelliğe alışmışız anlaşılan,
+~
+~
+~
+~
+~
+</pre></div></div>
+      <div class="para">
+        Satır sonuna geldiğiniz zaman komut satırına geçmek için <i>ESC</i> tuşuna
+        basın. Klavyenin sağındaki yön tuşlarını kullanarak dosya içinde
+        gezinebilirsiniz. vi'ın sevdiğim özelliklerinden birisi de kullanıcıyı
+        10 parmak yazmaya zorlamasıdır. Yön tuşlarının görevini <i>h, j, k</i> ve
+        <i>l</i> tuşları da yapabilir, böylece kullanıcı sağ elini klavye üzerinde
+        sürekli gezdirmek zorunda kalmaz.
+      </div>
+        <ul type="disc" class="itemizedlist"><li><b><tt>j</tt></b>, imleci bir satır aşağı indir </li><li><b><tt>k</tt></b>, imleci bir satır yukarı gönder</li><li><b><tt>h</tt></b>, imleci bir karakter sola al</li><li><b><tt>l</tt></b>, imleci bir karakter sağa al</li></ul>
+      <div class="para">
+        Alternatif olarak <i>ENTER</i> tuşu komut modunda `<i>j</i>' tuşu yerine de
+        kullanılabilir. Kursörü yön tuşları yardımıyla ``Fazla'' kelimesiyle
+        başlayan satıra kadar taşıyın. `<i>i</i>' tuşuna basıp tekrar yazı moduna
+        geçerek metin üzerinde biraz değişiklik yapın:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+Arada sırada kitapta bir şeyler ararken /'e basasım gelmiyor değil.
+Fazla vi kullanmaktan dolayı_tembelliğe alışmışız anlaşılan...
+~
+~
+~
+~
+~
+</pre></div></div>
+      <div class="para">
+        ``dolayı'' kelimesini ekledikten sonra bir noktayı işaret etmek
+        istiyorum. Kullandığım Linux makinası Türkçe destekli olduğu için Türkçe
+        karakterleri okuyup yazmam mümkün, aslında Linux işletim sistemi hemen
+        her ülkenin alfabesini desteklediğinden herhangi bir dilde (örneğin
+        Alman alfabesi karakterlerini kullanarak) yazmak için birkaç komut
+        yeterli oluyor.
+      </div><div class="para">
+        `<i>i</i>' tuşu imlecin bulunduğu yerden yazmasına rağmen, `<i>a</i>' komutu bir
+        karakter sağdan başlayarak yazmanızı sağlar. `<i>o</i>' komutu ise imlecin
+        bulunduğu yerin altında bir satır boşluk bırakır ve boş satırın başına
+        geçerek yazı moduna atlar. <i>ESC</i> tuşuna basarak komut modundayken en alt
+        satıra inin ve `<i>o</i>' tuşuna basın. Burada bir satır daha ekleyelim:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+Arada sırada kitapta bir şeyler ararken /'e basasım gelmiyor değil.
+Fazla vi kullanmaktan dolayı tembelliğe alışmışız anlaşılan..
+Sayfaları karıştırmak zor geliyor...
+~
+~
+~
+~
+</pre></div></div>
+      <div class="para">
+        Eğer ekrandaki bilgi birkaç sayfadan ibaretse <i>Control-F</i> tuşunu bir sayfa
+        ileri gitmek için, <i>Control-B</i> tuşunu ise metni bir sayfa geriye almak
+        için kullanabilirsiniz.
+      </div><div class="para">
+        vi her satırı kendi içinde numaralandırır. Belirli bir satıra gitmek
+        için tuşlar dışında satırın numarası kullanarak da gidilebilir. `<i>G</i>'
+        komutu yardımıyla imlecin gideceği satırı belirtebilirsiniz. Bunun için
+        komut modunda iken satır numarasını girin (ekranda görünmeyecektir) ve
+        hemen ardından `<i>G</i>' tuşuna basın. Eğer satır numarası girilmezse
+        imleci dosyanın sonunda konumlandırılır.
+      </div></dd></dl> <div class="head3"><a name="id4" id="id4"></a>Silme ve Kopyalama</div><dl><dd><div class="para">
+        Yazı modunda iken <i>back space</i> tuşu yardımıyla, komut modunda iken ise
+        `<i>x</i>' komutu ile istediğiniz kadar harfi silmeniz mümkündür. `<i>dd</i>'
+        komutu ise imleci üzerinde bulunduğu satırı siler ve alttaki tüm
+        satırlar bir satır yukarı alınır. PC üzerindeki editörlerdeki satır sonuna
+        gelince imlecin otomatik olarak bir satır aşağı kayması, <tt>:set wm=n</tt>
+        satır komutu yardımıyla gerçekleştirilir.  Komuttaki <i>n</i> sayısı, sağdan
+        kaç boşluk bırakılacağını söyler. Ekranın sağından 4 satır boşluk bırakmak
+        için (bu durumda satır uzunluğu 76 karaktere inecektir) <tt>:set wm=4</tt> yazın.
+      </div><div class="para">
+        `<i>dd</i>' veya `<i>x</i>' komutundan sonra silinen harf ve harf grupları hafızaya
+        alınır ve istenildiği zaman `<i>p</i>' tuşu yardımıyla imlecin bulunduğu yerden
+        itibaren ekrana basılır. `<i>P</i>' yardımıyla hafızadaki metni imlecin bir
+        satır üzerine kopyalayabilirsiniz.
+      </div><div class="para">
+        Kursörün bulunduğu yerden satır sonuna kadar silmek için
+        `<i>d$</i>' , metin
+        sonuna kadar silmek için `<i>dG</i>' kullanılabilir. ($ ve G harflerinin
+        işlevlerine dikkat edin!)
+      </div><div class="para">
+        Son kaldığımız yerden devam edelim. Son satırı `<i>dd</i>' ile
+        silelim.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+Arada sırada kitapta bir şeyler ararken /'e basasım gelmiyor değil.
+Fazla vi kullanmaktan dolayı tembelliğe alışmışız anlaşılan..
+~
+~
+~
+~
+~
+</pre></div></div>
+      <div class="para">
+Ardından kestiğimiz satırı <i>P</i> komutuyla en üste yapıştıralım .
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+Sayfaları karıştırmak zor geliyor...
+Arada sırada kitapta bir şeyler ararken /'e basasım gelmiyor değil.
+Fazla vi kullanmaktan dolayı tembelliğe alışmışız anlaşılan..
+~
+~
+~
+~
+</pre></div></div>
+      <div class="para">
+        Tek bir karakteri başka bir karakterle değiştirmek için önce komut modunda
+        karakteri silip yazı moduna geçtikten sonra gerekli değişikliği yapmaya
+        gerek yoktur. `<i>r</i>' komutu tek bir harfi değiştirmek için kullanılır. Bu
+        tuşa basınca imlecin üzerinde bulunduğu karakter silinir ve editör
+        kullanıcıdan yerine gelecek karakteri bekler. Bundan sonra vi tekrar
+        komut moduna döner.
+      </div><div class="para">
+        Bir kelimeyi silip üzerine yazmak için de `<i>cw</i>' komutu
+        kullanılabilir. Kelimenin başına gelin ve sırayla önce `<i>c</i>' sonra
+        `<i>w</i>' tuşlarına basın. Editör yazmayı bitirmenizi bekleyecektir. <i>ESC</i> tuşuna
+        basıncaya kadar yazdıklarınız ekranda kalacak ve (varsa) kelimeden arta
+        kalan harf(ler) silinecektir.
+      </div><div class="para">
+        Her ölümlü gibi siz de hata yapabilirsiniz. Hata yaptıktan sonra eski
+        konuma dönmek için `<i>u</i>' komutunu kullanın. Bu komut, üzerinde değişiklikler
+        yaptığınız metni son çalıştırılan komuttan önceki duruma getirir. Yeni
+        konuma tekrar geri dönmek için <i>Control-R</i> 'ye basın.
+      </div></dd></dl> <div class="head3"><a name="id5" id="id5"></a>Komut Tekrarı</div><dl><dd><div class="para">
+        20 satırı silmek için 20 kere dd tuşuna basmak gereksizdir. Bunun
+        için `<i>dd</i>' komutundan önce klavyeden 20 rakamını girmek yeterli
+        olur. Girilen rakamlar `<i>G</i>' komutundaki örneğe benzer şekilde ekranda
+        görünmezler. Kullanılan rakamlar, kendinden sonra gelecek olan komutun kaç
+        kere işletileceğini belirtir. Örnek olarak `<i>8x</i>' komutu sekiz karakteri
+        siler, `<i>12j</i>' komutu 12 satır aşağı iner. Üzerinde çalıştığımız dosyada
+        birkaç uygulama yapalım. Kursörü ilk satırdaki ``geliyor'' kelimesinin
+        başına alın ve `<i>7x</i>' komutunu girin. Son durum yaklaşık şu şekilde
+        olmalıdır:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+Sayfaları karıştırmak zor ...
+Arada sırada kitapta bir şeyler ararken /'e basasım gelmiyor değil.
+Fazla vi kullanmaktan dolayı tembelliğe alışmışız anlaşılan..
+~
+~
+~
+</pre></div></div>
+      <div class="para">
+        vi'ın komut tekrar özelliği sayesinde ekrana yazdıklarınızı ardarda
+        kopyalayabilirsiniz. Örnek dosya üzerinde birinci satırın başına gidin ve
+        `<i>9i</i>' yazın. Gireceğiniz yazı modunda ekrana ne gönderirseniz
+        <i>ESC</i> tuşundan sonra 9 kopyası basılacaktır:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+bip bip bip bip bip bip bip bip bipSayfaları karıştırmak zor ...
+Arada sırada kitapta bir şeyler ararken /'e basasım gelmiyor değil.
+Fazla vi kullanmaktan dolayı tembelliğe alışmışız anlaşılan..
+~
+~
+~
+~
+</pre></div></div>
+      </dd></dl> <div class="head3"><a name="id6" id="id6"></a>Kopyalama</div><dl><dd><div class="para">
+        Silinen karakter veya karakter gruplarının hafızaya kaydedildiğini
+        söylemiştik. Bu hafıza geçici bir tampon vazifesi görür. `<i>yy</i>' komutu
+        üzerinde bulunduğu satırı kopyalar. Eğer komuttan önce sayı girilirse o
+        kadar satır kopyalanır. Ardından kullanıcı metin üzerinde istediği yere
+        gelip `<i>p</i>' tuşuna basarak hafızadaki satırları imlecin bulunduğu satırın
+        altından itibaren basar. `<i>yy</i>' komutu yerine
+        `<i>Y</i>' de tercih edilebilir.
+      </div></dd></dl> <div class="head3"><a name="id7" id="id7"></a>Arama ve Eşleştirme</div><dl><dd><div class="para">
+        vi'da çalışırken arama yapmak isteyebilirsiniz. Eğer üzerinde çalıştığınız
+        metin uzun ise belirli bir kelime veya kelime gruplarını aramak çok zaman
+        alabilir. Komut modunda iken `<i>/</i>' karakterine basarak arama/tarama moduna
+        geçin. Ekranın en alt kısmında bir satır açılacaktır. Aramak istediğiniz
+        kelimeyi yazın ve <i>ENTER</i> tuşuna basın. vi editörü imlecin bulunduğu
+        yerden itibaren girilen anahtar sözcüğü metin içinde tarayacaktır. Eğer
+        aranan kelime bulunmuşsa satır bunun üzerine konumlandırır.
+      </div><div class="para">
+        `<i>/</i>' komutu dosyanın sonuna doğru arama yaparken `<i>?</i>' komutu
+        başa doğru gider. Aynı kelimeyi tekrar aratmak için `<i>n</i>' tuşuna
+        basın. Arama işlemi, `<i>/</i>' komutu yardımıyla yapılmışsa ileri doğru,
+        `<i>?</i>' komutu yardımıyla yapılmışsa geriye doğru tekrar başlayacaktır.
+      </div><div class="para">
+        Aslında arama yaparken komut modunda girilen her karakter grubu bir
+        düzgün deyimdir. Örnek olarak komut modunda `<i>d$</i>' yazdığımızda
+        $ harfinin satır sonunu belirttiğini, `<i>dG</i>' komutundaki
+        `<i>G</i>' harfinin de metin sonunu işaret ettiğinden imlecin bulunduğu
+        yerden itibaren dosya sonuna kadar sildiğini görmüştük. Metin içindeki
+        büyük harfleri aramak için
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+/[A-Z]
+</pre></div></div>
+      <div class="para">
+        kullanılabilir. Burada gösterebildiğimiz özellikleri vi'ın sadece
+        küçük bir parçasıdır. vi kullanıcılarının işine yarayabilecek birkaç
+        arama-eşleştirme komutuna göz atalım.
+      </div>
+        <div class="para"><div align="right"><pre class="screen">:[a,b]s/deyim/eşlenecek deyim/işleç</pre></div></div>
+      <div class="para">
+        Yukarıdaki komut metin içinde a ve b satırları arasındaki
+        ``deyim''i, ``eşlenecek deyim''e çevirir. Özel tanımlı karakterleri de
+        kullanabilirsiniz. Aşağıdaki komut da 1. ve 10. satırları arasında
+        bulduğu tüm ``nümerik'' kelimelerini ``sayısal'' hale getirir.
+      </div>
+        <div class="para"><div align="right"><pre class="screen">:1,10s/nümerik/sayısal;</pre></div></div>
+      <div class="para">
+        Satır sayısı yerine tüm dosya üzerinde eşleştirme yapmak için
+        % sembolünü, satır sonunu belirtmek için $ sembolünü
+        kullanabilirsiniz. Bu durumda satır sayısını belirten [a,b]
+        tanımını boş bıraktığınızda değişiklik sadece imlecin bulunduğu satırda
+        yapılacaktır. İşleçler de birkaç çeşit olabilir. `<i>c</i>' işleci, her
+        eşleme öncesi kullanıcıdan izin alır. vi kullanırken çoğu durumda her
+        satırda rastlanan ilk eşlemeyi yerine getirecek olan `<i>g</i>' işlecini
+        kullandığınızı göreceksiniz. Daha az kullanılan `<i>i</i>' işleci ise
+        aramanın büyük-küçük harf gözetimi yapmadan yerine getirmesini sağlar.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+:%s/elektronik/s/nik//g
+</pre></div></div>
+      <div class="para">
+komutu, içinde ``elektronik'' kelimesi geçen her satırdaki ``elektronik''
+kelimesini ``elektron'' haline getirir. Fakat ``mekanik'' kelimesine
+dokunmaz. Sed altında kullanılan `<i>\(\)</i>' operatörü vi için de
+geçerli bir tanımdır. Aşağıdaki komut da yukarıdaki uygulamaya benzer
+şekilde her ``kalemlik'' kelimesini ``kalemler'' haline getirir.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+:g/\(kalem\)lik/s//\1ler/g
+</pre></div></div>
+      </dd></dl> <div class="head3"><a name="id8" id="id8"></a>Diğer Dosyaların Metne Eklenmesi</div><dl><dd><div class="para">
+        Kursörün bulunduğu yerden itibaren <tt>rehber.txt</tt> dosyasını halihazırda
+        çalıştığınız metine kopyalamak için
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+:r rehber.txt
+</pre></div></div>
+      <div class="para">
+        komutunu kullanın.
+      </div></dd></dl> <div class="head3"><a name="id9" id="id9"></a>Kabuk Komutlarının Çalıştırılması</div><dl><dd><div class="para">
+        vi altında iken kabuk komutlarını, hatta kabuğun kendisini bile
+        çalıştırmak mümkündür. `<i>:!</i>' ile komut ismini girebilirsiniz. Aşağıdaki
+        komut vi'dan çıkmadan <tt>ls</tt> komutunu çalıştıracak ve sonucu ekrana
+        verecektir.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+:!ls -la
+</pre></div></div>
+      <div class="para">
+        Bunun yanısıra komut çıktısını ekran yerine üzerinde çalıştığımız metine
+        aktarmak için aşağıdaki vi komutunu kullanın:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+:r! ls -al
+</pre></div></div>
+      <div class="para">
+        Metnin son halini görelim:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+bip bip bip bip bip bip bip bip bipSayfaları karıştırmak zor ...
+Arada sırada kitapta bir şeyler ararken / 'e basasım gelmiyor değil.
+Fazla vi kullanmaktan dolayı tembelliğe alışmışız anlaşılan..
+bash.txt
+index.html
+images/
+~
+</pre></div></div>
+      </dd></dl> <div class="head3"><a name="id10" id="id10"></a>vi Başlangıç Dosyaları</div><dl><dd><div class="para">
+        vi her açıldığında belirli bir dosyayı okur ve gerekli düzenlemeleri
+        ve düzeltmeleri yapar. Bu işlemler için kullanılan set komutu
+        birtakım parametreler alır. Örneğin <tt>set wm=n</tt> , <i>n</i> karakter kenar
+        boşluğu bırakmak için, set nu ise her satırın numaralandırılması için
+        kullanılır. Bu komutlar ister vi içinde , ister başlangıç dosyası içinde
+        çalıştırılabilir.
+      </div><div class="para">
+        vi her açılışta öntanımlı olarak önce bulunduğunuz dizin içindeki,
+        ardından ev dizininizin içindeki <tt>.exrc</tt> dosyasına bakar.
+        Böylece
+        açılış anında yapılandırma işlemlerini bu dosyayı kullanarak kolayca
+        gerçekleştirebilirsiniz. Dosyaya her satırda bir set komutu gelecek
+        şekilde istedinildiği kadar komut yerleştirilebilir. Aşağıda örnek bir
+        .exrc dosyası görülüyor.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+set ignorecase
+set wrapmargin=2
+set tabstop=6
+</pre></div></div>
+      <div class="para">
+        Yukarıdaki seçenekler arasında <tt>ignorecase</tt>, vi editörünün arama yaparken
+        küçük-büyük harf ayrımı gözetmemesini; <tt>wrapmargin=2</tt> sol kenardan iki
+        satır boşluk bırakmasını; <tt>tabstop=6</tt> ise <i>TAB</i> tuşuna her basıldığında
+        imlecin 6 karakter ileri gitmesini sağlar. Daha kısa yazmak isterseniz
+        sırasıyla <tt>ic, wm</tt> ve <tt>ts</tt> kullanın.
+      </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-7.1.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../lis/archive-tlkg-lis-7.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-8.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">SED (Stream editor) </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> TCP/IP</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:25:20+03:00" /><title>CREATE FUNCTION</title><link rel="icon" type="image/png" href="../../images/belgeler-logo.png" /><link rel="stylesheet" href="../../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../../man/man7/man7.html" title="SQL Deyimleri, Makro Paketleri vs." /><link rel="previous" href="../../man/man7/man7-create_domain.html" title="CREATE DOMAIN" /><link rel="next" href="../../man/man7/man7-create_group.html" title="CREATE GROUP" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">CREATE FUNCTION</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../../man/man7/man7-create_domain.html">Önceki</a> </td><th width="60%" align="center">SQL Deyimleri, Makro Paketleri vs.</th><td width="20%" align="right"> <a accesskey="n" href="../../man/man7/man7-create_group.html">Sonraki</a></td></tr></table></td></tr></table><div class="refentry"><a name="tr-man7-create_function" id="tr-man7-create_function"></a><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="25%"><b>CREATE FUNCTION(7)</b></td><td class="mheadfoot" align="center" width="50%"><b>SQL - Dil Deyimleri</b> </td><td class="mheadfoot" align="right" width="25%"><b>CREATE FUNCTION(7)</b></td></tr></table></div><dl><dt class="head3">İSİM</dt><dd>CREATE FUNCTION — yeni bir işlev tanımlar<br /></dd><dd><div class="para"></div></dd><dt class="head3">KULLANIM</dt><dd><div class="para"><div class="para"><div align="center"><pre class="synopsis"><b><tt>CREATE</tt></b> [<b><tt>OR REPLACE</tt></b>] <b><tt>FUNCTION</tt></b> <i>isim</i> ( [ [ <i>arg_ismi</i> ] <i>arg_türü</i> [, ...] ] )
+    <b><tt>RETURNS</tt></b> <i>dönüş_türü</i>
+  { <b><tt>LANGUAGE</tt></b> <i>dil_ismi</i>
+    | <b><tt>IMMUTABLE</tt></b> | <b><tt>STABLE</tt></b> | <b><tt>VOLATILE</tt></b>
+    | <b><tt>CALLED ON NULL INPUT</tt></b> | <b><tt>RETURNS NULL ON NULL INPUT</tt></b> | <b><tt>STRICT</tt></b>
+    | [ <b><tt>EXTERNAL</tt></b> ] <b><tt>SECURITY INVOKER</tt></b> | [ <b><tt>EXTERNAL</tt></b> ] <b><tt>SECURITY DEFINER</tt></b>
+    | <b><tt>AS</tt></b> '<i>tanım</i>'
+    | <b><tt>AS</tt></b> '<i>nesne_dosyası</i>', '<i>ilintileme_sembolü</i>'
+  } ...
+    [ <b><tt>WITH</tt></b> ( <i>öznitelik</i> [, ...] ) ]
+</pre></div></div></div></dd><dt class="head3">Açıklama</dt><dd><div class="para">
+<b><tt>CREATE FUNCTION</tt></b> yeni bir işlev tanımlar. <b><tt>CREATE OR REPLACE FUNCTION</tt></b> ise ya yeni bir işlev oluşturur ya da bir mevcut işlev tanımını değiştirir.
+  </div><div class="para">
+Eğer bir şema ismi belirtilmişse, işlev belirtilen şemada oluşturulur. Aksi takdirde, geçerli olan şemada oluşturulur. Yeni işlevin ismi, aynı şema içindeki aynı argüman türlerine sahip bir işlev ismi ile aynı olmamalıdır. Farklı argüman türlerine sahip aynı isimdeki işlevlere izin verilir.
+  </div><div class="para">
+Mevcut bir işlevin tanımını güncellemek için <b><tt>CREATE OR REPLACE FUNCTION</tt></b> kullanılır. Ancak, bir işlevin ismini ya da argüman türlerini bu yöntemle değiştirmek mümkün değildir (eğer denerseniz, aslında ayrı ve yeni bir işlev oluşturmuş olursunuz). Ayrıca, <b><tt>CREATE OR REPLACE FUNCTION</tt></b> ile mevcut bir işlevin dönüş türünü değiştirmeye çalışmayın, bunu yapmak için işlevi önce silmeli, sonra yeniden oluşturmalısınız.
+  </div><div class="para">
+Eğer bir işlevi silip yeniden oluşturursanız, yeni işlev eskisiyle aynı olmaz; mevcut kuralları, sanal tabloları, tetikleri, vs. de silmiş olursunuz.  Bunları koruyarak işlev tanımını değiştirmek için <b><tt>CREATE OR REPLACE FUNCTION</tt></b> kullanın.
+  </div><div class="para">
+İşlevi tanımlayan kullanıcı aynı zamanda sahibi olur.
+  </div></dd><dt class="head3">Parametreler</dt><dd><div class="variablelist"><dl><dt><i><tt>isim</tt></i></dt><dd class="varlist"><div class="para">Tanımlanacak işlevin ismi (şema nitelemeli olabilir).
+     </div></dd><dt><i><tt>arg_ismi</tt></i></dt><dd class="varlist"><div class="para">Bir argümanın ismi. Bazı diller (şimdilik sadece PL/pgSQL) argüman ismini işlev gövdesinde kullanmanızı ister. Diğer diller için argüman ismi sadece ek bir bilgidir.
+     </div></dd><dt><i><tt>arg_türü</tt></i></dt><dd class="varlist"><div class="para">İşlevin (varsa) argümanlarının veri türleri (şema nitelemeli olabilir). Argüman türleri temel, birleşik veya veri alanı türü olabileceği gibi bir tablo sütununun veri türüne başvurulu olabilir.
+      </div><div class="para">
+Gerçeklenim diline bağımlılık sebebiyle, <tt>cstring</tt> gibi tanımlı türler de belirtilebilir. Argüman türü olarak tanımlı türler kısmen olabileceği gibi SQL veri türlerinin tamamen dışında türler olabilirler.
+      </div><div class="para">
+Bir sütun türüne başvuruyu <i><tt>tablo_ismi</tt></i>.<i><tt>sütun_ismi</tt></i><tt>%TYPE</tt> yazarak belirtebilirsiniz. Bu özelliğin kullanımı bazan bir işlevin bir tablo tanımındaki değişikliklerden bağımsız olmasını sağlayabilir.
+     </div></dd><dt><i><tt>dönüş_türü</tt></i></dt><dd class="varlist"><div class="para">İşlevin dönüş değerinin veri türü (şema nitelemeli olabilir). Dönüş türü temel, birleşik veya veri alanı türü olabileceği gibi bir tablo sütununun veri türüne başvurulu olabilir.
+      </div><div class="para">
+<b><tt>SETOF</tt></b> değiştiricisi işlevin tek bir öğe ile değil, bir öğe kümesi ile döneceğini belirtir.
+      </div><div class="para">
+Bir sütun türüne başvuruyu <i><tt>tablo_ismi</tt></i>.<i><tt>sütun_ismi</tt></i><tt>%TYPE</tt> yazarak belirtebilirsiniz.
+     </div></dd><dt><i><tt>dil_ismi</tt></i></dt><dd class="varlist"><div class="para">İşlevin gerçeklendiği dilin ismi. <tt>SQL</tt>, <tt>C</tt>, <tt>internal</tt> veya kullanıcı tarafından belirtilecek yordamsal dillerden biri olabilir. Geriye uyumluluk için isim tek tırnak içine alınabilir.
+     </div></dd><dt><b><tt>IMMUTABLE</tt></b></dt><dt><b><tt>STABLE</tt></b></dt><dt><b><tt>VOLATILE</tt></b></dt><dd class="varlist"><div class="para">Çalışma anı eniyilemesi için işlevin çoklu değerlendirmelerinin tek bir değerlendirme ile değiştirilmesinin güvenli olup olmayacağını belirlerler. En fazla bir seçim belirtilebilir. Bunlardan hiçbiri belirtilmemişse <b><tt>VOLATILE</tt></b> öntanımlıdır.
+      </div><div class="para">
+<b><tt>IMMUTABLE</tt></b> işlevin aynı argüman değerleriyle daima aynı sonucu döndüreceğini belirtir; yani, argümanlarının veritabanındaki değerlerden faydalanmayacağını ya da argüman olarak açıkça belirtilmemiş bilgileri kullanmayacağını belirtir. Eğer bu seçenek belirtilmişse, işlevin tamamen sabit argümanlı her çağrısı anında işlev değeriyle değiştirilebilir.
+      </div><div class="para">
+<b><tt>STABLE</tt></b> tek bir tablo taraması içinde işlevin aynı argüman değerleri için tutarlı olarak aynı sonucu döndüreceğini, ama sonucun SQL cümleleriyle değişebileceğini belirtir. Bu, sonuçları veritabanı aramalarına, parametrelerine, v.s. bağımlı işlevler için un uygun seçimdir. Ayrıca, değerleri bir hareket içinde değişmediğinden <tt>current_timestamp</tt> ailesindeki işlevler de <b><tt>STABLE</tt></b> olarak nitelenmiştir.
+      </div><div class="para">
+<b><tt>VOLATILE</tt></b> işlevin değerinin tek bir tablo taraması içinde bile değişebileceğini, dolayısıyla hiçbir eniyileme yapılamayacağını belirtir. Görece birkaç veritabanı işlevi bu anlamda oynaktır; bazı örnekler: <tt>random()</tt>, <tt>currval()</tt>, <tt>timeofday()</tt>. Yan etkiye sahip her işlevin, işlev sonucu tahmin edilebilir olsa bile, eniyilenmesini önlemek için <b><tt>VOLATILE</tt></b> olarak sınıflanması gerektiğini unutmayın; <tt>setval()</tt> buna bir örnektir.
+      </div><div class="para">
+Ek ayrıntılar için<br /><a class="ulink" href="http://www.postgresql.org/docs/8.0/static/xfunc-volatility.html" target="_top">http://www.postgresql.org/docs/8.0/static/xfunc-volatility.html</a> adresine bakınız.
+     </div></dd><dt><b><tt>CALLED ON NULL INPUT</tt></b></dt><dt><b><tt>RETURNS NULL ON NULL INPUT</tt></b></dt><dt><b><tt>STRICT</tt></b></dt><dd class="varlist"><div class="para"><b><tt>CALLED ON NULL INPUT</tt></b> (öntanımlıdır)  işlevin bazı argümanları NULL olduğunda normal olarak çağrılacağını belirtir. Bundan sonra işlev yazarının yapacağı NULL değerleri sınamak ve gereğini yapmaktır.
+      </div><div class="para">
+<b><tt>RETURNS NULL ON NULL INPUT</tt></b> veya <b><tt>STRICT</tt></b> ise işlevin, argümanlarından herhangi birinin NULL olması durumunda daima NULL değer döndüreceğini belirtir. Eğer bu seçenek belirtilmişse, NULL argümanların varlığında işlev çalıştırılmayacak, onun yerine hemen bir NULL değer döndürülecektir.
+     </div></dd><dt>
+<div class="para"><pre class="literallayout">[ <b><tt>EXTERNAL</tt></b> ] <b><tt>SECURITY INVOKER</tt></b>
+[ <b><tt>EXTERNAL</tt></b> ] <b><tt>SECURITY DEFINER</tt></b>
+</pre></div></dt><dd class="varlist"><div class="para">
+<b><tt>SECURITY INVOKER</tt></b> işlevin kendisini çağıran kullanıcının izinleriyle çalıştırılacağını belirtir. <b><tt>SECURITY DEFINER</tt></b> ise işlevin kendisini oluşturan kullanıcının izinleriyle çalıştırılacağını belirtir.
+     </div><div class="para">
+<b><tt>EXTERNAL</tt></b> sözcüğü SQL uyumluluğu için varsa da isteğe bağlı olmasından dolayı, SQL'in tersine bu özellik harici işlevlere uygulanmaz.
+     </div></dd><dt><i><tt>tanım</tt></i></dt><dd class="varlist"><div class="para">İşlevi tanımlayan bir dizge sabiti; anlamlandırılması dile bağımlıdır. Bir dahili işlev ismi olabileceği gibi bir nesne dosyasının yolu, bir SQL komutu veya bir yordamsal dilde yazılmış bir metin olabilir.
+     </div></dd><dt><i><tt>nesne_dosyası</tt></i>, <i><tt>ilintileme_sembolü</tt></i></dt><dd class="varlist"><div class="para"><b><tt>AS</tt></b> sözcüğünün bu biçimi özdevimli yüklenebilen C dili işlevleri için, işlevin C dili kaynak kodundaki ismi, bir SQL işlevinin ismiyle aynı değilse, kullanılır. <i><tt>nesne_dosyası</tt></i> dizgesi ile özdevimli yüklenebilen nesneyi içeren dosyanın ismi belirtilir. <i><tt>ilintileme_sembolü</tt></i> ise işlevin C dili kaynak kodundaki ismi olarak işlevin ilintileme sembolüdür. Eğer ilintileme sembolü belirtilmezse, tanımlandığı SQL işlevinin ismiyle aynı olduğu kabul edilir.
+     </div></dd><dt><i><tt>öznitelik</tt></i></dt><dd class="varlist"><div class="para">İşlev hakkında bilgi içeren isteğe bağlı parçaları belirtmenin tarihi bir yolu. Burada belirtilebilecek öznitelikler şunlardır:
+     </div><div class="variablelist"><dl><dt><tt>isStrict</tt></dt><dd class="varlist"><div class="para"><b><tt>STRICT</tt></b> veya <b><tt>RETURNS NULL ON NULL INPUT</tt></b>'a eşdeğerdir.
+         </div></dd><dt><tt>isCachable</tt></dt><dd class="varlist"><div class="para"><b><tt>IMMUTABLE</tt></b>'ın atıl olmuş eşdeğeridir; hala geriye uyumluluk adına kabul edilmektedir.
+         </div></dd></dl></div>
+       <div class="para">
+Öznitelik isimleri harf büyüklüğüne duyarlıdır.
+     </div></dd></dl></div></dd><dt class="head3">Ek Bilgi</dt><dd><div class="para">
+İşlevlerin yazılması hakkında bilgi edinmek için<br /><a class="ulink" href="http://www.postgresql.org/docs/8.0/static/xfunc.html" target="_top">http://www.postgresql.org/docs/8.0/static/xfunc.html</a> adresine bakınız.
+   </div><div class="para">
+Girdi argümanları ve dönüş değeri için tamamen SQL türü sözdizimine izin verilmektedir. Ancak, temel işlev gerçekleniminin sorumlusu olduğu tür belirtiminin bazı ayrıntıları (sayısal türlerdeki hassasiyet alanı gibi) <b><tt>CREATE FUNCTION</tt></b> tarafından sessizce sineye çekilir (yani, ne tanınır ne de uygulanır).
+   </div><div class="para">
+PostgreSQL<sup>TM</sup>, argümanları farklı olmak şartıyla işlevler için aynı isimlerin kullanımına izin verir. Ancak, C dilinde tüm işlev isimlerinin farklı olması gerekir, bu nedenle bu tür C işlevlerine farklı C isimleri vermelisiniz. (örneğin, C isimlerinin parçası olarak argüman türleri kullanılabilir).
+   </div><div class="para">
+<b><tt>CREATE FUNCTION</tt></b> aynı nesne dosyası için defalarca çağrıldığında dosya sadece bir kere yüklenir. Dosyayı tekrar tekrar yüklemeniz gerekiyorsa (geliştirme amaçlı) <tt><b>LOAD</b>[load(7)]</tt> komutunu kullanın.
+   </div><div class="para">
+Kullanıcı tanımlı işlevleri kaldırmak için <tt><b>DROP FUNCTION</b>[<a href="../../man/man7/man7-drop_function.html">drop_function(7)</a>]</tt> kullanılır.
+   </div><div class="para">
+İşlev tanımlarını yazarken tek tırnak içine almak yerine dolar işaretleri arasında yazmak çoğunlukla daha çok tercih edilen bir yöntemdir<br />(<a class="ulink" href="http://www.postgresql.org/docs/8.0/static/sql-syntax.html#SQL-SYNTAX-DOLLAR-QUOTING" target="_top">http://www.postgresql.org/docs/8.0/static/sql-syntax.html#SQL-SYNTAX-DOLLAR-QUOTING</a> adresine bakınız). Dolar işaretleri arasında yazma yöntemi kullanılmadığı zaman, işlev tanımı içindeki tek tırnaklar veya tersbölülerin öncelenmesi gerekir.
+   </div><div class="para">
+Bir işlevin tanımlanabilmesi için kullanıcının dil üzerinde <b><tt>USAGE</tt></b> iznine sahip olması gerekir.
+   </div></dd><dt class="head3">Örnekler</dt><dd><div class="para">
+Burada, başlangıç olarak yardımcı olacak önemsiz bir örneğe yer verilmiştir. Daha fazla bilgi edinmek ve başka örnekler için <br /><a class="ulink" href="http://www.postgresql.org/docs/8.0/static/xfunc.html" target="_top">http://www.postgresql.org/docs/8.0/static/xfunc.html</a> adresine bakınız.
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">CREATE FUNCTION add(integer, integer) RETURNS integer
+    AS 'select $1 + $2;'
+    LANGUAGE SQL
+    IMMUTABLE
+    RETURNS NULL ON NULL INPUT;
+</pre></div></div>
+  <div class="para">
+PL/pgSQL dilinde bir argüman ismi kullanarak bir tamsayı arttırımı:
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">CREATE OR REPLACE FUNCTION increment(i integer) RETURNS integer AS $$
+    BEGIN
+        RETURN i + 1;
+    END;
+$$ LANGUAGE plpgsql;
+</pre></div></div>
+  </dd><dt class="head3">Uyumluluk</dt><dd><div class="para">
+SQL:1999 ve sonrasında bir <b><tt>CREATE FUNCTION</tt></b> tanımlıdır. PostgreSQL<sup>TM</sup> sürümü de benzer olmakla birlikte tamamen uyumlu değildir. Ne öznitelikler taşınabilirdir ne de farklı diller kullanılabilmektedir.
+  </div></dd><dt class="head3">İlgili Belgeler</dt><dd><div class="para">
+<tt><b>ALTER FUNCTION</b>[<a href="../../man/man7/man7-alter_function.html">alter_function(7)</a>]</tt>,
+<tt><b>DROP FUNCTION</b>[<a href="../../man/man7/man7-drop_function.html">drop_function(7)</a>]</tt>,
+<tt><b>GRANT</b>[grant(7)]</tt>,
+<tt><b>LOAD</b>[load(7)]</tt>,
+<tt><b>REVOKE</b>[revoke(7)]</tt>,
+<tt><b>createlang(1)</b></tt>.
+ </div></dd><dt class="head3">Çeviren</dt><dd><div class="para">
+Nilgün Belma Bugüner <span class="email">&lt;nilgun (at) belgeler·gen·tr&gt;</span>, Nisan 2005
+</div></dd></dl><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="30%"><b>PostgreSQL</b></td><td class="mheadfoot" align="center" width="40%"></td><td class="mheadfoot" align="right" width="30%"><b>CREATE FUNCTION(7)</b></td></tr></table></div></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../../man/man7/man7-create_domain.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../../man/man7/man7.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../../man/man7/man7-create_group.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">CREATE DOMAIN </td><td width="20%" align="center"><a accesskey="h" href="../../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> CREATE GROUP</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

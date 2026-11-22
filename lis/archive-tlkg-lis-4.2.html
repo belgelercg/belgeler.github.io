@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:30:27+03:00" /><title>Diğer Dosya Sistemlerinin Kullanılması</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../lis/archive-tlkg-lis-4.html" title="Dosya ve Dizin İşlemleri" /><link rel="previous" href="../lis/archive-tlkg-lis-4.1.html" title="Erişim Hakları" /><link rel="next" href="../lis/archive-tlkg-lis-4.3.html" title="Sembolik Bağlantılar" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Diğer Dosya Sistemlerinin Kullanılması</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-4.1.html">Önceki</a> </td><th width="60%" align="center">Dosya ve Dizin İşlemleri</th><td width="20%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-4.3.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="archive-tlkg-lis-4.2" id="archive-tlkg-lis-4.2"></a>Diğer Dosya Sistemlerinin Kullanılması</div><dl><dd><div class="para">
+      Bir Linux işletim sisteminde dosyaların ve dizinlerin herbirisi sabit disk,
+      CDROM veya diğer bilgi saklamaya yarayan cihazların birer parçası olan
+      "dosya sistemlerinde" tutulur. Linux'un desteklediği pek çok dosya sistemi
+      vardır ve bunların her birisinin veri depolarken kullandıkları yöntem
+      birbirinden farklıdır.
+    </div><div class="para">
+      Linux'ta her dosya sistemi farklı bir dizinde tutulur ve bu dizinlerin
+      bilgisi <tt>/etc/fstab</tt> dosyasında yeralır. Açılış anında bu
+      dosyada hangi dosya sistemlerinin hangi dizinler altına yerleştirileceği
+      okunur ve buna göre makina açılır. Linux, kendisi için özel olarak
+      geliştirilen ext2 dosya sistemini kullanır.
+    </div><div class="para">
+      Bir sistem görevlisi olarak çeşitli dosya sistemlerini tanımalı, bu dosya
+      sistemleri üzerinde hata oluşması durumunda zararı en aza indirecek yolu
+      bilmelisiniz. Bilgisayar başında geçireceğiniz zamanınızın büyük bir
+      bölümünü dosya sistemleri üzerinde harcayacaksınız.
+    </div> <div class="head3"><a name="id1" id="id1"></a>mount İşlemi</div><dl><dd><div class="para">
+        Bir dosya sisteminin kullanılabilmesi için boş bir dizin altına
+        yerleştirilmesi gerekir. Ancak bu gerçekleştirilirse sözkonusu
+        dosya sistemini oluşturan dosyalar üzerinde işlem yapılabilir.
+        Bu işlem <tt>mount</tt> komutu yardımıyla yapılır.
+      </div><div class="para">
+        <tt>mount</tt> komutunun şu şekilde kullanılır:
+      </div>
+        <div class="para"><div align="right"><pre class="screen">mount -t &lt;tip&gt; &lt;nereye&gt; &lt;aygit&gt;</pre></div></div>
+      <div class="para">
+        <b><tt>tip</tt></b>: Dosya sistemi çeşidi. Örnek dosya sistem
+        çeşitleri arasında ext2, minix, msdos sayılabilir. Dosya sistemleri
+        hakkında daha geniş bilgi için Çekirdek yapılandırması konusuna
+        bakın. Genellikle mount programı ne tür bir diske
+        eriştiğini otomatik olarak anlayacaktır.
+      </div><div class="para">
+        <b><tt>nereye</tt></b>: mount edilecek dosya sistemi hangi dizin
+        altına yerleştirileceğini belirtir.
+      </div><div class="para">
+        <b><tt>aygıt</tt></b>: Üzerinde dosya sisteminin bulunduğu sabit disk,
+        CD-ROM benzeri aygıt.
+      </div><div class="para">
+        Linux'a bağlı olan tüm donanımlara ait bir giriş, <tt>/dev</tt>
+        dizini altında bulunur. Bu dizin altındaki dosyalar özel olarak
+        tanımlanmıştır ve bunlara kısaca "düğüm" adı verilir. Örneğin
+        <tt>/dev/hda2</tt>, birinci IDE sabit diskin ikinci bölümünü;
+        <tt>/dev/tty1</tt> ise birinci sanal konsolu gösterir.
+      </div><div class="para">
+        Çeşitli sabit disklere ait <tt>/dev</tt> düğümleri,
+        <i>Linux Kurulumu</i> bölümünde ayrıntılı olarak
+        anlatılmıştı. mount programı bu düğümlere ihtiyaç duyacaktır.
+        Bu yüzden bir dosya sistemini erişilebilir hale getirebilmek için
+        hangi düğüm ismine sahip olduğunu bilmelisiniz. Örnek olarak
+        CD-ROM için <tt>/dev/cdrom</tt>, birinci disket sürücü
+        için <tt>/dev/fd0</tt> gibi.
+      </div><div class="para">
+        CD-ROM sürücüsünü <tt>/mnt</tt> altına mount etmek için
+      </div>
+        <div class="para"><div align="right"><pre class="screen"># mount -t iso9660 /dev/cdrom /mnt</pre></div></div>
+      <div class="para">
+        yazın. Eğer çekirdekte CD-ROM dosya sistemi desteği varsa ve sistem
+        açılırken çekirdek CD-ROM'u tanımışsa <tt>/mnt</tt> dizini
+        altına CD'deki dosya sistemi yerleştirilir. Buna benzer şekilde MS-DOS
+        disket içeren disket sürücüyü ve üzerinde ext2 dosya sistemi bulunan
+        ikinci IDE sabit diskin birinci bölümünü sırasıyla
+        <tt>/mnt/disket</tt> ve <tt>/mnt/disk</tt>
+        dizinlerine bağlamak için
+      </div>
+        <div class="para"><div align="right"><pre class="screen"># mount -t msdos /dev/fd0 /mnt/disket</pre></div></div>
+      <div class="para">
+        ve
+      </div>
+        <div class="para"><div align="right"><pre class="screen"># mount -t ext2 /dev/hdb1 /mnt/disk</pre></div></div>
+      <div class="para">
+        yazılabilir. Bir mount işleminin tersini yapmak ve dosya sistemini
+        erişilemez kılmak için <tt>umount</tt> komutu kullanılır.
+        <tt>/disk</tt> altındaki <tt>/dev/hdb1</tt> sabit
+        disk bölümünü ayırmak etmek için
+      </div>
+        <div class="para"><div align="right"><pre class="screen"># umount /disk</pre></div></div>
+      <div class="para">
+        veya
+      </div>
+        <div class="para"><div align="right"><pre class="screen"># umount /dev/hdb1</pre></div></div>
+      <div class="para">
+        kullanılır. Her iki yazım şekli de kabul edilir. Son olarak o an
+        sistemde bindirilmiş halde bulunan tüm dosya sistemlerini görmek için
+        <tt>mount</tt> komutunu parametresiz yazın. Bu komut hakkında daha ayrıntılı
+        bilgi ve aldığı diğer parametreler için man sayfasına bakın.
+      </div><div class="para">
+        <tt>mount</tt> ve <tt>umount</tt> komutları ile bir dizin yapısını disk üzerinde
+        konumlandırırken veya ayırırken üzerinde işlem yapılan dizinde
+        bulunmamanız ya da o dizinde başka bir süreç çalışıyor olmaması
+        gereklidir. Aksi takdirde aşağıdaki hata mesajını alırsınız:
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# pwd
+/disk
+# umount /disk
+umount: /dev/hdb1: device is busy
+</pre></div></div>
+      <div class="para">
+        Yapmanız gereken, ayıracağınız dizinden dışarı çıkıp tekrar denemek. Diğer
+        bir seçenek de <tt>fuser</tt> komutunu kullanmak. Bu komut, ayırmak istediğiniz
+        dizini kullanan tüm süreçleri ekranda gösterir. Böylelikle
+        rahatlıkla yukarıdaki örnekteki gibi <tt>umount</tt> işlemini
+        gerçekleştirebilirsiniz. <tt>fuser</tt> komutunun -km seçeneğiyle o dizini
+        kullanan süreçleri öldürülebilir.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# cd /
+# fuser /disk
+/disk:                   78c
+# fuser -km /disk
+# umount /disk
+</pre></div></div>
+      <div class="para">
+        <tt>fuser</tt> komutunu kullanırken dikkatli olun, zira sistemi kilitlenme noktasına
+        getirebilirsiniz.
+      </div></dd></dl> <div class="head3"><a name="id2" id="id2"></a>Dosya Sistemi Bilgileri</div><dl><dd><div class="para">
+        Linux açılırken <tt>mount</tt> komutu yardımıyla root dosya
+        sistemine ekleyeceği her değişik dosya sistemini
+        <tt>/etc/fstab</tt> dosyasından okur ve işleme koyar.
+        Aşağıda örnek bir fstab dosyası yeralıyor.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+/dev/hda2       /               ext2            defaults  1 1
+/swap           none            swap            defaults  1 1
+/dev/cdrom      /cdrom          iso9660         defaults  1 1
+none            /proc           proc            defaults  1 1
+/dev/hda1       /dos            msdos           defaults  1 1
+</pre></div></div>
+      <div class="para">
+        Çekirdek açılış mesajları içinde
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+VFS: Mounted root (ext2 filesystem) readonly.
+</pre></div></div>
+      <div class="para">
+        gibi bir satır göreceksiniz. Sistem açılırken en önce <tt>/</tt>
+        dosya sistemini bağlar. Bu sayede bu dosya sistemi altında yeralan ve hayati
+        önem taşıyan yazılımlara (<tt>fsck</tt>, <tt>mount</tt>
+        gibi) ulaşır. Daha sonra yerel dosya sistemleri ve en son da ağ üzerinden
+        erişilen dosya sistemlerine (NFS) bağlanır. fstab dosyasında kullanıcının
+        kendi dosyalarını yerleştiremediği, fakat sistem tarafından kullanılan
+        <i>swap</i> ve <i>proc</i> dosya sistemleri
+        için de mount bilgileri bulunur.
+      </div><div class="para">
+        Yukarıdaki fstab dosyasında ext2 dosya sistemine sahip
+        <tt>/dev/hda2</tt> sabit disk bölümü, / dizinini oluşturuyor.
+        MS-DOS biçemli <tt>/dev/hda1</tt> bölümü de
+        <tt>/dos</tt> dizinine erişilebilir olarak açılış anında eklenecektir.
+      </div><div class="para">
+        Sistemdeki CD-ROM sürücü <tt>/cdrom</tt> dizini altına
+        yerleştirilmiş olup root kullanıcı bunu istediği dizine koyabilir.
+        Bu dosyaya, mount komutundaki gibi parametreler de eklenebilir.
+        Dördüncü sırada yeralan defaults parametresinin yanına eklemek
+        istediğiniz seçenekleri yazın. Bu parametrelerden sıkça kullanılan
+        bir tanesi de "user" olup root dışındaki kullanıcılara mount hakkını
+        verir. CD-ROM sürücüyü normal sistem kullanıcılarının mount veya umount
+        yapabilmesi için fstab dosyasındaki ilgili satırı
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+/dev/cdrom      /cdrom          iso9660                 defaults,user 1 1
+</pre></div></div>
+      <div class="para">
+        satırıyla değiştirin. <i>defaults</i> parametresi ise,
+        halihazırdaki dosya sistemini okunup yazılabildiğini, asenkron olduğunu,
+        üzerindeki bilgileri bloklar halinde alıp verdiğini (buna diğer örnekler
+        CD-ROM ve disket sürücülerdir), içerdiği programların çalıştırılabilir
+        olduğunu ve normal kullanıcıların <tt>mount</tt>,
+        <tt>umount</tt> yapamadığını gösterir. <i>user</i>
+        parametresiyle kullanıcılara <tt>mount</tt> ve
+        <tt>umount</tt> hakkı yukarıda verilmiştir.
+      </div></dd></dl> <div class="head3"><a name="id3" id="id3"></a>Dosya Sistemi Oluşturulması ve Denetlenmesi</div><dl><dd><div class="para">
+        Bazen MS-DOS altından oluşturulamayan dosya sistemlerini (ext2 gibi)
+        oluşturmak gerekebilir. Linux altında bir dosya sistemini oluştururken aynı
+        zamanda bunu kontrol eden programlar vardır. Bunların en çok kullanılanı,
+        Slackware sürümünde gelen <tt>mkfs</tt>/'tir.
+      </div><div class="para">
+        <tt>mkfs</tt> ile Linux native (ext2) dosya sistemi oluşturmak
+        için <tt>mkfs.ext2</tt> programı kullanılır.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+mkfs.ext2 &lt;aygit&gt; &lt;blok-sayisi&gt;
+</pre></div></div>
+      <div class="para">
+        "aygıt" yerine üzerine dosya sistemi kurulacak olan cihazın
+        <tt>/dev</tt> dizini altındaki düğüm dosyasının ismi
+        yazılır. Blok sayısı yerine, <tt>fdisk</tt> yazılımından
+        o bölümün kaç blok olduğunu öğrenip bu sayıyı girmelisiniz. Bir
+        blok 1024 bayttan oluşur. Örneğin
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# mke2fs /dev/hda3 163829
+</pre></div></div>
+      <div class="para">
+        komutu, <tt>/dev/hda3</tt> disk bölümünde ext2 dosya sistemi
+        kurar. Bu komutu kullanmadan önce iyi düşünün, zira burada yeralan tüm
+        dosyalar silinir ve bu hatanın geri dönüşü olmaz. Aşağıdaki komut ile
+        bir disket üzerinde ext2 dosya sistemi kuruluyor.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+# mke2fs /dev/fd0 1440
+</pre></div></div>
+      <div class="para">
+        <tt>mke2fs</tt> ile <tt>mkfs.ext2</tt> komutları
+        aynıdır. Benzer şekilde, MS-DOS dosya sistemi yaratmak için
+        <tt>mkfs.msdos</tt>, minix dosya sistemi yaratmak için
+        <tt>mkfs.minix</tt> kullanılabilir. Blok sayısı girilmez ise
+        <tt>mke2fs</tt> bunu otomatik olarak bulacaktır.
+      </div><div class="para">
+        Herhangi bir sebepten dolayı diskte bozulma ve veri kaybını en aza
+        indirmek için de yazılımlar vardır. <tt>fsck</tt> ile dosya
+        sistemi kontrolü yapılabilir. <tt>fsck</tt> ile ext2,
+        <tt>dosfsck</tt> (veya <tt>fsck.msdos</tt>) ile
+        MS-DOS biçemli alanlar kontrol edilir.
+      </div>
+<div class="para"><div align="right"><pre class="screen">
+linux:~# fsck /dev/hda2
+Parallelizing fsck version 0.5b (14-Feb-95)
+e2fsck 0.5b, 14-Feb-95 for EXT2 FS 0.5a, 95/03/19
+/dev/hda2 is mounted.  Do you really want to continue (y/n)? yes
+
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+Fix summary information&lt;y&gt;? yes
+
+Block bitmap differences: -46486 -46487 -46488 -46489 -46490.  FIXED
+Free blocks count wrong for group 5 (2803, counted=2808).  FIXED
+Free blocks count wrong (16326, counted=16331).  FIXED
+
+/dev/hda2: ***** FILE SYSTEM WAS MODIFIED *****
+/dev/hda2: ***** REBOOT LINUX *****
+/dev/hda2: 3494/29632 files, 42904/59235 blocks
+</pre></div></div>
+      <div class="para">
+        Bir dosya sistemini kontrol etmeden önce okunan bölümü root dosya
+        sisteminden ayırın ve kontrol işleminden sonra bilgisayarı kapatıp
+        tekrar açın.
+      </div><div class="para">
+        <tt>debugfs</tt> programı, dosya sistemi parametrelerini
+        incelemek için kullanılır. Disk üzerine doğrudan erişım yaptığı için dikkatli
+        kullanmalısınız. ext2fs yardımıyla kurtarılamayan bazı dosyalar (özellikle
+        silinmiş dosyalar) <tt>debugfs</tt> yardımıyla kurtarılabilir.
+      </div></dd></dl></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-4.1.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../lis/archive-tlkg-lis-4.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-4.3.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Erişim Hakları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Sembolik Bağlantılar</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

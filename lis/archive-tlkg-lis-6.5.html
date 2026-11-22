@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:30:27+03:00" /><title>Sisteme Giriş Dosyaları</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../lis/archive-tlkg-lis-6.html" title="Bash Kabuğu" /><link rel="previous" href="../lis/archive-tlkg-lis-6.4.html" title="Özel Kabuk Değişkenleri" /><link rel="next" href="../lis/archive-tlkg-lis-6.6.html" title="Kabuk Programlamaya Giriş" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Sisteme Giriş Dosyaları</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-6.4.html">Önceki</a> </td><th width="60%" align="center">Bash Kabuğu</th><td width="20%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-6.6.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="archive-tlkg-lis-6.5" id="archive-tlkg-lis-6.5"></a>Sisteme Giriş Dosyaları</div><dl><dd><div class="para">
+      Sisteme girerken her giriş anında çalıştırılan birtakım dosyalar bulunur.
+      Bash kabuğu ile doğrudan ilgili olan giriş dosyaları arasında
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+/etc/profile
+~/.bash_profile
+~/.bash_login
+~/.profile
+~/.bashrc
+</pre></div></div>
+    <div class="para">
+      sayılabilir. Kullanıcı bu dosyaların kendine ait olanlarını dilediği
+      gibi değiştirebilir. Sisteme girerken tanımlamak istediği değişkenleri
+      tanımlar, çalıştıracaği programları yazar. <tt>/etc/profile</tt>
+      dosyasını tüm kullanıcılar ortak kullanır. Her kullanıcı sisteme
+      girdiğinde sistem tarafından bu dosya çalıştırılır. Bu dosyada
+      kullanıcıların ihtiyacına yönelik özel sistem değişkenleri bulunur, ek
+      olarak birtakım kontrol ve kayıt işlemleri yapılır.
+    </div><div class="para">
+      Örnek bir <tt>/etc/profile</tt> dosyası şekildeki gibidir.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+if [ "$TERM" = "" -o "$TERM" = "unknown" ]; then
+ TERM=linux
+fi
+#PS1='`hostname`:`pwd`# '
+if [ "$SHELL" = "/bin/pdksh" -o "$SHELL" = "/bin/ksh" ]; then
+ PS1="! $ "
+elif [ "$SHELL" = "/bin/zsh" ]; then
+ PS1="%m:%~%# "
+elif [ "$SHELL" = "/bin/ash" ]; then
+ PS1="$ "
+else
+ PS1='\h:\w\$ '
+fi
+PS2='&gt; '
+ignoreeof=2
+export PATH DISPLAY LESS TERM PS1 PS2 ignoreeof
+umask 022
+# set up the color-ls environment variables:
+if [ "$SHELL" = "/bin/zsh" ]; then
+  eval `dircolors -z`
+elif [ "$SHELL" = "/bin/ash" ]; then
+  eval `dircolors -s`
+else
+  eval `dircolors -b`
+fi
+</pre></div></div>
+    <div class="para">
+      <tt>.bashrc</tt> dosyası, her bash kabuğu veya alt kabuk
+      çalıştırıldığı anda okunur. Her kabuk programı çalıştırılınca bir
+      alt kabuğa ihtiyaç olduğundan bu durumda <tt>.bashrc</tt>
+      dosyası da okunacak ve içerdiği değişkenler proram çalışmadan önce
+      tanımlanacaktır.
+
+      Sistemden çıkarken varsa çalıştırılan dosyanın ismi
+      <tt>.bash_logout</tt>'tur. Bu dosya ile kullanıcı sistemi
+      terkederken fazladan işlemler yapabilir. Aşağıdaki örnekteki
+      <tt>.bash_logout</tt> dosyasında kullanıcı sistemden her
+      çıktığında ekran temizlenecek ve en üste 'Hoscakal' yazacaktır.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+clear
+echo "Hoscakal!"
+</pre></div></div>
+    </dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-6.4.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../lis/archive-tlkg-lis-6.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-6.6.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Özel Kabuk Değişkenleri </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Kabuk Programlamaya Giriş</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

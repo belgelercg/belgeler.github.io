@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:30:27+03:00" /><title>Linux Dosya Sistemi Yapısı</title><link rel="icon" type="image/png" href="../images/belgeler-logo.png" /><link rel="stylesheet" href="../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../lis/archive-tlkg-lis-5.html" title="Linux Sistem Yönetimi" /><link rel="previous" href="../lis/archive-tlkg-lis-5.10.html" title="Çekirdek Mesajları" /><link rel="next" href="../lis/archive-tlkg-lis-5.12.html" title="Konsolda Türkçe Yazmak" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">Linux Dosya Sistemi Yapısı</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-5.10.html">Önceki</a> </td><th width="60%" align="center">Linux Sistem Yönetimi</th><td width="20%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-5.12.html">Sonraki</a></td></tr></table></td></tr></table><div class="sect1"> <div class="head2" style="clear: both"><a name="archive-tlkg-lis-5.11" id="archive-tlkg-lis-5.11"></a>Linux Dosya Sistemi Yapısı</div><dl><dd><div class="para">
+      Bu bölümde Linux'un kullandığı dosya sistemi hakkında bilgi verilecektir.
+      Dosya sistemini oluşturan dizinler, kapsadıkları dosyalar ve bunların
+      Linux işletim sistemindeki görevleri de kısaca belirtilecektir.
+    </div><div class="para">
+      Bir işletim sisteminin dosya sisteminin performansı, hızı ve buna
+      benzer çeşitli özellikleri sistemin verimli ve kararlı çalışması
+      üzerinde doğrudan etkisi vardır. Linux dizin yapısının
+      geliştirilmesinde <i>FSSTND</i> (file system standard) grubunun
+      çalışmalarının payı çok büyük oldu. Programcılardan oluşan grup,
+      standartların belirlenmesinde ve uygulama aşamasında Linux ile
+      ilgilenenlere yardım etti. 1993 yılında Olaf Kirsh, Linux haber grubuna
+      yazdığı bir e-postasında Linux dosya sistemi üzerindeki çalışmaların
+      tamamlandığını haber verdi.
+    </div><div class="para">
+      Linux dizin yapısında bazı dizinlerin işlevi birbiriyle aynıdır. Bu durum,
+      özellikle birbirini takip eden iki Linux sürümünde belirginleşir. Örnek
+      olarak bir dağıtımda <tt>/usr/bin</tt> dizini altında yeralan dosya,
+      diğer sürümde <tt>/bin</tt> altına yerleştirilebiyor.
+    </div><div class="para">
+      Dosya sistemleri ve dizinler paylaşımlı olarak da kullanılabilir.
+      Birden fazla kişisel bilgisayarın bağlandığı ağda, disk alanından yer
+      kazanmak için bir makina <i>sunucu</i> (ana makina) olarak tayin edilir. Ağ
+      üzerindeki diğer makinalar da sunucu üzerindeki diski paylaşır. Buna
+      örnek olarak kullanıcı ev dizinlerinin yeraldığı <tt>/home</tt>,
+      çalıştırılabilir dosyaların bulunduğu <tt>/usr</tt>, e-posta ve haber
+      grubu bilgilerinin bulunduğu <tt>/var/spool/mail</tt> ve
+      <tt>/var/spool/news</tt> dizinleri verilebilir.
+    </div><div class="para">
+      Kök dizini, kendisine bağlı diğer tüm dizinleri de içerdiğinden, Linux
+      dosya sisteminde önemli bir yere sahiptir. Linux açılırken önce kök
+      dizini <tt>/etc/fstab</tt> dosyasına uygun şekilde bağlanır. Diğer dosya
+      sistemlerinin onarımı ve kontrolü için gerekli olan <tt>fsck</tt> programları, bu
+      dizinde bulunmalıdır. Benzer şekilde yedekleme için gerekli olan <tt>tar, zip,
+      compress</tt> gibi arşiv programlarına da kök dizin altından erişilebilmeli,
+      açılış esnasında hafızaya yüklenen çekirdek de kök dizininde yeralmalıdır.
+    </div><div class="para">
+      Bir programı yerine koymadan önce bazı "dengelerin" gözönünde tutulmasında
+      yarar vardır. Programlanan her yazılımı kök dizinine koyarsanız, bir süre
+      sonra bu dosya sisteminin şiştiğini görürsünüz. Kök dizinini başlangıçta
+      küçük (20-30Mb kadar) tutmak, geliştirilen programları daha önceden
+      belirlenen başka bir dosya sistemi altına koymak akıllıca olur. Bu yol,
+      ağ üzerinden genellikle paylaşımı mümkün olmayan kök dizininin her
+      makinadaki sabit diskte mümkün olan en az yer işgal etmesini sağlar.
+    </div><div class="para">
+      Sistemdeki önemli dizinlere göz atarsak,
+    </div>
+      <div class="variablelist"><dl><dt><span class="term">/bin</span></dt><dd class="varlist"><div class="para">
+            Sistemin açılışı ve kontrolü için gerekli komutlar. Hem
+            kullanıcıların, hem de sistem görevlisinin kullanabileceği
+            dosyalar (kök dizinde ise fazla şişmemesi koşuluyla) buraya
+            atılabilir. Sadece root kullanıcının ihtiyaç duyacağı init,
+            getty, updatedb gibi programlar /sbin veya /usr/sbin'de
+            durabilir. Bu dizinde bulunan dosyalara örnek olarak cat,
+            chgrp, chown, date, dd, df, ln, mkdir, mount, ps, rm, sh,
+            su, sync ve umount verilebilir.
+          </div></dd><dt><span class="term">/dev</span></dt><dd class="varlist"><div class="para">
+            G/Ç dosyaları. Linux çekirdeğinde desteklenen her aygıta ait dosya /dev dizini altında bulunur. Kurulum anında bu dosyalar yerine
+            yerleştirilir, bu dosyaların silinmesi durumunda /dev/MAKEDEV ile tekrar
+            yaratılabilirler.
+          </div></dd><dt><span class="term">/etc</span></dt><dd class="varlist"><div class="para">
+            Sistem yapılandırma dosyaları. Bu dizinde çalıştırılabilir
+            dosyalar bulunmamalıdır.
+          </div>
+            <div class="variablelist"><dl><dt><span class="term">skel</span></dt><dd class="varlist"><div class="para">
+                  Buradaki dosyalar, kullanıcı hesabı açıldığında kullanıcının ev
+                  dizinine kopyalanır.
+                </div></dd><dt><span class="term">rc.d</span></dt><dd class="varlist"><div class="para">
+                  Bu dizinin içinde, init sürecinin başvurduğu yapılandırma
+                  dosyaları vardır. Bunlara "rc dosysları" da denir.
+                </div></dd><dt><span class="term">passwd</span></dt><dd class="varlist"><div class="para">
+                  Kullanıcı veritabanı
+                </div></dd><dt><span class="term">fstab</span></dt><dd class="varlist"><div class="para">
+                  Linux'un açılışı esnasında bindirilecek dosya sistemleri burada
+                  listelenir.
+                </div></dd><dt><span class="term">group</span></dt><dd class="varlist"><div class="para">
+                  passwd'e benzer şekilde kullanıcıların gruplarını tutar.
+                </div></dd><dt><span class="term">inittab</span></dt><dd class="varlist"><div class="para">
+                  init daemon için yapılandırma dosyası
+                </div></dd><dt><span class="term">motd</span></dt><dd class="varlist"><div class="para">
+                  Kullanıcı sisteme girdikten sonra ekranına basılması istenen mesaj
+                  burada tutulur.
+                </div></dd><dt><span class="term">profile</span></dt><dd class="varlist"><div class="para">
+                  Kullanıcı sisteme girdiği zaman çalıştırılan dosya (csh ve sh
+                  türevi kabuklar için)
+                </div></dd><dt><span class="term">shells</span></dt><dd class="varlist"><div class="para">
+                  Sistemde kullanılabilecek kabuk isimleri burada tutulur.
+                </div></dd><dt><span class="term">login.access</span></dt><dd class="varlist"><div class="para">
+                  login komutu için yapılandırma dosyası. Sisteme girişi
+                  kullanıcı bazında sınırlamak için kullanılir.
+                </div></dd></dl></div>
+          </dd><dt><span class="term">/home</span></dt><dd class="varlist"><div class="para">
+            Kullanıcılara ayrılmış dizin. Başka şekilde ayarlanmamış ise,
+            açılan her hesaba ait kullanıcı, burayı kullanır. Büyük sistemlerde,
+            bu kısım alt parçalara ayrılabilir (/home/ftpadm , /home/ogrenci gibi)
+          </div></dd><dt><span class="term">/lib</span></dt><dd class="varlist"><div class="para">
+            Kütüphane dosyaları.
+          </div></dd><dt><span class="term">/mnt</span></dt><dd class="varlist"><div class="para">
+            Geçici mount edilen dosya sistemleri. Sadece bu iş için
+            kullanıldığından sistem görevlisine zaman kazandırır.
+          </div></dd><dt><span class="term">/proc</span></dt><dd class="varlist"><div class="para">
+            Süreç kontrollerini ve diğer sistem bilgilerini tutan dosya sistemi.
+            Bu dosya sistemi aslında disk üzerinde yer kaplamaz, tüm dosyalar
+            çekirdeğin bir uzantısı sayılabilir.
+          </div>
+            <div class="variablelist"><dl><dt><span class="term">cpuinfo</span></dt><dd class="varlist"><div class="para">
+                  işlemci modeli, tipi ve performansını bildirir.
+                </div></dd><dt><span class="term">devices</span></dt><dd class="varlist"><div class="para">
+                  Halihazırda çalışan çekirdek içinde desteği bulunan aygıt
+                  sürücülerini listeler.
+                </div></dd><dt><span class="term">dma</span></dt><dd class="varlist"><div class="para">
+                  Hangi dma kanallarının kullanıldığını belirtir.
+                </div></dd><dt><span class="term">filesystems</span></dt><dd class="varlist"><div class="para">
+                  Halihazırda çalışan çekirdek içinde desteği bulunan dosya
+                  sistemlerini listeler.
+                </div></dd><dt><span class="term">interrupts</span></dt><dd class="varlist"><div class="para">
+                  Hangi kesintilerin kullanımda olduğunu söyler.
+                </div></dd><dt><span class="term">iports</span></dt><dd class="varlist"><div class="para">
+                  Halen hangi giriş/çıkış iskelelerinin kullanıldığını belirtir.
+                </div></dd><dt><span class="term">kcore</span></dt><dd class="varlist"><div class="para">
+                  Sistem hafızasının görüntüsü
+                </div></dd></dl></div>
+          </dd><dt><span class="term">/root</span></dt><dd class="varlist"><div class="para">
+            Sistem görevlisinin ev dizini. Mümkünse bu dizini sistemdeki diğer
+            kullanıcıların görmeyeceği şekilde ayarlayın.
+          </div></dd><dt><span class="term">/sbin</span></dt><dd class="varlist"><div class="para">
+            Hayati sistem komutları. Bir zamanlar bu dosyalar /etc dizini
+            altında yeralıyorlardı. Sadece sistem görevlisinin ihtiyacı olan komutlar,
+            /sbin veya /usr/sbin içinde bulunur.
+          </div></dd><dt><span class="term">/tmp</span></dt><dd class="varlist"><div class="para">
+            Geçici dosyaların koyulduğu dizin. Belirli zaman aralıklarında
+            temizlenmelidir.
+          </div></dd><dt><span class="term">/usr</span></dt><dd class="varlist"><div class="para">
+            Diğer önemli sistem dosyalarını tutar. Bu bölüm genelde en kalabalık
+            dizindir, zira yeni kurulan tüm programlar buraya konulur.
+          </div>
+            <div class="variablelist"><dl><dt><span class="term">X11R6</span></dt><dd class="varlist"><div class="para">
+                  X Pencere sistemi bilgileri tutulur.
+                </div></dd><dt><span class="term">doc</span></dt><dd class="varlist"><div class="para">
+                  Belge ve dökümanlar, genellikle HOWTO ve FAQ dosyaları.
+                </div></dd><dt><span class="term">lib</span></dt><dd class="varlist"><div class="para">
+                  Bazı kütüphaneler
+                </div></dd><dt><span class="term">man</span></dt><dd class="varlist"><div class="para">
+                  Man dosyaları
+                </div></dd><dt><span class="term">src</span></dt><dd class="varlist"><div class="para">
+                  Bazı kaynak dosyaları ve linux çekirdeğini oluşturan kodları
+                  (/usr/src/linux) içeren dizin.
+                </div></dd><dt><span class="term">sbin</span></dt><dd class="varlist"><div class="para">
+                  Kök dosya sisteminde yeralması gerekmeyen çalıştırılabilir sistem
+                  görevlisi dosyaları
+                </div></dd></dl></div>
+          </dd><dt><span class="term">/var</span></dt><dd class="varlist"><div class="para">
+            Sürekli değişen sistem bilgileri burada tutulur. İstisnalar dışında
+            diğer makinalarla paylaştırılmaz.
+          </div></dd><dt><span class="term">adm</span></dt><dd class="varlist"><div class="para">
+            Sistem yönetimini ilgilendiren kayıtlar
+          </div></dd><dt><span class="term">preserve</span></dt><dd class="varlist"><div class="para">
+            Sistemin göçmesinden sonra zarar görmesi mümkün dosyaların
+            kaydedildiği yer.
+          </div></dd><dt><span class="term">spool</span></dt><dd class="varlist"><div class="para">
+            Sonra işlenecek olan veriler buraya atılır (e-posta gibi)
+          </div></dd></dl></div>
+    <div class="para">
+      Eğer sistem yöneticisi iseniz düzenli olarak dosya ve dizin yapısını
+      kontrol etmelisiniz. Örneğinn <tt>/tmp</tt> dizini normal kullanıcıların
+      kullanımına açık olduğu için çok kısa bir sürede dolabilir. Burayı
+      periyodik olarak silmek için find komutu işe yarayabilir:
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+# find /tmp -atime +7 -exec rm -rf  {} \;
+</pre></div></div>
+    <div class="para">
+      Yukarıdaki komut, <tt>tmp</tt> dizini altında yeralan tüm dosyaları kontrol
+      edecek ve 7 günden daha eski dosyaları silecektir. Benzer şekilde,
+      kullanıcıların dosyalarının yer aldığı <tt>/home</tt> dizini de çok kısa bir
+      sürede dolmaya mahkumdur. Sistemde ne kadar büyük sabit disk olursa
+      olsun bir gün gelecek burası dolacaktır. Periyodik olarak buraya da
+      göz gezdirmek gerekir. Aşağıda yeralan kısa program, <tt>/home</tt> dizininde
+      yeralan kullanıcı dizinlerideki disk kullanımını büyükten küçüğe doğru
+      <tt>disk</tt> isimli dosyaya yollayacaktır. Bu dosyanın incelenmesiyle hangi
+      kullanıcıları "cezalandıracağınızı" görebilirsiniz :)
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+# du -skx /home/* | sort -rn &gt; disk
+</pre></div></div>
+    <div class="para">
+      <tt>du</tt> (disk usage), sistem kullanıcılarının sıkça başvurduğu bir
+      komuttur. Kullanılabilecek parametreler için <i>du(1)</i> man sayfasına bakın.
+    </div><div class="para">
+      UNIX, (ve dolayısıyla Linux) iki tip aygıt tanır. Bunlardan ilki karakter
+      aygıtları, başka bir deyişle veri alışverişini bayt bazında yapan
+      cihazlar, diğeri de blok aygıtları, yani veri alışverişini blok cinsinden
+      yapan cihazlardır. Karakter aygıtlarına örnek olarak seri bağlanan
+      cihazlar ve teypler, disk aygıtlarına örnek olarak da diskler verilebilir.
+      Bu cihazlardan bir bilgi yazılıp okunduğunda dosya sistemi altında bunları
+      tanımlayan dosyalar (<tt>/dev/*</tt>) kullanılmış olur.
+      Örnek olarak bir yazıcıya bilgi göndermek için,
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+$ cat dosya &gt; /dev/lp1
+</pre></div></div>
+    <div class="para">
+      komutunu kullanabilirsiniz. Dosya, yazıcının anlayabileceği bir yapıda
+      olmalıdır (örneğin düz metin).
+    </div><div class="para">
+      Her aygıt, bir dosya olarak dosya sisteminde kendine yer bulduğuna göre
+      hangi aygıt dosyalarının bulunduğunu görmek mümkün olabilir.
+    </div>
+<div class="para"><div align="right"><pre class="screen">
+$ ls -l /dev/cua0
+crw-rw-rw- 1 root uucp 5, 64 Nov 30 1993 /dev/cua0
+</pre></div></div>
+    <div class="para">
+      İlk kolondaki ilk karakter (c), bu dosyanın bir karakter aygıtına ait
+      olduğunu belirtiyor. Normal dosyalar için buradaki karakter '-' olmalıydı.
+      Benzer şekilde blok aygıtlar için ise 'b' kullanılr.
+    </div><div class="para">
+      Aygıt sürücü desteği çekirdekte olmasa bile <tt>/dev</tt> dizini
+      altında genellikle tüm aygıt dosyaları bulunur. Bu demektir ki
+      <tt>/dev/sda</tt> dosyasına sahip olduğunuz halde bir SCSI sabit
+      diski sistemde takılı olmayabilir. Tüm aygıt sürücülerinin bulunması,
+      programların kurulumunu ve yeni donanımın eklenmesini kolaylaştırır.
+    </div></dd></dl></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../lis/archive-tlkg-lis-5.10.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../lis/archive-tlkg-lis-5.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../lis/archive-tlkg-lis-5.12.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">Çekirdek Mesajları </td><td width="20%" align="center"><a accesskey="h" href="../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> Konsolda Türkçe Yazmak</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>

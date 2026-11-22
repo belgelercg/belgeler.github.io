@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="date" content="2015-10-21T14:25:29+03:00" /><title>EXPLAIN</title><link rel="icon" type="image/png" href="../../images/belgeler-logo.png" /><link rel="stylesheet" href="../../belgeler.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V-special(derived from 1.49 for Turkish Linux Documentation WG by Nilgün Belma Bugüner - nilgun (at) belgeler.gen.tr)" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="home" href="../../KiTAPLIK/index.html" title="Linux Kitaplığı" /><link rel="up" href="../../man/man7/man7.html" title="SQL Deyimleri, Makro Paketleri vs." /><link rel="previous" href="../../man/man7/man7-execute.html" title="EXECUTE" /><link rel="next" href="../../man/man7/man7-fetch.html" title="FETCH" /></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><th colspan="3" align="center">EXPLAIN</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="../../man/man7/man7-execute.html">Önceki</a> </td><th width="60%" align="center">SQL Deyimleri, Makro Paketleri vs.</th><td width="20%" align="right"> <a accesskey="n" href="../../man/man7/man7-fetch.html">Sonraki</a></td></tr></table></td></tr></table><div class="refentry"><a name="tr-man7-explain" id="tr-man7-explain"></a><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="25%"><b>EXPLAIN(7)</b></td><td class="mheadfoot" align="center" width="50%"><b>SQL - Dil Deyimleri</b> </td><td class="mheadfoot" align="right" width="25%"><b>EXPLAIN(7)</b></td></tr></table></div><dl><dt class="head3">İSİM</dt><dd>EXPLAIN — bir cümlenin icra planını gösterir<br /></dd><dd><div class="para"></div></dd><dt class="head3">KULLANIM</dt><dd><div class="para"><div class="para"><div align="center"><pre class="synopsis"><b><tt>EXPLAIN</tt></b> [ <b><tt>ANALYZE</tt></b> ] [ <b><tt>VERBOSE</tt></b> ] <i>cümle</i>
+</pre></div></div></div></dd><dt class="head3">Açıklama</dt><dd><div class="para">
+Bu komut, belirtilen cümle için PostgreSQL<sup>TM</sup> planlamacısının ürettiği icra planını gösterir. İcra planı cümle tarafından tablolara nasıl başvurulduğunu gösterir. Bu işlem, düz sıralı tarama, indeksli tarama, v.s. şeklinde yapılır. Ayrıca, eğer çok sayıda tabloya başvuruluyorsa, her tablodan gerekli satırların birarada alınması için kullanılacak katılım algoritmasını da gösterir.
+  </div><div class="para">
+Çıktının en önemli parçası, cümlenin icrasının ne kadar süreceği ile ilgili planlamacının tahminde bulunmasıyla saptanan, tahmini cümle icra maliyetidir (disk sayfası cinsinden ölçülür). Aslında, iki sayı gösterilir: başlangıçtan ilk satır döndürülene kadar geçen süre ve tüm satırlar döndürülünceye kadar geçecek toplam süre. Çoğu sorgu için, toplam süre sorun değildir, ama <b><tt>EXISTS</tt></b>'li bir alt sorgunun varlığı gibi durumlarda planlamacı en küçük  toplam süreye değil en küçük başlangıç zamanına bakacaktır (icracı bir satır döndüğünde duracaktır). Ancak, döndürülecek satır sayısını <b><tt>LIMIT</tt></b> deyimi ile sınırlarsanız, planlamacı en ucuz planlama için bir tahminde bulunabilecektir.
+  </div><div class="para">
+<b><tt>ANALYZE</tt></b> seçeneği cümlenin planlamasının yapılmasından başka cümlenin çalıştırılmasını da sağlar. Harcanan toplam süre her planlama düğümü için ayrı ayrı gösterilir (milisaniye cinsinden). Ayrıca, dönen satır sayısı da çıktıya eklenir. Bu, planlamacının tahminlerinin tutarlı olup olmadığını görme açısından da yararlıdır.
+  </div><div class="note"><table border="0"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="" src="../../images/xsl/important.png" /></td><th class="admon">Önemli</th></tr><tr><td align="left" valign="top" class="admon"><div class="para">
+<b><tt>ANALYZE</tt></b> kullanıldığında cümlenin çalıştırılacağını unutmayın. <b><tt>EXPLAIN</tt></b>'de kullanıldığında, bir <b><tt>SELECT</tt></b> cümlesinin döndüreceği çıktı iptal edileceğinden, cümlenin bazı yan etkileri varsa, onları bilemeyeceksiniz. <b><tt>INSERT</tt></b>, <b><tt>UPDATE</tt></b>,
+    <b><tt>DELETE</tt></b> veya <b><tt>EXECUTE</tt></b> cümleleri üzerinde <b><tt>EXPLAIN ANALYZE</tt></b> kullanmak ve komutun etkilerinin verinizi etkilememesini isterseniz, şu yaklaşımı kullanabilirsiniz:
+   </div>
+<div class="para"><div align="right"><pre class="programlisting">
+BEGIN;
+EXPLAIN ANALYZE ...;
+ROLLBACK;
+</pre></div></div>
+   </td></tr></table></div>
+ </dd><dt class="head3">Parametreler</dt><dd><div class="variablelist"><dl><dt><b><tt>ANALYZE</tt></b></dt><dd class="varlist"><div class="para">Cümleyi çalıştırır ve gerçek çalışma sürelerini gösterir.
+    </div></dd><dt><b><tt>VERBOSE</tt></b></dt><dd class="varlist"><div class="para">Planlama ağacının bir özetini değil dahili gösteriminin tamamını gösterir. Aslında, bu seçenek sadece hata ayıklama amacıyla yararlıdır. <b><tt>VERBOSE</tt></b> çıktısı <tt>explain_pretty_print</tt> yapılandırma değişkeninin değerine bağlı olarak ya cicili bicilidir ya da değildir.
+    </div></dd><dt><i><tt>cümle</tt></i></dt><dd class="varlist"><div class="para">İcra planını görmek istediğiniz bir <b><tt>SELECT</tt></b>, <b><tt>INSERT</tt></b>, <b><tt>UPDATE</tt></b>, <b><tt>DELETE</tt></b>, <b><tt>EXECUTE</tt></b> veya <b><tt>DECLARE</tt></b> cümlesi.
+    </div></dd></dl></div></dd><dt class="head3">Ek Bilgi</dt><dd><div class="para">
+Eniyileyici kullanımı hakkında<br /><a class="ulink" href="http://www.postgresql.org/docs/8.0/static/performance-tips.html#USING-EXPLAIN" target="_top">http://www.postgresql.org/docs/8.0/static/performance-tips.html#USING-EXPLAIN</a> adresinde daha fazla bilgi bulabilirsiniz.
+  </div><div class="para">
+PostgreSQL'in sorguları eniyilerken kabul edilebilir kararlar verebilmesi için, <b><tt>ANALYZE</tt></b> komutunun tablo içindeki verilerin istatistiksel dağılımını kaydetmiş olması gerekir. Bu yapılmazsa (ya da tablo içindeki verilerin istatistiksel dağılımı son <b><tt>ANALYZE</tt></b> çağrısından sonra çok fazla değişikliğe uğramışsa), tahmini maliyetler sorgunun gerçek özellikleriyle uyumlu olmayacağı gibi planlamacının ürkütücü bir sorgu planlaması seçimi yapmasına sebep olabilir.
+  </div><div class="para">
+PostgreSQL<sup>TM</sup> 7.3 öncesi, sorgu planı bir <b><tt>NOTICE</tt></b> çıktısı biçimindeydi. Şimdi, bir sorgunun sonucu gibi (tek sütunluk bir tablo gösterimi olarak) çıktılanmaktadır.
+  </div></dd><dt class="head3">Örnekler</dt><dd><div class="para">
+<tt>integer</tt> türünde tek bir sütunu olan 10000 satırlık bir tabloya uygulanan basit bir sorgunun planlamasını görmek için:
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">EXPLAIN SELECT * FROM foo;
+
+                       QUERY PLAN
+---------------------------------------------------------
+ Seq Scan on foo  (cost=0.00..155.00 rows=10000 width=4)
+(1 row)
+</pre></div></div>
+  <div class="para">
+Eğer bir indeks varsa ve <b><tt>WHERE</tt></b> ile indekslenen bir sorgu kullanırsak, <b><tt>EXPLAIN</tt></b> farklı bir plan gösterebilir:
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">EXPLAIN SELECT * FROM foo WHERE i = 4;
+
+                         QUERY PLAN
+--------------------------------------------------------------
+ Index Scan using fi on foo  (cost=0.00..5.98 rows=1 width=4)
+   Index Cond: (i = 4)
+(2 rows)
+</pre></div></div>
+  <div class="para">
+Bir ortak değer işlevi kullanılan bir sorgunun sorgu planı:
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">EXPLAIN SELECT sum(i) FROM foo WHERE i &lt; 10;
+
+                             QUERY PLAN
+---------------------------------------------------------------------
+ Aggregate  (cost=23.93..23.93 rows=1 width=4)
+   -&gt;  Index Scan using fi on foo  (cost=0.00..23.92 rows=6 width=4)
+         Index Cond: (i &lt; 10)
+(3 rows)
+</pre></div></div>
+  <div class="para">
+Bir taslak sorgu hazırlarken bunun icra planını görmek için, <b><tt>EXPLAIN EXECUTE</tt></b> kullanımı örneği:
+  </div>
+<div class="para"><div align="right"><pre class="programlisting">PREPARE query(int, int) AS SELECT sum(bar) FROM test
+    WHERE id &gt; $1 AND id &lt; $2
+    GROUP BY foo;
+
+EXPLAIN ANALYZE EXECUTE query(100, 200);
+
+                QUERY PLAN
+----------------------------------------------------------
+HashAggregate  (cost=39.53..39.53 rows=1 width=8)
+                (actual time=0.661..0.672 rows=7 loops=1)
+  -&gt;  Index Scan using test_pkey on test
+                (cost=0.00..32.97 rows=1311 width=8)
+                (actual time=0.050..0.395 rows=99 loops=1)
+        Index Cond: ((id &gt; $1) AND (id &lt; $2))
+Total runtime: 0.851 ms
+(4 rows)
+</pre></div></div>
+  <div class="para">
+Şüphesiz burada gösterilen değerler işlenen tabloların gerçek içeriğine bağlıdır. Ayrıca, bu değerler ve hatta seçilen sorgu stratejisi, planlamacının sürekli geliştirilmesi sebebiyle, PostgreSQL dağıtımları arasında bile değişiklik gösterebilir. Buna ek olarak, <b><tt>ANALYZE</tt></b> komutu veri istatistiklerini tahmin etmek için rasgele örnekleme yapar; bundan dolayı, tablo verisinde bir değişiklik olmamış bile olsa, taze bir  <b><tt>ANALYZE</tt></b> çağrısından sonra maliyet tahminleri değişiklik gösterebilir.
+  </div></dd><dt class="head3">Uyumluluk</dt><dd><div class="para">
+SQL standardında <b><tt>EXPLAIN</tt></b> diye bir deyim yoktur.
+  </div></dd><dt class="head3">İlgili Belgeler</dt><dd><div class="para">
+<tt><b>ANALYZE</b>[<a href="../../man/man7/man7-analyze.html">analyze(7)</a>]</tt>.
+  </div></dd><dt class="head3">Çeviren</dt><dd><div class="para">
+Nilgün Belma Bugüner <span class="email">&lt;nilgun (at) belgeler·gen·tr&gt;</span>, Nisan 2005
+</div></dd></dl><div class="refentry-header"><table cellspacing="3" cellpadding="3" width="100%" border="0"><tr><td class="mheadfoot" align="left" width="30%"><b>PostgreSQL</b></td><td class="mheadfoot" align="center" width="40%"></td><td class="mheadfoot" align="right" width="30%"><b>EXPLAIN(7)</b></td></tr></table></div></div><div class="eop"></div><table width="100%" summary="Gezinme Çubuğu" cellpadding="1" cellspacing="0" style="border:1px dotted #999999"><tr><td><table width="100%" cellpadding="3" cellspacing="0" border="0"><tr><td width="40%" align="left"><a accesskey="p" href="../../man/man7/man7-execute.html">Önceki</a> </td><td width="20%" align="center"><a accesskey="u" href="../../man/man7/man7.html">Üst Ana Başlık</a></td><td width="40%" align="right"> <a accesskey="n" href="../../man/man7/man7-fetch.html">Sonraki</a></td></tr><tr><td width="40%" align="left" valign="top">EXECUTE </td><td width="20%" align="center"><a accesskey="h" href="../../KiTAPLIK/index.html">Başlangıç</a></td><td width="40%" align="right" valign="top"> FETCH</td></tr><tr><td colspan="3" align="center">
+              Bir <a href="http://www.belgeler.org.tr/">Linux Kitaplığı</a> Sayfası
+            </td></tr></table></td></tr></table></body></html>
